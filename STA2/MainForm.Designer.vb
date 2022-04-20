@@ -61,6 +61,7 @@ Partial Class MainForm
         Me.dgvDbLogCount = New System.Windows.Forms.DataGridView()
         Me.pnlDbLogs = New System.Windows.Forms.Panel()
         Me.gpMessageLogFilters = New System.Windows.Forms.GroupBox()
+        Me.lblMsgLogNumRows = New System.Windows.Forms.Label()
         Me.lblMsgLogEndDate = New System.Windows.Forms.Label()
         Me.lblMsgLogStartDate = New System.Windows.Forms.Label()
         Me.cbMsgLogDateRange = New System.Windows.Forms.CheckBox()
@@ -96,7 +97,13 @@ Partial Class MainForm
         Me.RightToolStripPanel = New System.Windows.Forms.ToolStripPanel()
         Me.LeftToolStripPanel = New System.Windows.Forms.ToolStripPanel()
         Me.ContentPanel = New System.Windows.Forms.ToolStripContentPanel()
-        Me.lblMsgLogNumRows = New System.Windows.Forms.Label()
+        Me.scAdvantageCloudSyncService = New System.ServiceProcess.ServiceController()
+        Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
+        Me.pnlCoreService = New System.Windows.Forms.Panel()
+        Me.pnlCloudService = New System.Windows.Forms.Panel()
+        Me.txtboxCoreService = New System.Windows.Forms.TextBox()
+        Me.btnCoreServiceSS = New System.Windows.Forms.Button()
+        Me.btnCoreServiceRS = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -121,6 +128,8 @@ Partial Class MainForm
         Me.tpStParse.SuspendLayout()
         Me.Panel1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.FlowLayoutPanel1.SuspendLayout()
+        Me.pnlCoreService.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -168,7 +177,7 @@ Partial Class MainForm
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
         Me.SplitContainer1.Size = New System.Drawing.Size(1265, 649)
-        Me.SplitContainer1.SplitterDistance = 552
+        Me.SplitContainer1.SplitterDistance = 553
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -182,17 +191,18 @@ Partial Class MainForm
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1261, 548)
+        Me.tcSTA.Size = New System.Drawing.Size(1261, 549)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
         '
+        Me.tpGeneral.Controls.Add(Me.FlowLayoutPanel1)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
         Me.tpGeneral.Controls.Add(Me.gpPfsConnect)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1253, 491)
+        Me.tpGeneral.Size = New System.Drawing.Size(1253, 523)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         Me.tpGeneral.UseVisualStyleBackColor = True
@@ -385,7 +395,7 @@ Partial Class MainForm
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1253, 491)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1253, 523)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.UseVisualStyleBackColor = True
@@ -399,7 +409,7 @@ Partial Class MainForm
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 460)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 492)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1247, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -465,7 +475,7 @@ Partial Class MainForm
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1250, 416)
+        Me.pnlDbData.Size = New System.Drawing.Size(1250, 447)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -479,7 +489,7 @@ Partial Class MainForm
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1250, 416)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1250, 447)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tbDbLogs
@@ -490,7 +500,7 @@ Partial Class MainForm
         Me.tbDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tbDbLogs.Name = "tbDbLogs"
         Me.tbDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tbDbLogs.Size = New System.Drawing.Size(1253, 522)
+        Me.tbDbLogs.Size = New System.Drawing.Size(1253, 523)
         Me.tbDbLogs.TabIndex = 2
         Me.tbDbLogs.Text = "CE DB Logs"
         Me.tbDbLogs.UseVisualStyleBackColor = True
@@ -560,7 +570,7 @@ Partial Class MainForm
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 392)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 393)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1247, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -583,6 +593,15 @@ Partial Class MainForm
         Me.gpMessageLogFilters.TabIndex = 4
         Me.gpMessageLogFilters.TabStop = False
         Me.gpMessageLogFilters.Text = "MessageLog Filters"
+        '
+        'lblMsgLogNumRows
+        '
+        Me.lblMsgLogNumRows.AutoSize = True
+        Me.lblMsgLogNumRows.Location = New System.Drawing.Point(297, 41)
+        Me.lblMsgLogNumRows.Name = "lblMsgLogNumRows"
+        Me.lblMsgLogNumRows.Size = New System.Drawing.Size(96, 13)
+        Me.lblMsgLogNumRows.TabIndex = 15
+        Me.lblMsgLogNumRows.Text = "# of Rows to show"
         '
         'lblMsgLogEndDate
         '
@@ -705,7 +724,7 @@ Partial Class MainForm
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1253, 491)
+        Me.tpStParse.Size = New System.Drawing.Size(1253, 523)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -900,14 +919,61 @@ Partial Class MainForm
         '
         Me.ContentPanel.Size = New System.Drawing.Size(150, 125)
         '
-        'lblMsgLogNumRows
+        'scAdvantageCloudSyncService
         '
-        Me.lblMsgLogNumRows.AutoSize = True
-        Me.lblMsgLogNumRows.Location = New System.Drawing.Point(297, 41)
-        Me.lblMsgLogNumRows.Name = "lblMsgLogNumRows"
-        Me.lblMsgLogNumRows.Size = New System.Drawing.Size(96, 13)
-        Me.lblMsgLogNumRows.TabIndex = 15
-        Me.lblMsgLogNumRows.Text = "# of Rows to show"
+        Me.scAdvantageCloudSyncService.ServiceName = "AdvantageCloudSyncService"
+        '
+        'FlowLayoutPanel1
+        '
+        Me.FlowLayoutPanel1.Controls.Add(Me.pnlCoreService)
+        Me.FlowLayoutPanel1.Controls.Add(Me.pnlCloudService)
+        Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(511, 204)
+        Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
+        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(587, 225)
+        Me.FlowLayoutPanel1.TabIndex = 12
+        '
+        'pnlCoreService
+        '
+        Me.pnlCoreService.Controls.Add(Me.btnCoreServiceRS)
+        Me.pnlCoreService.Controls.Add(Me.txtboxCoreService)
+        Me.pnlCoreService.Controls.Add(Me.btnCoreServiceSS)
+        Me.pnlCoreService.Location = New System.Drawing.Point(3, 3)
+        Me.pnlCoreService.Name = "pnlCoreService"
+        Me.pnlCoreService.Size = New System.Drawing.Size(325, 100)
+        Me.pnlCoreService.TabIndex = 0
+        '
+        'pnlCloudService
+        '
+        Me.pnlCloudService.Location = New System.Drawing.Point(3, 109)
+        Me.pnlCloudService.Name = "pnlCloudService"
+        Me.pnlCloudService.Size = New System.Drawing.Size(325, 100)
+        Me.pnlCloudService.TabIndex = 1
+        '
+        'txtboxCoreService
+        '
+        Me.txtboxCoreService.Location = New System.Drawing.Point(3, 3)
+        Me.txtboxCoreService.Name = "txtboxCoreService"
+        Me.txtboxCoreService.Size = New System.Drawing.Size(185, 20)
+        Me.txtboxCoreService.TabIndex = 13
+        '
+        'btnCoreServiceSS
+        '
+        Me.btnCoreServiceSS.Location = New System.Drawing.Point(3, 29)
+        Me.btnCoreServiceSS.Name = "btnCoreServiceSS"
+        Me.btnCoreServiceSS.Size = New System.Drawing.Size(75, 23)
+        Me.btnCoreServiceSS.TabIndex = 14
+        Me.btnCoreServiceSS.Text = "Button1"
+        Me.btnCoreServiceSS.UseVisualStyleBackColor = True
+        '
+        'btnCoreServiceRS
+        '
+        Me.btnCoreServiceRS.Location = New System.Drawing.Point(113, 29)
+        Me.btnCoreServiceRS.Name = "btnCoreServiceRS"
+        Me.btnCoreServiceRS.Size = New System.Drawing.Size(75, 23)
+        Me.btnCoreServiceRS.TabIndex = 15
+        Me.btnCoreServiceRS.Text = "Button2"
+        Me.btnCoreServiceRS.UseVisualStyleBackColor = True
         '
         'MainForm
         '
@@ -949,6 +1015,9 @@ Partial Class MainForm
         Me.Panel1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.FlowLayoutPanel1.ResumeLayout(False)
+        Me.pnlCoreService.ResumeLayout(False)
+        Me.pnlCoreService.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -1027,4 +1096,11 @@ Partial Class MainForm
     Friend WithEvents lblMsgLogEndDate As Label
     Friend WithEvents lblMsgLogStartDate As Label
     Friend WithEvents lblMsgLogNumRows As Label
+    Friend WithEvents scAdvantageCloudSyncService As ServiceProcess.ServiceController
+    Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
+    Friend WithEvents pnlCoreService As Panel
+    Friend WithEvents btnCoreServiceRS As Button
+    Friend WithEvents txtboxCoreService As TextBox
+    Friend WithEvents btnCoreServiceSS As Button
+    Friend WithEvents pnlCloudService As Panel
 End Class

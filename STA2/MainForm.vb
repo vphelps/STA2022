@@ -36,6 +36,8 @@ Public Class MainForm
             txtboxTest2.Visible = False
             btnTest.Visible = False
         End If
+
+        txtboxTest1.Text = scAdvantageCloudSyncService.Status.ToString
     End Sub
 
     Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs) Handles btnUnlockAdminAccount.Click
