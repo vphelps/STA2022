@@ -1,9 +1,12 @@
 ﻿Imports System.ServiceProcess
 
 Public Class Services
-    Public Shared Function Test()
+    Public Shared AdvCoreService As New ServiceController("AdvCoreService")
+    Public Shared AdvCloudService As New ServiceController("AdvantageCloudSyncService")
 
-        Dim controller As New ServiceController("AdvantageCloudSyncService")
+    Public Shared Sub StopStart(ServiceName As String)
+
+        Dim controller As New ServiceController(ServiceName)
         Dim serviceControllerStatus = controller.Status
 
         Select Case serviceControllerStatus
@@ -19,16 +22,13 @@ Public Class Services
 
 
 
-        Return serviceControllerStatus.ToString
+
+    End Sub
+
+    Public Shared Function GetServiceStatus(serviceName As String)
+        Dim controller As New ServiceController(serviceName)
+        Dim serviceControllerStatus As String = controller.Status.ToString
+        Return controller
 
     End Function
-
-    Public Shared Function GetServiceStatus(ServiceName As String)
-        Dim controller As New ServiceController(ServiceName)
-        Dim serviceControllerStatus = controller.Status
-        Return serviceControllerStatus.ToString
-
-
-    End Function
-
 End Class

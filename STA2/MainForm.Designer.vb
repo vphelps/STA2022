@@ -28,18 +28,31 @@ Partial Class MainForm
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.tcSTA = New System.Windows.Forms.TabControl()
         Me.tpGeneral = New System.Windows.Forms.TabPage()
+        Me.flpServices = New System.Windows.Forms.FlowLayoutPanel()
+        Me.gpApiService = New System.Windows.Forms.GroupBox()
+        Me.btnApiServiceRS = New System.Windows.Forms.Button()
+        Me.tbApiService = New System.Windows.Forms.TextBox()
+        Me.btnApiServiceSS = New System.Windows.Forms.Button()
+        Me.gpCoreService = New System.Windows.Forms.GroupBox()
+        Me.btnCoreServiceRS = New System.Windows.Forms.Button()
+        Me.tbCoreService = New System.Windows.Forms.TextBox()
+        Me.btnCoreServiceSS = New System.Windows.Forms.Button()
+        Me.gpCloudService = New System.Windows.Forms.GroupBox()
+        Me.btnCloudServiceRS = New System.Windows.Forms.Button()
+        Me.tbCloudService = New System.Windows.Forms.TextBox()
+        Me.btnCloudServiceSS = New System.Windows.Forms.Button()
         Me.gpLicInfo = New System.Windows.Forms.GroupBox()
-        Me.txtboxShiftDate = New System.Windows.Forms.TextBox()
-        Me.txtboxLocName = New System.Windows.Forms.TextBox()
+        Me.tbShiftDate = New System.Windows.Forms.TextBox()
+        Me.tbLocName = New System.Windows.Forms.TextBox()
         Me.lblCoreSvr = New System.Windows.Forms.Label()
         Me.lblShiftDate = New System.Windows.Forms.Label()
-        Me.txtboxCoreSvr = New System.Windows.Forms.TextBox()
-        Me.txtboxLicSvr = New System.Windows.Forms.TextBox()
-        Me.txtboxWebEnabled = New System.Windows.Forms.TextBox()
+        Me.tbCoreSvr = New System.Windows.Forms.TextBox()
+        Me.tbLicSvr = New System.Windows.Forms.TextBox()
+        Me.tbWebEnabled = New System.Windows.Forms.TextBox()
         Me.lblDbVer = New System.Windows.Forms.Label()
         Me.lblLicSvr = New System.Windows.Forms.Label()
         Me.lblWebEnabled = New System.Windows.Forms.Label()
-        Me.txtboxDbVer = New System.Windows.Forms.TextBox()
+        Me.tbDbVer = New System.Windows.Forms.TextBox()
         Me.lblLocName = New System.Windows.Forms.Label()
         Me.gpPfsConnect = New System.Windows.Forms.GroupBox()
         Me.dgvPFSConnect = New System.Windows.Forms.DataGridView()
@@ -80,12 +93,12 @@ Partial Class MainForm
         Me.btnStPaste = New System.Windows.Forms.Button()
         Me.btnStParse = New System.Windows.Forms.Button()
         Me.btnSTClear = New System.Windows.Forms.Button()
-        Me.txtboxSTParse = New System.Windows.Forms.TextBox()
+        Me.tbSTParse = New System.Windows.Forms.TextBox()
         Me.btnTest = New System.Windows.Forms.Button()
-        Me.txtboxTest2 = New System.Windows.Forms.TextBox()
+        Me.tbTest2 = New System.Windows.Forms.TextBox()
         Me.btnCenterEdgeConfig = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.txtboxTest1 = New System.Windows.Forms.TextBox()
+        Me.tbTest1 = New System.Windows.Forms.TextBox()
         Me.btnLogin = New System.Windows.Forms.Button()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.tslblCeVersion = New System.Windows.Forms.ToolStripStatusLabel()
@@ -97,19 +110,18 @@ Partial Class MainForm
         Me.RightToolStripPanel = New System.Windows.Forms.ToolStripPanel()
         Me.LeftToolStripPanel = New System.Windows.Forms.ToolStripPanel()
         Me.ContentPanel = New System.Windows.Forms.ToolStripContentPanel()
-        Me.scAdvantageCloudSyncService = New System.ServiceProcess.ServiceController()
-        Me.FlowLayoutPanel1 = New System.Windows.Forms.FlowLayoutPanel()
-        Me.pnlCoreService = New System.Windows.Forms.Panel()
-        Me.pnlCloudService = New System.Windows.Forms.Panel()
-        Me.txtboxCoreService = New System.Windows.Forms.TextBox()
-        Me.btnCoreServiceSS = New System.Windows.Forms.Button()
-        Me.btnCoreServiceRS = New System.Windows.Forms.Button()
+        Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
+        Me.scAdvCoreService = New System.ServiceProcess.ServiceController()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
         Me.tcSTA.SuspendLayout()
         Me.tpGeneral.SuspendLayout()
+        Me.flpServices.SuspendLayout()
+        Me.gpApiService.SuspendLayout()
+        Me.gpCoreService.SuspendLayout()
+        Me.gpCloudService.SuspendLayout()
         Me.gpLicInfo.SuspendLayout()
         Me.gpPfsConnect.SuspendLayout()
         CType(Me.dgvPFSConnect, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -128,8 +140,6 @@ Partial Class MainForm
         Me.tpStParse.SuspendLayout()
         Me.Panel1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
-        Me.FlowLayoutPanel1.SuspendLayout()
-        Me.pnlCoreService.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -169,15 +179,15 @@ Partial Class MainForm
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnTest)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.txtboxTest2)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
         Me.SplitContainer1.Panel2.Controls.Add(Me.Label1)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.txtboxTest1)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
         Me.SplitContainer1.Size = New System.Drawing.Size(1265, 649)
-        Me.SplitContainer1.SplitterDistance = 553
+        Me.SplitContainer1.SplitterDistance = 560
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -191,35 +201,169 @@ Partial Class MainForm
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1261, 549)
+        Me.tcSTA.Size = New System.Drawing.Size(1261, 556)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
         '
-        Me.tpGeneral.Controls.Add(Me.FlowLayoutPanel1)
+        Me.tpGeneral.Controls.Add(Me.flpServices)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
         Me.tpGeneral.Controls.Add(Me.gpPfsConnect)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1253, 523)
+        Me.tpGeneral.Size = New System.Drawing.Size(1253, 530)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         Me.tpGeneral.UseVisualStyleBackColor = True
         '
+        'flpServices
+        '
+        Me.flpServices.Controls.Add(Me.gpApiService)
+        Me.flpServices.Controls.Add(Me.gpCoreService)
+        Me.flpServices.Controls.Add(Me.gpCloudService)
+        Me.flpServices.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.flpServices.Location = New System.Drawing.Point(511, 204)
+        Me.flpServices.Name = "flpServices"
+        Me.flpServices.Size = New System.Drawing.Size(587, 225)
+        Me.flpServices.TabIndex = 12
+        '
+        'gpApiService
+        '
+        Me.gpApiService.Controls.Add(Me.btnApiServiceRS)
+        Me.gpApiService.Controls.Add(Me.tbApiService)
+        Me.gpApiService.Controls.Add(Me.btnApiServiceSS)
+        Me.gpApiService.Location = New System.Drawing.Point(3, 3)
+        Me.gpApiService.Name = "gpApiService"
+        Me.gpApiService.Size = New System.Drawing.Size(362, 49)
+        Me.gpApiService.TabIndex = 15
+        Me.gpApiService.TabStop = False
+        Me.gpApiService.Text = "Api Service"
+        '
+        'btnApiServiceRS
+        '
+        Me.btnApiServiceRS.Location = New System.Drawing.Point(278, 16)
+        Me.btnApiServiceRS.Name = "btnApiServiceRS"
+        Me.btnApiServiceRS.Size = New System.Drawing.Size(75, 23)
+        Me.btnApiServiceRS.TabIndex = 15
+        Me.btnApiServiceRS.Tag = "AdvApiServer"
+        Me.btnApiServiceRS.Text = "Restart"
+        Me.btnApiServiceRS.UseVisualStyleBackColor = True
+        '
+        'tbApiService
+        '
+        Me.tbApiService.Location = New System.Drawing.Point(6, 19)
+        Me.tbApiService.Name = "tbApiService"
+        Me.tbApiService.ReadOnly = True
+        Me.tbApiService.Size = New System.Drawing.Size(185, 20)
+        Me.tbApiService.TabIndex = 13
+        Me.tbApiService.Tag = "AdvApiServer"
+        '
+        'btnApiServiceSS
+        '
+        Me.btnApiServiceSS.Location = New System.Drawing.Point(197, 16)
+        Me.btnApiServiceSS.Name = "btnApiServiceSS"
+        Me.btnApiServiceSS.Size = New System.Drawing.Size(75, 23)
+        Me.btnApiServiceSS.TabIndex = 14
+        Me.btnApiServiceSS.Tag = "AdvApiServer"
+        Me.btnApiServiceSS.Text = "Start"
+        Me.btnApiServiceSS.UseVisualStyleBackColor = True
+        '
+        'gpCoreService
+        '
+        Me.gpCoreService.Controls.Add(Me.btnCoreServiceRS)
+        Me.gpCoreService.Controls.Add(Me.tbCoreService)
+        Me.gpCoreService.Controls.Add(Me.btnCoreServiceSS)
+        Me.gpCoreService.Location = New System.Drawing.Point(3, 58)
+        Me.gpCoreService.Name = "gpCoreService"
+        Me.gpCoreService.Size = New System.Drawing.Size(362, 49)
+        Me.gpCoreService.TabIndex = 13
+        Me.gpCoreService.TabStop = False
+        Me.gpCoreService.Text = "Core Service"
+        '
+        'btnCoreServiceRS
+        '
+        Me.btnCoreServiceRS.Location = New System.Drawing.Point(278, 16)
+        Me.btnCoreServiceRS.Name = "btnCoreServiceRS"
+        Me.btnCoreServiceRS.Size = New System.Drawing.Size(75, 23)
+        Me.btnCoreServiceRS.TabIndex = 15
+        Me.btnCoreServiceRS.Tag = "AdvCoreService"
+        Me.btnCoreServiceRS.Text = "Restart"
+        Me.btnCoreServiceRS.UseVisualStyleBackColor = True
+        '
+        'tbCoreService
+        '
+        Me.tbCoreService.Location = New System.Drawing.Point(6, 19)
+        Me.tbCoreService.Name = "tbCoreService"
+        Me.tbCoreService.ReadOnly = True
+        Me.tbCoreService.Size = New System.Drawing.Size(185, 20)
+        Me.tbCoreService.TabIndex = 13
+        Me.tbCoreService.Tag = "AdvCoreService"
+        '
+        'btnCoreServiceSS
+        '
+        Me.btnCoreServiceSS.Location = New System.Drawing.Point(197, 16)
+        Me.btnCoreServiceSS.Name = "btnCoreServiceSS"
+        Me.btnCoreServiceSS.Size = New System.Drawing.Size(75, 23)
+        Me.btnCoreServiceSS.TabIndex = 14
+        Me.btnCoreServiceSS.Tag = "AdvCoreService"
+        Me.btnCoreServiceSS.Text = "Start"
+        Me.btnCoreServiceSS.UseVisualStyleBackColor = True
+        '
+        'gpCloudService
+        '
+        Me.gpCloudService.Controls.Add(Me.btnCloudServiceRS)
+        Me.gpCloudService.Controls.Add(Me.tbCloudService)
+        Me.gpCloudService.Controls.Add(Me.btnCloudServiceSS)
+        Me.gpCloudService.Location = New System.Drawing.Point(3, 113)
+        Me.gpCloudService.Name = "gpCloudService"
+        Me.gpCloudService.Size = New System.Drawing.Size(362, 46)
+        Me.gpCloudService.TabIndex = 14
+        Me.gpCloudService.TabStop = False
+        Me.gpCloudService.Text = "Cloud Service"
+        '
+        'btnCloudServiceRS
+        '
+        Me.btnCloudServiceRS.Location = New System.Drawing.Point(278, 14)
+        Me.btnCloudServiceRS.Name = "btnCloudServiceRS"
+        Me.btnCloudServiceRS.Size = New System.Drawing.Size(75, 23)
+        Me.btnCloudServiceRS.TabIndex = 18
+        Me.btnCloudServiceRS.Tag = "AdvantageCloudSyncService"
+        Me.btnCloudServiceRS.Text = "Restart"
+        Me.btnCloudServiceRS.UseVisualStyleBackColor = True
+        '
+        'tbCloudService
+        '
+        Me.tbCloudService.Location = New System.Drawing.Point(6, 17)
+        Me.tbCloudService.Name = "tbCloudService"
+        Me.tbCloudService.ReadOnly = True
+        Me.tbCloudService.Size = New System.Drawing.Size(185, 20)
+        Me.tbCloudService.TabIndex = 16
+        Me.tbCloudService.Tag = "AdvantageCloudSyncService"
+        '
+        'btnCloudServiceSS
+        '
+        Me.btnCloudServiceSS.Location = New System.Drawing.Point(197, 14)
+        Me.btnCloudServiceSS.Name = "btnCloudServiceSS"
+        Me.btnCloudServiceSS.Size = New System.Drawing.Size(75, 23)
+        Me.btnCloudServiceSS.TabIndex = 17
+        Me.btnCloudServiceSS.Tag = "AdvantageCloudSyncService"
+        Me.btnCloudServiceSS.Text = "Start"
+        Me.btnCloudServiceSS.UseVisualStyleBackColor = True
+        '
         'gpLicInfo
         '
-        Me.gpLicInfo.Controls.Add(Me.txtboxShiftDate)
-        Me.gpLicInfo.Controls.Add(Me.txtboxLocName)
+        Me.gpLicInfo.Controls.Add(Me.tbShiftDate)
+        Me.gpLicInfo.Controls.Add(Me.tbLocName)
         Me.gpLicInfo.Controls.Add(Me.lblCoreSvr)
         Me.gpLicInfo.Controls.Add(Me.lblShiftDate)
-        Me.gpLicInfo.Controls.Add(Me.txtboxCoreSvr)
-        Me.gpLicInfo.Controls.Add(Me.txtboxLicSvr)
-        Me.gpLicInfo.Controls.Add(Me.txtboxWebEnabled)
+        Me.gpLicInfo.Controls.Add(Me.tbCoreSvr)
+        Me.gpLicInfo.Controls.Add(Me.tbLicSvr)
+        Me.gpLicInfo.Controls.Add(Me.tbWebEnabled)
         Me.gpLicInfo.Controls.Add(Me.lblDbVer)
         Me.gpLicInfo.Controls.Add(Me.lblLicSvr)
         Me.gpLicInfo.Controls.Add(Me.lblWebEnabled)
-        Me.gpLicInfo.Controls.Add(Me.txtboxDbVer)
+        Me.gpLicInfo.Controls.Add(Me.tbDbVer)
         Me.gpLicInfo.Controls.Add(Me.lblLocName)
         Me.gpLicInfo.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.gpLicInfo.Location = New System.Drawing.Point(511, 3)
@@ -229,21 +373,21 @@ Partial Class MainForm
         Me.gpLicInfo.TabStop = False
         Me.gpLicInfo.Text = "License Info"
         '
-        'txtboxShiftDate
+        'tbShiftDate
         '
-        Me.txtboxShiftDate.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtboxShiftDate.Location = New System.Drawing.Point(101, 126)
-        Me.txtboxShiftDate.Name = "txtboxShiftDate"
-        Me.txtboxShiftDate.Size = New System.Drawing.Size(325, 20)
-        Me.txtboxShiftDate.TabIndex = 11
+        Me.tbShiftDate.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbShiftDate.Location = New System.Drawing.Point(101, 126)
+        Me.tbShiftDate.Name = "tbShiftDate"
+        Me.tbShiftDate.Size = New System.Drawing.Size(325, 20)
+        Me.tbShiftDate.TabIndex = 11
         '
-        'txtboxLocName
+        'tbLocName
         '
-        Me.txtboxLocName.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtboxLocName.Location = New System.Drawing.Point(101, 16)
-        Me.txtboxLocName.Name = "txtboxLocName"
-        Me.txtboxLocName.Size = New System.Drawing.Size(325, 20)
-        Me.txtboxLocName.TabIndex = 1
+        Me.tbLocName.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbLocName.Location = New System.Drawing.Point(101, 16)
+        Me.tbLocName.Name = "tbLocName"
+        Me.tbLocName.Size = New System.Drawing.Size(325, 20)
+        Me.tbLocName.TabIndex = 1
         '
         'lblCoreSvr
         '
@@ -265,29 +409,29 @@ Partial Class MainForm
         Me.lblShiftDate.TabIndex = 10
         Me.lblShiftDate.Text = "Shift Date:"
         '
-        'txtboxCoreSvr
+        'tbCoreSvr
         '
-        Me.txtboxCoreSvr.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtboxCoreSvr.Location = New System.Drawing.Point(101, 59)
-        Me.txtboxCoreSvr.Name = "txtboxCoreSvr"
-        Me.txtboxCoreSvr.Size = New System.Drawing.Size(325, 20)
-        Me.txtboxCoreSvr.TabIndex = 5
+        Me.tbCoreSvr.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbCoreSvr.Location = New System.Drawing.Point(101, 59)
+        Me.tbCoreSvr.Name = "tbCoreSvr"
+        Me.tbCoreSvr.Size = New System.Drawing.Size(325, 20)
+        Me.tbCoreSvr.TabIndex = 5
         '
-        'txtboxLicSvr
+        'tbLicSvr
         '
-        Me.txtboxLicSvr.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtboxLicSvr.Location = New System.Drawing.Point(101, 37)
-        Me.txtboxLicSvr.Name = "txtboxLicSvr"
-        Me.txtboxLicSvr.Size = New System.Drawing.Size(325, 20)
-        Me.txtboxLicSvr.TabIndex = 3
+        Me.tbLicSvr.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbLicSvr.Location = New System.Drawing.Point(101, 37)
+        Me.tbLicSvr.Name = "tbLicSvr"
+        Me.tbLicSvr.Size = New System.Drawing.Size(325, 20)
+        Me.tbLicSvr.TabIndex = 3
         '
-        'txtboxWebEnabled
+        'tbWebEnabled
         '
-        Me.txtboxWebEnabled.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtboxWebEnabled.Location = New System.Drawing.Point(101, 103)
-        Me.txtboxWebEnabled.Name = "txtboxWebEnabled"
-        Me.txtboxWebEnabled.Size = New System.Drawing.Size(325, 20)
-        Me.txtboxWebEnabled.TabIndex = 9
+        Me.tbWebEnabled.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbWebEnabled.Location = New System.Drawing.Point(101, 103)
+        Me.tbWebEnabled.Name = "tbWebEnabled"
+        Me.tbWebEnabled.Size = New System.Drawing.Size(325, 20)
+        Me.tbWebEnabled.TabIndex = 9
         '
         'lblDbVer
         '
@@ -319,13 +463,13 @@ Partial Class MainForm
         Me.lblWebEnabled.TabIndex = 8
         Me.lblWebEnabled.Text = "Webstore Enabled:"
         '
-        'txtboxDbVer
+        'tbDbVer
         '
-        Me.txtboxDbVer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtboxDbVer.Location = New System.Drawing.Point(101, 81)
-        Me.txtboxDbVer.Name = "txtboxDbVer"
-        Me.txtboxDbVer.Size = New System.Drawing.Size(325, 20)
-        Me.txtboxDbVer.TabIndex = 7
+        Me.tbDbVer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbDbVer.Location = New System.Drawing.Point(101, 81)
+        Me.tbDbVer.Name = "tbDbVer"
+        Me.tbDbVer.Size = New System.Drawing.Size(325, 20)
+        Me.tbDbVer.TabIndex = 7
         '
         'lblLocName
         '
@@ -395,7 +539,7 @@ Partial Class MainForm
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1253, 523)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1253, 530)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.UseVisualStyleBackColor = True
@@ -409,7 +553,7 @@ Partial Class MainForm
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 492)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 499)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1247, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -500,7 +644,7 @@ Partial Class MainForm
         Me.tbDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tbDbLogs.Name = "tbDbLogs"
         Me.tbDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tbDbLogs.Size = New System.Drawing.Size(1253, 523)
+        Me.tbDbLogs.Size = New System.Drawing.Size(1253, 530)
         Me.tbDbLogs.TabIndex = 2
         Me.tbDbLogs.Text = "CE DB Logs"
         Me.tbDbLogs.UseVisualStyleBackColor = True
@@ -570,7 +714,7 @@ Partial Class MainForm
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 393)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 400)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1247, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -720,11 +864,11 @@ Partial Class MainForm
         'tpStParse
         '
         Me.tpStParse.Controls.Add(Me.Panel1)
-        Me.tpStParse.Controls.Add(Me.txtboxSTParse)
+        Me.tpStParse.Controls.Add(Me.tbSTParse)
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1253, 523)
+        Me.tpStParse.Size = New System.Drawing.Size(1253, 530)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -778,14 +922,14 @@ Partial Class MainForm
         Me.btnSTClear.Text = "Clear"
         Me.btnSTClear.UseVisualStyleBackColor = True
         '
-        'txtboxSTParse
+        'tbSTParse
         '
-        Me.txtboxSTParse.Location = New System.Drawing.Point(9, 3)
-        Me.txtboxSTParse.Multiline = True
-        Me.txtboxSTParse.Name = "txtboxSTParse"
-        Me.txtboxSTParse.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.txtboxSTParse.Size = New System.Drawing.Size(1108, 435)
-        Me.txtboxSTParse.TabIndex = 2
+        Me.tbSTParse.Location = New System.Drawing.Point(9, 3)
+        Me.tbSTParse.Multiline = True
+        Me.tbSTParse.Name = "tbSTParse"
+        Me.tbSTParse.ScrollBars = System.Windows.Forms.ScrollBars.Both
+        Me.tbSTParse.Size = New System.Drawing.Size(1108, 435)
+        Me.tbSTParse.TabIndex = 2
         '
         'btnTest
         '
@@ -796,13 +940,13 @@ Partial Class MainForm
         Me.btnTest.Text = "Test Button"
         Me.btnTest.UseVisualStyleBackColor = True
         '
-        'txtboxTest2
+        'tbTest2
         '
-        Me.txtboxTest2.Location = New System.Drawing.Point(13, 39)
-        Me.txtboxTest2.Name = "txtboxTest2"
-        Me.txtboxTest2.Size = New System.Drawing.Size(275, 20)
-        Me.txtboxTest2.TabIndex = 13
-        Me.txtboxTest2.Text = "Test Use"
+        Me.tbTest2.Location = New System.Drawing.Point(13, 39)
+        Me.tbTest2.Name = "tbTest2"
+        Me.tbTest2.Size = New System.Drawing.Size(275, 20)
+        Me.tbTest2.TabIndex = 13
+        Me.tbTest2.Text = "Test Use"
         '
         'btnCenterEdgeConfig
         '
@@ -822,13 +966,13 @@ Partial Class MainForm
         Me.Label1.TabIndex = 11
         Me.Label1.Text = "Login using SQL Credentials"
         '
-        'txtboxTest1
+        'tbTest1
         '
-        Me.txtboxTest1.Location = New System.Drawing.Point(13, 13)
-        Me.txtboxTest1.Name = "txtboxTest1"
-        Me.txtboxTest1.Size = New System.Drawing.Size(830, 20)
-        Me.txtboxTest1.TabIndex = 3
-        Me.txtboxTest1.Text = "Test Use"
+        Me.tbTest1.Location = New System.Drawing.Point(13, 13)
+        Me.tbTest1.Name = "tbTest1"
+        Me.tbTest1.Size = New System.Drawing.Size(830, 20)
+        Me.tbTest1.TabIndex = 3
+        Me.tbTest1.Text = "Test Use"
         '
         'btnLogin
         '
@@ -919,61 +1063,14 @@ Partial Class MainForm
         '
         Me.ContentPanel.Size = New System.Drawing.Size(150, 125)
         '
-        'scAdvantageCloudSyncService
+        'tmr1Sec
         '
-        Me.scAdvantageCloudSyncService.ServiceName = "AdvantageCloudSyncService"
+        Me.tmr1Sec.Enabled = True
+        Me.tmr1Sec.Interval = 1000
         '
-        'FlowLayoutPanel1
+        'scAdvCoreService
         '
-        Me.FlowLayoutPanel1.Controls.Add(Me.pnlCoreService)
-        Me.FlowLayoutPanel1.Controls.Add(Me.pnlCloudService)
-        Me.FlowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.FlowLayoutPanel1.Location = New System.Drawing.Point(511, 204)
-        Me.FlowLayoutPanel1.Name = "FlowLayoutPanel1"
-        Me.FlowLayoutPanel1.Size = New System.Drawing.Size(587, 225)
-        Me.FlowLayoutPanel1.TabIndex = 12
-        '
-        'pnlCoreService
-        '
-        Me.pnlCoreService.Controls.Add(Me.btnCoreServiceRS)
-        Me.pnlCoreService.Controls.Add(Me.txtboxCoreService)
-        Me.pnlCoreService.Controls.Add(Me.btnCoreServiceSS)
-        Me.pnlCoreService.Location = New System.Drawing.Point(3, 3)
-        Me.pnlCoreService.Name = "pnlCoreService"
-        Me.pnlCoreService.Size = New System.Drawing.Size(325, 100)
-        Me.pnlCoreService.TabIndex = 0
-        '
-        'pnlCloudService
-        '
-        Me.pnlCloudService.Location = New System.Drawing.Point(3, 109)
-        Me.pnlCloudService.Name = "pnlCloudService"
-        Me.pnlCloudService.Size = New System.Drawing.Size(325, 100)
-        Me.pnlCloudService.TabIndex = 1
-        '
-        'txtboxCoreService
-        '
-        Me.txtboxCoreService.Location = New System.Drawing.Point(3, 3)
-        Me.txtboxCoreService.Name = "txtboxCoreService"
-        Me.txtboxCoreService.Size = New System.Drawing.Size(185, 20)
-        Me.txtboxCoreService.TabIndex = 13
-        '
-        'btnCoreServiceSS
-        '
-        Me.btnCoreServiceSS.Location = New System.Drawing.Point(3, 29)
-        Me.btnCoreServiceSS.Name = "btnCoreServiceSS"
-        Me.btnCoreServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnCoreServiceSS.TabIndex = 14
-        Me.btnCoreServiceSS.Text = "Button1"
-        Me.btnCoreServiceSS.UseVisualStyleBackColor = True
-        '
-        'btnCoreServiceRS
-        '
-        Me.btnCoreServiceRS.Location = New System.Drawing.Point(113, 29)
-        Me.btnCoreServiceRS.Name = "btnCoreServiceRS"
-        Me.btnCoreServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnCoreServiceRS.TabIndex = 15
-        Me.btnCoreServiceRS.Text = "Button2"
-        Me.btnCoreServiceRS.UseVisualStyleBackColor = True
+        Me.scAdvCoreService.ServiceName = "AdvCoreService"
         '
         'MainForm
         '
@@ -983,7 +1080,7 @@ Partial Class MainForm
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Name = "MainForm"
-        Me.Text = "Support Tech Assistant 2.0"
+        Me.Text = "Support Tech Assistant"
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
         Me.SplitContainer1.Panel2.PerformLayout()
@@ -991,6 +1088,13 @@ Partial Class MainForm
         Me.SplitContainer1.ResumeLayout(False)
         Me.tcSTA.ResumeLayout(False)
         Me.tpGeneral.ResumeLayout(False)
+        Me.flpServices.ResumeLayout(False)
+        Me.gpApiService.ResumeLayout(False)
+        Me.gpApiService.PerformLayout()
+        Me.gpCoreService.ResumeLayout(False)
+        Me.gpCoreService.PerformLayout()
+        Me.gpCloudService.ResumeLayout(False)
+        Me.gpCloudService.PerformLayout()
         Me.gpLicInfo.ResumeLayout(False)
         Me.gpLicInfo.PerformLayout()
         Me.gpPfsConnect.ResumeLayout(False)
@@ -1015,9 +1119,6 @@ Partial Class MainForm
         Me.Panel1.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
-        Me.FlowLayoutPanel1.ResumeLayout(False)
-        Me.pnlCoreService.ResumeLayout(False)
-        Me.pnlCoreService.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -1032,17 +1133,17 @@ Partial Class MainForm
     Friend WithEvents Setting As DataGridViewTextBoxColumn
     Friend WithEvents Value As DataGridViewTextBoxColumn
     Friend WithEvents gpLicInfo As GroupBox
-    Friend WithEvents txtboxShiftDate As TextBox
+    Friend WithEvents tbShiftDate As TextBox
     Friend WithEvents lblShiftDate As Label
-    Friend WithEvents txtboxWebEnabled As TextBox
+    Friend WithEvents tbWebEnabled As TextBox
     Friend WithEvents lblWebEnabled As Label
-    Friend WithEvents txtboxDbVer As TextBox
+    Friend WithEvents tbDbVer As TextBox
     Friend WithEvents lblDbVer As Label
-    Friend WithEvents txtboxCoreSvr As TextBox
+    Friend WithEvents tbCoreSvr As TextBox
     Friend WithEvents lblCoreSvr As Label
-    Friend WithEvents txtboxLicSvr As TextBox
+    Friend WithEvents tbLicSvr As TextBox
     Friend WithEvents lblLicSvr As Label
-    Friend WithEvents txtboxLocName As TextBox
+    Friend WithEvents tbLocName As TextBox
     Friend WithEvents lblLocName As Label
     Friend WithEvents gpPfsConnect As GroupBox
     Friend WithEvents StatusStrip1 As StatusStrip
@@ -1055,7 +1156,7 @@ Partial Class MainForm
     Friend WithEvents btnDbInfoRefresh As Button
     Friend WithEvents pnlDbData As Panel
     Friend WithEvents dgvDbTableSize As DataGridView
-    Friend WithEvents txtboxTest1 As TextBox
+    Friend WithEvents tbTest1 As TextBox
     Friend WithEvents BottomToolStripPanel As ToolStripPanel
     Friend WithEvents TopToolStripPanel As ToolStripPanel
     Friend WithEvents RightToolStripPanel As ToolStripPanel
@@ -1070,7 +1171,7 @@ Partial Class MainForm
     Friend WithEvents tbDbLogs As TabPage
     Friend WithEvents btnTest As Button
     Friend WithEvents pnlDbLogs As Panel
-    Friend WithEvents txtboxTest2 As TextBox
+    Friend WithEvents tbTest2 As TextBox
     Friend WithEvents dgvDbLogCount As DataGridView
     Friend WithEvents dgvDbLogData As DataGridView
     Friend WithEvents rbMessageLog As RadioButton
@@ -1081,7 +1182,7 @@ Partial Class MainForm
     Friend WithEvents tpStParse As TabPage
     Friend WithEvents btnSTClear As Button
     Friend WithEvents btnStParse As Button
-    Friend WithEvents txtboxSTParse As TextBox
+    Friend WithEvents tbSTParse As TextBox
     Friend WithEvents Panel1 As Panel
     Friend WithEvents btnStPaste As Button
     Friend WithEvents btnStCopy As Button
@@ -1096,11 +1197,19 @@ Partial Class MainForm
     Friend WithEvents lblMsgLogEndDate As Label
     Friend WithEvents lblMsgLogStartDate As Label
     Friend WithEvents lblMsgLogNumRows As Label
-    Friend WithEvents scAdvantageCloudSyncService As ServiceProcess.ServiceController
-    Friend WithEvents FlowLayoutPanel1 As FlowLayoutPanel
-    Friend WithEvents pnlCoreService As Panel
+    Friend WithEvents flpServices As FlowLayoutPanel
     Friend WithEvents btnCoreServiceRS As Button
-    Friend WithEvents txtboxCoreService As TextBox
+    Friend WithEvents tbCoreService As TextBox
     Friend WithEvents btnCoreServiceSS As Button
-    Friend WithEvents pnlCloudService As Panel
+    Friend WithEvents btnCloudServiceRS As Button
+    Friend WithEvents tbCloudService As TextBox
+    Friend WithEvents btnCloudServiceSS As Button
+    Friend WithEvents gpCoreService As GroupBox
+    Friend WithEvents gpCloudService As GroupBox
+    Friend WithEvents tmr1Sec As Timer
+    Friend WithEvents gpApiService As GroupBox
+    Friend WithEvents btnApiServiceRS As Button
+    Friend WithEvents tbApiService As TextBox
+    Friend WithEvents btnApiServiceSS As Button
+    Friend WithEvents scAdvCoreService As ServiceProcess.ServiceController
 End Class
