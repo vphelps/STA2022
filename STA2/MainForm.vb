@@ -7,7 +7,7 @@ Public Class MainForm
     Public Shared Rows As Integer
     Public Shared Columns As Integer
     Private LastServiceButton As Button
-
+    Private LastServiceTextBox As TextBox
 
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
@@ -204,50 +204,36 @@ Public Class MainForm
 
     End Sub
 
-    Private Sub tbCoreService_TextChanged(sender As Object, e As EventArgs) Handles tbCoreService.TextChanged, tbCloudService.TextChanged, tbApiService.TextChanged
-        Dim txtbox As TextBox = DirectCast(sender, TextBox)
-        If txtbox.Text = "Running" Then
-            tmr1Sec.Enabled = False
-            LastServiceButton.Enabled = True
-            LastServiceButton.Text = "Stop"
-        ElseIf txtbox.Text = "Stopped" Then
-            tmr1Sec.Enabled = False
-            LastServiceButton.Enabled = True
-            LastServiceButton.Text = "Start"
-        Else
-            tmr1Sec.Enabled = True
-            LastServiceButton.Enabled = False
-
-        End If
-
-
-    End Sub
-
     Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click
 
         LastServiceButton = DirectCast(sender, Button)
 
         Services.StopStart(LastServiceButton.Tag)
         tmr1Sec.Enabled = True
+        tbTest1.Text = tmr1Sec.Enabled.ToString
+
     End Sub
 
     Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
-        Dim service As ServiceController
 
-        LastServiceButton = btnApiServiceSS
-        service = Services.GetServiceStatus(tbApiService.Tag)
-        tbApiService.Text = service.Status.ToString
-        LastServiceButton = btnCoreServiceSS
-        service = Services.GetServiceStatus(tbCoreService.Tag)
-        tbCoreService.Text = service.Status.ToString
-        LastServiceButton = btnCloudServiceSS
-        service = Services.GetServiceStatus(tbCloudService.Tag)
-        tbCloudService.Text = service.Status.ToString
+        If Not IsNothing(LastServiceButton) Then
+            Select Case LastServiceButton.Tag
+                Case "AdvApiServer"
+                    tbApiService.Text = Services.GetServiceStatus(btnApiServiceSS, tbApiService)
+                Case "AdvCoreService"
+                    tbCoreService.Text = Services.GetServiceStatus(btnCoreServiceSS, tbCoreService)
+                Case "AdvantageCloudSyncService"
+                    tbCloudService.Text = Services.GetServiceStatus(btnCloudServiceSS, tbCloudService)
+
+                Case Else
+
+            End Select
+
+        End If
 
     End Sub
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-        tbTest1.Text = scAdvCoreService.Status.ToString
 
     End Sub
 End Class
