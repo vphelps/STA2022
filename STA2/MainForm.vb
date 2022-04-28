@@ -8,6 +8,8 @@ Public Class MainForm
     Public Shared Columns As Integer
     Private LastServiceButton As Button
     Private LastServiceTextBox As TextBox
+    Public Shared ServiceControlList As New List(Of ServiceControlEntry)
+    Public Shared LastServiceEntry As ServiceControlEntry
 
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
@@ -38,9 +40,22 @@ Public Class MainForm
         If userName <> "PFASOFT\vphelps" Then
             tbTest1.Visible = False
             tbTest2.Visible = False
+            tbTest3.Visible = False
+            tbMLTest1.Visible = False
             btnTest.Visible = False
         End If
 
+        ServiceControlList = Services.ServicesExistCheck()
+        Dim list As New List(Of Boolean)
+
+        For index = 0 To ServiceControlList.Count - 1
+            If ServiceControlList.Item(index).GroupBox.Enabled Then
+                'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
+                list.Add(Services.GetServiceStatus(ServiceControlList.Item(index)))
+
+            End If
+        Next
+        If list.Contains(True) Then tmr1Sec.Enabled = True Else tmr1Sec.Enabled = False
 
     End Sub
 
@@ -61,6 +76,27 @@ Public Class MainForm
         dgvPFSConnect.Visible = Variables.LoggedIn
 
 
+        Dim list As New List(Of Boolean)
+
+        For index = 0 To ServiceControlList.Count - 1
+            If ServiceControlList.Item(index).GroupBox.Enabled Then
+                'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
+                list.Add(Services.GetServiceStatus(ServiceControlList.Item(index)))
+
+            End If
+        Next
+        If list.Contains(True) Then tmr1Sec.Enabled = True Else tmr1Sec.Enabled = False
+    End Sub
+
+    Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
+        tmr1Sec.Enabled = Services.GetServiceStatus(LastServiceEntry)
+
+        If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
+            Services.RestartService(LastServiceEntry)
+        Else
+            LastServiceEntry.RSButton.Tag = ""
+
+        End If
     End Sub
 
     Private Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
@@ -204,36 +240,48 @@ Public Class MainForm
 
     End Sub
 
-    Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click
+    Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click
 
-        LastServiceButton = DirectCast(sender, Button)
-
-        Services.StopStart(LastServiceButton.Tag)
+        Dim caller As Button = DirectCast(sender, Button)
+        Dim temp As Integer
+        caller.Enabled = False
         tmr1Sec.Enabled = True
-        tbTest1.Text = tmr1Sec.Enabled.ToString
+        For index = 0 To ServiceControlList.Count - 1
+            If ServiceControlList.Item(index).SSButton.Equals(caller) Then
+                temp = index
+            End If
+        Next
+
+        LastServiceEntry = ServiceControlList.Item(temp)
+
+        Services.StopStart(LastServiceEntry, caller)
 
     End Sub
 
-    Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
+    Private Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click
+        Dim temp As Integer
+        Dim caller As Button = DirectCast(sender, Button)
+        tmr1Sec.Enabled = True
+        caller.Enabled = False
 
-        If Not IsNothing(LastServiceButton) Then
-            Select Case LastServiceButton.Tag
-                Case "AdvApiServer"
-                    tbApiService.Text = Services.GetServiceStatus(btnApiServiceSS, tbApiService)
-                Case "AdvCoreService"
-                    tbCoreService.Text = Services.GetServiceStatus(btnCoreServiceSS, tbCoreService)
-                Case "AdvantageCloudSyncService"
-                    tbCloudService.Text = Services.GetServiceStatus(btnCloudServiceSS, tbCloudService)
+        For index = 0 To ServiceControlList.Count - 1
+            If ServiceControlList.Item(index).RSButton.Equals(caller) Then
+                temp = index
+            End If
+        Next
+        LastServiceEntry = ServiceControlList.Item(temp)
+        LastServiceEntry.RSButton.Tag = "restart"
+        Services.RestartService(LastServiceEntry)
 
-                Case Else
-
-            End Select
-
-        End If
-
-    End Sub
-
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        tmr1Sec.Enabled = Not (caller.Enabled)
 
     End Sub
+
+    Private Sub tbCoreService_GotFocus(sender As Object, e As EventArgs) Handles tbCoreService.GotFocus, tbCoreService.GotFocus, tbCloudService.GotFocus, tbAdvCreditService.GotFocus, tbAdvSignageService.GotFocus, tbAdvLicService.GotFocus, tbAdvNotifyService.GotFocus, tbAdvTurnstileEngine.GotFocus, tbAdvantageUpgradeService.GotFocus
+
+        Dim caller As TextBox = DirectCast(sender, TextBox)
+        caller.SelectionStart = 0
+        caller.SelectionLength = 0
+    End Sub
+
 End Class
