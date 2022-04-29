@@ -13,6 +13,9 @@ Public Class FormMain
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Connections.IniFileHandler(False)
         CodeHelper.Refresher()
+        ServiceControlList = Services.ServicesExistCheck()
+
+
         Me.Text = Me.Text & " " & My.Application.Info.Version.Major
 
         dbAppOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM AppOptions")
@@ -37,29 +40,6 @@ Public Class FormMain
 
 
         dgvAppOptions.Refresh()
-
-        dbLicData = DBConnector.dbQuery(GeneralQueries.LicenseData)
-        tbLocName.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("LocName").ToString
-        tbLicSvr.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("LicenseServer").ToString
-        tbCoreSvr.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("CoreServiceServerName").ToString
-        tbDbVer.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("Version").ToString
-        tbWebEnabled.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("EnableWeb").ToString
-        tbShiftDate.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("ShiftDate").ToString
-        tmr10Seconds_Tick(sender, e)
-        tslblNetVersion.Text = DotNetInfo.Get45PlusFromRegistry
-        dtpMsgLogDateFrom.Enabled = cbMsgLogDateRange.Checked
-        dtpMsgLogTimeFrom.Enabled = cbMsgLogDateRange.Checked
-
-        dtpMsgLogDateTo.Enabled = cbMsgLogDateRange.Checked
-        dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
-        'Dim userName = My.User.Name
-        'If userName <> "PFASOFT\vphelps" Then
-        '    tbTest1.Visible = False
-        '    tbTest2.Visible = False
-        '    tbTest3.Visible = False
-        '    tbMLTest1.Visible = False
-        '    btnTest.Visible = False
-        'End If
 #If DEBUG Then
 
 #Else
@@ -70,17 +50,6 @@ Public Class FormMain
         btnTest.Visible = False
 
 #End If
-        ServiceControlList = Services.ServicesExistCheck()
-        Dim list As New List(Of Boolean)
-
-        For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).GroupBox.Enabled Then
-                'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
-                list.Add(Services.GetServiceStatus(ServiceControlList.Item(index)))
-
-            End If
-        Next
-        If list.Contains(True) Then tmr1Sec.Enabled = True Else tmr1Sec.Enabled = False
 
     End Sub
 
@@ -95,22 +64,18 @@ Public Class FormMain
     End Sub
 
     Private Sub tmr10Seconds_Tick(sender As Object, e As EventArgs) Handles tmr10Seconds.Tick
-        tslblCeVersion.Text = "Installed Software Version:  " + CodeHelper.CeInfo
-        tslblTime.Text = My.Computer.Clock.LocalTime.ToShortDateString & " " & My.Computer.Clock.LocalTime.ToShortTimeString
-        btnUnlockAdminAccount.Enabled = Variables.LoggedIn
-        dgvPFSConnect.Visible = Variables.LoggedIn
 
+        'Dim list As New List(Of Boolean)
 
-        Dim list As New List(Of Boolean)
+        'For index = 0 To ServiceControlList.Count - 1
+        '    If ServiceControlList.Item(index).GroupBox.Enabled Then
+        '        'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
+        '        list.Add(Services.GetServiceStatus(ServiceControlList.Item(index)))
 
-        For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).GroupBox.Enabled Then
-                'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
-                list.Add(Services.GetServiceStatus(ServiceControlList.Item(index)))
-
-            End If
-        Next
-        If list.Contains(True) Then tmr1Sec.Enabled = True Else tmr1Sec.Enabled = False
+        '    End If
+        'Next
+        'If list.Contains(True) Then tmr1Sec.Enabled = True Else tmr1Sec.Enabled = False
+        CodeHelper.Refresher()
     End Sub
 
     Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
