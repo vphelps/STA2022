@@ -1,11 +1,11 @@
 ﻿
 Public Class CodeHelper
     Public Shared Sub Refresher()
-        MainForm.dgvPFSConnect.Rows.Add("Server Name", My.Settings.Server)
-        MainForm.dgvPFSConnect.Rows.Add("Database Name", My.Settings.Database)
-        MainForm.dgvPFSConnect.Rows.Add("User ID", My.Settings.UserID)
-        MainForm.dgvPFSConnect.Rows.Add("Password", My.Settings.Password)
-        MainForm.dgvPFSConnect.Rows.Add("Station Number", My.Settings.StationNo)
+        FormMain.dgvPFSConnect.Rows.Add("Server Name", My.Settings.Server)
+        FormMain.dgvPFSConnect.Rows.Add("Database Name", My.Settings.Database)
+        FormMain.dgvPFSConnect.Rows.Add("User ID", My.Settings.UserID)
+        FormMain.dgvPFSConnect.Rows.Add("Password", My.Settings.Password)
+        FormMain.dgvPFSConnect.Rows.Add("Station Number", My.Settings.StationNo)
 
     End Sub
     Public Shared Function CeInfo() As String

@@ -2,12 +2,7 @@
 Imports System.ServiceProcess
 Imports STA2.AppData
 
-Public Class MainForm
-    Public Shared IndexNumber As Integer = 0
-    Public Shared Rows As Integer
-    Public Shared Columns As Integer
-    Private LastServiceButton As Button
-    Private LastServiceTextBox As TextBox
+Public Class FormMain
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
     Public Shared LastServiceEntry As ServiceControlEntry
 
@@ -21,6 +16,27 @@ Public Class MainForm
         Me.Text = Me.Text & " " & My.Application.Info.Version.Major
 
         dbAppOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM AppOptions")
+        Try
+            For index = 0 To dbAppOptions.Tables(0).Rows.Count - 1
+                dgvAppOptions.Rows.Add(dbAppOptions.Tables(0).Rows(index).ItemArray)
+            Next
+            dbWebOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM WebOptions")
+            For index = 0 To dbWebOptions.Tables(0).Rows.Count - 1
+                dgvWebOptions.Rows.Add(dbWebOptions.Tables(0).Rows(index).ItemArray)
+            Next
+
+        Catch ex As Exception
+            Dim errMessage As String = ex.Message
+            Dim errStack As String = ex.StackTrace
+
+            FormError.errMessage = ex.Message
+            FormError.errStack = ex.StackTrace
+            FormError.ShowDialog()
+
+        End Try
+
+
+        dgvAppOptions.Refresh()
 
         dbLicData = DBConnector.dbQuery(GeneralQueries.LicenseData)
         tbLocName.Text = dbLicData.Tables.Item(0).Rows.Item(0).Item("LocName").ToString
@@ -36,15 +52,24 @@ Public Class MainForm
 
         dtpMsgLogDateTo.Enabled = cbMsgLogDateRange.Checked
         dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
-        Dim userName = My.User.Name
-        If userName <> "PFASOFT\vphelps" Then
-            tbTest1.Visible = False
-            tbTest2.Visible = False
-            tbTest3.Visible = False
-            tbMLTest1.Visible = False
-            btnTest.Visible = False
-        End If
+        'Dim userName = My.User.Name
+        'If userName <> "PFASOFT\vphelps" Then
+        '    tbTest1.Visible = False
+        '    tbTest2.Visible = False
+        '    tbTest3.Visible = False
+        '    tbMLTest1.Visible = False
+        '    btnTest.Visible = False
+        'End If
+#If DEBUG Then
 
+#Else
+        tbTest1.Visible = False
+        tbTest2.Visible = False
+        tbTest3.Visible = False
+        tbMLTest1.Visible = False
+        btnTest.Visible = False
+
+#End If
         ServiceControlList = Services.ServicesExistCheck()
         Dim list As New List(Of Boolean)
 
@@ -100,7 +125,7 @@ Public Class MainForm
     End Sub
 
     Private Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
-        LoginForm1.ShowDialog()
+        FormLogin.ShowDialog()
         tmr10Seconds_Tick(sender, e)
 
     End Sub
@@ -118,8 +143,6 @@ Public Class MainForm
             dbResult = DBConnector.dbQuery(query)
             dgvDbTableSize.DataSource = dbResult.Tables(0)
             dgvDbTableSize.Refresh()
-            Rows = dbResult.Tables(0).Rows.Count
-            Columns = dbResult.Tables(0).Columns.Count
 
         End If
 

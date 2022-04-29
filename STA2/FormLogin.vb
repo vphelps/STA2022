@@ -1,4 +1,4 @@
-Public Class LoginForm1
+Public Class FormLogin
 
     ' TODO: Insert code to perform custom authentication using the provided username and password 
     ' (See https://go.microsoft.com/fwlink/?LinkId=35339).  

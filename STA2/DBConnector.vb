@@ -1,5 +1,6 @@
 ﻿Imports System.Data.SqlClient
-Imports STA2.MainForm
+Imports STA2.FormMain
+Imports STA2.FormError
 
 Public Class DBConnector
     Public Shared Function dbQuery(Query As String)
@@ -29,8 +30,6 @@ Public Class DBConnector
                 End Using
                 cn.Close()
             End Using
-            MainForm.Rows = Ds.Tables(0).Rows.Count
-            MainForm.Columns = Ds.Tables(0).Columns.Count
 
             If Ds.Tables(0).Rows.Count = 1 And Ds.Tables(0).Columns.Count = 1 Then
                 result = Ds.Tables(0).Rows.Item(0).Item(0)
@@ -38,7 +37,7 @@ Public Class DBConnector
 
             End If
         Catch ex As SqlException
-
+            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
         End Try
         Return Ds
 

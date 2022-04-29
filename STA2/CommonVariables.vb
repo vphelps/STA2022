@@ -2,6 +2,7 @@
 
 Public Class AppData
     Public Shared dbAppOptions As New DataSet
+    Public Shared dbWebOptions As New DataSet
     Public Shared dbLicData As New DataSet
 
 End Class
