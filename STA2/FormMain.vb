@@ -232,17 +232,29 @@ Public Class FormMain
 
         Dim caller As Button = DirectCast(sender, Button)
         Dim temp As Integer
+
         caller.Enabled = False
         tmr1Sec.Enabled = True
         For index = 0 To ServiceControlList.Count - 1
             If ServiceControlList.Item(index).SSButton.Equals(caller) Then
+
                 temp = index
             End If
         Next
 
         LastServiceEntry = ServiceControlList.Item(temp)
+        tbTest2.Text = LastServiceEntry.Service
+        Dim controller As New ServiceController(LastServiceEntry.Service)
+        Dim serviceControllerStatus = controller.Status
 
-        Services.StopStart(LastServiceEntry, caller)
+        If LastServiceEntry.TextBox.Text = "Running" Then
+            Services.StopService(LastServiceEntry)
+        ElseIf LastServiceEntry.TextBox.Text = "Stopped" Then
+            Services.StartService(LastServiceEntry)
+        End If
+
+
+
 
     End Sub
 
@@ -261,7 +273,7 @@ Public Class FormMain
         LastServiceEntry.RSButton.Tag = "restart"
         Services.RestartService(LastServiceEntry)
 
-        tmr1Sec.Enabled = Not (caller.Enabled)
+        tmr1Sec.Enabled = Not caller.Enabled
 
     End Sub
 
@@ -270,6 +282,15 @@ Public Class FormMain
         Dim caller As TextBox = DirectCast(sender, TextBox)
         caller.SelectionStart = 0
         caller.SelectionLength = 0
+    End Sub
+
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        tbTest1.ForeColor = TextboxColors.Black
+        tbTest1.BackColor = TextboxColors.White
+        tbTest2.ForeColor = TextboxColors.White
+        tbTest2.BackColor = TextboxColors.Red
+        tbTest3.ForeColor = TextboxColors.Black
+        tbTest3.BackColor = TextboxColors.Yellow
     End Sub
 
 End Class

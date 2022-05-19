@@ -91,6 +91,7 @@ Partial Class FormError
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "FormError"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Application Error"
         Me.ResumeLayout(False)
         Me.PerformLayout()

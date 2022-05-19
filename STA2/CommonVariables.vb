@@ -12,3 +12,11 @@ Public Class Variables
 
 End Class
 
+Public Structure PCInfo
+    Public Shared Name As String
+    Public Shared OpSys As String
+    Public Shared Ram As String
+    Public Shared FreeSpace As String
+    Public Shared Architecture As String
+
+End Structure

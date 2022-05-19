@@ -7,26 +7,40 @@ Public Structure ServiceControlEntry
     Public RSButton As Button
     Public Service As String
     Public GroupBox As GroupBox
+    Public Status As ServiceControllerStatus
 End Structure
 
 Public Class Services
-    Public Shared localServiceList As New ServiceControlEntry
 
-    Public Shared Sub StopStart(ByRef list As ServiceControlEntry, caller As Button)
+    Public Shared Sub StopService(ByRef list As ServiceControlEntry)
         Dim controller As New ServiceController(list.Service)
         Dim serviceControllerStatus = controller.Status
-        Dim counter As Integer = 0
+        Dim Changing As Boolean = True
 
-        Select Case serviceControllerStatus
-            Case ServiceControllerStatus.Running
-                controller.Stop()
+        controller.Stop()
+        Do
+            Changing = GetServiceStatus(list)
+            FormMain.tbTest1.Text = serviceControllerStatus.ToString
+            FormMain.tmr1Sec.Enabled = Changing
+        Loop Until list.Status = ServiceControllerStatus.Stopped And Changing = False
 
-            Case ServiceControllerStatus.Stopped
-                controller.Start()
 
-            Case Else
+    End Sub
 
-        End Select
+
+    Public Shared Sub StartService(ByRef list As ServiceControlEntry)
+        Dim controller As New ServiceController(list.Service)
+        Dim serviceControllerStatus = controller.Status
+        Dim Changing As Boolean = True
+
+        controller.Start()
+        Do
+            Changing = GetServiceStatus(list)
+            serviceControllerStatus = controller.Status
+            FormMain.tbTest1.Text = serviceControllerStatus.ToString
+            FormMain.tmr1Sec.Enabled = Changing
+        Loop Until list.Status = ServiceControllerStatus.Running And Changing = False
+
 
 
     End Sub
@@ -36,7 +50,7 @@ Public Class Services
         Dim serviceControllerStatus As String = ""
         Try
             serviceControllerStatus = service.Status.ToString
-
+            caller.Status = service.Status
         Catch ex As Exception
 
         End Try
@@ -47,21 +61,27 @@ Public Class Services
             caller.RSButton.Enabled = True
             caller.RSButton.Text = "Restart"
             caller.SSButton.Text = "Stop"
+            caller.TextBox.ForeColor = TextboxColors.Black
+            caller.TextBox.BackColor = TextboxColors.White
             'MainForm.tmr1Sec.Enabled = False
         ElseIf caller.TextBox.Text = "Stopped" Then
             caller.SSButton.Enabled = True
             caller.RSButton.Enabled = False
             caller.RSButton.Text = "Restart"
             caller.SSButton.Text = "Start"
+            caller.TextBox.ForeColor = TextboxColors.White
+            caller.TextBox.BackColor = TextboxColors.Red
             'MainForm.tmr1Sec.Enabled = False
         Else
             caller.SSButton.Enabled = False
             caller.RSButton.Enabled = False
             caller.RSButton.Text = "Restart"
             caller.SSButton.Text = "Working"
+            caller.TextBox.ForeColor = TextboxColors.Black
+            caller.TextBox.BackColor = TextboxColors.Yellow
 
         End If
-        Return Not (caller.SSButton.Enabled)
+        Return Not caller.SSButton.Enabled
 
     End Function
 
@@ -189,7 +209,10 @@ Public Class Services
         Select Case serviceControllerStatus
             Case ServiceControllerStatus.Running
                 controller.Stop()
+                Do While serviceControllerStatus = ServiceControllerStatus.Running
+                    If GetServiceStatus(list) Then Exit Do
 
+                Loop
             Case ServiceControllerStatus.Stopped
                 controller.Start()
 

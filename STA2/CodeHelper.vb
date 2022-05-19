@@ -35,9 +35,29 @@ Public Class CodeHelper
 
             End If
         Next
-        If List.Contains(True) Then FormMain.tmr1Sec.Enabled = True Else FormMain.tmr1Sec.Enabled = False
+        If list.Contains(True) Then FormMain.tmr1Sec.Enabled = True Else FormMain.tmr1Sec.Enabled = False
 
+        GetPcInfo()
 
+        FormMain.tbPcName.Text = PCInfo.Name
+        FormMain.tbPcOsInfo.Text = PCInfo.OpSys
+        FormMain.tbPcRam.Text = PCInfo.Ram
+        FormMain.tbPcHardDrive.Text = PCInfo.FreeSpace
+        FormMain.tbPcArch.Text = PCInfo.Architecture
+
+    End Sub
+
+    Public Shared Sub GetPcInfo()
+        PCInfo.Name = My.Computer.Name
+        PCInfo.OpSys = My.Computer.Info.OSFullName
+
+        Dim Ram As Integer = My.Computer.Info.TotalPhysicalMemory / 1024 / 1024 / 1024
+        PCInfo.Ram = String.Format("{0} GB", Ram.ToString)
+
+        Dim freeSpace As Long = My.Computer.FileSystem.GetDriveInfo("C:\").TotalFreeSpace
+        PCInfo.FreeSpace = FormatNumber(freeSpace / 1024 / 1024 / 1024, 2, TriState.False, TriState.False, TriState.True).ToString()
+
+        If Environment.Is64BitOperatingSystem Then PCInfo.Architecture = "x64" Else PCInfo.Architecture = "x86"
     End Sub
     Public Shared Function CeInfo() As String
         Dim Path As String = "C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe"

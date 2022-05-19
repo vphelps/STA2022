@@ -130,6 +130,18 @@ Partial Class FormMain
         Me.btnStParse = New System.Windows.Forms.Button()
         Me.btnSTClear = New System.Windows.Forms.Button()
         Me.tbSTParse = New System.Windows.Forms.TextBox()
+        Me.tpPcInfo = New System.Windows.Forms.TabPage()
+        Me.tlpPcInfo = New System.Windows.Forms.TableLayoutPanel()
+        Me.lblPcArch = New System.Windows.Forms.Label()
+        Me.tbPcRam = New System.Windows.Forms.TextBox()
+        Me.lblPcHardDrive = New System.Windows.Forms.Label()
+        Me.tbPcName = New System.Windows.Forms.TextBox()
+        Me.lblPcRam = New System.Windows.Forms.Label()
+        Me.tbPcOsInfo = New System.Windows.Forms.TextBox()
+        Me.lblPcOsInfo = New System.Windows.Forms.Label()
+        Me.tbPcHardDrive = New System.Windows.Forms.TextBox()
+        Me.lblPcName = New System.Windows.Forms.Label()
+        Me.tbPcArch = New System.Windows.Forms.TextBox()
         Me.tbTest3 = New System.Windows.Forms.TextBox()
         Me.btnTest = New System.Windows.Forms.Button()
         Me.tbTest2 = New System.Windows.Forms.TextBox()
@@ -148,6 +160,7 @@ Partial Class FormMain
         Me.LeftToolStripPanel = New System.Windows.Forms.ToolStripPanel()
         Me.ContentPanel = New System.Windows.Forms.ToolStripContentPanel()
         Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
+        Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -185,6 +198,8 @@ Partial Class FormMain
         CType(Me.nudMsgLog, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpStParse.SuspendLayout()
         Me.Panel1.SuspendLayout()
+        Me.tpPcInfo.SuspendLayout()
+        Me.tlpPcInfo.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -234,7 +249,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
         Me.SplitContainer1.Size = New System.Drawing.Size(1265, 678)
-        Me.SplitContainer1.SplitterDistance = 563
+        Me.SplitContainer1.SplitterDistance = 571
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -245,11 +260,12 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpDbInfo)
         Me.tcSTA.Controls.Add(Me.tbDbLogs)
         Me.tcSTA.Controls.Add(Me.tpStParse)
+        Me.tcSTA.Controls.Add(Me.tpPcInfo)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1261, 559)
+        Me.tcSTA.Size = New System.Drawing.Size(1261, 567)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -261,7 +277,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1253, 533)
+        Me.tpGeneral.Size = New System.Drawing.Size(1253, 541)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         Me.tpGeneral.UseVisualStyleBackColor = True
@@ -310,8 +326,9 @@ Partial Class FormMain
         Me.btnApiServiceRS.Name = "btnApiServiceRS"
         Me.btnApiServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnApiServiceRS.TabIndex = 15
-        Me.btnApiServiceRS.Tag = ""
+        Me.btnApiServiceRS.Tag = "Api Service"
         Me.btnApiServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnApiServiceRS, "Restart the Advantage API Service")
         Me.btnApiServiceRS.UseVisualStyleBackColor = True
         '
         'tbApiService
@@ -321,7 +338,7 @@ Partial Class FormMain
         Me.tbApiService.ReadOnly = True
         Me.tbApiService.Size = New System.Drawing.Size(185, 20)
         Me.tbApiService.TabIndex = 13
-        Me.tbApiService.Tag = ""
+        Me.tbApiService.Tag = "Api Service"
         '
         'btnApiServiceSS
         '
@@ -329,8 +346,9 @@ Partial Class FormMain
         Me.btnApiServiceSS.Name = "btnApiServiceSS"
         Me.btnApiServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnApiServiceSS.TabIndex = 14
-        Me.btnApiServiceSS.Tag = ""
+        Me.btnApiServiceSS.Tag = "Api Service"
         Me.btnApiServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnApiServiceSS, "Start/Stop  the Advantage API Service" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
         Me.btnApiServiceSS.UseVisualStyleBackColor = True
         '
         'gpCoreService
@@ -352,8 +370,9 @@ Partial Class FormMain
         Me.btnCoreServiceRS.Name = "btnCoreServiceRS"
         Me.btnCoreServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnCoreServiceRS.TabIndex = 15
-        Me.btnCoreServiceRS.Tag = ""
+        Me.btnCoreServiceRS.Tag = "Core Service"
         Me.btnCoreServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnCoreServiceRS, "Restart the Advantage Core Service")
         Me.btnCoreServiceRS.UseVisualStyleBackColor = True
         '
         'tbCoreService
@@ -363,7 +382,7 @@ Partial Class FormMain
         Me.tbCoreService.ReadOnly = True
         Me.tbCoreService.Size = New System.Drawing.Size(185, 20)
         Me.tbCoreService.TabIndex = 13
-        Me.tbCoreService.Tag = ""
+        Me.tbCoreService.Tag = "Core Service"
         '
         'btnCoreServiceSS
         '
@@ -371,8 +390,9 @@ Partial Class FormMain
         Me.btnCoreServiceSS.Name = "btnCoreServiceSS"
         Me.btnCoreServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnCoreServiceSS.TabIndex = 14
-        Me.btnCoreServiceSS.Tag = ""
+        Me.btnCoreServiceSS.Tag = "Core Service"
         Me.btnCoreServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnCoreServiceSS, "Start/Stop the Advantage Core Service")
         Me.btnCoreServiceSS.UseVisualStyleBackColor = True
         '
         'gpCloudService
@@ -394,8 +414,9 @@ Partial Class FormMain
         Me.btnCloudServiceRS.Name = "btnCloudServiceRS"
         Me.btnCloudServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnCloudServiceRS.TabIndex = 18
-        Me.btnCloudServiceRS.Tag = ""
+        Me.btnCloudServiceRS.Tag = "Cloud Service"
         Me.btnCloudServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnCloudServiceRS, "Restart the Advantage Cloud Service")
         Me.btnCloudServiceRS.UseVisualStyleBackColor = True
         '
         'tbCloudService
@@ -405,7 +426,7 @@ Partial Class FormMain
         Me.tbCloudService.ReadOnly = True
         Me.tbCloudService.Size = New System.Drawing.Size(185, 20)
         Me.tbCloudService.TabIndex = 16
-        Me.tbCloudService.Tag = ""
+        Me.tbCloudService.Tag = "Cloud Service"
         '
         'btnCloudServiceSS
         '
@@ -413,8 +434,9 @@ Partial Class FormMain
         Me.btnCloudServiceSS.Name = "btnCloudServiceSS"
         Me.btnCloudServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnCloudServiceSS.TabIndex = 17
-        Me.btnCloudServiceSS.Tag = ""
+        Me.btnCloudServiceSS.Tag = "Cloud Service"
         Me.btnCloudServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnCloudServiceSS, "Start/Stop the Advantage Cloud Service")
         Me.btnCloudServiceSS.UseVisualStyleBackColor = True
         '
         'gpAdvCreditService
@@ -436,8 +458,9 @@ Partial Class FormMain
         Me.btnAdvCreditServiceRS.Name = "btnAdvCreditServiceRS"
         Me.btnAdvCreditServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvCreditServiceRS.TabIndex = 18
-        Me.btnAdvCreditServiceRS.Tag = ""
+        Me.btnAdvCreditServiceRS.Tag = "Credit Service"
         Me.btnAdvCreditServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnAdvCreditServiceRS, "Restart the Advantage Credit Service")
         Me.btnAdvCreditServiceRS.UseVisualStyleBackColor = True
         '
         'tbAdvCreditService
@@ -447,7 +470,7 @@ Partial Class FormMain
         Me.tbAdvCreditService.ReadOnly = True
         Me.tbAdvCreditService.Size = New System.Drawing.Size(185, 20)
         Me.tbAdvCreditService.TabIndex = 16
-        Me.tbAdvCreditService.Tag = ""
+        Me.tbAdvCreditService.Tag = "Credit Service"
         '
         'btnAdvCreditServiceSS
         '
@@ -455,8 +478,9 @@ Partial Class FormMain
         Me.btnAdvCreditServiceSS.Name = "btnAdvCreditServiceSS"
         Me.btnAdvCreditServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvCreditServiceSS.TabIndex = 17
-        Me.btnAdvCreditServiceSS.Tag = ""
+        Me.btnAdvCreditServiceSS.Tag = "Credit Service"
         Me.btnAdvCreditServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnAdvCreditServiceSS, "Start/Stop the Advantage Credit Service")
         Me.btnAdvCreditServiceSS.UseVisualStyleBackColor = True
         '
         'gpAdvSignageService
@@ -478,8 +502,9 @@ Partial Class FormMain
         Me.btnAdvSignageServiceRS.Name = "btnAdvSignageServiceRS"
         Me.btnAdvSignageServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvSignageServiceRS.TabIndex = 18
-        Me.btnAdvSignageServiceRS.Tag = ""
+        Me.btnAdvSignageServiceRS.Tag = "Signage Service"
         Me.btnAdvSignageServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnAdvSignageServiceRS, "Restart the Advantage Signage Service")
         Me.btnAdvSignageServiceRS.UseVisualStyleBackColor = True
         '
         'tbAdvSignageService
@@ -489,7 +514,7 @@ Partial Class FormMain
         Me.tbAdvSignageService.ReadOnly = True
         Me.tbAdvSignageService.Size = New System.Drawing.Size(185, 20)
         Me.tbAdvSignageService.TabIndex = 16
-        Me.tbAdvSignageService.Tag = ""
+        Me.tbAdvSignageService.Tag = "Signage Service"
         '
         'btnAdvSignageServiceSS
         '
@@ -497,8 +522,9 @@ Partial Class FormMain
         Me.btnAdvSignageServiceSS.Name = "btnAdvSignageServiceSS"
         Me.btnAdvSignageServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvSignageServiceSS.TabIndex = 17
-        Me.btnAdvSignageServiceSS.Tag = ""
+        Me.btnAdvSignageServiceSS.Tag = "Signage Service"
         Me.btnAdvSignageServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnAdvSignageServiceSS, "Start/Stop the Advantage Signage Service")
         Me.btnAdvSignageServiceSS.UseVisualStyleBackColor = True
         '
         'gpAdvLicService
@@ -520,8 +546,9 @@ Partial Class FormMain
         Me.btnAdvLicServiceRS.Name = "btnAdvLicServiceRS"
         Me.btnAdvLicServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvLicServiceRS.TabIndex = 18
-        Me.btnAdvLicServiceRS.Tag = ""
+        Me.btnAdvLicServiceRS.Tag = "License Service"
         Me.btnAdvLicServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnAdvLicServiceRS, "Restart the Advantage License Service")
         Me.btnAdvLicServiceRS.UseVisualStyleBackColor = True
         '
         'tbAdvLicService
@@ -531,7 +558,7 @@ Partial Class FormMain
         Me.tbAdvLicService.ReadOnly = True
         Me.tbAdvLicService.Size = New System.Drawing.Size(185, 20)
         Me.tbAdvLicService.TabIndex = 16
-        Me.tbAdvLicService.Tag = ""
+        Me.tbAdvLicService.Tag = "License Service"
         '
         'btnAdvLicServiceSS
         '
@@ -539,8 +566,9 @@ Partial Class FormMain
         Me.btnAdvLicServiceSS.Name = "btnAdvLicServiceSS"
         Me.btnAdvLicServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvLicServiceSS.TabIndex = 17
-        Me.btnAdvLicServiceSS.Tag = ""
+        Me.btnAdvLicServiceSS.Tag = "License Service"
         Me.btnAdvLicServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnAdvLicServiceSS, "Start/Stop the Advantage License Service")
         Me.btnAdvLicServiceSS.UseVisualStyleBackColor = True
         '
         'gpAdvNotifyService
@@ -562,8 +590,9 @@ Partial Class FormMain
         Me.btnAdvNotifyServiceRS.Name = "btnAdvNotifyServiceRS"
         Me.btnAdvNotifyServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvNotifyServiceRS.TabIndex = 18
-        Me.btnAdvNotifyServiceRS.Tag = ""
+        Me.btnAdvNotifyServiceRS.Tag = "Notification Service"
         Me.btnAdvNotifyServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnAdvNotifyServiceRS, "Restart the Advantage Notification Service")
         Me.btnAdvNotifyServiceRS.UseVisualStyleBackColor = True
         '
         'tbAdvNotifyService
@@ -573,7 +602,7 @@ Partial Class FormMain
         Me.tbAdvNotifyService.ReadOnly = True
         Me.tbAdvNotifyService.Size = New System.Drawing.Size(185, 20)
         Me.tbAdvNotifyService.TabIndex = 16
-        Me.tbAdvNotifyService.Tag = ""
+        Me.tbAdvNotifyService.Tag = "Notification Service"
         '
         'btnAdvNotifyServiceSS
         '
@@ -581,8 +610,9 @@ Partial Class FormMain
         Me.btnAdvNotifyServiceSS.Name = "btnAdvNotifyServiceSS"
         Me.btnAdvNotifyServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvNotifyServiceSS.TabIndex = 17
-        Me.btnAdvNotifyServiceSS.Tag = ""
+        Me.btnAdvNotifyServiceSS.Tag = "Notification Service"
         Me.btnAdvNotifyServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnAdvNotifyServiceSS, "Start/Stop the Advantage Notification Service")
         Me.btnAdvNotifyServiceSS.UseVisualStyleBackColor = True
         '
         'gpAdvTurnstileEngine
@@ -604,8 +634,9 @@ Partial Class FormMain
         Me.btnAdvTurnstileEngineRS.Name = "btnAdvTurnstileEngineRS"
         Me.btnAdvTurnstileEngineRS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvTurnstileEngineRS.TabIndex = 18
-        Me.btnAdvTurnstileEngineRS.Tag = ""
+        Me.btnAdvTurnstileEngineRS.Tag = "Turnstile Service"
         Me.btnAdvTurnstileEngineRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnAdvTurnstileEngineRS, "Restart the Advantage Turnstile Service")
         Me.btnAdvTurnstileEngineRS.UseVisualStyleBackColor = True
         '
         'tbAdvTurnstileEngine
@@ -615,7 +646,7 @@ Partial Class FormMain
         Me.tbAdvTurnstileEngine.ReadOnly = True
         Me.tbAdvTurnstileEngine.Size = New System.Drawing.Size(185, 20)
         Me.tbAdvTurnstileEngine.TabIndex = 16
-        Me.tbAdvTurnstileEngine.Tag = ""
+        Me.tbAdvTurnstileEngine.Tag = "Turnstile Service"
         '
         'btnAdvTurnstileEngineSS
         '
@@ -623,8 +654,9 @@ Partial Class FormMain
         Me.btnAdvTurnstileEngineSS.Name = "btnAdvTurnstileEngineSS"
         Me.btnAdvTurnstileEngineSS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvTurnstileEngineSS.TabIndex = 17
-        Me.btnAdvTurnstileEngineSS.Tag = ""
+        Me.btnAdvTurnstileEngineSS.Tag = "Turnstile Service"
         Me.btnAdvTurnstileEngineSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnAdvTurnstileEngineSS, "Start/Stop the Advantage Turnstile Service")
         Me.btnAdvTurnstileEngineSS.UseVisualStyleBackColor = True
         '
         'gpAdvantageUpgradeService
@@ -646,8 +678,9 @@ Partial Class FormMain
         Me.btnAdvantageUpgradeServiceRS.Name = "btnAdvantageUpgradeServiceRS"
         Me.btnAdvantageUpgradeServiceRS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvantageUpgradeServiceRS.TabIndex = 18
-        Me.btnAdvantageUpgradeServiceRS.Tag = ""
+        Me.btnAdvantageUpgradeServiceRS.Tag = "Upgrade Service"
         Me.btnAdvantageUpgradeServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnAdvantageUpgradeServiceRS, "Restart the Advantage Upgrade Service")
         Me.btnAdvantageUpgradeServiceRS.UseVisualStyleBackColor = True
         '
         'tbAdvantageUpgradeService
@@ -657,7 +690,7 @@ Partial Class FormMain
         Me.tbAdvantageUpgradeService.ReadOnly = True
         Me.tbAdvantageUpgradeService.Size = New System.Drawing.Size(185, 20)
         Me.tbAdvantageUpgradeService.TabIndex = 16
-        Me.tbAdvantageUpgradeService.Tag = ""
+        Me.tbAdvantageUpgradeService.Tag = "Upgrade Service"
         '
         'btnAdvantageUpgradeServiceSS
         '
@@ -665,8 +698,9 @@ Partial Class FormMain
         Me.btnAdvantageUpgradeServiceSS.Name = "btnAdvantageUpgradeServiceSS"
         Me.btnAdvantageUpgradeServiceSS.Size = New System.Drawing.Size(75, 23)
         Me.btnAdvantageUpgradeServiceSS.TabIndex = 17
-        Me.btnAdvantageUpgradeServiceSS.Tag = ""
+        Me.btnAdvantageUpgradeServiceSS.Tag = "Upgrade Service"
         Me.btnAdvantageUpgradeServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnAdvantageUpgradeServiceSS, "Start/Stop the Advantage Upgrade Service")
         Me.btnAdvantageUpgradeServiceSS.UseVisualStyleBackColor = True
         '
         'gpLicInfo
@@ -858,9 +892,10 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1253, 533)
+        Me.tpAdvData.Size = New System.Drawing.Size(1253, 541)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
+        Me.tpAdvData.ToolTipText = "Information from the Database Tables"
         Me.tpAdvData.UseVisualStyleBackColor = True
         '
         'lblWebOptions
@@ -963,9 +998,10 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1253, 533)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1253, 541)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
+        Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
         Me.tpDbInfo.UseVisualStyleBackColor = True
         '
         'pnlDbInfoButtons
@@ -977,7 +1013,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 502)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 510)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1247, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1068,9 +1104,10 @@ Partial Class FormMain
         Me.tbDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tbDbLogs.Name = "tbDbLogs"
         Me.tbDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tbDbLogs.Size = New System.Drawing.Size(1253, 533)
+        Me.tbDbLogs.Size = New System.Drawing.Size(1253, 541)
         Me.tbDbLogs.TabIndex = 2
         Me.tbDbLogs.Text = "CE DB Logs"
+        Me.tbDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
         Me.tbDbLogs.UseVisualStyleBackColor = True
         '
         'gpDbLogData
@@ -1138,7 +1175,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 403)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 411)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1247, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1292,7 +1329,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1253, 533)
+        Me.tpStParse.Size = New System.Drawing.Size(1253, 541)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1355,6 +1392,133 @@ Partial Class FormMain
         Me.tbSTParse.Size = New System.Drawing.Size(1108, 435)
         Me.tbSTParse.TabIndex = 2
         '
+        'tpPcInfo
+        '
+        Me.tpPcInfo.Controls.Add(Me.tlpPcInfo)
+        Me.tpPcInfo.Location = New System.Drawing.Point(4, 22)
+        Me.tpPcInfo.Name = "tpPcInfo"
+        Me.tpPcInfo.Padding = New System.Windows.Forms.Padding(3)
+        Me.tpPcInfo.Size = New System.Drawing.Size(1253, 541)
+        Me.tpPcInfo.TabIndex = 5
+        Me.tpPcInfo.Text = "Computer Information"
+        Me.tpPcInfo.UseVisualStyleBackColor = True
+        '
+        'tlpPcInfo
+        '
+        Me.tlpPcInfo.ColumnCount = 2
+        Me.tlpPcInfo.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.tlpPcInfo.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.tlpPcInfo.Controls.Add(Me.lblPcArch, 0, 4)
+        Me.tlpPcInfo.Controls.Add(Me.tbPcRam, 1, 2)
+        Me.tlpPcInfo.Controls.Add(Me.lblPcHardDrive, 0, 3)
+        Me.tlpPcInfo.Controls.Add(Me.tbPcName, 1, 0)
+        Me.tlpPcInfo.Controls.Add(Me.lblPcRam, 0, 2)
+        Me.tlpPcInfo.Controls.Add(Me.tbPcOsInfo, 1, 1)
+        Me.tlpPcInfo.Controls.Add(Me.lblPcOsInfo, 0, 1)
+        Me.tlpPcInfo.Controls.Add(Me.tbPcHardDrive, 1, 3)
+        Me.tlpPcInfo.Controls.Add(Me.lblPcName, 0, 0)
+        Me.tlpPcInfo.Controls.Add(Me.tbPcArch, 1, 4)
+        Me.tlpPcInfo.Location = New System.Drawing.Point(589, 15)
+        Me.tlpPcInfo.Name = "tlpPcInfo"
+        Me.tlpPcInfo.RowCount = 5
+        Me.tlpPcInfo.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tlpPcInfo.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tlpPcInfo.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tlpPcInfo.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tlpPcInfo.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tlpPcInfo.Size = New System.Drawing.Size(388, 129)
+        Me.tlpPcInfo.TabIndex = 6
+        '
+        'lblPcArch
+        '
+        Me.lblPcArch.AutoSize = True
+        Me.lblPcArch.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblPcArch.Location = New System.Drawing.Point(3, 104)
+        Me.lblPcArch.Name = "lblPcArch"
+        Me.lblPcArch.Size = New System.Drawing.Size(101, 26)
+        Me.lblPcArch.TabIndex = 11
+        Me.lblPcArch.Text = "System Architecture"
+        Me.lblPcArch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tbPcRam
+        '
+        Me.tbPcRam.Location = New System.Drawing.Point(110, 55)
+        Me.tbPcRam.Name = "tbPcRam"
+        Me.tbPcRam.Size = New System.Drawing.Size(258, 20)
+        Me.tbPcRam.TabIndex = 12
+        '
+        'lblPcHardDrive
+        '
+        Me.lblPcHardDrive.AutoSize = True
+        Me.lblPcHardDrive.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblPcHardDrive.Location = New System.Drawing.Point(3, 78)
+        Me.lblPcHardDrive.Name = "lblPcHardDrive"
+        Me.lblPcHardDrive.Size = New System.Drawing.Size(101, 26)
+        Me.lblPcHardDrive.TabIndex = 10
+        Me.lblPcHardDrive.Text = "HD Free Space"
+        Me.lblPcHardDrive.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tbPcName
+        '
+        Me.tbPcName.Location = New System.Drawing.Point(110, 3)
+        Me.tbPcName.Name = "tbPcName"
+        Me.tbPcName.Size = New System.Drawing.Size(258, 20)
+        Me.tbPcName.TabIndex = 0
+        '
+        'lblPcRam
+        '
+        Me.lblPcRam.AutoSize = True
+        Me.lblPcRam.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblPcRam.Location = New System.Drawing.Point(3, 52)
+        Me.lblPcRam.Name = "lblPcRam"
+        Me.lblPcRam.Size = New System.Drawing.Size(101, 26)
+        Me.lblPcRam.TabIndex = 9
+        Me.lblPcRam.Text = "Memory"
+        Me.lblPcRam.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tbPcOsInfo
+        '
+        Me.tbPcOsInfo.Location = New System.Drawing.Point(110, 29)
+        Me.tbPcOsInfo.Name = "tbPcOsInfo"
+        Me.tbPcOsInfo.Size = New System.Drawing.Size(258, 20)
+        Me.tbPcOsInfo.TabIndex = 1
+        '
+        'lblPcOsInfo
+        '
+        Me.lblPcOsInfo.AutoSize = True
+        Me.lblPcOsInfo.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblPcOsInfo.Location = New System.Drawing.Point(3, 26)
+        Me.lblPcOsInfo.Name = "lblPcOsInfo"
+        Me.lblPcOsInfo.Size = New System.Drawing.Size(101, 26)
+        Me.lblPcOsInfo.TabIndex = 8
+        Me.lblPcOsInfo.Text = "Operating System"
+        Me.lblPcOsInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tbPcHardDrive
+        '
+        Me.tbPcHardDrive.Location = New System.Drawing.Point(110, 81)
+        Me.tbPcHardDrive.Name = "tbPcHardDrive"
+        Me.tbPcHardDrive.Size = New System.Drawing.Size(258, 20)
+        Me.tbPcHardDrive.TabIndex = 4
+        '
+        'lblPcName
+        '
+        Me.lblPcName.AutoSize = True
+        Me.lblPcName.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblPcName.Location = New System.Drawing.Point(3, 0)
+        Me.lblPcName.Name = "lblPcName"
+        Me.lblPcName.Size = New System.Drawing.Size(101, 26)
+        Me.lblPcName.TabIndex = 7
+        Me.lblPcName.Text = "Computer Name"
+        Me.lblPcName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'tbPcArch
+        '
+        Me.tbPcArch.Location = New System.Drawing.Point(110, 107)
+        Me.tbPcArch.Name = "tbPcArch"
+        Me.tbPcArch.Size = New System.Drawing.Size(258, 20)
+        Me.tbPcArch.TabIndex = 5
+        '
         'tbTest3
         '
         Me.tbTest3.Location = New System.Drawing.Point(345, 32)
@@ -1413,6 +1577,8 @@ Partial Class FormMain
         Me.btnLogin.Size = New System.Drawing.Size(75, 23)
         Me.btnLogin.TabIndex = 10
         Me.btnLogin.Text = "Login"
+        Me.ttSTA2.SetToolTip(Me.btnLogin, "Use this button to unlock higher level functions by logging in with the SA Userna" &
+        "me and Password")
         Me.btnLogin.UseVisualStyleBackColor = True
         '
         'StatusStrip1
@@ -1497,7 +1663,14 @@ Partial Class FormMain
         '
         'tmr1Sec
         '
+        Me.tmr1Sec.Enabled = True
         Me.tmr1Sec.Interval = 1000
+        '
+        'ttSTA2
+        '
+        Me.ttSTA2.IsBalloon = True
+        Me.ttSTA2.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info
+        Me.ttSTA2.ToolTipTitle = "Support Tech Assistant 2022"
         '
         'FormMain
         '
@@ -1509,6 +1682,7 @@ Partial Class FormMain
         Me.Controls.Add(Me.SplitContainer1)
         Me.KeyPreview = True
         Me.Name = "FormMain"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Support Tech Assistant"
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
@@ -1564,6 +1738,9 @@ Partial Class FormMain
         Me.tpStParse.ResumeLayout(False)
         Me.tpStParse.PerformLayout()
         Me.Panel1.ResumeLayout(False)
+        Me.tpPcInfo.ResumeLayout(False)
+        Me.tlpPcInfo.ResumeLayout(False)
+        Me.tlpPcInfo.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
@@ -1695,4 +1872,17 @@ Partial Class FormMain
     Friend WithEvents lblWebOptions As Label
     Friend WithEvents cmsEditMenu As ContextMenuStrip
     Friend WithEvents tsmCopy As ToolStripMenuItem
+    Friend WithEvents ttSTA2 As ToolTip
+    Friend WithEvents tpPcInfo As TabPage
+    Friend WithEvents tbPcName As TextBox
+    Friend WithEvents tbPcOsInfo As TextBox
+    Friend WithEvents tbPcArch As TextBox
+    Friend WithEvents tbPcHardDrive As TextBox
+    Friend WithEvents tbPcRam As TextBox
+    Friend WithEvents lblPcArch As Label
+    Friend WithEvents lblPcHardDrive As Label
+    Friend WithEvents lblPcRam As Label
+    Friend WithEvents lblPcOsInfo As Label
+    Friend WithEvents lblPcName As Label
+    Friend WithEvents tlpPcInfo As TableLayoutPanel
 End Class
