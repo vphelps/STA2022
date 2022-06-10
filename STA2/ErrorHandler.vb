@@ -4,7 +4,7 @@
         FormError.errMessage = Message
         FormError.errStack = StackTrace
         FormError.ShowDialog()
-        FormMain.Close()
+        'FormMain.Close()
 
 
     End Sub

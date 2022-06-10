@@ -2,6 +2,8 @@
 
     Public Shared UnlockAdminAccount As String = "UPDATE AppOptions SET OptionValue = CONVERT(VARCHAR(24), DATEADD(DAY, 1, GETDATE()),120) + 'Z' WHERE OptionName = 'AdminUnlockedUntil'"
     Public Shared LicenseData As String = "SELECT LocName, LicenseServer, EnableWeb, ShiftDate, (SELECT OptionValue FROM AppOptions WHERE OptionName = 'CoreServiceServerName') AS CoreServiceServerName, (SELECT TOP 1 Version FROM VersionInfo ORDER BY KeyID DESC) AS Version FROM ApplicationInfo"
+    Public Shared DbStats As String = "SELECT (SELECT Sum(size)/128 FROM sys.database_files WHERE name = 'PathFinder' or Name = 'Pathfinder_log'), (SELECT @@VERSION)"
+
 End Class
 
 Public Class DbInfo

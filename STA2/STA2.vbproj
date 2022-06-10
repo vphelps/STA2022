@@ -107,6 +107,7 @@
     <Compile Include="Connections.vb" />
     <Compile Include="Constants.vb" />
     <Compile Include="DBConnector.vb" />
+    <Compile Include="DeferredRevenue.vb" />
     <Compile Include="DotNetInfo.vb" />
     <Compile Include="ErrorHandler.vb" />
     <Compile Include="FormError.Designer.vb">

@@ -3,10 +3,12 @@ Imports STA2.FormMain
 Imports STA2.FormError
 
 Public Class DBConnector
-    Public Shared Function dbQuery(Query As String)
+    Public Shared Function getValue(Query As String)
         Dim builder As New SqlConnectionStringBuilder
         Dim Ds As New DataSet
-        Dim result As String = ""
+        Dim result As Object = Nothing
+        Dim strTemp As String = ""
+        If Not PCInfo.ValidDatabase Then Return Ds
 
 #Region "Build Connection String"
 
@@ -15,7 +17,53 @@ Public Class DBConnector
         builder.Add("Initial Catalog", My.Settings.Database)
         builder.Add("UID", My.Settings.UserID)
         builder.Add("PWD", My.Settings.Password)
-        'strTemp = builder.ConnectionString
+        strTemp = builder.ConnectionString
+
+
+#End Region
+        Try
+
+            Using cn As New SqlConnection(builder.ConnectionString)
+                cn.Open()
+                Using cmdSQL As New SqlCommand(Query, cn)
+                    Dim reader As SqlDataReader = cmdSQL.ExecuteReader()
+                    If reader.HasRows Then
+                        Do While reader.Read()
+                            result = reader.GetValue(0)
+                            Console.WriteLine(result.ToString)
+                        Loop
+                    End If
+                End Using
+                cn.Close()
+
+            End Using
+
+
+        Catch ex As SqlException
+            If ex.Message.StartsWith("Cannot Open") Then strTemp = "Database Error" Else strTemp = ex.Message
+            ErrorHandler.ErrorHandler(strTemp, ex.StackTrace)
+
+        End Try
+
+        Return result
+
+    End Function
+
+    Public Shared Function dbQuery(Query As String)
+        Dim builder As New SqlConnectionStringBuilder
+        Dim Ds As New DataSet
+        Dim result As String = ""
+        Dim strTemp As String = ""
+        If Not PCInfo.ValidDatabase Then Return Ds
+
+#Region "Build Connection String"
+
+        builder.Add("Data Source", My.Settings.Server)
+        builder("Integrated Security") = False
+        builder.Add("Initial Catalog", My.Settings.Database)
+        builder.Add("UID", My.Settings.UserID)
+        builder.Add("PWD", My.Settings.Password)
+        strTemp = builder.ConnectionString
 
 
 #End Region
@@ -37,14 +85,19 @@ Public Class DBConnector
 
             End If
         Catch ex As SqlException
-            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
+            If ex.Message.StartsWith("Cannot Open") Then strTemp = "Database Error" Else strTemp = ex.Message
+            ErrorHandler.ErrorHandler(strTemp, ex.StackTrace)
+
         End Try
         Return Ds
 
 
     End Function
-    Public Shared Sub CreateCommand(ByVal queryString As String)
+
+
+    Public Shared Function CreateCommand(ByVal queryString As String)
         Dim builder As New SqlConnectionStringBuilder
+        Dim result As Integer = 0
 
 #Region "Build Connection String"
 
@@ -61,9 +114,10 @@ Public Class DBConnector
         Using connection As New SqlConnection(builder.ConnectionString)
             Dim command As New SqlCommand(queryString, connection)
             command.Connection.Open()
-            command.ExecuteNonQuery()
+            result = command.ExecuteNonQuery()
             command.Connection.Close()
 
         End Using
-    End Sub
+        Return result
+    End Function
 End Class

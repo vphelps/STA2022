@@ -46,41 +46,45 @@ Public Class Services
     End Sub
 
     Public Shared Function GetServiceStatus(ByRef caller As ServiceControlEntry) 'ByRef buttonSS As Button, ByRef textbox As TextBox, ByRef buttonRS As Button)
-        Dim service As New ServiceController(caller.Service)
-        Dim serviceControllerStatus As String = ""
         Try
+            Dim service As New ServiceController(caller.Service)
+            Dim serviceControllerStatus As String = ""
             serviceControllerStatus = service.Status.ToString
             caller.Status = service.Status
-        Catch ex As Exception
 
+            caller.TextBox.Text = serviceControllerStatus
+            If caller.TextBox.Text = "Running" Then
+                caller.SSButton.Enabled = True
+                caller.RSButton.Enabled = True
+                caller.RSButton.Text = "Restart"
+                caller.SSButton.Text = "Stop"
+                caller.TextBox.ForeColor = TextboxColors.Black
+                caller.TextBox.BackColor = TextboxColors.White
+                'MainForm.tmr1Sec.Enabled = False
+            ElseIf caller.TextBox.Text = "Stopped" Then
+                caller.SSButton.Enabled = True
+                caller.RSButton.Enabled = False
+                caller.RSButton.Text = "Restart"
+                caller.SSButton.Text = "Start"
+                caller.TextBox.ForeColor = TextboxColors.White
+                caller.TextBox.BackColor = TextboxColors.Red
+                'MainForm.tmr1Sec.Enabled = False
+            Else
+                caller.SSButton.Enabled = False
+                caller.RSButton.Enabled = False
+                caller.RSButton.Text = "Restart"
+                caller.SSButton.Text = "Working"
+                caller.TextBox.ForeColor = TextboxColors.Black
+                caller.TextBox.BackColor = TextboxColors.Yellow
+
+            End If
+        Catch ex As Exception
+            PCInfo.AreServicesInstalled = False
+            Return Not caller.SSButton.Enabled
+
+            Exit Function
         End Try
 
-        caller.TextBox.Text = serviceControllerStatus
-        If caller.TextBox.Text = "Running" Then
-            caller.SSButton.Enabled = True
-            caller.RSButton.Enabled = True
-            caller.RSButton.Text = "Restart"
-            caller.SSButton.Text = "Stop"
-            caller.TextBox.ForeColor = TextboxColors.Black
-            caller.TextBox.BackColor = TextboxColors.White
-            'MainForm.tmr1Sec.Enabled = False
-        ElseIf caller.TextBox.Text = "Stopped" Then
-            caller.SSButton.Enabled = True
-            caller.RSButton.Enabled = False
-            caller.RSButton.Text = "Restart"
-            caller.SSButton.Text = "Start"
-            caller.TextBox.ForeColor = TextboxColors.White
-            caller.TextBox.BackColor = TextboxColors.Red
-            'MainForm.tmr1Sec.Enabled = False
-        Else
-            caller.SSButton.Enabled = False
-            caller.RSButton.Enabled = False
-            caller.RSButton.Text = "Restart"
-            caller.SSButton.Text = "Working"
-            caller.TextBox.ForeColor = TextboxColors.Black
-            caller.TextBox.BackColor = TextboxColors.Yellow
-
-        End If
         Return Not caller.SSButton.Enabled
 
     End Function
@@ -113,6 +117,9 @@ Public Class Services
                 localServiceList.Item(index).GroupBox.Visible = False
                 localServiceList.Item(index).TextBox.Text = "Not Installed"
                 localServiceList.RemoveAt(index)
+            Else
+                GetServiceStatus(localServiceList.Item(index))
+
             End If
         Next
         Return localServiceList
