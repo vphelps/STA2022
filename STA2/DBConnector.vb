@@ -84,9 +84,16 @@ Public Class DBConnector
                 Return result
 
             End If
+
         Catch ex As SqlException
-            If ex.Message.StartsWith("Cannot Open") Then strTemp = "Database Error" Else strTemp = ex.Message
-            ErrorHandler.ErrorHandler(strTemp, ex.StackTrace)
+            If ex.Number = 233 Then
+                ErrorHandler.WarningHandler("Database Connection Failure")
+
+            ElseIf ex.Message.StartsWith("Cannot Open") Then
+                strTemp = "Database Error"
+            Else strTemp = String.Format("ErrorCode = {0} | Message = {1}", ex.Number, ex.Message)
+                ErrorHandler.ErrorHandler(strTemp, ex.StackTrace)
+            End If
 
         End Try
         Return Ds

@@ -39,6 +39,8 @@ Public Class CodeHelper
             If PCInfo.SqlVersion.Length > 0 And strTemp.Length > 0 Then FormMain.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", PCInfo.SqlVersion.Substring(PCInfo.SqlVersion.IndexOf("20"), 4), strTemp)
         End If
 
+
+
     End Sub
     Public Shared Sub Refresher()
         If PCInfo.ValidDatabase Then

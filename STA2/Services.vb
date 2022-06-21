@@ -211,21 +211,24 @@ Public Class Services
         Dim serviceControllerStatus = controller.Status
         Dim counter As Integer = 0
 
+        controller.Stop()
 
-        'End If
-        Select Case serviceControllerStatus
-            Case ServiceControllerStatus.Running
-                controller.Stop()
-                Do While serviceControllerStatus = ServiceControllerStatus.Running
-                    If GetServiceStatus(list) Then Exit Do
+        controller.WaitForStatus(ServiceControllerStatus.Stopped)
 
-                Loop
-            Case ServiceControllerStatus.Stopped
-                controller.Start()
+        controller.Start()
+        'Select Case serviceControllerStatus
+        '    Case ServiceControllerStatus.Running
+        '        controller.Stop()
+        '        Do While serviceControllerStatus = ServiceControllerStatus.Running
+        '            If GetServiceStatus(list) Then Exit Do
 
-            Case Else
+        '        Loop
+        '    Case ServiceControllerStatus.Stopped
+        '        controller.Start()
 
-        End Select
+        '    Case Else
+
+        'End Select
 
 
     End Sub

@@ -8,4 +8,9 @@
 
 
     End Sub
+    Public Shared Sub WarningHandler(Message As String)
+        FormWarn.errMessage = Message
+        FormWarn.ShowDialog()
+
+    End Sub
 End Class

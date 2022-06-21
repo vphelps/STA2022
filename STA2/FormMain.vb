@@ -56,6 +56,7 @@ Public Class FormMain
         tbTest3.Visible = False
         tbMLTest1.Visible = False
         btnTest.Visible = False
+        tbMLDRTest.visible = false
 #End If
     End Sub
 
@@ -313,7 +314,22 @@ Public Class FormMain
         caller.SelectionLength = 0
     End Sub
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click, btnCloudRestart.Click
+        Dim temp As Integer
+        Dim caller As Button = DirectCast(btnCloudServiceRS, Button)
+        tmr1Sec.Enabled = True
+        caller.Enabled = False
+
+        For index = 0 To ServiceControlList.Count - 1
+            If ServiceControlList.Item(index).RSButton.Equals(caller) Then
+                temp = index
+            End If
+        Next
+        LastServiceEntry = ServiceControlList.Item(temp)
+        LastServiceEntry.RSButton.Tag = "restart"
+        Services.RestartService(LastServiceEntry)
+
+        tmr1Sec.Enabled = Not caller.Enabled
 
     End Sub
 
@@ -384,14 +400,41 @@ Public Class FormMain
         tbMLDRTest.AppendText("-- INSERT Command to offset for deferred revenue posting to sales" & vbCrLf)
         tbMLDRTest.AppendText(String.Format(DeferredRevenueQueries.DRUpdate, Today, DeferredRevenue.pcDeferred) & vbCrLf & vbCrLf)
 
-        result = DBConnector.CreateCommand(DeferredRevenueQueries.pcDRswitch)
+#If DEBUG Then
+        MsgBox("Running in Debug Mode, Database not changed", MsgBoxStyle.Information, "DEBUG Mode")
+
+#Else
+                result = DBConnector.CreateCommand(DeferredRevenueQueries.pcDRswitch)
         result = DBConnector.CreateCommand((String.Format(DeferredRevenueQueries.SubCatSalesUpdate, DeferredRevenue.pcDeferred, Today, InventoryItem.CatNo, InventoryItem.SubCatNo)))
         result = DBConnector.CreateCommand((String.Format(DeferredRevenueQueries.SaleInsert, Today, InventoryItem.InvNo, DeferredRevenue.pcDeferred, InventoryItem.CatNo, InventoryItem.SubCatNo)))
         result = DBConnector.CreateCommand(DeferredRevenueQueries.pcCardValues)
         result = DBConnector.CreateCommand(String.Format(DeferredRevenueQueries.DRUpdate, Today, DeferredRevenue.pcDeferred))
 
+#End If
+
         btnPcDrCommit.Enabled = False
 
 
+    End Sub
+
+    Private Sub tcSTA_Click(sender As Object, e As EventArgs) Handles tcSTA.Click
+        btnDbLogRefresh.PerformClick()
+        btnDbInfoRefresh.PerformClick()
+
+    End Sub
+
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click
+        Dim caller As Button = DirectCast(sender, Button)
+
+        Select Case caller.Name
+            Case "btnAdvManager"
+                Diagnostics.Process.Start(AppData.CEPath & "AdvManager.exe")
+            Case "btnPos"
+                Diagnostics.Process.Start(AppData.CEPath & "pos.exe")
+            Case "btnAdvGroups"
+                Diagnostics.Process.Start(AppData.CEPath & "AdvGroups.exe")
+            Case Else
+
+        End Select
     End Sub
 End Class
