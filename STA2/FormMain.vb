@@ -1,10 +1,19 @@
 ﻿Imports System.Data.SqlClient
 Imports System.ServiceProcess
 Imports STA2.AppData
+Imports STA2.NetworkData
+Imports System.Net.NetworkInformation
+Imports System.Net
 
 Public Class FormMain
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
     Public Shared LastServiceEntry As ServiceControlEntry
+
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+
+
+    End Sub
+
 
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
@@ -13,6 +22,7 @@ Public Class FormMain
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Connections.IniFileHandler(False)
         CodeHelper.FirstLoad()
+
         Dim strTemp As String = ""
         ServiceControlList = Services.ServicesExistCheck()
         CodeHelper.Refresher()
@@ -314,25 +324,6 @@ Public Class FormMain
         caller.SelectionLength = 0
     End Sub
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click, btnCloudRestart.Click
-        Dim temp As Integer
-        Dim caller As Button = DirectCast(btnCloudServiceRS, Button)
-        tmr1Sec.Enabled = True
-        caller.Enabled = False
-
-        For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).RSButton.Equals(caller) Then
-                temp = index
-            End If
-        Next
-        LastServiceEntry = ServiceControlList.Item(temp)
-        LastServiceEntry.RSButton.Tag = "restart"
-        Services.RestartService(LastServiceEntry)
-
-        tmr1Sec.Enabled = Not caller.Enabled
-
-    End Sub
-
     Private Sub btnDRInvNo_Click(sender As Object, e As EventArgs) Handles btnDRInvNo.Click
         Dim dsResult As DataSet
         Dim Today As String = Now.ToShortDateString
@@ -420,6 +411,7 @@ Public Class FormMain
     Private Sub tcSTA_Click(sender As Object, e As EventArgs) Handles tcSTA.Click
         btnDbLogRefresh.PerformClick()
         btnDbInfoRefresh.PerformClick()
+        btnRelayRefresh.PerformClick()
 
     End Sub
 
@@ -436,5 +428,37 @@ Public Class FormMain
             Case Else
 
         End Select
+    End Sub
+
+    Private Sub btnPortCheck_Click(sender As Object, e As EventArgs) Handles btnPortCheck.Click
+        Dim host As String = My.Settings.Server
+        Dim tmpBoolean As Boolean
+        NetworkDataHelper.NetworkPortListGenerate()
+
+        Dim rows As Integer = dgvPorts.Rows.Count - 1
+        For row As Integer = 0 To rows
+            tmpBoolean = TCPCheck(host, dgvPorts.Rows(row).Cells(0).Value)
+            tbPortScan.Text = String.Format("Scanning Port {0} | {1}", dgvPorts.Rows(row).Cells(0).Value, dgvPorts.Rows(row).Cells(1).Value)
+
+            If tmpBoolean Then
+                dgvPorts.Rows(row).Cells(2).Value = "Ready"
+            Else
+                dgvPorts.Rows(row).Cells(2).Value = "Error"
+            End If
+        Next
+
+    End Sub
+
+    Private Sub btnRelayRefresh_Click(sender As Object, e As EventArgs) Handles btnRelayRefresh.Click
+        Dim tmpBoolean As Boolean = TCPCheck("relay-us-east-1.centeredgeonline.com", 50511)
+
+        If tmpBoolean Then
+            tbStageRelayConn.Text = "Ready"
+            tbStageRelayConn.BackColor = TextboxColors.Green
+        Else
+            tbStageRelayConn.Text = "Error"
+            tbStageRelayConn.BackColor = TextboxColors.Red
+        End If
+
     End Sub
 End Class

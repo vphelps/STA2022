@@ -124,10 +124,11 @@ Partial Class FormMain
         Me.pnlDbData = New System.Windows.Forms.Panel()
         Me.dgvDbTableSize = New System.Windows.Forms.DataGridView()
         Me.tpDbLogs = New System.Windows.Forms.TabPage()
-        Me.gpDbLogData = New System.Windows.Forms.GroupBox()
-        Me.dgvDbLogData = New System.Windows.Forms.DataGridView()
+        Me.tlpLogData = New System.Windows.Forms.TableLayoutPanel()
         Me.gpDbLogCount = New System.Windows.Forms.GroupBox()
         Me.dgvDbLogCount = New System.Windows.Forms.DataGridView()
+        Me.gpDbLogData = New System.Windows.Forms.GroupBox()
+        Me.dgvDbLogData = New System.Windows.Forms.DataGridView()
         Me.pnlDbLogs = New System.Windows.Forms.Panel()
         Me.btnCloudRestart = New System.Windows.Forms.Button()
         Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
@@ -171,6 +172,17 @@ Partial Class FormMain
         Me.InvItemData = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.InvItemValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.btnDRInvNo = New System.Windows.Forms.Button()
+        Me.tpNetwork = New System.Windows.Forms.TabPage()
+        Me.tbPortScan = New System.Windows.Forms.TextBox()
+        Me.gpCloudComm = New System.Windows.Forms.GroupBox()
+        Me.btnRelayRefresh = New System.Windows.Forms.Button()
+        Me.tbStageRelayConn = New System.Windows.Forms.TextBox()
+        Me.lblStageRelayConn = New System.Windows.Forms.Label()
+        Me.btnPortCheck = New System.Windows.Forms.Button()
+        Me.dgvPorts = New System.Windows.Forms.DataGridView()
+        Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.PortStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.btnAdvGroups = New System.Windows.Forms.Button()
         Me.btnPos = New System.Windows.Forms.Button()
@@ -194,7 +206,6 @@ Partial Class FormMain
         Me.ContentPanel = New System.Windows.Forms.ToolStripContentPanel()
         Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.tlpLogData = New System.Windows.Forms.TableLayoutPanel()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -225,10 +236,11 @@ Partial Class FormMain
         Me.pnlDbData.SuspendLayout()
         CType(Me.dgvDbTableSize, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpDbLogs.SuspendLayout()
-        Me.gpDbLogData.SuspendLayout()
-        CType(Me.dgvDbLogData, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tlpLogData.SuspendLayout()
         Me.gpDbLogCount.SuspendLayout()
         CType(Me.dgvDbLogCount, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.gpDbLogData.SuspendLayout()
+        CType(Me.dgvDbLogData, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlDbLogs.SuspendLayout()
         Me.gpMessageLogFilters.SuspendLayout()
         CType(Me.nudMsgLog, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -240,8 +252,10 @@ Partial Class FormMain
         Me.gpInvItem.SuspendLayout()
         CType(Me.nudDRInvNo, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvInvItem, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tpNetwork.SuspendLayout()
+        Me.gpCloudComm.SuspendLayout()
+        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.StatusStrip1.SuspendLayout()
-        Me.tlpLogData.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -295,7 +309,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 692)
-        Me.SplitContainer1.SplitterDistance = 538
+        Me.SplitContainer1.SplitterDistance = 542
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -307,11 +321,12 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpDbLogs)
         Me.tcSTA.Controls.Add(Me.tpStParse)
         Me.tcSTA.Controls.Add(Me.tpPlayerCardDeferredRevenue)
+        Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 534)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 538)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -324,7 +339,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 508)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 512)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1152,7 +1167,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 559)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 512)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1259,7 +1274,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 559)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 512)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1274,7 +1289,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 528)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 481)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1303,7 +1318,8 @@ Partial Class FormMain
         '
         'btnDbInfoRefresh
         '
-        Me.btnDbInfoRefresh.Location = New System.Drawing.Point(1180, 2)
+        Me.btnDbInfoRefresh.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnDbInfoRefresh.Location = New System.Drawing.Point(969, 2)
         Me.btnDbInfoRefresh.Name = "btnDbInfoRefresh"
         Me.btnDbInfoRefresh.Size = New System.Drawing.Size(64, 20)
         Me.btnDbInfoRefresh.TabIndex = 2
@@ -1340,7 +1356,7 @@ Partial Class FormMain
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1053, 422)
+        Me.pnlDbData.Size = New System.Drawing.Size(1053, 472)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -1354,7 +1370,7 @@ Partial Class FormMain
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 422)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 472)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tpDbLogs
@@ -1365,19 +1381,64 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 508)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 512)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
+        '
+        'tlpLogData
+        '
+        Me.tlpLogData.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.tlpLogData.ColumnCount = 2
+        Me.tlpLogData.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.25409!))
+        Me.tlpLogData.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75.74591!))
+        Me.tlpLogData.Controls.Add(Me.gpDbLogCount, 0, 0)
+        Me.tlpLogData.Controls.Add(Me.gpDbLogData, 1, 0)
+        Me.tlpLogData.Location = New System.Drawing.Point(6, 6)
+        Me.tlpLogData.Name = "tlpLogData"
+        Me.tlpLogData.RowCount = 1
+        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 371.0!))
+        Me.tlpLogData.Size = New System.Drawing.Size(1039, 371)
+        Me.tlpLogData.TabIndex = 5
+        '
+        'gpDbLogCount
+        '
+        Me.gpDbLogCount.BackColor = System.Drawing.Color.LightGray
+        Me.gpDbLogCount.Controls.Add(Me.dgvDbLogCount)
+        Me.gpDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.gpDbLogCount.Location = New System.Drawing.Point(3, 3)
+        Me.gpDbLogCount.Name = "gpDbLogCount"
+        Me.gpDbLogCount.Size = New System.Drawing.Size(245, 365)
+        Me.gpDbLogCount.TabIndex = 3
+        Me.gpDbLogCount.TabStop = False
+        Me.gpDbLogCount.Text = "Log Count"
+        '
+        'dgvDbLogCount
+        '
+        Me.dgvDbLogCount.AllowUserToAddRows = False
+        Me.dgvDbLogCount.AllowUserToDeleteRows = False
+        Me.dgvDbLogCount.AllowUserToResizeRows = False
+        Me.dgvDbLogCount.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.dgvDbLogCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.dgvDbLogCount.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.dgvDbLogCount.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
+        Me.dgvDbLogCount.Location = New System.Drawing.Point(3, 16)
+        Me.dgvDbLogCount.Name = "dgvDbLogCount"
+        Me.dgvDbLogCount.Size = New System.Drawing.Size(239, 346)
+        Me.dgvDbLogCount.TabIndex = 1
         '
         'gpDbLogData
         '
         Me.gpDbLogData.BackColor = System.Drawing.Color.LightGray
         Me.gpDbLogData.Controls.Add(Me.dgvDbLogData)
         Me.gpDbLogData.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.gpDbLogData.Location = New System.Drawing.Point(255, 3)
+        Me.gpDbLogData.Location = New System.Drawing.Point(254, 3)
         Me.gpDbLogData.Name = "gpDbLogData"
-        Me.gpDbLogData.Size = New System.Drawing.Size(781, 365)
+        Me.gpDbLogData.Size = New System.Drawing.Size(782, 365)
         Me.gpDbLogData.TabIndex = 4
         Me.gpDbLogData.TabStop = False
         Me.gpDbLogData.Text = "Log Data"
@@ -1395,35 +1456,8 @@ Partial Class FormMain
         Me.dgvDbLogData.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogData.Name = "dgvDbLogData"
         Me.dgvDbLogData.ReadOnly = True
-        Me.dgvDbLogData.Size = New System.Drawing.Size(775, 346)
+        Me.dgvDbLogData.Size = New System.Drawing.Size(776, 346)
         Me.dgvDbLogData.TabIndex = 2
-        '
-        'gpDbLogCount
-        '
-        Me.gpDbLogCount.BackColor = System.Drawing.Color.LightGray
-        Me.gpDbLogCount.Controls.Add(Me.dgvDbLogCount)
-        Me.gpDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.gpDbLogCount.Location = New System.Drawing.Point(3, 3)
-        Me.gpDbLogCount.Name = "gpDbLogCount"
-        Me.gpDbLogCount.Size = New System.Drawing.Size(246, 365)
-        Me.gpDbLogCount.TabIndex = 3
-        Me.gpDbLogCount.TabStop = False
-        Me.gpDbLogCount.Text = "Log Count"
-        '
-        'dgvDbLogCount
-        '
-        Me.dgvDbLogCount.AllowUserToAddRows = False
-        Me.dgvDbLogCount.AllowUserToDeleteRows = False
-        Me.dgvDbLogCount.AllowUserToResizeRows = False
-        Me.dgvDbLogCount.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.dgvDbLogCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.dgvDbLogCount.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.dgvDbLogCount.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvDbLogCount.Location = New System.Drawing.Point(3, 16)
-        Me.dgvDbLogCount.Name = "dgvDbLogCount"
-        Me.dgvDbLogCount.Size = New System.Drawing.Size(240, 346)
-        Me.dgvDbLogCount.TabIndex = 1
         '
         'pnlDbLogs
         '
@@ -1435,7 +1469,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 378)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 382)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1455,6 +1489,7 @@ Partial Class FormMain
         Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
         Me.ImageList1.Images.SetKeyName(0, "RestartCloud2.bmp")
+        Me.ImageList1.Images.SetKeyName(1, "reload-icon-8.jpg")
         '
         'gpMessageLogFilters
         '
@@ -1606,7 +1641,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 559)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 512)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1680,7 +1715,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 559)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 512)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1864,6 +1899,112 @@ Partial Class FormMain
         Me.btnDRInvNo.TabIndex = 17
         Me.btnDRInvNo.Text = "Select"
         Me.btnDRInvNo.UseVisualStyleBackColor = True
+        '
+        'tpNetwork
+        '
+        Me.tpNetwork.Controls.Add(Me.tbPortScan)
+        Me.tpNetwork.Controls.Add(Me.gpCloudComm)
+        Me.tpNetwork.Controls.Add(Me.btnPortCheck)
+        Me.tpNetwork.Controls.Add(Me.dgvPorts)
+        Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
+        Me.tpNetwork.Name = "tpNetwork"
+        Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 512)
+        Me.tpNetwork.TabIndex = 6
+        Me.tpNetwork.Text = "Network Info"
+        Me.tpNetwork.UseVisualStyleBackColor = True
+        '
+        'tbPortScan
+        '
+        Me.tbPortScan.Location = New System.Drawing.Point(524, 438)
+        Me.tbPortScan.Name = "tbPortScan"
+        Me.tbPortScan.Size = New System.Drawing.Size(382, 20)
+        Me.tbPortScan.TabIndex = 6
+        '
+        'gpCloudComm
+        '
+        Me.gpCloudComm.Controls.Add(Me.btnRelayRefresh)
+        Me.gpCloudComm.Controls.Add(Me.tbStageRelayConn)
+        Me.gpCloudComm.Controls.Add(Me.lblStageRelayConn)
+        Me.gpCloudComm.Location = New System.Drawing.Point(524, 6)
+        Me.gpCloudComm.Name = "gpCloudComm"
+        Me.gpCloudComm.Size = New System.Drawing.Size(456, 394)
+        Me.gpCloudComm.TabIndex = 5
+        Me.gpCloudComm.TabStop = False
+        Me.gpCloudComm.Text = "Cloud Communication"
+        '
+        'btnRelayRefresh
+        '
+        Me.btnRelayRefresh.ImageIndex = 1
+        Me.btnRelayRefresh.ImageList = Me.ImageList1
+        Me.btnRelayRefresh.Location = New System.Drawing.Point(265, 27)
+        Me.btnRelayRefresh.Name = "btnRelayRefresh"
+        Me.btnRelayRefresh.Size = New System.Drawing.Size(25, 25)
+        Me.btnRelayRefresh.TabIndex = 2
+        Me.btnRelayRefresh.UseVisualStyleBackColor = True
+        '
+        'tbStageRelayConn
+        '
+        Me.tbStageRelayConn.Location = New System.Drawing.Point(159, 28)
+        Me.tbStageRelayConn.Name = "tbStageRelayConn"
+        Me.tbStageRelayConn.Size = New System.Drawing.Size(100, 20)
+        Me.tbStageRelayConn.TabIndex = 1
+        '
+        'lblStageRelayConn
+        '
+        Me.lblStageRelayConn.AutoSize = True
+        Me.lblStageRelayConn.Location = New System.Drawing.Point(19, 35)
+        Me.lblStageRelayConn.Name = "lblStageRelayConn"
+        Me.lblStageRelayConn.Size = New System.Drawing.Size(122, 13)
+        Me.lblStageRelayConn.TabIndex = 0
+        Me.lblStageRelayConn.Text = "Stage Relay Connection"
+        '
+        'btnPortCheck
+        '
+        Me.btnPortCheck.Location = New System.Drawing.Point(388, 435)
+        Me.btnPortCheck.Name = "btnPortCheck"
+        Me.btnPortCheck.Size = New System.Drawing.Size(75, 23)
+        Me.btnPortCheck.TabIndex = 4
+        Me.btnPortCheck.Text = "Check Ports"
+        Me.btnPortCheck.UseVisualStyleBackColor = True
+        '
+        'dgvPorts
+        '
+        Me.dgvPorts.AllowUserToAddRows = False
+        Me.dgvPorts.AllowUserToDeleteRows = False
+        Me.dgvPorts.AllowUserToResizeColumns = False
+        Me.dgvPorts.AllowUserToResizeRows = False
+        Me.dgvPorts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.dgvPorts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvPorts.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PortNo, Me.AppName, Me.PortStatus})
+        Me.dgvPorts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
+        Me.dgvPorts.Location = New System.Drawing.Point(6, 6)
+        Me.dgvPorts.Name = "dgvPorts"
+        Me.dgvPorts.ReadOnly = True
+        Me.dgvPorts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
+        Me.dgvPorts.Size = New System.Drawing.Size(494, 394)
+        Me.dgvPorts.TabIndex = 3
+        '
+        'PortNo
+        '
+        Me.PortNo.HeaderText = "Port"
+        Me.PortNo.Name = "PortNo"
+        Me.PortNo.ReadOnly = True
+        Me.PortNo.Width = 51
+        '
+        'AppName
+        '
+        Me.AppName.HeaderText = "Application"
+        Me.AppName.Name = "AppName"
+        Me.AppName.ReadOnly = True
+        Me.AppName.Width = 84
+        '
+        'PortStatus
+        '
+        Me.PortStatus.HeaderText = "Status"
+        Me.PortStatus.Name = "PortStatus"
+        Me.PortStatus.ReadOnly = True
+        Me.PortStatus.Width = 62
         '
         'tbMLTest1
         '
@@ -2056,24 +2197,6 @@ Partial Class FormMain
         Me.ttSTA2.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info
         Me.ttSTA2.ToolTipTitle = "Support Tech Assistant 2022"
         '
-        'tlpLogData
-        '
-        Me.tlpLogData.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.tlpLogData.ColumnCount = 2
-        Me.tlpLogData.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.25409!))
-        Me.tlpLogData.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75.74591!))
-        Me.tlpLogData.Controls.Add(Me.gpDbLogCount, 0, 0)
-        Me.tlpLogData.Controls.Add(Me.gpDbLogData, 1, 0)
-        Me.tlpLogData.Location = New System.Drawing.Point(6, 6)
-        Me.tlpLogData.Name = "tlpLogData"
-        Me.tlpLogData.RowCount = 1
-        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.tlpLogData.Size = New System.Drawing.Size(1039, 371)
-        Me.tlpLogData.TabIndex = 5
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2131,10 +2254,11 @@ Partial Class FormMain
         Me.pnlDbData.ResumeLayout(False)
         CType(Me.dgvDbTableSize, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpDbLogs.ResumeLayout(False)
-        Me.gpDbLogData.ResumeLayout(False)
-        CType(Me.dgvDbLogData, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tlpLogData.ResumeLayout(False)
         Me.gpDbLogCount.ResumeLayout(False)
         CType(Me.dgvDbLogCount, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.gpDbLogData.ResumeLayout(False)
+        CType(Me.dgvDbLogData, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlDbLogs.ResumeLayout(False)
         Me.pnlDbLogs.PerformLayout()
         Me.gpMessageLogFilters.ResumeLayout(False)
@@ -2153,9 +2277,13 @@ Partial Class FormMain
         Me.gpInvItem.PerformLayout()
         CType(Me.nudDRInvNo, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvInvItem, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tpNetwork.ResumeLayout(False)
+        Me.tpNetwork.PerformLayout()
+        Me.gpCloudComm.ResumeLayout(False)
+        Me.gpCloudComm.PerformLayout()
+        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).EndInit()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
-        Me.tlpLogData.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2331,4 +2459,15 @@ Partial Class FormMain
     Friend WithEvents btnAdvGroups As Button
     Friend WithEvents btnPos As Button
     Friend WithEvents tlpLogData As TableLayoutPanel
+    Friend WithEvents tpNetwork As TabPage
+    Friend WithEvents dgvPorts As DataGridView
+    Friend WithEvents PortNo As DataGridViewTextBoxColumn
+    Friend WithEvents AppName As DataGridViewTextBoxColumn
+    Friend WithEvents PortStatus As DataGridViewTextBoxColumn
+    Friend WithEvents btnPortCheck As Button
+    Friend WithEvents gpCloudComm As GroupBox
+    Friend WithEvents tbStageRelayConn As TextBox
+    Friend WithEvents lblStageRelayConn As Label
+    Friend WithEvents btnRelayRefresh As Button
+    Friend WithEvents tbPortScan As TextBox
 End Class

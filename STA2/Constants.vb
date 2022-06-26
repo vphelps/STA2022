@@ -4,6 +4,7 @@ Public Class TextboxColors
     Public Shared Property White As Color = Color.White
     Public Shared Property Black As Color = Color.Black
     Public Shared Property Yellow As Color = Color.Yellow
+    Public Shared Property Green As Color = Color.Green
 
 
 End Class
