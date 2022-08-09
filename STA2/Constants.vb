@@ -8,3 +8,12 @@ Public Class TextboxColors
 
 
 End Class
+
+Public Class AdvUpgradeConstants
+    Public Const Quiet As String = "/q "
+    Public Const NoSetup As String = "/nosetup "
+    Public Const NoBackup As String = "/nobackup "
+
+
+End Class
+

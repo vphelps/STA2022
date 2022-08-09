@@ -183,6 +183,13 @@ Partial Class FormMain
         Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.PortStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.tpOptions = New System.Windows.Forms.TabPage()
+        Me.gpAdvUpgrade = New System.Windows.Forms.GroupBox()
+        Me.cbAdvUpgradeNoBackup = New System.Windows.Forms.CheckBox()
+        Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
+        Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
+        Me.btnAdvUpgrade = New System.Windows.Forms.Button()
+        Me.btnAdvReportEditor = New System.Windows.Forms.Button()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.btnAdvGroups = New System.Windows.Forms.Button()
         Me.btnPos = New System.Windows.Forms.Button()
@@ -255,6 +262,8 @@ Partial Class FormMain
         Me.tpNetwork.SuspendLayout()
         Me.gpCloudComm.SuspendLayout()
         CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tpOptions.SuspendLayout()
+        Me.gpAdvUpgrade.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -295,6 +304,8 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvReportEditor)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbMLTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvGroups)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnPos)
@@ -309,7 +320,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 692)
-        Me.SplitContainer1.SplitterDistance = 542
+        Me.SplitContainer1.SplitterDistance = 547
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -322,11 +333,12 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpStParse)
         Me.tcSTA.Controls.Add(Me.tpPlayerCardDeferredRevenue)
         Me.tcSTA.Controls.Add(Me.tpNetwork)
+        Me.tcSTA.Controls.Add(Me.tpOptions)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 538)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 543)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -339,7 +351,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 512)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 517)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1167,7 +1179,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 512)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 517)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1274,7 +1286,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 512)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 517)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1289,7 +1301,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 481)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 486)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1381,7 +1393,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 512)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 517)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1469,7 +1481,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 382)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 387)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1641,7 +1653,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 512)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 517)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1715,7 +1727,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 512)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 517)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1727,9 +1739,9 @@ Partial Class FormMain
         Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr2a)
         Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr2)
         Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr1)
-        Me.gpPcDrCommit.Location = New System.Drawing.Point(23, 307)
+        Me.gpPcDrCommit.Location = New System.Drawing.Point(23, 280)
         Me.gpPcDrCommit.Name = "gpPcDrCommit"
-        Me.gpPcDrCommit.Size = New System.Drawing.Size(479, 204)
+        Me.gpPcDrCommit.Size = New System.Drawing.Size(479, 143)
         Me.gpPcDrCommit.TabIndex = 25
         Me.gpPcDrCommit.TabStop = False
         Me.gpPcDrCommit.Text = "Instructions"
@@ -1786,7 +1798,7 @@ Partial Class FormMain
         '
         'btnPcDrCommit
         '
-        Me.btnPcDrCommit.Location = New System.Drawing.Point(432, 517)
+        Me.btnPcDrCommit.Location = New System.Drawing.Point(427, 429)
         Me.btnPcDrCommit.Name = "btnPcDrCommit"
         Me.btnPcDrCommit.Size = New System.Drawing.Size(75, 23)
         Me.btnPcDrCommit.TabIndex = 24
@@ -1795,7 +1807,7 @@ Partial Class FormMain
         '
         'tbMLDRTest
         '
-        Me.tbMLDRTest.Location = New System.Drawing.Point(533, 218)
+        Me.tbMLDRTest.Location = New System.Drawing.Point(508, 82)
         Me.tbMLDRTest.Multiline = True
         Me.tbMLDRTest.Name = "tbMLDRTest"
         Me.tbMLDRTest.ScrollBars = System.Windows.Forms.ScrollBars.Both
@@ -1909,7 +1921,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 512)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 517)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2006,6 +2018,78 @@ Partial Class FormMain
         Me.PortStatus.ReadOnly = True
         Me.PortStatus.Width = 62
         '
+        'tpOptions
+        '
+        Me.tpOptions.Controls.Add(Me.gpAdvUpgrade)
+        Me.tpOptions.Location = New System.Drawing.Point(4, 22)
+        Me.tpOptions.Name = "tpOptions"
+        Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 517)
+        Me.tpOptions.TabIndex = 7
+        Me.tpOptions.Text = "Options"
+        Me.tpOptions.UseVisualStyleBackColor = True
+        '
+        'gpAdvUpgrade
+        '
+        Me.gpAdvUpgrade.Controls.Add(Me.cbAdvUpgradeNoBackup)
+        Me.gpAdvUpgrade.Controls.Add(Me.cbAdvUpgradeNoSetup)
+        Me.gpAdvUpgrade.Controls.Add(Me.cbAdvUpgradeQuiet)
+        Me.gpAdvUpgrade.Location = New System.Drawing.Point(568, 26)
+        Me.gpAdvUpgrade.Name = "gpAdvUpgrade"
+        Me.gpAdvUpgrade.Size = New System.Drawing.Size(274, 127)
+        Me.gpAdvUpgrade.TabIndex = 0
+        Me.gpAdvUpgrade.TabStop = False
+        Me.gpAdvUpgrade.Text = "Advantage Upgrade"
+        '
+        'cbAdvUpgradeNoBackup
+        '
+        Me.cbAdvUpgradeNoBackup.AutoSize = True
+        Me.cbAdvUpgradeNoBackup.Location = New System.Drawing.Point(17, 77)
+        Me.cbAdvUpgradeNoBackup.Name = "cbAdvUpgradeNoBackup"
+        Me.cbAdvUpgradeNoBackup.Size = New System.Drawing.Size(135, 17)
+        Me.cbAdvUpgradeNoBackup.TabIndex = 2
+        Me.cbAdvUpgradeNoBackup.Text = "Do not make a backup"
+        Me.cbAdvUpgradeNoBackup.UseVisualStyleBackColor = True
+        '
+        'cbAdvUpgradeNoSetup
+        '
+        Me.cbAdvUpgradeNoSetup.AutoSize = True
+        Me.cbAdvUpgradeNoSetup.Location = New System.Drawing.Point(17, 54)
+        Me.cbAdvUpgradeNoSetup.Name = "cbAdvUpgradeNoSetup"
+        Me.cbAdvUpgradeNoSetup.Size = New System.Drawing.Size(162, 17)
+        Me.cbAdvUpgradeNoSetup.TabIndex = 1
+        Me.cbAdvUpgradeNoSetup.Text = "Do not run Advantage Setup"
+        Me.cbAdvUpgradeNoSetup.UseVisualStyleBackColor = True
+        '
+        'cbAdvUpgradeQuiet
+        '
+        Me.cbAdvUpgradeQuiet.AutoSize = True
+        Me.cbAdvUpgradeQuiet.Location = New System.Drawing.Point(17, 31)
+        Me.cbAdvUpgradeQuiet.Name = "cbAdvUpgradeQuiet"
+        Me.cbAdvUpgradeQuiet.Size = New System.Drawing.Size(228, 17)
+        Me.cbAdvUpgradeQuiet.TabIndex = 0
+        Me.cbAdvUpgradeQuiet.Text = "Quiet Mode (Runs in Cmd Prompt Window)"
+        Me.cbAdvUpgradeQuiet.UseVisualStyleBackColor = True
+        '
+        'btnAdvUpgrade
+        '
+        Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnAdvUpgrade.Location = New System.Drawing.Point(852, 36)
+        Me.btnAdvUpgrade.Name = "btnAdvUpgrade"
+        Me.btnAdvUpgrade.Size = New System.Drawing.Size(80, 44)
+        Me.btnAdvUpgrade.TabIndex = 18
+        Me.btnAdvUpgrade.Text = "Advantage Upgrade"
+        Me.btnAdvUpgrade.UseVisualStyleBackColor = True
+        '
+        'btnAdvReportEditor
+        '
+        Me.btnAdvReportEditor.Location = New System.Drawing.Point(664, 79)
+        Me.btnAdvReportEditor.Name = "btnAdvReportEditor"
+        Me.btnAdvReportEditor.Size = New System.Drawing.Size(75, 38)
+        Me.btnAdvReportEditor.TabIndex = 17
+        Me.btnAdvReportEditor.Text = "Report Editor"
+        Me.btnAdvReportEditor.UseVisualStyleBackColor = True
+        '
         'tbMLTest1
         '
         Me.tbMLTest1.Location = New System.Drawing.Point(225, 7)
@@ -2069,7 +2153,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(766, 39)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(766, 36)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2282,6 +2366,9 @@ Partial Class FormMain
         Me.gpCloudComm.ResumeLayout(False)
         Me.gpCloudComm.PerformLayout()
         CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tpOptions.ResumeLayout(False)
+        Me.gpAdvUpgrade.ResumeLayout(False)
+        Me.gpAdvUpgrade.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
@@ -2470,4 +2557,11 @@ Partial Class FormMain
     Friend WithEvents lblStageRelayConn As Label
     Friend WithEvents btnRelayRefresh As Button
     Friend WithEvents tbPortScan As TextBox
+    Friend WithEvents btnAdvReportEditor As Button
+    Friend WithEvents btnAdvUpgrade As Button
+    Friend WithEvents tpOptions As TabPage
+    Friend WithEvents gpAdvUpgrade As GroupBox
+    Friend WithEvents cbAdvUpgradeQuiet As CheckBox
+    Friend WithEvents cbAdvUpgradeNoBackup As CheckBox
+    Friend WithEvents cbAdvUpgradeNoSetup As CheckBox
 End Class

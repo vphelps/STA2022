@@ -1,4 +1,5 @@
-﻿Imports System.Net.Sockets
+﻿Imports System.Net
+Imports System.Net.Sockets
 
 Public Class NetworkData
     Public Shared Function TCPCheck(host As String, port As Integer) As Boolean
@@ -8,7 +9,7 @@ Public Class NetworkData
             client.Connect(host, port)
             TCPCheck = client.Connected
         Catch ex As ArgumentOutOfRangeException
-            MsgBox(port)
+
         Catch
             TCPCheck = client.Connected
         End Try
@@ -36,6 +37,30 @@ Public Class NetworkDataHelper
         FormMain.dgvPorts.Rows.Add(9100, "Mercury/Vantiv Gift Cards port", "")
     End Sub
 
-    Delegate Sub InvokeDelegate()
+    Public Shared Function GetLocalIP() As String
+        Dim IPList As System.Net.IPHostEntry = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName)
+
+        For Each IPaddress In IPList.AddressList
+            'Only return IPv4 routable IPs
+            If (IPaddress.AddressFamily = Sockets.AddressFamily.InterNetwork) Then
+                Return IPaddress.ToString
+            End If
+        Next
+        Return ""
+    End Function
+
+    Public Shared Function GetIPv4Address() As String
+        GetIPv4Address = String.Empty
+        Dim strHostName As String = System.Net.Dns.GetHostName()
+        Dim iphe As System.Net.IPHostEntry = System.Net.Dns.GetHostEntry(My.Settings.Server)
+        FormMain.tbMLTest1.Text = ""
+        For Each ipheal As System.Net.IPAddress In iphe.AddressList
+            If ipheal.AddressFamily = System.Net.Sockets.AddressFamily.InterNetwork Then
+                GetIPv4Address = ipheal.ToString()
+                FormMain.tbMLTest1.Text += GetIPv4Address + "|" + iphe.HostName + vbCrLf
+            End If
+        Next
+
+    End Function
 
 End Class

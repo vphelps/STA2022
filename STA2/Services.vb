@@ -216,20 +216,7 @@ Public Class Services
         controller.WaitForStatus(ServiceControllerStatus.Stopped)
 
         controller.Start()
-        'Select Case serviceControllerStatus
-        '    Case ServiceControllerStatus.Running
-        '        controller.Stop()
-        '        Do While serviceControllerStatus = ServiceControllerStatus.Running
-        '            If GetServiceStatus(list) Then Exit Do
-
-        '        Loop
-        '    Case ServiceControllerStatus.Stopped
-        '        controller.Start()
-
-        '    Case Else
-
-        'End Select
-
 
     End Sub
+
 End Class

@@ -30,7 +30,6 @@ Public Class DBConnector
                     If reader.HasRows Then
                         Do While reader.Read()
                             result = reader.GetValue(0)
-                            Console.WriteLine(result.ToString)
                         Loop
                     End If
                 End Using

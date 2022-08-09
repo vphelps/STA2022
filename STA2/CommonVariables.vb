@@ -5,6 +5,7 @@ Public Class AppData
     Public Shared dbWebOptions As New DataSet
     Public Shared dbLicData As New DataSet
     Public Shared CEPath As String = "C:\Program Files (x86)\CenterEdge Software\"
+    Public Shared UpgradePath As String = ""
 End Class
 Public Class Variables
     Public Shared LoggedIn As Boolean = False

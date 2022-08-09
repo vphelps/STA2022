@@ -75,8 +75,7 @@ Public Class CodeHelper
 
         FormMain.tslblCeVersion.Text = PCInfo.AdvantageVersion
         FormMain.tslblTime.Text = My.Computer.Clock.LocalTime.ToShortDateString & " " & My.Computer.Clock.LocalTime.ToShortTimeString
-        FormMain.btnUnlockAdminAccount.Enabled = Variables.LoggedIn
-        FormMain.dgvPFSConnect.Visible = Variables.LoggedIn
+
         Dim list As New List(Of Boolean)
 
         For index = 0 To FormMain.ServiceControlList.Count - 1
@@ -125,6 +124,14 @@ Public Class CodeHelper
     Public Shared Sub MsgLogBuilder(Optional errValue As String = "0", Optional limit As String = "100", Optional daterange As String = "")
         LogQueries.MessageLog = String.Format(MessageLogFilters.MessageLog, errValue, limit, daterange)
         LogQueries.MessageLogErrorCount = String.Format(MessageLogFilters.MessageLogErrorCount, limit, daterange)
+
+
+    End Sub
+    Public Shared Sub AdminUser(Admin As Boolean)
+
+        FormMain.flpServices.Enabled = Admin
+        FormMain.btnUnlockAdminAccount.Enabled = Admin
+        FormMain.dgvPFSConnect.Visible = Not (Admin)
 
 
     End Sub

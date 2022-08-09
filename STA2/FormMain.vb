@@ -11,6 +11,39 @@ Public Class FormMain
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
 
+        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
+            flpServices.Enabled = True
+            MsgBox("Admin")
+        Else
+            flpServices.Enabled = False
+            MsgBox("Standard")
+        End If
+
+        Exit Sub
+
+        Dim hostname = NetworkDataHelper.GetLocalIP
+        Dim portno = 15050
+        Dim ipa = Dns.GetHostAddresses(hostname)(0)
+        MessageBox.Show(hostname & " " & ipa.ToString)
+        Try
+            ' Get active TCP connections - the GetActiveTcpListeners is also useful if you're starting up a server...
+            Dim active = IPGlobalProperties.GetIPGlobalProperties.GetActiveTcpConnections
+            If (From connection In active Where connection.LocalEndPoint.Address.Equals(ipa) AndAlso connection.LocalEndPoint.Port = portno).Any Then
+                ' Port is being used by an active connection
+                MessageBox.Show("Port is in use!")
+
+            Else
+                ' Proceed with connection
+                Using sock As New Sockets.Socket(Sockets.AddressFamily.InterNetwork, Sockets.SocketType.Stream, Sockets.ProtocolType.Tcp)
+                    sock.Connect(ipa, portno)
+                    ' Do something more interesting with the socket here...
+                End Using
+            End If
+
+        Catch ex As Sockets.SocketException
+            MessageBox.Show(ex.Message)
+        End Try
+        NetworkDataHelper.GetIPv4Address()
 
     End Sub
 
@@ -21,6 +54,8 @@ Public Class FormMain
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Connections.IniFileHandler(False)
+        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then FormLogin.ShowDialog()
+        CodeHelper.AdminUser(Variables.LoggedIn)
         CodeHelper.FirstLoad()
 
         Dim strTemp As String = ""
@@ -415,19 +450,14 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click
+
         Dim caller As Button = DirectCast(sender, Button)
 
-        Select Case caller.Name
-            Case "btnAdvManager"
-                Diagnostics.Process.Start(AppData.CEPath & "AdvManager.exe")
-            Case "btnPos"
-                Diagnostics.Process.Start(AppData.CEPath & "pos.exe")
-            Case "btnAdvGroups"
-                Diagnostics.Process.Start(AppData.CEPath & "AdvGroups.exe")
-            Case Else
+        Dim Executable As String = caller.Name.Replace("btn", "")
+        Executable = String.Format("{0}{1}.exe", AppData.CEPath, Executable)
+        Diagnostics.Process.Start(Executable)
 
-        End Select
     End Sub
 
     Private Sub btnPortCheck_Click(sender As Object, e As EventArgs) Handles btnPortCheck.Click
@@ -461,4 +491,31 @@ Public Class FormMain
         End If
 
     End Sub
+
+    Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
+
+        Dim Path As String = "C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe"
+        Dim temp As String = ""
+        temp = DBConnector.getValue("SELECT OptionValue FROM AppOptions WHERE OptionName = 'UpgradePath'").ToString
+
+        temp += "\Version " + FileVersionInfo.GetVersionInfo(Path).FileVersion.ToString
+        temp += "\AdvUpgrade.exe "
+        Dim startinfo As ProcessStartInfo = New ProcessStartInfo(temp)
+        startinfo.Arguments = ""
+        startinfo.FileName = temp
+        temp = ""
+
+        If cbAdvUpgradeNoBackup.Checked Then temp += AdvUpgradeConstants.NoBackup
+        If cbAdvUpgradeQuiet.Checked Then temp += AdvUpgradeConstants.Quiet
+        If cbAdvUpgradeNoSetup.Checked Then temp += AdvUpgradeConstants.NoSetup
+        startinfo.Arguments = temp
+
+        Process.Start(startinfo)
+
+    End Sub
+
+    Private Sub cbAdvUpgradeQuiet_CheckedChanged(sender As Object, e As EventArgs) Handles cbAdvUpgradeQuiet.CheckedChanged, cbAdvUpgradeNoSetup.CheckedChanged, cbAdvUpgradeNoBackup.CheckedChanged
+
+    End Sub
+
 End Class
