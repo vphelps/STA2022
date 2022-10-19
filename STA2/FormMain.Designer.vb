@@ -188,8 +188,14 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoBackup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
+        Me.tpEODB = New System.Windows.Forms.TabPage()
+        Me.dtpEODB = New System.Windows.Forms.DateTimePicker()
+        Me.btnEODBFolder = New System.Windows.Forms.Button()
+        Me.lblEODBFolder = New System.Windows.Forms.Label()
+        Me.tbEODBFolder = New System.Windows.Forms.TextBox()
         Me.btnAdvUpgrade = New System.Windows.Forms.Button()
         Me.btnAdvReportEditor = New System.Windows.Forms.Button()
+        Me.btnEODBSave = New System.Windows.Forms.Button()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.btnAdvGroups = New System.Windows.Forms.Button()
         Me.btnPos = New System.Windows.Forms.Button()
@@ -213,6 +219,7 @@ Partial Class FormMain
         Me.ContentPanel = New System.Windows.Forms.ToolStripContentPanel()
         Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
+        Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -264,6 +271,7 @@ Partial Class FormMain
         CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpOptions.SuspendLayout()
         Me.gpAdvUpgrade.SuspendLayout()
+        Me.tpEODB.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -320,7 +328,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 692)
-        Me.SplitContainer1.SplitterDistance = 547
+        Me.SplitContainer1.SplitterDistance = 553
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -334,11 +342,12 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpPlayerCardDeferredRevenue)
         Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Controls.Add(Me.tpOptions)
+        Me.tcSTA.Controls.Add(Me.tpEODB)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 543)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 549)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -351,7 +360,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 517)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 523)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1179,7 +1188,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 517)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 523)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1286,7 +1295,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 517)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 523)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1301,7 +1310,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 486)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 492)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1393,7 +1402,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 517)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 523)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1481,7 +1490,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 387)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 393)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1653,7 +1662,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 517)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 523)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1727,7 +1736,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 517)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 523)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1921,7 +1930,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 517)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 523)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2024,7 +2033,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 517)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 523)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2071,6 +2080,55 @@ Partial Class FormMain
         Me.cbAdvUpgradeQuiet.Text = "Quiet Mode (Runs in Cmd Prompt Window)"
         Me.cbAdvUpgradeQuiet.UseVisualStyleBackColor = True
         '
+        'tpEODB
+        '
+        Me.tpEODB.Controls.Add(Me.dtpEODB)
+        Me.tpEODB.Controls.Add(Me.btnEODBFolder)
+        Me.tpEODB.Controls.Add(Me.btnEODBSave)
+        Me.tpEODB.Controls.Add(Me.lblEODBFolder)
+        Me.tpEODB.Controls.Add(Me.tbEODBFolder)
+        Me.tpEODB.Location = New System.Drawing.Point(4, 22)
+        Me.tpEODB.Name = "tpEODB"
+        Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 523)
+        Me.tpEODB.TabIndex = 8
+        Me.tpEODB.Text = "EODB Troubleshooting"
+        Me.tpEODB.UseVisualStyleBackColor = True
+        '
+        'dtpEODB
+        '
+        Me.dtpEODB.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.dtpEODB.Location = New System.Drawing.Point(660, 152)
+        Me.dtpEODB.Name = "dtpEODB"
+        Me.dtpEODB.Size = New System.Drawing.Size(200, 20)
+        Me.dtpEODB.TabIndex = 3
+        Me.dtpEODB.Value = New Date(2022, 7, 7, 0, 0, 0, 0)
+        '
+        'btnEODBFolder
+        '
+        Me.btnEODBFolder.Location = New System.Drawing.Point(762, 26)
+        Me.btnEODBFolder.Name = "btnEODBFolder"
+        Me.btnEODBFolder.Size = New System.Drawing.Size(79, 23)
+        Me.btnEODBFolder.TabIndex = 2
+        Me.btnEODBFolder.Text = "Select Folder"
+        Me.btnEODBFolder.UseVisualStyleBackColor = True
+        '
+        'lblEODBFolder
+        '
+        Me.lblEODBFolder.AutoSize = True
+        Me.lblEODBFolder.Location = New System.Drawing.Point(26, 35)
+        Me.lblEODBFolder.Name = "lblEODBFolder"
+        Me.lblEODBFolder.Size = New System.Drawing.Size(39, 13)
+        Me.lblEODBFolder.TabIndex = 1
+        Me.lblEODBFolder.Text = "Folder:"
+        '
+        'tbEODBFolder
+        '
+        Me.tbEODBFolder.Location = New System.Drawing.Point(71, 28)
+        Me.tbEODBFolder.Name = "tbEODBFolder"
+        Me.tbEODBFolder.Size = New System.Drawing.Size(664, 20)
+        Me.tbEODBFolder.TabIndex = 0
+        '
         'btnAdvUpgrade
         '
         Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -2089,6 +2147,15 @@ Partial Class FormMain
         Me.btnAdvReportEditor.TabIndex = 17
         Me.btnAdvReportEditor.Text = "Report Editor"
         Me.btnAdvReportEditor.UseVisualStyleBackColor = True
+        '
+        'btnEODBSave
+        '
+        Me.btnEODBSave.Location = New System.Drawing.Point(703, 366)
+        Me.btnEODBSave.Name = "btnEODBSave"
+        Me.btnEODBSave.Size = New System.Drawing.Size(75, 23)
+        Me.btnEODBSave.TabIndex = 4
+        Me.btnEODBSave.Text = "Save"
+        Me.btnEODBSave.UseVisualStyleBackColor = True
         '
         'tbMLTest1
         '
@@ -2281,6 +2348,10 @@ Partial Class FormMain
         Me.ttSTA2.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info
         Me.ttSTA2.ToolTipTitle = "Support Tech Assistant 2022"
         '
+        'fbdEODB
+        '
+        Me.fbdEODB.Description = "EODB Troubleshooting"
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2369,6 +2440,8 @@ Partial Class FormMain
         Me.tpOptions.ResumeLayout(False)
         Me.gpAdvUpgrade.ResumeLayout(False)
         Me.gpAdvUpgrade.PerformLayout()
+        Me.tpEODB.ResumeLayout(False)
+        Me.tpEODB.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
@@ -2564,4 +2637,11 @@ Partial Class FormMain
     Friend WithEvents cbAdvUpgradeQuiet As CheckBox
     Friend WithEvents cbAdvUpgradeNoBackup As CheckBox
     Friend WithEvents cbAdvUpgradeNoSetup As CheckBox
+    Friend WithEvents tpEODB As TabPage
+    Friend WithEvents btnEODBFolder As Button
+    Friend WithEvents lblEODBFolder As Label
+    Friend WithEvents tbEODBFolder As TextBox
+    Friend WithEvents fbdEODB As FolderBrowserDialog
+    Friend WithEvents dtpEODB As DateTimePicker
+    Friend WithEvents btnEODBSave As Button
 End Class
