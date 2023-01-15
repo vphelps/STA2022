@@ -130,7 +130,6 @@ Public Class CodeHelper
     Public Shared Sub AdminUser(Admin As Boolean)
 
         FormMain.flpServices.Enabled = Admin
-        FormMain.btnUnlockAdminAccount.Enabled = Admin
         FormMain.dgvPFSConnect.Visible = Not (Admin)
 
 

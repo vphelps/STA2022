@@ -73,6 +73,64 @@ Public Class EODBTroubleshooting
 
         End If
     End Sub
+
+    Public Shared Function CreateSheetFromXml(dbResult As DataSet, ByRef xlWorkBook As Workbook)
+        Dim textString As String = ""
+
+        Console.WriteLine("Entered CreateSheetFromXml")
+        xlWorkBook.Sheets.Add(After:=xlWorkBook.Sheets(xlWorkBook.Sheets.Count))
+        Dim xlActiveSheet As Worksheet = xlWorkBook.ActiveSheet
+        xlActiveSheet.Name = String.Format("{0:00}", xlWorkBook.Sheets.Count - 1)
+        Dim Col1 As Integer
+        Dim Row1 As Integer
+        Dim row As Integer = dbResult.Tables(0).Rows.Count
+
+        Dim Header1 As String
+        Dim Header2 As String
+        Dim Header3 As String
+        Console.WriteLine("Sheet = " & xlActiveSheet.Name)
+        Console.WriteLine("Reading Headers")
+        Header1 = dbResult.Tables(0).Rows(dbResult.Tables(0).Rows.Count - 1)(0)
+        Header2 = dbResult.Tables(0).Rows(dbResult.Tables(0).Rows.Count - 2)(0)
+        Header3 = dbResult.Tables(0).Rows(dbResult.Tables(0).Rows.Count - 3)(0)
+        If dbResult.Tables(0).Rows.Count > 2 Then
+            dbResult.Tables(0).Rows.RemoveAt(dbResult.Tables(0).Rows.Count - 1)
+            dbResult.Tables(0).Rows.RemoveAt(dbResult.Tables(0).Rows.Count - 1)
+            dbResult.Tables(0).Rows.RemoveAt(dbResult.Tables(0).Rows.Count - 1)
+        End If
+
+        Try
+
+            For Col = 0 To dbResult.Tables(0).Columns.Count - 1
+                For row = 0 To dbResult.Tables(0).Rows.Count - 1
+                    Col1 = Col
+                    Row1 = row
+                    Console.WriteLine(String.Format("Reading Data Col = {0} Row = {1}", Col1, Row1))
+                    textString = "Sheet = " & xlActiveSheet.Name & vbCrLf & (String.Format("Reading Data Col = {0} Row = {1}", Col1, Row1))
+                    FormMain.tbEodbProgress.Text = textString
+                    xlActiveSheet.Cells(1, Col + 1) = dbResult.Tables(0).Columns(Col).ColumnName
+                    xlActiveSheet.Cells(row + 2, Col + 1) = dbResult.Tables(0).Rows(row).Item(Col).ToString
+
+                Next
+            Next
+        Catch ex As Exception
+
+        End Try
+
+
+        Console.Write("Inserting Headers")
+        SheetFormatting(xlActiveSheet)
+        InsertHeader(xlActiveSheet, Header1)
+        InsertHeader(xlActiveSheet, Header2)
+        InsertHeader(xlActiveSheet, Header3)
+
+
+
+        Console.WriteLine("Exiting CreateSheetFromXml")
+        Return xlActiveSheet
+
+
+    End Function
 End Class
 
 Public Class EODBQueries

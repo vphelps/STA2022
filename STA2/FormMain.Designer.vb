@@ -25,7 +25,6 @@ Partial Class FormMain
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormMain))
         Me.btnExit = New System.Windows.Forms.Button()
-        Me.btnUnlockAdminAccount = New System.Windows.Forms.Button()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.tcSTA = New System.Windows.Forms.TabControl()
         Me.tpGeneral = New System.Windows.Forms.TabPage()
@@ -189,13 +188,17 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
         Me.tpEODB = New System.Windows.Forms.TabPage()
+        Me.dtpTest = New System.Windows.Forms.DateTimePicker()
+        Me.tbEodbProgress = New System.Windows.Forms.TextBox()
+        Me.btnXmltoWorkbook = New System.Windows.Forms.Button()
+        Me.btnSaveToXml = New System.Windows.Forms.Button()
         Me.dtpEODB = New System.Windows.Forms.DateTimePicker()
         Me.btnEODBFolder = New System.Windows.Forms.Button()
+        Me.btnEODBSave = New System.Windows.Forms.Button()
         Me.lblEODBFolder = New System.Windows.Forms.Label()
         Me.tbEODBFolder = New System.Windows.Forms.TextBox()
         Me.btnAdvUpgrade = New System.Windows.Forms.Button()
         Me.btnAdvReportEditor = New System.Windows.Forms.Button()
-        Me.btnEODBSave = New System.Windows.Forms.Button()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.btnAdvGroups = New System.Windows.Forms.Button()
         Me.btnPos = New System.Windows.Forms.Button()
@@ -220,6 +223,7 @@ Partial Class FormMain
         Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
+        Me.gnAdvApps = New System.Windows.Forms.GroupBox()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -273,28 +277,19 @@ Partial Class FormMain
         Me.gpAdvUpgrade.SuspendLayout()
         Me.tpEODB.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.gnAdvApps.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(990, 65)
+        Me.btnExit.Location = New System.Drawing.Point(990, 101)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(64, 20)
         Me.btnExit.TabIndex = 0
         Me.btnExit.Text = "Exit"
         Me.btnExit.UseVisualStyleBackColor = True
-        '
-        'btnUnlockAdminAccount
-        '
-        Me.btnUnlockAdminAccount.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnUnlockAdminAccount.Location = New System.Drawing.Point(990, 5)
-        Me.btnUnlockAdminAccount.Name = "btnUnlockAdminAccount"
-        Me.btnUnlockAdminAccount.Size = New System.Drawing.Size(64, 20)
-        Me.btnUnlockAdminAccount.TabIndex = 9
-        Me.btnUnlockAdminAccount.Text = "Unlock"
-        Me.btnUnlockAdminAccount.UseVisualStyleBackColor = True
         '
         'SplitContainer1
         '
@@ -312,12 +307,9 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.gnAdvApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvReportEditor)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbMLTest1)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvGroups)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnPos)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvManager)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest3)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnTest)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
@@ -326,9 +318,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnUnlockAdminAccount)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 692)
-        Me.SplitContainer1.SplitterDistance = 553
+        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 710)
+        Me.SplitContainer1.SplitterDistance = 540
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -347,7 +338,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 549)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 536)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -360,7 +351,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 523)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 510)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1188,7 +1179,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 523)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 510)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1295,7 +1286,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 523)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 510)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1310,7 +1301,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 492)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 479)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1377,7 +1368,7 @@ Partial Class FormMain
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1053, 472)
+        Me.pnlDbData.Size = New System.Drawing.Size(1053, 454)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -1391,7 +1382,7 @@ Partial Class FormMain
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 472)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 454)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tpDbLogs
@@ -1402,7 +1393,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 523)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 510)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1422,7 +1413,7 @@ Partial Class FormMain
         Me.tlpLogData.RowCount = 1
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 371.0!))
-        Me.tlpLogData.Size = New System.Drawing.Size(1039, 371)
+        Me.tlpLogData.Size = New System.Drawing.Size(1039, 353)
         Me.tlpLogData.TabIndex = 5
         '
         'gpDbLogCount
@@ -1490,7 +1481,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 393)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 380)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1662,7 +1653,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 523)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 510)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1736,7 +1727,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 523)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 510)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1930,7 +1921,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 523)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 510)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2033,7 +2024,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 523)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 510)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2082,6 +2073,10 @@ Partial Class FormMain
         '
         'tpEODB
         '
+        Me.tpEODB.Controls.Add(Me.dtpTest)
+        Me.tpEODB.Controls.Add(Me.tbEodbProgress)
+        Me.tpEODB.Controls.Add(Me.btnXmltoWorkbook)
+        Me.tpEODB.Controls.Add(Me.btnSaveToXml)
         Me.tpEODB.Controls.Add(Me.dtpEODB)
         Me.tpEODB.Controls.Add(Me.btnEODBFolder)
         Me.tpEODB.Controls.Add(Me.btnEODBSave)
@@ -2090,10 +2085,45 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 523)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 510)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
+        '
+        'dtpTest
+        '
+        Me.dtpTest.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.dtpTest.Location = New System.Drawing.Point(728, 293)
+        Me.dtpTest.Name = "dtpTest"
+        Me.dtpTest.Size = New System.Drawing.Size(200, 20)
+        Me.dtpTest.TabIndex = 7
+        Me.dtpTest.Value = New Date(2022, 11, 1, 0, 0, 0, 0)
+        '
+        'tbEodbProgress
+        '
+        Me.tbEodbProgress.Location = New System.Drawing.Point(137, 255)
+        Me.tbEodbProgress.Multiline = True
+        Me.tbEodbProgress.Name = "tbEodbProgress"
+        Me.tbEodbProgress.Size = New System.Drawing.Size(292, 107)
+        Me.tbEodbProgress.TabIndex = 6
+        '
+        'btnXmltoWorkbook
+        '
+        Me.btnXmltoWorkbook.Location = New System.Drawing.Point(888, 448)
+        Me.btnXmltoWorkbook.Name = "btnXmltoWorkbook"
+        Me.btnXmltoWorkbook.Size = New System.Drawing.Size(75, 23)
+        Me.btnXmltoWorkbook.TabIndex = 5
+        Me.btnXmltoWorkbook.Text = "Read XML"
+        Me.btnXmltoWorkbook.UseVisualStyleBackColor = True
+        '
+        'btnSaveToXml
+        '
+        Me.btnSaveToXml.Location = New System.Drawing.Point(703, 413)
+        Me.btnSaveToXml.Name = "btnSaveToXml"
+        Me.btnSaveToXml.Size = New System.Drawing.Size(75, 23)
+        Me.btnSaveToXml.TabIndex = 5
+        Me.btnSaveToXml.Text = "Save XML"
+        Me.btnSaveToXml.UseVisualStyleBackColor = True
         '
         'dtpEODB
         '
@@ -2112,6 +2142,15 @@ Partial Class FormMain
         Me.btnEODBFolder.TabIndex = 2
         Me.btnEODBFolder.Text = "Select Folder"
         Me.btnEODBFolder.UseVisualStyleBackColor = True
+        '
+        'btnEODBSave
+        '
+        Me.btnEODBSave.Location = New System.Drawing.Point(703, 366)
+        Me.btnEODBSave.Name = "btnEODBSave"
+        Me.btnEODBSave.Size = New System.Drawing.Size(75, 23)
+        Me.btnEODBSave.TabIndex = 4
+        Me.btnEODBSave.Text = "Save"
+        Me.btnEODBSave.UseVisualStyleBackColor = True
         '
         'lblEODBFolder
         '
@@ -2132,7 +2171,7 @@ Partial Class FormMain
         'btnAdvUpgrade
         '
         Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAdvUpgrade.Location = New System.Drawing.Point(852, 36)
+        Me.btnAdvUpgrade.Location = New System.Drawing.Point(833, 80)
         Me.btnAdvUpgrade.Name = "btnAdvUpgrade"
         Me.btnAdvUpgrade.Size = New System.Drawing.Size(80, 44)
         Me.btnAdvUpgrade.TabIndex = 18
@@ -2141,33 +2180,24 @@ Partial Class FormMain
         '
         'btnAdvReportEditor
         '
-        Me.btnAdvReportEditor.Location = New System.Drawing.Point(664, 79)
+        Me.btnAdvReportEditor.Location = New System.Drawing.Point(182, 94)
         Me.btnAdvReportEditor.Name = "btnAdvReportEditor"
         Me.btnAdvReportEditor.Size = New System.Drawing.Size(75, 38)
         Me.btnAdvReportEditor.TabIndex = 17
         Me.btnAdvReportEditor.Text = "Report Editor"
         Me.btnAdvReportEditor.UseVisualStyleBackColor = True
         '
-        'btnEODBSave
-        '
-        Me.btnEODBSave.Location = New System.Drawing.Point(703, 366)
-        Me.btnEODBSave.Name = "btnEODBSave"
-        Me.btnEODBSave.Size = New System.Drawing.Size(75, 23)
-        Me.btnEODBSave.TabIndex = 4
-        Me.btnEODBSave.Text = "Save"
-        Me.btnEODBSave.UseVisualStyleBackColor = True
-        '
         'tbMLTest1
         '
-        Me.tbMLTest1.Location = New System.Drawing.Point(225, 7)
+        Me.tbMLTest1.Location = New System.Drawing.Point(488, 10)
         Me.tbMLTest1.Multiline = True
         Me.tbMLTest1.Name = "tbMLTest1"
-        Me.tbMLTest1.Size = New System.Drawing.Size(258, 110)
+        Me.tbMLTest1.Size = New System.Drawing.Size(194, 125)
         Me.tbMLTest1.TabIndex = 16
         '
         'btnAdvGroups
         '
-        Me.btnAdvGroups.Location = New System.Drawing.Point(489, 79)
+        Me.btnAdvGroups.Location = New System.Drawing.Point(7, 94)
         Me.btnAdvGroups.Name = "btnAdvGroups"
         Me.btnAdvGroups.Size = New System.Drawing.Size(75, 38)
         Me.btnAdvGroups.TabIndex = 16
@@ -2176,7 +2206,7 @@ Partial Class FormMain
         '
         'btnPos
         '
-        Me.btnPos.Location = New System.Drawing.Point(489, 42)
+        Me.btnPos.Location = New System.Drawing.Point(7, 57)
         Me.btnPos.Name = "btnPos"
         Me.btnPos.Size = New System.Drawing.Size(75, 38)
         Me.btnPos.TabIndex = 15
@@ -2185,7 +2215,7 @@ Partial Class FormMain
         '
         'btnAdvManager
         '
-        Me.btnAdvManager.Location = New System.Drawing.Point(489, 5)
+        Me.btnAdvManager.Location = New System.Drawing.Point(7, 20)
         Me.btnAdvManager.Name = "btnAdvManager"
         Me.btnAdvManager.Size = New System.Drawing.Size(75, 38)
         Me.btnAdvManager.TabIndex = 15
@@ -2194,7 +2224,7 @@ Partial Class FormMain
         '
         'tbTest3
         '
-        Me.tbTest3.Location = New System.Drawing.Point(13, 44)
+        Me.tbTest3.Location = New System.Drawing.Point(276, 51)
         Me.tbTest3.Name = "tbTest3"
         Me.tbTest3.Size = New System.Drawing.Size(206, 20)
         Me.tbTest3.TabIndex = 14
@@ -2202,7 +2232,7 @@ Partial Class FormMain
         '
         'btnTest
         '
-        Me.btnTest.Location = New System.Drawing.Point(16, 70)
+        Me.btnTest.Location = New System.Drawing.Point(279, 77)
         Me.btnTest.Name = "btnTest"
         Me.btnTest.Size = New System.Drawing.Size(75, 23)
         Me.btnTest.TabIndex = 1
@@ -2211,7 +2241,7 @@ Partial Class FormMain
         '
         'tbTest2
         '
-        Me.tbTest2.Location = New System.Drawing.Point(13, 23)
+        Me.tbTest2.Location = New System.Drawing.Point(276, 30)
         Me.tbTest2.Name = "tbTest2"
         Me.tbTest2.Size = New System.Drawing.Size(206, 20)
         Me.tbTest2.TabIndex = 13
@@ -2220,7 +2250,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(766, 36)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(833, 30)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2231,7 +2261,7 @@ Partial Class FormMain
         '
         Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(763, 7)
+        Me.Label1.Location = New System.Drawing.Point(830, 10)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(140, 13)
         Me.Label1.TabIndex = 11
@@ -2239,7 +2269,7 @@ Partial Class FormMain
         '
         'tbTest1
         '
-        Me.tbTest1.Location = New System.Drawing.Point(13, 3)
+        Me.tbTest1.Location = New System.Drawing.Point(276, 10)
         Me.tbTest1.Name = "tbTest1"
         Me.tbTest1.Size = New System.Drawing.Size(206, 20)
         Me.tbTest1.TabIndex = 3
@@ -2248,7 +2278,7 @@ Partial Class FormMain
         'btnLogin
         '
         Me.btnLogin.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnLogin.Location = New System.Drawing.Point(909, 2)
+        Me.btnLogin.Location = New System.Drawing.Point(976, 5)
         Me.btnLogin.Name = "btnLogin"
         Me.btnLogin.Size = New System.Drawing.Size(75, 23)
         Me.btnLogin.TabIndex = 10
@@ -2260,7 +2290,7 @@ Partial Class FormMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 668)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 686)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1068, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2352,12 +2382,25 @@ Partial Class FormMain
         '
         Me.fbdEODB.Description = "EODB Troubleshooting"
         '
+        'gnAdvApps
+        '
+        Me.gnAdvApps.Controls.Add(Me.btnAdvManager)
+        Me.gnAdvApps.Controls.Add(Me.btnPos)
+        Me.gnAdvApps.Controls.Add(Me.btnAdvReportEditor)
+        Me.gnAdvApps.Controls.Add(Me.btnAdvGroups)
+        Me.gnAdvApps.Location = New System.Drawing.Point(3, 3)
+        Me.gnAdvApps.Name = "gnAdvApps"
+        Me.gnAdvApps.Size = New System.Drawing.Size(267, 135)
+        Me.gnAdvApps.TabIndex = 19
+        Me.gnAdvApps.TabStop = False
+        Me.gnAdvApps.Text = "Advantage Applications"
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1068, 692)
+        Me.ClientSize = New System.Drawing.Size(1068, 710)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -2444,12 +2487,12 @@ Partial Class FormMain
         Me.tpEODB.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.gnAdvApps.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
     Friend WithEvents btnExit As Button
-    Friend WithEvents btnUnlockAdminAccount As Button
     Friend WithEvents SplitContainer1 As SplitContainer
     Friend WithEvents tcSTA As TabControl
     Friend WithEvents tpGeneral As TabPage
@@ -2644,4 +2687,9 @@ Partial Class FormMain
     Friend WithEvents fbdEODB As FolderBrowserDialog
     Friend WithEvents dtpEODB As DateTimePicker
     Friend WithEvents btnEODBSave As Button
+    Friend WithEvents btnSaveToXml As Button
+    Friend WithEvents btnXmltoWorkbook As Button
+    Friend WithEvents tbEodbProgress As TextBox
+    Friend WithEvents dtpTest As DateTimePicker
+    Friend WithEvents gnAdvApps As GroupBox
 End Class

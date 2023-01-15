@@ -1,13 +1,15 @@
 ﻿Imports System.Data.SqlClient
 Imports System.Net
+Imports System.Xml
+Imports System.IO
 Imports System.Net.NetworkInformation
 Imports System.ServiceProcess
-Imports Microsoft.Office.Interop
-Imports Microsoft.Office.Interop.Excel
 Imports STA2.AppData
 Imports STA2.NetworkData
 
 Public Class FormMain
+    Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
+
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
     Public Shared LastServiceEntry As ServiceControlEntry
 
@@ -93,10 +95,17 @@ Public Class FormMain
         End If
         btnPcDrCommit.Enabled = False
 
+        EODBTroubleshooting.filePath = "C:\CenterEdge\EODB"
+        fbdEODB.SelectedPath = EODBTroubleshooting.filePath
+
+        tbEODBFolder.Text = EODBTroubleshooting.filePath
+        dtpEODB.Value = Now
+
 #If DEBUG Then
         Variables.LoggedIn = True
         dgvPFSConnect.Visible = Variables.LoggedIn
         nudDRInvNo.Value = 11564
+        dtpEODB.Value = "07-07-2022"
 #Else
         tbTest1.Visible = False
         tbTest2.Visible = False
@@ -104,16 +113,13 @@ Public Class FormMain
         tbMLTest1.Visible = False
         btnTest.Visible = False
         tbMLDRTest.visible = false
-#End If
-        EODBTroubleshooting.filePath = "C:\CenterEdge"
-        fbdEODB.SelectedPath = EODBTroubleshooting.filePath
+        tcSTA.TabPages.Remove(tpEODB)
 
-        tbEODBFolder.Text = EODBTroubleshooting.filePath
-        dtpEODB.Value = Now
+#End If
 
     End Sub
 
-    Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs) Handles btnUnlockAdminAccount.Click
+    Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
         DBConnector.CreateCommand(GeneralQueries.UnlockAdminAccount)
 
     End Sub
@@ -460,7 +466,7 @@ Public Class FormMain
 
     Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click
 
-        Dim caller As Button = DirectCast(sender, Button)
+        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
 
         Dim Executable As String = caller.Name.Replace("btn", "")
         Executable = String.Format("{0}{1}.exe", AppData.CEPath, Executable)
@@ -541,160 +547,450 @@ Public Class FormMain
     Private Sub btnEODBSave_Click(sender As Object, e As EventArgs) Handles btnEODBSave.Click
         Dim dbResult As DataSet
         Dim strTemp As String
+        Try
 
-        EODBTroubleshooting.filePath = fbdEODB.SelectedPath
+            EODBTroubleshooting.filePath = fbdEODB.SelectedPath
+            Dim dateTemp As Date = dtpEODB.Value.Date
+            EODBTroubleshooting.normDate = dateTemp.ToString("MM-dd-yyyy")
+            EODBTroubleshooting.sqlDate = dateTemp.ToString("yyyy-MM-dd")
+
+            strTemp = EODBTroubleshooting.filePath + "\EODBTroubleshooting " + EODBTroubleshooting.normDate + ".xlsx"
+            EODBTroubleshooting.filePath = strTemp
+            Dim xlApp As Microsoft.Office.Interop.Excel.Application = New Microsoft.Office.Interop.Excel.Application()
+            Dim xlWorkBook As Microsoft.Office.Interop.Excel.Workbook
+            Dim xlActiveSheet As Microsoft.Office.Interop.Excel.Worksheet
+            Dim misValue As Object = System.Reflection.Missing.Value
+
+            xlWorkBook = xlApp.Workbooks.Add(misValue)
+            xlActiveSheet = xlWorkBook.ActiveSheet
+            xlActiveSheet.Name = "blank"
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.EODBCurrency, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Note: Generally not worried about Coupon, Discounts, or Player Card")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Verify the currency on the eod balance (remember to add/subtract over/short amounts)")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RecLinesByItem, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Sum reclines by item")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking for amounts that might match the imbalance.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.LineItemsByDate, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at line items sold for target date")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking for detail for Sum reclines by item query.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.SalesAllocationsNonSales, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for sales allocations and non-sales")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking for amounts that might match the imbalance. Also, should match the total for Sum reclines by item query.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PlayerCardDiscounts, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at player cards that were discounted")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Should match Player Card Discounts Used total.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PlayerCardsAddUse, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at the player cards added/used")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Should match Player Card Value Added and Player Card Value Used.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.Sales, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at sales")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total of sales which should match the Sales Total ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalCategorySubCategory, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total by Category and Subcategory")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "which should match the sales for Cat and Subcat")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalSalesTax, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total Sales Tax")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalDeposits, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total Deposits Received and Redeemed")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.DepositsReceived, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at deposit received")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.DepositsRedeemed, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at deposit redeemed")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RefundReceipts, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking to see if totals match imbalance.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for a receipt return")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReceiptsRefunded, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking to see if totals match imbalance.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for a receipt return")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RecLinesRefunded, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking to see if totals match imbalance.")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for a receipt return")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReturnedItems, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for returned items")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReturnedInventory, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Info on items FROM returned RecLines")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TaxablePlayerCards, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Shows Player Card inventory items that get tax applied at sale")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for taxable player cards")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PackagesEmpty, EODBTroubleshooting.sqlDate))
+            xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
+            EODBTroubleshooting.SheetFormatting(xlActiveSheet)
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "These package items do not have any inventory items assigned to them")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for package items that are not referencing a inventory item")
+            EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+
+            xlActiveSheet = xlWorkBook.Worksheets("blank")
+            xlActiveSheet.Delete()
+
+            xlWorkBook.SaveAs(EODBTroubleshooting.filePath) ', Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue)
+            xlWorkBook.Close(True, misValue, misValue)
+            xlApp.Quit()
+
+            EODBTroubleshooting.releaseObject(xlActiveSheet)
+
+            EODBTroubleshooting.releaseObject(xlWorkBook)
+
+            EODBTroubleshooting.releaseObject(xlApp)
+        Catch ex As System.Runtime.InteropServices.COMException
+            MsgBox("Error communicating to Excel")
+        End Try
+
+    End Sub
+
+    Private Sub btnSaveToXml_Click(sender As Object, e As EventArgs) Handles btnSaveToXml.Click
+        Dim dbResult As DataSet
         Dim dateTemp As Date = dtpEODB.Value.Date
+
+        EODBTroubleshooting.normDate = dateTemp.ToString("MM-dd-yyyy")
+        EODBTroubleshooting.sqlDate = dateTemp.ToString("yyyy-MM-dd")
+        EODBTroubleshooting.filePath = fbdEODB.SelectedPath & xmlFileNamePattern
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.EODBCurrency, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Verify the currency on the eod balance (remember to add/subtract over/short amounts)")
+        dbResult.Tables(0).Rows.Add("Note: Generally not worried about Coupon, Discounts, or Player Card")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "01"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RecLinesByItem, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Sum reclines by item")
+        dbResult.Tables(0).Rows.Add("Looking for amounts that might match the imbalance.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "02"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.LineItemsByDate, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look at line items sold for target date")
+        dbResult.Tables(0).Rows.Add("Looking for detail for Sum reclines by item query.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "03"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.SalesAllocationsNonSales, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for sales allocations and non-sales")
+        dbResult.Tables(0).Rows.Add("Looking for amounts that might match the imbalance. Also, should match the total for Sum reclines by item query.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "04"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PlayerCardDiscounts, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look at player cards that were discounted")
+        dbResult.Tables(0).Rows.Add("Should match Player Card Discounts Used total.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "05"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PlayerCardsAddUse, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look at the player cards added/used")
+        dbResult.Tables(0).Rows.Add("Should match Player Card Value Added and Player Card Value Used.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "06"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.Sales, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look at sales")
+        dbResult.Tables(0).Rows.Add("Total of sales which should match the Sales Total ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "07"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalCategorySubCategory, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Total by Category and Subcategory")
+        dbResult.Tables(0).Rows.Add("which should match the sales for Cat and Subcat")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "08"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalSalesTax, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Total Sales Tax")
+        dbResult.Tables(0).Rows.Add(" ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "09"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalDeposits, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Total Deposits Received and Redeemed")
+        dbResult.Tables(0).Rows.Add(" ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "10"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.DepositsReceived, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look at deposit received")
+        dbResult.Tables(0).Rows.Add(" ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "11"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.DepositsRedeemed, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look at deposit redeemed")
+        dbResult.Tables(0).Rows.Add(" ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "12"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RefundReceipts, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for a receipt return")
+        dbResult.Tables(0).Rows.Add("Looking to see if totals match imbalance.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "13"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReceiptsRefunded, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for a receipt return")
+        dbResult.Tables(0).Rows.Add("Looking to see if totals match imbalance.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "14"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RecLinesRefunded, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for a receipt return")
+        dbResult.Tables(0).Rows.Add("Looking to see if totals match imbalance.")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "15"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReturnedItems, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for returned items")
+        dbResult.Tables(0).Rows.Add(" ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "16"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReturnedInventory, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Info on items FROM returned RecLines")
+        dbResult.Tables(0).Rows.Add(" ")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "17"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TaxablePlayerCards, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for taxable player cards")
+        dbResult.Tables(0).Rows.Add("Shows Player Card inventory items that get tax applied at sale")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "18"), XmlWriteMode.IgnoreSchema)
+
+        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PackagesEmpty, EODBTroubleshooting.sqlDate))
+        dbResult.Tables(0).Rows.Add(String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Tables(0).Rows.Add("Look for package items that are not referencing a inventory item")
+        dbResult.Tables(0).Rows.Add("These package items do not have any inventory items assigned to them")
+        dbResult.WriteXml(String.Format(EODBTroubleshooting.filePath, EODBTroubleshooting.sqlDate, "19"), XmlWriteMode.IgnoreSchema)
+
+    End Sub
+
+    Private Sub btnXmltoWorkbook_Click(sender As Object, e As EventArgs) Handles btnXmltoWorkbook.Click
+        Dim dateTemp As Date
+        Dim xmlFile As String = ""
+        Dim xmlTemp As String = ""
+        Dim idxTemp As Integer = 0
+        Dim strTemp As String = ""
+        Dim xlsFile As String = ""
+
+        Dim fileSelect As New OpenFileDialog
+        fileSelect.Title = "Select file with the desired date"
+        fileSelect.InitialDirectory = fbdEODB.SelectedPath
+        fileSelect.DefaultExt = "xml"
+        fileSelect.Filter = "XML files (*.xml)|*.xml|All files (*.*)|*.*"
+        If fileSelect.ShowDialog() = DialogResult.OK Then
+            xmlFile = fileSelect.FileName
+        End If
+        xmlTemp = xmlFile
+
+        idxTemp = xmlTemp.IndexOf("(")
+        xmlTemp = xmlTemp.Substring(idxTemp + 1)
+        idxTemp = xmlTemp.IndexOf(")")
+        xmlTemp = xmlTemp.Remove(idxTemp)
+        MsgBox(xmlTemp & vbCrLf & xmlFile)
+        dtpEODB.Value = Convert.ToDateTime(xmlTemp)
+        dateTemp = dtpEODB.Value.Date
         EODBTroubleshooting.normDate = dateTemp.ToString("MM-dd-yyyy")
         EODBTroubleshooting.sqlDate = dateTemp.ToString("yyyy-MM-dd")
 
-        strTemp = EODBTroubleshooting.filePath + "\EODBTroubleshooting " + EODBTroubleshooting.normDate + ".xlsx"
-        EODBTroubleshooting.filePath = strTemp
-        Dim xlApp As Excel.Application = New Microsoft.Office.Interop.Excel.Application()
-        Dim xlWorkBook As Excel.Workbook
-        Dim xlActiveSheet As Excel.Worksheet
+        EODBTroubleshooting.filePath = fbdEODB.SelectedPath
+
+        xlsFile = EODBTroubleshooting.filePath + "\EODBTroubleshooting Test" + EODBTroubleshooting.normDate + ".xlsx"
+        'strTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate)
+        'MsgBox(strTemp)
+
+
+
+
+        Dim dbResult As New DataSet
+        Dim xlApp As Microsoft.Office.Interop.Excel.Application = New Microsoft.Office.Interop.Excel.Application()
+        Dim xlWorkBook As Microsoft.Office.Interop.Excel.Workbook
+        Dim xlActiveSheet As Microsoft.Office.Interop.Excel.Worksheet
         Dim misValue As Object = System.Reflection.Missing.Value
 
         xlWorkBook = xlApp.Workbooks.Add(misValue)
         xlActiveSheet = xlWorkBook.ActiveSheet
         xlActiveSheet.Name = "blank"
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.EODBCurrency, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Note: Generally not worried about Coupon, Discounts, or Player Card")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Verify the currency on the eod balance (remember to add/subtract over/short amounts)")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
 
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "01")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RecLinesByItem, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Sum reclines by item")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking for amounts that might match the imbalance.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "02")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.LineItemsByDate, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at line items sold for target date")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking for detail for Sum reclines by item query.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "03")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.SalesAllocationsNonSales, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for sales allocations and non-sales")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking for amounts that might match the imbalance. Also, should match the total for Sum reclines by item query.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "04")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PlayerCardDiscounts, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at player cards that were discounted")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Should match Player Card Discounts Used total.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "05")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PlayerCardsAddUse, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at the player cards added/used")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Should match Player Card Value Added and Player Card Value Used.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "06")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.Sales, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at sales")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total of sales which should match the Sales Total ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "07")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalCategorySubCategory, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total by Category and Subcategory")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "which should match the sales for Cat and Subcat")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "08")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalSalesTax, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total Sales Tax")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "09")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TotalDeposits, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Total Deposits Received and Redeemed")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "10")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.DepositsReceived, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at deposit received")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "11")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.DepositsRedeemed, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look at deposit redeemed")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "12")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RefundReceipts, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking to see if totals match imbalance.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for a receipt return")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "13")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReceiptsRefunded, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking to see if totals match imbalance.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for a receipt return")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "14")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.RecLinesRefunded, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Looking to see if totals match imbalance.")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for a receipt return")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "15")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReturnedItems, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for returned items")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "16")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.ReturnedInventory, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, " ")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Info on items FROM returned RecLines")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "17")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.TaxablePlayerCards, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Shows Player Card inventory items that get tax applied at sale")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for taxable player cards")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "18")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
-        dbResult = DBConnector.dbQuery(String.Format(EODBQueries.PackagesEmpty, EODBTroubleshooting.sqlDate))
-        xlActiveSheet = EODBTroubleshooting.CreateSheet(dbResult, xlWorkBook)
-        EODBTroubleshooting.SheetFormatting(xlActiveSheet)
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "These package items do not have any inventory items assigned to them")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, "Look for package items that are not referencing a inventory item")
-        EODBTroubleshooting.InsertHeader(xlActiveSheet, String.Format("End of Day Balance Troubleshooting {0}", EODBTroubleshooting.normDate))
+        dbResult.Reset()
+        xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "19")
+        dbResult.ReadXml(xmlTemp)
+        xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
+
+        'dbResult.Reset()
+        'xmlTemp = String.Format(EODBTroubleshooting.filePath & xmlFileNamePattern, EODBTroubleshooting.sqlDate, "XX")
+        'dbResult.ReadXml(xmlTemp)
+        'xlActiveSheet = EODBTroubleshooting.CreateSheetFromXml(dbResult, xlWorkBook)
 
         xlActiveSheet = xlWorkBook.Worksheets("blank")
         xlActiveSheet.Delete()
 
-        xlWorkBook.SaveAs(EODBTroubleshooting.filePath) ', Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue)
+        xlWorkBook.SaveAs(xlsFile) ', Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue)
         xlWorkBook.Close(True, misValue, misValue)
         xlApp.Quit()
 
