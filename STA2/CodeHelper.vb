@@ -131,6 +131,8 @@ Public Class CodeHelper
 
         FormMain.flpServices.Enabled = Admin
         FormMain.dgvPFSConnect.Visible = Not (Admin)
+        FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
+
 
 
     End Sub
