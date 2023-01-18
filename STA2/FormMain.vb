@@ -83,7 +83,10 @@ Public Class FormMain
                 For index = 0 To dbWebOptions.Tables(0).Rows.Count - 1
                     dgvWebOptions.Rows.Add(dbWebOptions.Tables(0).Rows(index).ItemArray)
                 Next
-
+                dbApplicationInfo = DBConnector.dbQuery("SELECT * FROM ApplicationInfo")
+                For index = 0 To dbApplicationInfo.Tables(0).Columns.Count - 1
+                    dgvApplicationInfo.Rows.Add(dbApplicationInfo.Tables(0).Columns(index).ColumnName, dbApplicationInfo.Tables(0).Rows(0).ItemArray(index).ToString)
+                Next
                 dgvAppOptions.Refresh()
 
             Catch ex As Exception

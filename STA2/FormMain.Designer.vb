@@ -28,6 +28,7 @@ Partial Class FormMain
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.tcSTA = New System.Windows.Forms.TabControl()
         Me.tpGeneral = New System.Windows.Forms.TabPage()
+        Me.tbServicesButtonsHelpMessage = New System.Windows.Forms.TextBox()
         Me.gpPcInfo = New System.Windows.Forms.GroupBox()
         Me.tlpPcInfo = New System.Windows.Forms.TableLayoutPanel()
         Me.lblPcAdvVersion = New System.Windows.Forms.Label()
@@ -224,7 +225,11 @@ Partial Class FormMain
         Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
-        Me.tbServicesButtonsHelpMessage = New System.Windows.Forms.TextBox()
+        Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.dgvApplicationInfo = New System.Windows.Forms.DataGridView()
+        Me.DataGridViewTextBoxColumn3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DataGridViewTextBoxColumn4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.lblApplicationInfo = New System.Windows.Forms.Label()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -279,6 +284,7 @@ Partial Class FormMain
         Me.tpEODB.SuspendLayout()
         Me.gnAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'btnExit
@@ -320,7 +326,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 710)
-        Me.SplitContainer1.SplitterDistance = 541
+        Me.SplitContainer1.SplitterDistance = 542
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -335,11 +341,12 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Controls.Add(Me.tpOptions)
         Me.tcSTA.Controls.Add(Me.tpEODB)
+        Me.tcSTA.Controls.Add(Me.TabPage1)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 537)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 538)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -353,9 +360,21 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 511)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 512)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
+        '
+        'tbServicesButtonsHelpMessage
+        '
+        Me.tbServicesButtonsHelpMessage.Enabled = False
+        Me.tbServicesButtonsHelpMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbServicesButtonsHelpMessage.Location = New System.Drawing.Point(799, 163)
+        Me.tbServicesButtonsHelpMessage.Multiline = True
+        Me.tbServicesButtonsHelpMessage.Name = "tbServicesButtonsHelpMessage"
+        Me.tbServicesButtonsHelpMessage.Size = New System.Drawing.Size(248, 78)
+        Me.tbServicesButtonsHelpMessage.TabIndex = 16
+        Me.tbServicesButtonsHelpMessage.Text = "To enable Services buttons close and reopen the application in Administrator Mode" &
+    "."
         '
         'gpPcInfo
         '
@@ -1175,13 +1194,15 @@ Partial Class FormMain
         '
         'tpAdvData
         '
+        Me.tpAdvData.Controls.Add(Me.lblApplicationInfo)
+        Me.tpAdvData.Controls.Add(Me.dgvApplicationInfo)
         Me.tpAdvData.Controls.Add(Me.lblWebOptions)
         Me.tpAdvData.Controls.Add(Me.lblAppOptions)
         Me.tpAdvData.Controls.Add(Me.dgvWebOptions)
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 511)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 512)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1191,7 +1212,7 @@ Partial Class FormMain
         '
         Me.lblWebOptions.AutoSize = True
         Me.lblWebOptions.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblWebOptions.Location = New System.Drawing.Point(529, 10)
+        Me.lblWebOptions.Location = New System.Drawing.Point(753, 14)
         Me.lblWebOptions.Name = "lblWebOptions"
         Me.lblWebOptions.Size = New System.Drawing.Size(83, 16)
         Me.lblWebOptions.TabIndex = 3
@@ -1201,7 +1222,7 @@ Partial Class FormMain
         '
         Me.lblAppOptions.AutoSize = True
         Me.lblAppOptions.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblAppOptions.Location = New System.Drawing.Point(6, 10)
+        Me.lblAppOptions.Location = New System.Drawing.Point(351, 14)
         Me.lblAppOptions.Name = "lblAppOptions"
         Me.lblAppOptions.Size = New System.Drawing.Size(79, 16)
         Me.lblAppOptions.TabIndex = 2
@@ -1217,11 +1238,11 @@ Partial Class FormMain
         Me.dgvWebOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvWebOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2})
         Me.dgvWebOptions.ContextMenuStrip = Me.cmsEditMenu
-        Me.dgvWebOptions.Location = New System.Drawing.Point(532, 29)
+        Me.dgvWebOptions.Location = New System.Drawing.Point(756, 33)
         Me.dgvWebOptions.Name = "dgvWebOptions"
         Me.dgvWebOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvWebOptions.ShowEditingIcon = False
-        Me.dgvWebOptions.Size = New System.Drawing.Size(514, 479)
+        Me.dgvWebOptions.Size = New System.Drawing.Size(291, 479)
         Me.dgvWebOptions.TabIndex = 1
         '
         'DataGridViewTextBoxColumn1
@@ -1261,11 +1282,11 @@ Partial Class FormMain
         Me.dgvAppOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvAppOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.OptionName, Me.OptionValue})
         Me.dgvAppOptions.ContextMenuStrip = Me.cmsEditMenu
-        Me.dgvAppOptions.Location = New System.Drawing.Point(9, 29)
+        Me.dgvAppOptions.Location = New System.Drawing.Point(301, 33)
         Me.dgvAppOptions.Name = "dgvAppOptions"
         Me.dgvAppOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvAppOptions.ShowEditingIcon = False
-        Me.dgvAppOptions.Size = New System.Drawing.Size(514, 479)
+        Me.dgvAppOptions.Size = New System.Drawing.Size(449, 479)
         Me.dgvAppOptions.TabIndex = 0
         '
         'OptionName
@@ -1288,7 +1309,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 511)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 512)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1303,7 +1324,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 480)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 481)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1395,7 +1416,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 511)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 512)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1483,7 +1504,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 381)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 382)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1655,7 +1676,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 511)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 512)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1729,7 +1750,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 511)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 512)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1923,7 +1944,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 511)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 512)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2026,7 +2047,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 511)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 512)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2087,7 +2108,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 511)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 512)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2397,17 +2418,53 @@ Partial Class FormMain
         '
         Me.fbdEODB.Description = "EODB Troubleshooting"
         '
-        'tbServicesButtonsHelpMessage
+        'TabPage1
         '
-        Me.tbServicesButtonsHelpMessage.Enabled = False
-        Me.tbServicesButtonsHelpMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.tbServicesButtonsHelpMessage.Location = New System.Drawing.Point(799, 163)
-        Me.tbServicesButtonsHelpMessage.Multiline = True
-        Me.tbServicesButtonsHelpMessage.Name = "tbServicesButtonsHelpMessage"
-        Me.tbServicesButtonsHelpMessage.Size = New System.Drawing.Size(248, 78)
-        Me.tbServicesButtonsHelpMessage.TabIndex = 16
-        Me.tbServicesButtonsHelpMessage.Text = "To enable Services buttons close and reopen the application in Administrator Mode" &
-    "."
+        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Name = "TabPage1"
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage1.Size = New System.Drawing.Size(1056, 512)
+        Me.TabPage1.TabIndex = 9
+        Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'dgvApplicationInfo
+        '
+        Me.dgvApplicationInfo.AllowUserToAddRows = False
+        Me.dgvApplicationInfo.AllowUserToDeleteRows = False
+        Me.dgvApplicationInfo.AllowUserToResizeColumns = False
+        Me.dgvApplicationInfo.AllowUserToResizeRows = False
+        Me.dgvApplicationInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.dgvApplicationInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvApplicationInfo.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4})
+        Me.dgvApplicationInfo.ContextMenuStrip = Me.cmsEditMenu
+        Me.dgvApplicationInfo.Location = New System.Drawing.Point(4, 33)
+        Me.dgvApplicationInfo.Name = "dgvApplicationInfo"
+        Me.dgvApplicationInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
+        Me.dgvApplicationInfo.ShowEditingIcon = False
+        Me.dgvApplicationInfo.Size = New System.Drawing.Size(291, 479)
+        Me.dgvApplicationInfo.TabIndex = 4
+        '
+        'DataGridViewTextBoxColumn3
+        '
+        Me.DataGridViewTextBoxColumn3.HeaderText = "OptionName"
+        Me.DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
+        Me.DataGridViewTextBoxColumn3.Width = 91
+        '
+        'DataGridViewTextBoxColumn4
+        '
+        Me.DataGridViewTextBoxColumn4.HeaderText = "OptionValue"
+        Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
+        Me.DataGridViewTextBoxColumn4.Width = 90
+        '
+        'lblApplicationInfo
+        '
+        Me.lblApplicationInfo.AutoSize = True
+        Me.lblApplicationInfo.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblApplicationInfo.Location = New System.Drawing.Point(6, 14)
+        Me.lblApplicationInfo.Name = "lblApplicationInfo"
+        Me.lblApplicationInfo.Size = New System.Drawing.Size(96, 16)
+        Me.lblApplicationInfo.TabIndex = 5
+        Me.lblApplicationInfo.Text = "ApplicationInfo"
         '
         'FormMain
         '
@@ -2503,6 +2560,7 @@ Partial Class FormMain
         Me.gnAdvApps.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2708,4 +2766,9 @@ Partial Class FormMain
     Friend WithEvents dtpTest As DateTimePicker
     Friend WithEvents gnAdvApps As GroupBox
     Friend WithEvents tbServicesButtonsHelpMessage As TextBox
+    Friend WithEvents lblApplicationInfo As Label
+    Friend WithEvents dgvApplicationInfo As DataGridView
+    Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
+    Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
+    Friend WithEvents TabPage1 As TabPage
 End Class
