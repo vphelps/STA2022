@@ -116,7 +116,7 @@ Public Class FormMain
         tbMLTest1.Visible = False
         btnTest.Visible = False
         tbMLDRTest.visible = false
-        tcSTA.TabPages.Remove(tpEODB)
+        'tcSTA.TabPages.Remove(tpEODB)
 
 #End If
 

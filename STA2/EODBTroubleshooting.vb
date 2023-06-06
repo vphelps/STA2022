@@ -223,7 +223,7 @@ SELECT 'TotalDepositsRedeemed' AS Query,  birthdayevent, sum(amount) as TotalDep
     Public shared TaxablePlayerCards As String ="SELECT 'Look for taxable player cards' AS Query,  * FROM InvSnapShot
 LEFT OUTER JOIN inventory ON inventory.InvID = InvSnapShot.InvID
 LEFT OUTER JOIN invmaster ON invmaster.MasterInvno = inventory.MasterInvNo
-WHERE (itemtype = 3 or itemtype = 8 or ItemType = 19) and InvSnapShot.Taxable <> 0"
+WHERE (itemtype = 3 or itemtype = 8 or ItemType = 19) and InvSnapShot.Taxable <> 0 AND ShiftDate = '{0}'"
 
 
     'Look for package items that are not referencing a inventory item
