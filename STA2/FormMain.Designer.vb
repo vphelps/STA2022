@@ -193,14 +193,18 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
         Me.tpEODB = New System.Windows.Forms.TabPage()
-        Me.tbEodbProgress = New System.Windows.Forms.TextBox()
-        Me.btnXmltoWorkbook = New System.Windows.Forms.Button()
-        Me.btnSaveToXml = New System.Windows.Forms.Button()
-        Me.dtpEODB = New System.Windows.Forms.DateTimePicker()
-        Me.btnEODBFolder = New System.Windows.Forms.Button()
+        Me.tbEODBInstructions = New System.Windows.Forms.TextBox()
+        Me.gbEODBExcel = New System.Windows.Forms.GroupBox()
         Me.btnEODBSave = New System.Windows.Forms.Button()
-        Me.lblEODBFolder = New System.Windows.Forms.Label()
+        Me.btnSaveToXml = New System.Windows.Forms.Button()
+        Me.btnXmltoWorkbook = New System.Windows.Forms.Button()
+        Me.gbEODBParameter = New System.Windows.Forms.GroupBox()
+        Me.lblEODBdate = New System.Windows.Forms.Label()
+        Me.dtpEODB = New System.Windows.Forms.DateTimePicker()
         Me.tbEODBFolder = New System.Windows.Forms.TextBox()
+        Me.lblEODBFolder = New System.Windows.Forms.Label()
+        Me.btnEODBFolder = New System.Windows.Forms.Button()
+        Me.tbEodbProgress = New System.Windows.Forms.TextBox()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.gnAdvApps = New System.Windows.Forms.GroupBox()
         Me.btnAdvManager = New System.Windows.Forms.Button()
@@ -282,6 +286,8 @@ Partial Class FormMain
         Me.tpOptions.SuspendLayout()
         Me.gpAdvUpgrade.SuspendLayout()
         Me.tpEODB.SuspendLayout()
+        Me.gbEODBExcel.SuspendLayout()
+        Me.gbEODBParameter.SuspendLayout()
         Me.gnAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
@@ -325,7 +331,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 710)
-        Me.SplitContainer1.SplitterDistance = 543
+        Me.SplitContainer1.SplitterDistance = 544
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -345,7 +351,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 539)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 540)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -359,7 +365,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 513)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 514)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1150,6 +1156,7 @@ Partial Class FormMain
         Me.gpPfsConnect.TabIndex = 11
         Me.gpPfsConnect.TabStop = False
         Me.gpPfsConnect.Text = "PFSConnect.ini data"
+        Me.gpPfsConnect.Visible = False
         '
         'dgvPFSConnect
         '
@@ -1201,7 +1208,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 513)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 514)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1347,7 +1354,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 513)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 514)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1362,7 +1369,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 482)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 483)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1454,7 +1461,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 513)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 514)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1542,7 +1549,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 383)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 384)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1714,7 +1721,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 513)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 514)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1788,7 +1795,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 513)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 514)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1982,7 +1989,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 513)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 514)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2085,7 +2092,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 513)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 514)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2134,97 +2141,138 @@ Partial Class FormMain
         '
         'tpEODB
         '
+        Me.tpEODB.Controls.Add(Me.tbEODBInstructions)
+        Me.tpEODB.Controls.Add(Me.gbEODBExcel)
+        Me.tpEODB.Controls.Add(Me.gbEODBParameter)
         Me.tpEODB.Controls.Add(Me.tbEodbProgress)
-        Me.tpEODB.Controls.Add(Me.btnXmltoWorkbook)
-        Me.tpEODB.Controls.Add(Me.btnSaveToXml)
-        Me.tpEODB.Controls.Add(Me.dtpEODB)
-        Me.tpEODB.Controls.Add(Me.btnEODBFolder)
-        Me.tpEODB.Controls.Add(Me.btnEODBSave)
-        Me.tpEODB.Controls.Add(Me.lblEODBFolder)
-        Me.tpEODB.Controls.Add(Me.tbEODBFolder)
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 513)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 514)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
         '
-        'tbEodbProgress
+        'tbEODBInstructions
         '
-        Me.tbEodbProgress.Location = New System.Drawing.Point(137, 255)
-        Me.tbEodbProgress.Multiline = True
-        Me.tbEodbProgress.Name = "tbEodbProgress"
-        Me.tbEodbProgress.Size = New System.Drawing.Size(292, 107)
-        Me.tbEodbProgress.TabIndex = 6
+        Me.tbEODBInstructions.Location = New System.Drawing.Point(550, 121)
+        Me.tbEODBInstructions.Multiline = True
+        Me.tbEODBInstructions.Name = "tbEODBInstructions"
+        Me.tbEODBInstructions.ReadOnly = True
+        Me.tbEODBInstructions.Size = New System.Drawing.Size(489, 97)
+        Me.tbEODBInstructions.TabIndex = 9
+        Me.tbEODBInstructions.Text = resources.GetString("tbEODBInstructions.Text")
         '
-        'btnXmltoWorkbook
+        'gbEODBExcel
         '
-        Me.btnXmltoWorkbook.Location = New System.Drawing.Point(888, 448)
-        Me.btnXmltoWorkbook.Name = "btnXmltoWorkbook"
-        Me.btnXmltoWorkbook.Size = New System.Drawing.Size(75, 23)
-        Me.btnXmltoWorkbook.TabIndex = 5
-        Me.btnXmltoWorkbook.Text = "Read XML"
-        Me.btnXmltoWorkbook.UseVisualStyleBackColor = True
-        '
-        'btnSaveToXml
-        '
-        Me.btnSaveToXml.Location = New System.Drawing.Point(703, 413)
-        Me.btnSaveToXml.Name = "btnSaveToXml"
-        Me.btnSaveToXml.Size = New System.Drawing.Size(75, 23)
-        Me.btnSaveToXml.TabIndex = 5
-        Me.btnSaveToXml.Text = "Save XML"
-        Me.btnSaveToXml.UseVisualStyleBackColor = True
-        '
-        'dtpEODB
-        '
-        Me.dtpEODB.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.dtpEODB.Location = New System.Drawing.Point(660, 152)
-        Me.dtpEODB.Name = "dtpEODB"
-        Me.dtpEODB.Size = New System.Drawing.Size(200, 20)
-        Me.dtpEODB.TabIndex = 3
-        Me.dtpEODB.Value = New Date(2022, 7, 7, 0, 0, 0, 0)
-        '
-        'btnEODBFolder
-        '
-        Me.btnEODBFolder.Location = New System.Drawing.Point(762, 26)
-        Me.btnEODBFolder.Name = "btnEODBFolder"
-        Me.btnEODBFolder.Size = New System.Drawing.Size(79, 23)
-        Me.btnEODBFolder.TabIndex = 2
-        Me.btnEODBFolder.Text = "Select Folder"
-        Me.btnEODBFolder.UseVisualStyleBackColor = True
+        Me.gbEODBExcel.Controls.Add(Me.btnEODBSave)
+        Me.gbEODBExcel.Controls.Add(Me.btnSaveToXml)
+        Me.gbEODBExcel.Controls.Add(Me.btnXmltoWorkbook)
+        Me.gbEODBExcel.Location = New System.Drawing.Point(550, 15)
+        Me.gbEODBExcel.Name = "gbEODBExcel"
+        Me.gbEODBExcel.Size = New System.Drawing.Size(175, 100)
+        Me.gbEODBExcel.TabIndex = 8
+        Me.gbEODBExcel.TabStop = False
+        Me.gbEODBExcel.Text = "GroupBox1"
         '
         'btnEODBSave
         '
-        Me.btnEODBSave.Location = New System.Drawing.Point(703, 366)
+        Me.btnEODBSave.Location = New System.Drawing.Point(11, 19)
         Me.btnEODBSave.Name = "btnEODBSave"
         Me.btnEODBSave.Size = New System.Drawing.Size(75, 23)
         Me.btnEODBSave.TabIndex = 4
         Me.btnEODBSave.Text = "Save"
         Me.btnEODBSave.UseVisualStyleBackColor = True
         '
-        'lblEODBFolder
+        'btnSaveToXml
         '
-        Me.lblEODBFolder.AutoSize = True
-        Me.lblEODBFolder.Location = New System.Drawing.Point(26, 35)
-        Me.lblEODBFolder.Name = "lblEODBFolder"
-        Me.lblEODBFolder.Size = New System.Drawing.Size(39, 13)
-        Me.lblEODBFolder.TabIndex = 1
-        Me.lblEODBFolder.Text = "Folder:"
+        Me.btnSaveToXml.Location = New System.Drawing.Point(11, 48)
+        Me.btnSaveToXml.Name = "btnSaveToXml"
+        Me.btnSaveToXml.Size = New System.Drawing.Size(75, 23)
+        Me.btnSaveToXml.TabIndex = 5
+        Me.btnSaveToXml.Text = "Save XML"
+        Me.btnSaveToXml.UseVisualStyleBackColor = True
+        '
+        'btnXmltoWorkbook
+        '
+        Me.btnXmltoWorkbook.Location = New System.Drawing.Point(92, 48)
+        Me.btnXmltoWorkbook.Name = "btnXmltoWorkbook"
+        Me.btnXmltoWorkbook.Size = New System.Drawing.Size(75, 23)
+        Me.btnXmltoWorkbook.TabIndex = 5
+        Me.btnXmltoWorkbook.Text = "Read XML"
+        Me.btnXmltoWorkbook.UseVisualStyleBackColor = True
+        '
+        'gbEODBParameter
+        '
+        Me.gbEODBParameter.Controls.Add(Me.lblEODBdate)
+        Me.gbEODBParameter.Controls.Add(Me.dtpEODB)
+        Me.gbEODBParameter.Controls.Add(Me.tbEODBFolder)
+        Me.gbEODBParameter.Controls.Add(Me.lblEODBFolder)
+        Me.gbEODBParameter.Controls.Add(Me.btnEODBFolder)
+        Me.gbEODBParameter.Location = New System.Drawing.Point(15, 15)
+        Me.gbEODBParameter.Name = "gbEODBParameter"
+        Me.gbEODBParameter.Size = New System.Drawing.Size(520, 105)
+        Me.gbEODBParameter.TabIndex = 7
+        Me.gbEODBParameter.TabStop = False
+        Me.gbEODBParameter.Text = "Set Parameters"
+        '
+        'lblEODBdate
+        '
+        Me.lblEODBdate.AutoSize = True
+        Me.lblEODBdate.Location = New System.Drawing.Point(6, 70)
+        Me.lblEODBdate.Name = "lblEODBdate"
+        Me.lblEODBdate.Size = New System.Drawing.Size(74, 13)
+        Me.lblEODBdate.TabIndex = 4
+        Me.lblEODBdate.Text = "Date to query:"
+        '
+        'dtpEODB
+        '
+        Me.dtpEODB.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.dtpEODB.Location = New System.Drawing.Point(86, 63)
+        Me.dtpEODB.Name = "dtpEODB"
+        Me.dtpEODB.Size = New System.Drawing.Size(109, 20)
+        Me.dtpEODB.TabIndex = 3
+        Me.dtpEODB.Value = New Date(2022, 7, 7, 0, 0, 0, 0)
         '
         'tbEODBFolder
         '
-        Me.tbEODBFolder.Location = New System.Drawing.Point(71, 28)
+        Me.tbEODBFolder.Location = New System.Drawing.Point(94, 19)
         Me.tbEODBFolder.Name = "tbEODBFolder"
-        Me.tbEODBFolder.Size = New System.Drawing.Size(664, 20)
+        Me.tbEODBFolder.Size = New System.Drawing.Size(310, 20)
         Me.tbEODBFolder.TabIndex = 0
+        '
+        'lblEODBFolder
+        '
+        Me.lblEODBFolder.AutoSize = True
+        Me.lblEODBFolder.Location = New System.Drawing.Point(6, 22)
+        Me.lblEODBFolder.Name = "lblEODBFolder"
+        Me.lblEODBFolder.Size = New System.Drawing.Size(89, 13)
+        Me.lblEODBFolder.TabIndex = 1
+        Me.lblEODBFolder.Text = "Folder to save to:"
+        '
+        'btnEODBFolder
+        '
+        Me.btnEODBFolder.Location = New System.Drawing.Point(410, 17)
+        Me.btnEODBFolder.Name = "btnEODBFolder"
+        Me.btnEODBFolder.Size = New System.Drawing.Size(79, 23)
+        Me.btnEODBFolder.TabIndex = 2
+        Me.btnEODBFolder.Text = "Select Folder"
+        Me.btnEODBFolder.UseVisualStyleBackColor = True
+        '
+        'tbEodbProgress
+        '
+        Me.tbEodbProgress.Location = New System.Drawing.Point(15, 384)
+        Me.tbEodbProgress.Multiline = True
+        Me.tbEodbProgress.Name = "tbEodbProgress"
+        Me.tbEodbProgress.Size = New System.Drawing.Size(292, 107)
+        Me.tbEodbProgress.TabIndex = 6
         '
         'TabPage1
         '
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(1056, 513)
+        Me.TabPage1.Size = New System.Drawing.Size(1056, 514)
         Me.TabPage1.TabIndex = 9
         Me.TabPage1.UseVisualStyleBackColor = True
         '
@@ -2547,6 +2595,9 @@ Partial Class FormMain
         Me.gpAdvUpgrade.PerformLayout()
         Me.tpEODB.ResumeLayout(False)
         Me.tpEODB.PerformLayout()
+        Me.gbEODBExcel.ResumeLayout(False)
+        Me.gbEODBParameter.ResumeLayout(False)
+        Me.gbEODBParameter.PerformLayout()
         Me.gnAdvApps.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
@@ -2759,4 +2810,8 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
     Friend WithEvents TabPage1 As TabPage
+    Friend WithEvents gbEODBParameter As GroupBox
+    Friend WithEvents lblEODBdate As Label
+    Friend WithEvents gbEODBExcel As GroupBox
+    Friend WithEvents tbEODBInstructions As TextBox
 End Class

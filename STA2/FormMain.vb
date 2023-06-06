@@ -98,11 +98,29 @@ Public Class FormMain
         End If
         btnPcDrCommit.Enabled = False
 
-        EODBTroubleshooting.filePath = "C:\CenterEdge\EODB"
+        EODBTroubleshooting.filePath = "C:\CenterEdge"
         fbdEODB.SelectedPath = EODBTroubleshooting.filePath
 
         tbEODBFolder.Text = EODBTroubleshooting.filePath
         dtpEODB.Value = Now
+
+        Try
+            Dim regKey = My.Computer.Registry.ClassesRoot.OpenSubKey("Excel.Application", False).OpenSubKey("CurVer", False)
+            PCInfo.ExcelInstalled = True
+
+
+
+        Catch ex As Exception
+            PCInfo.ExcelInstalled = False
+        End Try
+        btnEODBSave.Enabled = PCInfo.ExcelInstalled
+        btnSaveToXml.Enabled = Not (PCInfo.ExcelInstalled)
+        btnXmltoWorkbook.Enabled = PCInfo.ExcelInstalled
+        If PCInfo.ExcelInstalled Then
+            gbEODBExcel.Text = "Excel is installed"
+        Else
+            gbEODBExcel.Text = "Excel is not installed"
+        End If
 
 #If DEBUG Then
         Variables.LoggedIn = True
@@ -110,13 +128,13 @@ Public Class FormMain
         nudDRInvNo.Value = 11564
         dtpEODB.Value = "07-07-2022"
 #Else
+        Variables.LoggedIn = False
         tbTest1.Visible = False
         tbTest2.Visible = False
         tbTest3.Visible = False
         tbMLTest1.Visible = False
         btnTest.Visible = False
-        tbMLDRTest.visible = false
-        'tcSTA.TabPages.Remove(tpEODB)
+        tbMLDRTest.visible = False
 
 #End If
 
@@ -1004,4 +1022,6 @@ Public Class FormMain
         EODBTroubleshooting.releaseObject(xlApp)
 
     End Sub
+
+
 End Class

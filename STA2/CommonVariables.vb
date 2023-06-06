@@ -29,4 +29,6 @@ Public Structure PCInfo
     Public Shared IsAdvantageInstalled As Boolean = True
     Public Shared AreServicesInstalled As Boolean = True
     Public Shared ValidDatabase As Boolean = True
+    Public Shared ExcelInstalled As Boolean = False
+
 End Structure
