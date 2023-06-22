@@ -46,7 +46,7 @@ Public Class EODBTroubleshooting
                 Next
             Next
         Catch ex As Exception
-
+            ErrorHandler.WarningHandler(ex.Message)
         End Try
 
 

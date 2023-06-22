@@ -126,7 +126,7 @@ Public Class FormMain
         Variables.LoggedIn = True
         dgvPFSConnect.Visible = Variables.LoggedIn
         nudDRInvNo.Value = 11564
-        dtpEODB.Value = "07-07-2022"
+        dtpEODB.Value = "05-17-2023"
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
