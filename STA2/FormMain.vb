@@ -1023,5 +1023,22 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Dim dbDataPumps As New DataSet
 
+        Try
+            dbDataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps_Description)
+            For index = 0 To dbDataPumps.Tables(0).Rows.Count - 1
+                dgvDatapumpDescriptions.Rows.Add(dbDataPumps.Tables(0).Rows(index).ItemArray)
+            Next
+            dgvDatapumpDescriptions.Refresh()
+
+        Catch ex As Exception
+
+            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
+            PCInfo.ValidDatabase = False
+
+        End Try
+
+    End Sub
 End Class

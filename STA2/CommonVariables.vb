@@ -32,3 +32,7 @@ Public Structure PCInfo
     Public Shared ExcelInstalled As Boolean = False
 
 End Structure
+
+Public Class DataPumpInfo
+
+End Class
