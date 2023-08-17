@@ -136,7 +136,3 @@ Public Class MessageLogFilters
 
 
 End Class
-Public Class DatapumpQueries
-    Public Shared Datapumps_Description As String = "SELECT Description FROM DataPumps"
-
-End Class

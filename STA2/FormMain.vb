@@ -127,6 +127,7 @@ Public Class FormMain
         dgvPFSConnect.Visible = Variables.LoggedIn
         nudDRInvNo.Value = 11564
         dtpEODB.Value = "05-17-2023"
+        tcSTA.SelectedTab = tpDatapump
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
@@ -1024,14 +1025,22 @@ Public Class FormMain
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Dim dbDataPumps As New DataSet
+
 
         Try
-            dbDataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps_Description)
-            For index = 0 To dbDataPumps.Tables(0).Rows.Count - 1
-                dgvDatapumpDescriptions.Rows.Add(dbDataPumps.Tables(0).Rows(index).ItemArray)
-            Next
-            dgvDatapumpDescriptions.Refresh()
+            'Loading Datapumps Table
+            DataPumpStorage.DataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps)
+            dgvDatapumps.DataSource = DataPumpStorage.DataPumps.Tables(0)
+
+            'Loading DatapumpCredemtials table
+            DataPumpStorage.DataPumpCredentials = DBConnector.dbQuery(DatapumpQueries.DataPumpCredentials)
+            cbDataPumpCredentials.DataSource = DataPumpStorage.DataPumpCredentials.Tables(0)
+            cbDataPumpCredentials.DisplayMember = "Description"
+
+            'Loading DatapumpCredemtials table
+            DataPumpStorage.DataPumpDestinations = DBConnector.dbQuery(DatapumpQueries.DataPumpDestinations)
+            cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
+            cbDataPumpDestinations.DisplayMember = "Description"
 
         Catch ex As Exception
 
@@ -1039,6 +1048,20 @@ Public Class FormMain
             PCInfo.ValidDatabase = False
 
         End Try
+
+    End Sub
+
+    Private Sub cbDataPumpCredentials_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDataPumpCredentials.SelectedIndexChanged
+        Dim rowData As DataRowView = cbDataPumpCredentials.SelectedItem
+
+        tbDataPumpCredsCredentialID.Text = rowData.Row(0).ToString
+
+    End Sub
+
+    Private Sub cbDataPumpDestinations_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDataPumpDestinations.SelectedIndexChanged
+        Dim rowData As DataRowView = cbDataPumpDestinations.SelectedItem
+
+        tbDataPumpDestinationsID.Text = rowData.Row(0).ToString
 
     End Sub
 End Class

@@ -33,6 +33,3 @@ Public Structure PCInfo
 
 End Structure
 
-Public Class DataPumpInfo
-
-End Class
