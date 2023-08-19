@@ -1062,6 +1062,11 @@ Public Class FormMain
         Dim rowData As DataRowView = cbDataPumpDestinations.SelectedItem
 
         tbDataPumpDestinationsID.Text = rowData.Row(0).ToString
+        Dim copyDataSet As DataSet = DataPumpStorage.DataPumps.Clone
+
+        dgvDPTest.DataSource = copyDataSet.Tables(0)
+        copyDataSet.Tables(0).Rows.Add(Guid.NewGuid, "Test", False, "Query", "Filename", "00:00", 1440, True, Nothing, Nothing, 0, rowData.Row(0).ToString)
+
 
     End Sub
 End Class

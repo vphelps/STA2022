@@ -241,6 +241,7 @@ Partial Class FormMain
         Me.lblDataPumpCredentials = New System.Windows.Forms.Label()
         Me.lblDataPumpDestinations = New System.Windows.Forms.Label()
         Me.tbDataPumpDestinationsID = New System.Windows.Forms.TextBox()
+        Me.dgvDPTest = New System.Windows.Forms.DataGridView()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -300,6 +301,7 @@ Partial Class FormMain
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gnAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        CType(Me.dgvDPTest, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'btnExit
@@ -2279,6 +2281,7 @@ Partial Class FormMain
         '
         'tpDatapump
         '
+        Me.tpDatapump.Controls.Add(Me.dgvDPTest)
         Me.tpDatapump.Controls.Add(Me.lblDataPumpDestinations)
         Me.tpDatapump.Controls.Add(Me.lblDataPumpCredentials)
         Me.tpDatapump.Controls.Add(Me.tbDataPumpDestinationsID)
@@ -2592,6 +2595,14 @@ Partial Class FormMain
         Me.tbDataPumpDestinationsID.Size = New System.Drawing.Size(100, 20)
         Me.tbDataPumpDestinationsID.TabIndex = 3
         '
+        'dgvDPTest
+        '
+        Me.dgvDPTest.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvDPTest.Location = New System.Drawing.Point(6, 162)
+        Me.dgvDPTest.Name = "dgvDPTest"
+        Me.dgvDPTest.Size = New System.Drawing.Size(1041, 150)
+        Me.dgvDPTest.TabIndex = 5
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2693,6 +2704,7 @@ Partial Class FormMain
         Me.gnAdvApps.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        CType(Me.dgvDPTest, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2914,4 +2926,5 @@ Partial Class FormMain
     Friend WithEvents lblDataPumpDestinations As Label
     Friend WithEvents lblDataPumpCredentials As Label
     Friend WithEvents tbDataPumpDestinationsID As TextBox
+    Friend WithEvents dgvDPTest As DataGridView
 End Class
