@@ -1025,8 +1025,6 @@ Public Class FormMain
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-
         Try
             'Loading Datapumps Table
             DataPumpStorage.DataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps)
@@ -1049,6 +1047,9 @@ Public Class FormMain
 
         End Try
 
+
+
+
     End Sub
 
     Private Sub cbDataPumpCredentials_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDataPumpCredentials.SelectedIndexChanged
@@ -1065,8 +1066,68 @@ Public Class FormMain
         Dim copyDataSet As DataSet = DataPumpStorage.DataPumps.Clone
 
         dgvDPTest.DataSource = copyDataSet.Tables(0)
-        copyDataSet.Tables(0).Rows.Add(Guid.NewGuid, "Test", False, "Query", "Filename", "00:00", 1440, True, Nothing, Nothing, 0, rowData.Row(0).ToString)
+        copyDataSet.Tables(0).Rows.Add(Guid.NewGuid, "StaTest", False, "Query", "Filename", "00:00", 1440, True, Nothing, Nothing, 0, rowData.Row(0).ToString)
 
 
     End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Dim dbResult As DataSet
+        Dim query As String = String.Format("SELECT * FROM DataPumps WHERE Description LIKE '{0}", "%test%'")
+        dbResult = DBConnector.dbQuery(query)
+        dgvDPTest.DataSource = dbResult.Tables(0)
+    End Sub
+
+    Private Sub btDpEdit_Click(sender As Object, e As EventArgs) Handles btDpEdit.Click, dgvDatapumps.CellDoubleClick
+        Dim frmDataPump As New FormDataPump
+
+        frmDataPump.ShowDialog()
+
+    End Sub
+
+    Private Sub tpDatapump_Enter(sender As Object, e As EventArgs) Handles tpDatapump.Enter
+        Try
+            'Loading Datapumps Table
+            DataPumpStorage.DataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps)
+            dgvDatapumps.DataSource = DataPumpStorage.DataPumps.Tables(0)
+
+            'Loading DatapumpCredemtials table
+            DataPumpStorage.DataPumpCredentials = DBConnector.dbQuery(DatapumpQueries.DataPumpCredentials)
+            cbDataPumpCredentials.DataSource = DataPumpStorage.DataPumpCredentials.Tables(0)
+            cbDataPumpCredentials.DisplayMember = "Description"
+
+            'Loading DatapumpCredemtials table
+            DataPumpStorage.DataPumpDestinations = DBConnector.dbQuery(DatapumpQueries.DataPumpDestinations)
+            cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
+            cbDataPumpDestinations.DisplayMember = "Description"
+
+        Catch ex As Exception
+
+            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
+            PCInfo.ValidDatabase = False
+
+        End Try
+
+
+    End Sub
+
+    Private Sub dgvDatapumps_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvDatapumps.CellClick
+        Dim rowIndex As Integer = dgvDatapumps.CurrentCell.RowIndex
+        tbTest1.Text = dgvDatapumps.CurrentCell.RowIndex
+        tbTest2.Text = dgvDatapumps.Rows.Item(dgvDatapumps.CurrentCell.RowIndex).Cells.Item(1).Value
+        tbTest3.Text = dgvDatapumps.Columns("Description").Index
+
+
+        DataPump.DataPumpId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DataPumpId").Index).Value
+        DataPump.Description = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Description").Index).Value
+        DataPump.IsStandard = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IsStandard").Index).Value
+        DataPump.DestinationId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DestinationId").Index).Value
+        DataPump.Query = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Query").Index).Value
+        DataPump.FileName = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("FileName").Index).Value
+        DataPump.StartTime = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+        DataPump.Interval = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IntervalMinutes").Index).Value
+        DataPump.Enabled = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Enabled").Index).Value
+        tbTest3.Text = DataPump.Interval.ToString
+    End Sub
+
 End Class
