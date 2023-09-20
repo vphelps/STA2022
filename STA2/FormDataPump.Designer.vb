@@ -40,12 +40,15 @@ Partial Class FormDataPump
         Me.tbInterval = New System.Windows.Forms.TextBox()
         Me.lblEnabled = New System.Windows.Forms.Label()
         Me.tbEnabled = New System.Windows.Forms.TextBox()
+        Me.btnFrmDpSave = New System.Windows.Forms.Button()
+        Me.btnFrmDpCancel = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'tbDataPumpId
         '
         Me.tbDataPumpId.Location = New System.Drawing.Point(99, 33)
         Me.tbDataPumpId.Name = "tbDataPumpId"
+        Me.tbDataPumpId.ReadOnly = True
         Me.tbDataPumpId.Size = New System.Drawing.Size(514, 20)
         Me.tbDataPumpId.TabIndex = 0
         '
@@ -188,11 +191,32 @@ Partial Class FormDataPump
         Me.tbEnabled.Size = New System.Drawing.Size(100, 20)
         Me.tbEnabled.TabIndex = 15
         '
+        'btnFrmDpSave
+        '
+        Me.btnFrmDpSave.Location = New System.Drawing.Point(510, 461)
+        Me.btnFrmDpSave.Name = "btnFrmDpSave"
+        Me.btnFrmDpSave.Size = New System.Drawing.Size(75, 23)
+        Me.btnFrmDpSave.TabIndex = 16
+        Me.btnFrmDpSave.Text = "Save"
+        Me.btnFrmDpSave.UseVisualStyleBackColor = True
+        '
+        'btnFrmDpCancel
+        '
+        Me.btnFrmDpCancel.Location = New System.Drawing.Point(623, 461)
+        Me.btnFrmDpCancel.Name = "btnFrmDpCancel"
+        Me.btnFrmDpCancel.Size = New System.Drawing.Size(75, 23)
+        Me.btnFrmDpCancel.TabIndex = 16
+        Me.btnFrmDpCancel.Text = "Cancel"
+        Me.btnFrmDpCancel.UseVisualStyleBackColor = True
+        '
         'FormDataPump
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.CancelButton = Me.btnFrmDpCancel
         Me.ClientSize = New System.Drawing.Size(800, 534)
+        Me.Controls.Add(Me.btnFrmDpCancel)
+        Me.Controls.Add(Me.btnFrmDpSave)
         Me.Controls.Add(Me.tbEnabled)
         Me.Controls.Add(Me.lblEnabled)
         Me.Controls.Add(Me.tbInterval)
@@ -237,4 +261,6 @@ Partial Class FormDataPump
     Friend WithEvents tbInterval As TextBox
     Friend WithEvents lblEnabled As Label
     Friend WithEvents tbEnabled As TextBox
+    Friend WithEvents btnFrmDpSave As Button
+    Friend WithEvents btnFrmDpCancel As Button
 End Class

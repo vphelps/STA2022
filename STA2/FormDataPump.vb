@@ -11,4 +11,15 @@
         tbEnabled.Text = DataPump.Enabled.ToString
 
     End Sub
+
+    Private Sub btnFrmDpCancel_Click(sender As Object, e As EventArgs) Handles btnFrmDpCancel.Click
+        Me.DialogResult = Windows.Forms.DialogResult.Cancel
+        Me.Close()
+    End Sub
+
+    Private Sub btnFrmDpSave_Click(sender As Object, e As EventArgs) Handles btnFrmDpSave.Click
+        Me.DialogResult = Windows.Forms.DialogResult.OK
+        Me.Close()
+
+    End Sub
 End Class

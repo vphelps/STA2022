@@ -1082,7 +1082,6 @@ Public Class FormMain
         Dim frmDataPump As New FormDataPump
 
         frmDataPump.ShowDialog()
-
     End Sub
 
     Private Sub tpDatapump_Enter(sender As Object, e As EventArgs) Handles tpDatapump.Enter
@@ -1100,6 +1099,22 @@ Public Class FormMain
             DataPumpStorage.DataPumpDestinations = DBConnector.dbQuery(DatapumpQueries.DataPumpDestinations)
             cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
             cbDataPumpDestinations.DisplayMember = "Description"
+
+            dgvDatapumps.Item(0, 0).Selected = True
+
+            tbTest1.Text = dgvDatapumps.SelectedCells.Item(0).RowIndex
+            Dim rowIndex As Integer = dgvDatapumps.SelectedCells.Item(0).RowIndex
+
+            DataPump.DataPumpId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DataPumpId").Index).Value
+            DataPump.Description = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Description").Index).Value
+            DataPump.IsStandard = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IsStandard").Index).Value
+            DataPump.DestinationId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DestinationId").Index).Value
+            DataPump.Query = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Query").Index).Value
+            DataPump.FileName = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("FileName").Index).Value
+            DataPump.StartTime = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+            DataPump.Interval = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IntervalMinutes").Index).Value
+            DataPump.Enabled = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Enabled").Index).Value
+            tbTest3.Text = DataPump.Interval.ToString
 
         Catch ex As Exception
 
