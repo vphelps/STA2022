@@ -1,6 +1,8 @@
 ﻿Imports System.Data.OleDb
 Imports System.Data.SqlClient
+Imports System.Reflection
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip
 
 Public Class DataPumpStorage
     Public Shared DataPumpCredentials As New DataSet
@@ -14,28 +16,31 @@ Public Class DatapumpQueries
     Public Shared Datapumps As String = "SELECT * FROM DataPumps"
     Public Shared DataPumpCredentials As String = "SELECT * FROM DataPumpCredentials"
     Public Shared DataPumpDestinations As String = "SELECT * FROM DataPumpDestinations"
+    Public Shared DataPumpInsert As String = "INSERT INTO DataPumps(DataPumpId, Description, IsStandard, Query, FileName, StartTime, IntervalMinutes, Enabled, DestinationId)
+	VALUES(NEWID(),@Description,@IsStandard,@Query, @FileName, @StartTime, @IntervalMinutes, @Enabled, @DestinationId)"
+    Public Shared DataPumpDelete As String = "DELETE FROM DataPumps WHERE DataPumpId = '{0}'"
     Public Shared DataPumpMerge As String =
         "MERGE INTO DataPumps AS Dest
 USING (
-SELECT [DataPumpId], [Description], [IsStandard], [Query], [FileName], [StartTime], [IntervalMinutes], [Enabled], [LastCompletionDateTime], [LastFailureDateTime], [ConsecutiveFailureCount], [DestinationId] FROM DataPumps
+SELECT DataPumpId, Description, IsStandard, Query, FileName, StartTime, IntervalMinutes, Enabled, DestinationId 
+FROM DataPumps WHERE DataPumpId = @DataPumpId
 
-) AS Src ([DataPumpId], [Description], [IsStandard], [Query], [FileName], [StartTime], [IntervalMinutes], [Enabled], [LastCompletionDateTime], [LastFailureDateTime], [ConsecutiveFailureCount], [DestinationId])
-ON src.DataPumpId = Dest.DataPumpId
+) AS Src (DataPumpId, Description, IsStandard, Query, FileName, StartTime, IntervalMinutes, Enabled, DestinationId)
+ON @DataPumpID = Dest.DataPumpId
 
 WHEN MATCHED THEN
 UPDATE SET
-	DataPumpID = '{0}',
-	Description = '{1}',
-	IsStandard = {2},
-	Query = '{3}',
-	FileName= '{4}',
-	StartTime = '{5}',
-	IntervalMinutes ={6},
-	Enabled = {7},
-	DestinationId = {8}
+	Description = @Description,
+	IsStandard = @IsStandard,
+	Query = @Query,
+	FileName= @FileName,
+	StartTime = @StartTime,
+	IntervalMinutes =@IntervalMinutes,
+	Enabled = @Enabled,
+	DestinationId = @DestinationId
 WHEN NOT MATCHED THEN 
-	INSERT ([DataPumpId], [Description], [IsStandard], [Query], [FileName], [StartTime], [IntervalMinutes], [Enabled], [LastCompletionDateTime], [LastFailureDateTime], [ConsecutiveFailureCount], [DestinationId])
-	VALUES (NEWID(),'{1}','{2},'{3}', '{4}', '{5}',{6}, {7}, NULL, NULL, 0, {8})
+	INSERT (DataPumpId, Description, IsStandard, Query, FileName, StartTime, IntervalMinutes, Enabled, DestinationId)
+	VALUES (NEWID(),@Description,@IsStandard,@Query, @FileName, @StartTime, @IntervalMinutes, @Enabled, @DestinationId)
 ;
 "
 
@@ -90,8 +95,8 @@ Public Class DataPumpHelpers
                 DataPump.DestinationId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DestinationId").Index).Value
                 DataPump.Query = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Query").Index).Value
                 DataPump.FileName = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("FileName").Index).Value
-                Time = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
-                DataPump.StartTime = Time.ToString
+                time = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+                DataPump.StartTime = time.ToString
                 DataPump.Interval = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IntervalMinutes").Index).Value
                 DataPump.Enabled = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Enabled").Index).Value
 
@@ -118,43 +123,87 @@ Public Class DataPumpHelpers
         Dim QueryTemp As String = Query
         QueryTemp = QueryTemp.Replace("'", "''")
         SqlQuery = String.Format(DatapumpQueries.DataPumpMerge, DataPumpId, Description, IsStandard, QueryTemp, FileName, StartTime, Interval, Enabled, DestinationId)
+        Dim builder As New SqlConnectionStringBuilder
 
-        Using cmd As New SqlCommand("
-MERGE INTO DataPumps AS Dest
-USING (
-SELECT [DataPumpId], [Description], [IsStandard], [Query], [FileName], [StartTime], [IntervalMinutes], [Enabled], [LastCompletionDateTime], [LastFailureDateTime], [ConsecutiveFailureCount], [DestinationId] FROM DataPumps
+        If DataPumpId = Nothing Then
+            Dim DataPumpInsert As String = "INSERT INTO DataPumps(DataPumpId, Description, IsStandard, Query, FileName, StartTime, IntervalMinutes, Enabled, DestinationId)
+	VALUES(NEWID(),@Description,@IsStandard,@Query, @FileName, @StartTime, @IntervalMinutes, @Enabled, @DestinationId)"
 
-) AS Src ([DataPumpId], [Description], [IsStandard], [Query], [FileName], [StartTime], [IntervalMinutes], [Enabled], [LastCompletionDateTime], [LastFailureDateTime], [ConsecutiveFailureCount], [DestinationId])
-ON src.DataPumpId = Dest.DataPumpId
+            builder.Add("Data Source", My.Settings.Server)
+            builder("Integrated Security") = False
+            builder.Add("Initial Catalog", My.Settings.Database)
+            builder.Add("UID", My.Settings.UserID)
+            builder.Add("PWD", My.Settings.Password)
+            Dim cn As New SqlConnection(builder.ConnectionString)
+            cn.Open()
+            If DataPumpId = Nothing Then MsgBox("Nothing")
+            Using cmd As New SqlCommand(DatapumpQueries.DataPumpInsert)
+                cmd.Connection = cn
 
-WHEN MATCHED THEN
-UPDATE SET
-	DataPumpID = @DataPumpId,
-	Description = @Description,
-	IsStandard = 0,
-	Query = 'Query',
-	FileName= 'FileName',
-	StartTime = 'StartTime',
-	IntervalMinutes =0,
-	Enabled = 0,
-	LastCompletionDateTime = 'LastCompletionDateTime',
-	LastFailureDateTime ='LastFailureDateTime',
-	ConsecutiveFailureCount = 0,
-	DestinationId = 0
-WHEN NOT MATCHED THEN 
-	INSERT ([DataPumpId], [Description], [IsStandard], [Query], [FileName], [StartTime], [IntervalMinutes], [Enabled], [LastCompletionDateTime], [LastFailureDateTime], [ConsecutiveFailureCount], [DestinationId])
-	VALUES (NEWID(),'Description','IsStandard','Query', 'FileName', 'StartTime', 'IntervalMinutes', 'Enabled', 'LastCompletionDateTime', 'LastFailureDateTime', 'ConsecutiveFailureCount', 'DestinationId')
-;
-")
-            cmd.Parameters.Add("@DataPumpId", SqlDbType.UniqueIdentifier).Value = DataPumpId
-            cmd.Parameters.Add("@Description", SqlDbType.VarChar).Value = Description
+                cmd.Parameters.Add("@Description", SqlDbType.VarChar).Value = Description
+                cmd.Parameters.Add("@IsStandard", SqlDbType.Int).Value = IsStandard
+                cmd.Parameters.Add("@Query", SqlDbType.VarChar).Value = Query
+                cmd.Parameters.Add("@FileName", SqlDbType.VarChar).Value = FileName
+                cmd.Parameters.Add("@StartTime", SqlDbType.Time).Value = StartTime
+                cmd.Parameters.Add("@IntervalMinutes", SqlDbType.Int).Value = Interval
+                cmd.Parameters.Add("@Enabled", SqlDbType.Int).Value = Enabled
+                cmd.Parameters.Add("@DestinationId", SqlDbType.Int).Value = DestinationId
+                cmd.ExecuteNonQuery()
 
-            FormMain.tbMLTest1.Text = cmd.CommandText
+                cn.Close()
+            End Using
 
+        Else
+
+            builder.Add("Data Source", My.Settings.Server)
+            builder("Integrated Security") = False
+            builder.Add("Initial Catalog", My.Settings.Database)
+            builder.Add("UID", My.Settings.UserID)
+            builder.Add("PWD", My.Settings.Password)
+            Dim cn As New SqlConnection(builder.ConnectionString)
+            cn.Open()
+            If DataPumpId = Nothing Then MsgBox("Nothing")
+            Using cmd As New SqlCommand(DatapumpQueries.DataPumpMerge)
+                cmd.Connection = cn
+
+                cmd.Parameters.Add("@DataPumpId", SqlDbType.UniqueIdentifier).Value = If(DataPumpId = Nothing, CObj(DBNull.Value), DataPumpId)
+                cmd.Parameters.Add("@Description", SqlDbType.VarChar).Value = Description
+                cmd.Parameters.Add("@IsStandard", SqlDbType.Int).Value = IsStandard
+                cmd.Parameters.Add("@Query", SqlDbType.VarChar).Value = Query
+                cmd.Parameters.Add("@FileName", SqlDbType.VarChar).Value = FileName
+                cmd.Parameters.Add("@StartTime", SqlDbType.Time).Value = StartTime
+                cmd.Parameters.Add("@IntervalMinutes", SqlDbType.Int).Value = Interval
+                cmd.Parameters.Add("@Enabled", SqlDbType.Int).Value = Enabled
+                cmd.Parameters.Add("@DestinationId", SqlDbType.Int).Value = DestinationId
+                cmd.ExecuteNonQuery()
+
+                cn.Close()
+            End Using
+        End If
+
+    End Sub
+
+    Public Shared Sub DeleteDataPump(DataPumpId As Guid)
+        Dim builder As New SqlConnectionStringBuilder
+
+        builder.Add("Data Source", My.Settings.Server)
+        builder("Integrated Security") = False
+            builder.Add("Initial Catalog", My.Settings.Database)
+            builder.Add("UID", My.Settings.UserID)
+            builder.Add("PWD", My.Settings.Password)
+            Dim cn As New SqlConnection(builder.ConnectionString)
+            cn.Open()
+            If DataPumpId = Nothing Then MsgBox("Nothing")
+
+        Using cmd As New SqlCommand(String.Format(DatapumpQueries.DataPumpDelete, DataPumpId.ToString))
+            MsgBox(cmd.CommandText)
+            cmd.Connection = cn
+
+            cmd.ExecuteNonQuery()
+
+            cn.Close()
         End Using
-        'DBConnector.CreateCommand(SqlQuery)
 
-        'MsgBox(SqlQuery)
 
     End Sub
 End Class

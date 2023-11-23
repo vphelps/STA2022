@@ -11,7 +11,11 @@ Public Class FormDataPump
         tbStartTime.Text = DataPump.StartTime
         tbInterval.Text = DataPump.Interval
         tbEnabled.Text = DataPump.Enabled.ToString
+        If DataPump.DataPumpId = Nothing Then
+            tbDataPumpId.Visible = False
+            lblDataPumpId.Visible = False
 
+        End If
     End Sub
 
     Private Sub btnDpCancel_Click(sender As Object, e As EventArgs) Handles btnDpCancel.Click

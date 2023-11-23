@@ -7,6 +7,8 @@ Imports System.ServiceProcess
 Imports STA2.AppData
 Imports STA2.NetworkData
 Imports System.ComponentModel
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
+Imports System.Web
 
 Public Class FormMain
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
@@ -1084,6 +1086,8 @@ Public Class FormMain
 
         frmDataPump.ShowDialog()
         tbTest3.Text = DataPump.IsStandard.ToString
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
+
     End Sub
 
     Private Sub tpDatapump_Enter(sender As Object, e As EventArgs) Handles tpDatapump.Enter
@@ -1117,4 +1121,31 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub btnDpNew_Click(sender As Object, e As EventArgs) Handles btnDpNew.Click
+        Dim frmDataPump As New FormDataPump
+        DataPump.DataPumpId = Nothing
+        DataPump.Description = ""
+        DataPump.IsStandard = 0
+        DataPump.DestinationId = 0
+        DataPump.Query = ""
+        DataPump.FileName = ""
+        DataPump.StartTime = ""
+        DataPump.Interval = 0
+        DataPump.Enabled = 0
+        frmDataPump.ShowDialog()
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
+
+    End Sub
+
+    Private Sub btDpDelete_Click(sender As Object, e As EventArgs) Handles btDpDelete.Click
+        Dim MsgBoxAnswer As Object
+        Dim strTemp As String = DataPump.Description
+        MsgBoxAnswer = MsgBox(String.Format("Warning you are about to delete this DataPump:  {0}", DataPump.Description), MsgBoxStyle.YesNo, "WARNING:  Deleteing Datapump")
+        If MsgBoxAnswer = MsgBoxResult.Yes Then
+            DataPumpHelpers.DeleteDataPump(DataPump.DataPumpId)
+            MsgBox(String.Format("Datapump {0} has been deleted", strTemp), MsgBoxStyle.OkOnly)
+
+        End If
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
+    End Sub
 End Class
