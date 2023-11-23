@@ -345,7 +345,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 710)
-        Me.SplitContainer1.SplitterDistance = 554
+        Me.SplitContainer1.SplitterDistance = 556
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -365,7 +365,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 550)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 552)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -379,7 +379,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 524)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 526)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1222,7 +1222,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 524)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 526)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1368,7 +1368,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 524)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 526)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1383,7 +1383,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 493)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 495)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1475,7 +1475,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 524)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 526)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1563,7 +1563,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 394)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 396)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1735,7 +1735,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 524)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 526)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1809,7 +1809,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 524)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 526)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -2003,7 +2003,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 524)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 526)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2106,7 +2106,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 524)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 526)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2162,7 +2162,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 524)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 526)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2297,7 +2297,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 524)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 526)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True

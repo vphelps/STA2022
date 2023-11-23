@@ -40,6 +40,8 @@ Partial Class FormDataPump
         Me.tbInterval = New System.Windows.Forms.TextBox()
         Me.lblEnabled = New System.Windows.Forms.Label()
         Me.tbEnabled = New System.Windows.Forms.TextBox()
+        Me.btnDpSave = New System.Windows.Forms.Button()
+        Me.btnDpCancel = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'tbDataPumpId
@@ -188,11 +190,31 @@ Partial Class FormDataPump
         Me.tbEnabled.Size = New System.Drawing.Size(100, 20)
         Me.tbEnabled.TabIndex = 15
         '
+        'btnDpSave
+        '
+        Me.btnDpSave.Location = New System.Drawing.Point(569, 466)
+        Me.btnDpSave.Name = "btnDpSave"
+        Me.btnDpSave.Size = New System.Drawing.Size(75, 23)
+        Me.btnDpSave.TabIndex = 16
+        Me.btnDpSave.Text = "Save"
+        Me.btnDpSave.UseVisualStyleBackColor = True
+        '
+        'btnDpCancel
+        '
+        Me.btnDpCancel.Location = New System.Drawing.Point(674, 466)
+        Me.btnDpCancel.Name = "btnDpCancel"
+        Me.btnDpCancel.Size = New System.Drawing.Size(75, 23)
+        Me.btnDpCancel.TabIndex = 17
+        Me.btnDpCancel.Text = "Cancel"
+        Me.btnDpCancel.UseVisualStyleBackColor = True
+        '
         'FormDataPump
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 534)
+        Me.Controls.Add(Me.btnDpCancel)
+        Me.Controls.Add(Me.btnDpSave)
         Me.Controls.Add(Me.tbEnabled)
         Me.Controls.Add(Me.lblEnabled)
         Me.Controls.Add(Me.tbInterval)
@@ -237,4 +259,6 @@ Partial Class FormDataPump
     Friend WithEvents tbInterval As TextBox
     Friend WithEvents lblEnabled As Label
     Friend WithEvents tbEnabled As TextBox
+    Friend WithEvents btnDpSave As Button
+    Friend WithEvents btnDpCancel As Button
 End Class

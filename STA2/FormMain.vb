@@ -6,6 +6,7 @@ Imports System.Net.NetworkInformation
 Imports System.ServiceProcess
 Imports STA2.AppData
 Imports STA2.NetworkData
+Imports System.ComponentModel
 
 Public Class FormMain
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
@@ -1082,41 +1083,24 @@ Public Class FormMain
         Dim frmDataPump As New FormDataPump
 
         frmDataPump.ShowDialog()
-
+        tbTest3.Text = DataPump.IsStandard.ToString
     End Sub
 
     Private Sub tpDatapump_Enter(sender As Object, e As EventArgs) Handles tpDatapump.Enter
-        Try
-            'Loading Datapumps Table
-            DataPumpStorage.DataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps)
-            dgvDatapumps.DataSource = DataPumpStorage.DataPumps.Tables(0)
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
 
-            'Loading DatapumpCredemtials table
-            DataPumpStorage.DataPumpCredentials = DBConnector.dbQuery(DatapumpQueries.DataPumpCredentials)
-            cbDataPumpCredentials.DataSource = DataPumpStorage.DataPumpCredentials.Tables(0)
-            cbDataPumpCredentials.DisplayMember = "Description"
+        cbDataPumpCredentials.DataSource = DataPumpStorage.DataPumpCredentials.Tables(0)
+        cbDataPumpCredentials.DisplayMember = "Description"
 
-            'Loading DatapumpCredemtials table
-            DataPumpStorage.DataPumpDestinations = DBConnector.dbQuery(DatapumpQueries.DataPumpDestinations)
-            cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
-            cbDataPumpDestinations.DisplayMember = "Description"
-
-        Catch ex As Exception
-
-            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
-            PCInfo.ValidDatabase = False
-
-        End Try
+        cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
+        cbDataPumpDestinations.DisplayMember = "Description"
 
 
     End Sub
 
     Private Sub dgvDatapumps_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvDatapumps.CellClick
+        Dim time As TimeSpan
         Dim rowIndex As Integer = dgvDatapumps.CurrentCell.RowIndex
-        tbTest1.Text = dgvDatapumps.CurrentCell.RowIndex
-        tbTest2.Text = dgvDatapumps.Rows.Item(dgvDatapumps.CurrentCell.RowIndex).Cells.Item(1).Value
-        tbTest3.Text = dgvDatapumps.Columns("Description").Index
-
 
         DataPump.DataPumpId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DataPumpId").Index).Value
         DataPump.Description = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Description").Index).Value
@@ -1124,10 +1108,13 @@ Public Class FormMain
         DataPump.DestinationId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DestinationId").Index).Value
         DataPump.Query = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Query").Index).Value
         DataPump.FileName = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("FileName").Index).Value
-        DataPump.StartTime = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+        'DataPump.StartTime = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+        time = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+        DataPump.StartTime = time.ToString
         DataPump.Interval = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IntervalMinutes").Index).Value
         DataPump.Enabled = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Enabled").Index).Value
-        tbTest3.Text = DataPump.Interval.ToString
+        tbTest1.Text = DataPump.StartTime
+
     End Sub
 
 End Class
