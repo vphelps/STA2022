@@ -29,7 +29,6 @@ Partial Class FormDataPump
         Me.lblIsStandard = New System.Windows.Forms.Label()
         Me.tbIsStandard = New System.Windows.Forms.TextBox()
         Me.lblDestinationId = New System.Windows.Forms.Label()
-        Me.tbDestinationId = New System.Windows.Forms.TextBox()
         Me.lblQuery = New System.Windows.Forms.Label()
         Me.tbQuery = New System.Windows.Forms.TextBox()
         Me.lblFileName = New System.Windows.Forms.Label()
@@ -42,7 +41,10 @@ Partial Class FormDataPump
         Me.tbEnabled = New System.Windows.Forms.TextBox()
         Me.btnDpSave = New System.Windows.Forms.Button()
         Me.btnDpCancel = New System.Windows.Forms.Button()
-        Me.lbDataPumpDestinations = New System.Windows.Forms.ListBox()
+        Me.dgvDataPumpDestinations = New System.Windows.Forms.DataGridView()
+        Me.TextBox1 = New System.Windows.Forms.TextBox()
+        Me.TextBox2 = New System.Windows.Forms.TextBox()
+        CType(Me.dgvDataPumpDestinations, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'tbDataPumpId
@@ -96,18 +98,11 @@ Partial Class FormDataPump
         'lblDestinationId
         '
         Me.lblDestinationId.AutoSize = True
-        Me.lblDestinationId.Location = New System.Drawing.Point(33, 156)
+        Me.lblDestinationId.Location = New System.Drawing.Point(289, 113)
         Me.lblDestinationId.Name = "lblDestinationId"
         Me.lblDestinationId.Size = New System.Drawing.Size(69, 13)
         Me.lblDestinationId.TabIndex = 13
         Me.lblDestinationId.Text = "DestinationId"
-        '
-        'tbDestinationId
-        '
-        Me.tbDestinationId.Location = New System.Drawing.Point(111, 153)
-        Me.tbDestinationId.Name = "tbDestinationId"
-        Me.tbDestinationId.Size = New System.Drawing.Size(62, 20)
-        Me.tbDestinationId.TabIndex = 3
         '
         'lblQuery
         '
@@ -209,20 +204,46 @@ Partial Class FormDataPump
         Me.btnDpCancel.Text = "Cancel"
         Me.btnDpCancel.UseVisualStyleBackColor = True
         '
-        'lbDataPumpDestinations
+        'dgvDataPumpDestinations
         '
-        Me.lbDataPumpDestinations.FormattingEnabled = True
-        Me.lbDataPumpDestinations.Location = New System.Drawing.Point(219, 146)
-        Me.lbDataPumpDestinations.Name = "lbDataPumpDestinations"
-        Me.lbDataPumpDestinations.Size = New System.Drawing.Size(120, 95)
-        Me.lbDataPumpDestinations.TabIndex = 19
+        Me.dgvDataPumpDestinations.AllowUserToAddRows = False
+        Me.dgvDataPumpDestinations.AllowUserToDeleteRows = False
+        Me.dgvDataPumpDestinations.AllowUserToOrderColumns = True
+        Me.dgvDataPumpDestinations.AllowUserToResizeColumns = False
+        Me.dgvDataPumpDestinations.AllowUserToResizeRows = False
+        Me.dgvDataPumpDestinations.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvDataPumpDestinations.ColumnHeadersVisible = False
+        Me.dgvDataPumpDestinations.Location = New System.Drawing.Point(381, 99)
+        Me.dgvDataPumpDestinations.MultiSelect = False
+        Me.dgvDataPumpDestinations.Name = "dgvDataPumpDestinations"
+        Me.dgvDataPumpDestinations.ReadOnly = True
+        Me.dgvDataPumpDestinations.RowHeadersVisible = False
+        Me.dgvDataPumpDestinations.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.dgvDataPumpDestinations.Size = New System.Drawing.Size(302, 142)
+        Me.dgvDataPumpDestinations.TabIndex = 19
+        '
+        'TextBox1
+        '
+        Me.TextBox1.Location = New System.Drawing.Point(399, 434)
+        Me.TextBox1.Name = "TextBox1"
+        Me.TextBox1.Size = New System.Drawing.Size(100, 20)
+        Me.TextBox1.TabIndex = 20
+        '
+        'TextBox2
+        '
+        Me.TextBox2.Location = New System.Drawing.Point(399, 475)
+        Me.TextBox2.Name = "TextBox2"
+        Me.TextBox2.Size = New System.Drawing.Size(100, 20)
+        Me.TextBox2.TabIndex = 21
         '
         'FormDataPump
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 534)
-        Me.Controls.Add(Me.lbDataPumpDestinations)
+        Me.Controls.Add(Me.TextBox2)
+        Me.Controls.Add(Me.TextBox1)
+        Me.Controls.Add(Me.dgvDataPumpDestinations)
         Me.Controls.Add(Me.btnDpCancel)
         Me.Controls.Add(Me.btnDpSave)
         Me.Controls.Add(Me.tbEnabled)
@@ -235,7 +256,6 @@ Partial Class FormDataPump
         Me.Controls.Add(Me.lblFileName)
         Me.Controls.Add(Me.tbQuery)
         Me.Controls.Add(Me.lblQuery)
-        Me.Controls.Add(Me.tbDestinationId)
         Me.Controls.Add(Me.lblDestinationId)
         Me.Controls.Add(Me.tbIsStandard)
         Me.Controls.Add(Me.lblIsStandard)
@@ -245,6 +265,7 @@ Partial Class FormDataPump
         Me.Controls.Add(Me.tbDataPumpId)
         Me.Name = "FormDataPump"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
+        CType(Me.dgvDataPumpDestinations, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -257,7 +278,6 @@ Partial Class FormDataPump
     Friend WithEvents lblIsStandard As Label
     Friend WithEvents tbIsStandard As TextBox
     Friend WithEvents lblDestinationId As Label
-    Friend WithEvents tbDestinationId As TextBox
     Friend WithEvents lblQuery As Label
     Friend WithEvents tbQuery As TextBox
     Friend WithEvents lblFileName As Label
@@ -270,5 +290,7 @@ Partial Class FormDataPump
     Friend WithEvents tbEnabled As TextBox
     Friend WithEvents btnDpSave As Button
     Friend WithEvents btnDpCancel As Button
-    Friend WithEvents lbDataPumpDestinations As ListBox
+    Friend WithEvents dgvDataPumpDestinations As DataGridView
+    Friend WithEvents TextBox1 As TextBox
+    Friend WithEvents TextBox2 As TextBox
 End Class
