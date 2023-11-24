@@ -16,6 +16,9 @@ Public Class FormDataPump
             lblDataPumpId.Visible = False
 
         End If
+
+        lbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0).Columns(0)
+
     End Sub
 
     Private Sub btnDpCancel_Click(sender As Object, e As EventArgs) Handles btnDpCancel.Click
@@ -36,5 +39,12 @@ Public Class FormDataPump
 
 
         Me.Close()
+    End Sub
+
+    Private Sub cbDataPumpDestinations_SelectedIndexChanged(sender As Object, e As EventArgs)
+        'Dim rowData As DataRowView = cbDataPumpDestinations.SelectedItem
+        'tbDestinationId.Text = cbDataPumpDestinations.FindString("Verns")
+
+        'tbDestinationId.Text = rowData.Row(0).ToString
     End Sub
 End Class

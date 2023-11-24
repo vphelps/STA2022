@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class FormDataPump
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class FormDataPump
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.tbDataPumpId = New System.Windows.Forms.TextBox()
         Me.tbDescription = New System.Windows.Forms.TextBox()
@@ -42,6 +42,7 @@ Partial Class FormDataPump
         Me.tbEnabled = New System.Windows.Forms.TextBox()
         Me.btnDpSave = New System.Windows.Forms.Button()
         Me.btnDpCancel = New System.Windows.Forms.Button()
+        Me.lbDataPumpDestinations = New System.Windows.Forms.ListBox()
         Me.SuspendLayout()
         '
         'tbDataPumpId
@@ -64,7 +65,7 @@ Partial Class FormDataPump
         Me.lblDataPumpId.Location = New System.Drawing.Point(33, 36)
         Me.lblDataPumpId.Name = "lblDataPumpId"
         Me.lblDataPumpId.Size = New System.Drawing.Size(66, 13)
-        Me.lblDataPumpId.TabIndex = 2
+        Me.lblDataPumpId.TabIndex = 10
         Me.lblDataPumpId.Text = "DataPumpId"
         '
         'lblDescription
@@ -73,7 +74,7 @@ Partial Class FormDataPump
         Me.lblDescription.Location = New System.Drawing.Point(33, 76)
         Me.lblDescription.Name = "lblDescription"
         Me.lblDescription.Size = New System.Drawing.Size(60, 13)
-        Me.lblDescription.TabIndex = 3
+        Me.lblDescription.TabIndex = 11
         Me.lblDescription.Text = "Description"
         '
         'lblIsStandard
@@ -82,7 +83,7 @@ Partial Class FormDataPump
         Me.lblIsStandard.Location = New System.Drawing.Point(33, 120)
         Me.lblIsStandard.Name = "lblIsStandard"
         Me.lblIsStandard.Size = New System.Drawing.Size(58, 13)
-        Me.lblIsStandard.TabIndex = 4
+        Me.lblIsStandard.TabIndex = 12
         Me.lblIsStandard.Text = "IsStandard"
         '
         'tbIsStandard
@@ -90,7 +91,7 @@ Partial Class FormDataPump
         Me.tbIsStandard.Location = New System.Drawing.Point(99, 113)
         Me.tbIsStandard.Name = "tbIsStandard"
         Me.tbIsStandard.Size = New System.Drawing.Size(62, 20)
-        Me.tbIsStandard.TabIndex = 5
+        Me.tbIsStandard.TabIndex = 2
         '
         'lblDestinationId
         '
@@ -98,7 +99,7 @@ Partial Class FormDataPump
         Me.lblDestinationId.Location = New System.Drawing.Point(33, 156)
         Me.lblDestinationId.Name = "lblDestinationId"
         Me.lblDestinationId.Size = New System.Drawing.Size(69, 13)
-        Me.lblDestinationId.TabIndex = 4
+        Me.lblDestinationId.TabIndex = 13
         Me.lblDestinationId.Text = "DestinationId"
         '
         'tbDestinationId
@@ -106,96 +107,96 @@ Partial Class FormDataPump
         Me.tbDestinationId.Location = New System.Drawing.Point(111, 153)
         Me.tbDestinationId.Name = "tbDestinationId"
         Me.tbDestinationId.Size = New System.Drawing.Size(62, 20)
-        Me.tbDestinationId.TabIndex = 5
+        Me.tbDestinationId.TabIndex = 3
         '
         'lblQuery
         '
         Me.lblQuery.AutoSize = True
-        Me.lblQuery.Location = New System.Drawing.Point(33, 191)
+        Me.lblQuery.Location = New System.Drawing.Point(31, 250)
         Me.lblQuery.Name = "lblQuery"
         Me.lblQuery.Size = New System.Drawing.Size(35, 13)
-        Me.lblQuery.TabIndex = 6
+        Me.lblQuery.TabIndex = 14
         Me.lblQuery.Text = "Query"
         '
         'tbQuery
         '
-        Me.tbQuery.Location = New System.Drawing.Point(89, 188)
+        Me.tbQuery.Location = New System.Drawing.Point(87, 247)
         Me.tbQuery.Multiline = True
         Me.tbQuery.Name = "tbQuery"
         Me.tbQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.tbQuery.Size = New System.Drawing.Size(647, 110)
-        Me.tbQuery.TabIndex = 7
+        Me.tbQuery.TabIndex = 4
         '
         'lblFileName
         '
         Me.lblFileName.AutoSize = True
-        Me.lblFileName.Location = New System.Drawing.Point(33, 311)
+        Me.lblFileName.Location = New System.Drawing.Point(31, 370)
         Me.lblFileName.Name = "lblFileName"
         Me.lblFileName.Size = New System.Drawing.Size(51, 13)
-        Me.lblFileName.TabIndex = 8
+        Me.lblFileName.TabIndex = 15
         Me.lblFileName.Text = "FileName"
         '
         'tbFileName
         '
-        Me.tbFileName.Location = New System.Drawing.Point(89, 308)
+        Me.tbFileName.Location = New System.Drawing.Point(87, 367)
         Me.tbFileName.Name = "tbFileName"
         Me.tbFileName.Size = New System.Drawing.Size(271, 20)
-        Me.tbFileName.TabIndex = 9
+        Me.tbFileName.TabIndex = 5
         '
         'lblStartTime
         '
         Me.lblStartTime.AutoSize = True
-        Me.lblStartTime.Location = New System.Drawing.Point(33, 347)
+        Me.lblStartTime.Location = New System.Drawing.Point(31, 406)
         Me.lblStartTime.Name = "lblStartTime"
         Me.lblStartTime.Size = New System.Drawing.Size(52, 13)
-        Me.lblStartTime.TabIndex = 10
+        Me.lblStartTime.TabIndex = 16
         Me.lblStartTime.Text = "StartTime"
         '
         'tbStartTime
         '
-        Me.tbStartTime.Location = New System.Drawing.Point(92, 339)
+        Me.tbStartTime.Location = New System.Drawing.Point(90, 398)
         Me.tbStartTime.Name = "tbStartTime"
         Me.tbStartTime.Size = New System.Drawing.Size(181, 20)
-        Me.tbStartTime.TabIndex = 11
+        Me.tbStartTime.TabIndex = 6
         '
         'lblInterval
         '
         Me.lblInterval.AutoSize = True
-        Me.lblInterval.Location = New System.Drawing.Point(33, 383)
+        Me.lblInterval.Location = New System.Drawing.Point(31, 442)
         Me.lblInterval.Name = "lblInterval"
         Me.lblInterval.Size = New System.Drawing.Size(42, 13)
-        Me.lblInterval.TabIndex = 12
+        Me.lblInterval.TabIndex = 17
         Me.lblInterval.Text = "Interval"
         '
         'tbInterval
         '
-        Me.tbInterval.Location = New System.Drawing.Point(81, 380)
+        Me.tbInterval.Location = New System.Drawing.Point(79, 439)
         Me.tbInterval.Name = "tbInterval"
         Me.tbInterval.Size = New System.Drawing.Size(100, 20)
-        Me.tbInterval.TabIndex = 13
+        Me.tbInterval.TabIndex = 7
         '
         'lblEnabled
         '
         Me.lblEnabled.AutoSize = True
-        Me.lblEnabled.Location = New System.Drawing.Point(36, 423)
+        Me.lblEnabled.Location = New System.Drawing.Point(34, 482)
         Me.lblEnabled.Name = "lblEnabled"
         Me.lblEnabled.Size = New System.Drawing.Size(46, 13)
-        Me.lblEnabled.TabIndex = 14
+        Me.lblEnabled.TabIndex = 18
         Me.lblEnabled.Text = "Enabled"
         '
         'tbEnabled
         '
-        Me.tbEnabled.Location = New System.Drawing.Point(81, 420)
+        Me.tbEnabled.Location = New System.Drawing.Point(79, 479)
         Me.tbEnabled.Name = "tbEnabled"
         Me.tbEnabled.Size = New System.Drawing.Size(100, 20)
-        Me.tbEnabled.TabIndex = 15
+        Me.tbEnabled.TabIndex = 8
         '
         'btnDpSave
         '
         Me.btnDpSave.Location = New System.Drawing.Point(569, 466)
         Me.btnDpSave.Name = "btnDpSave"
         Me.btnDpSave.Size = New System.Drawing.Size(75, 23)
-        Me.btnDpSave.TabIndex = 16
+        Me.btnDpSave.TabIndex = 9
         Me.btnDpSave.Text = "Save"
         Me.btnDpSave.UseVisualStyleBackColor = True
         '
@@ -204,15 +205,24 @@ Partial Class FormDataPump
         Me.btnDpCancel.Location = New System.Drawing.Point(674, 466)
         Me.btnDpCancel.Name = "btnDpCancel"
         Me.btnDpCancel.Size = New System.Drawing.Size(75, 23)
-        Me.btnDpCancel.TabIndex = 17
+        Me.btnDpCancel.TabIndex = 10
         Me.btnDpCancel.Text = "Cancel"
         Me.btnDpCancel.UseVisualStyleBackColor = True
+        '
+        'lbDataPumpDestinations
+        '
+        Me.lbDataPumpDestinations.FormattingEnabled = True
+        Me.lbDataPumpDestinations.Location = New System.Drawing.Point(219, 146)
+        Me.lbDataPumpDestinations.Name = "lbDataPumpDestinations"
+        Me.lbDataPumpDestinations.Size = New System.Drawing.Size(120, 95)
+        Me.lbDataPumpDestinations.TabIndex = 19
         '
         'FormDataPump
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 534)
+        Me.Controls.Add(Me.lbDataPumpDestinations)
         Me.Controls.Add(Me.btnDpCancel)
         Me.Controls.Add(Me.btnDpSave)
         Me.Controls.Add(Me.tbEnabled)
@@ -235,7 +245,6 @@ Partial Class FormDataPump
         Me.Controls.Add(Me.tbDataPumpId)
         Me.Name = "FormDataPump"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "DataPump Editor"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -261,4 +270,5 @@ Partial Class FormDataPump
     Friend WithEvents tbEnabled As TextBox
     Friend WithEvents btnDpSave As Button
     Friend WithEvents btnDpCancel As Button
+    Friend WithEvents lbDataPumpDestinations As ListBox
 End Class

@@ -1066,19 +1066,7 @@ Public Class FormMain
         Dim rowData As DataRowView = cbDataPumpDestinations.SelectedItem
 
         tbDataPumpDestinationsID.Text = rowData.Row(0).ToString
-        Dim copyDataSet As DataSet = DataPumpStorage.DataPumps.Clone
-
-        dgvDPTest.DataSource = copyDataSet.Tables(0)
-        copyDataSet.Tables(0).Rows.Add(Guid.NewGuid, "StaTest", False, "Query", "Filename", "00:00", 1440, True, Nothing, Nothing, 0, rowData.Row(0).ToString)
-
-
-    End Sub
-
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-        Dim dbResult As DataSet
-        Dim query As String = String.Format("SELECT * FROM DataPumps WHERE Description LIKE '{0}", "%test%'")
-        dbResult = DBConnector.dbQuery(query)
-        dgvDPTest.DataSource = dbResult.Tables(0)
+        tbTest3.Text = rowData.Row(1).ToString
     End Sub
 
     Private Sub btDpEdit_Click(sender As Object, e As EventArgs) Handles btDpEdit.Click, dgvDatapumps.CellDoubleClick
@@ -1099,6 +1087,7 @@ Public Class FormMain
         cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
         cbDataPumpDestinations.DisplayMember = "Description"
 
+        dgvDPTest.DataSource = cbDataPumpDestinations.DataSource
 
     End Sub
 
@@ -1148,4 +1137,5 @@ Public Class FormMain
         End If
         DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
     End Sub
+
 End Class
