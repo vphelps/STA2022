@@ -59,9 +59,6 @@ Public Class DataPump
 
     Public Shared FileName As String
 
-    ''' <summary>
-    ''' Start time for cycle in UTC time zone
-    ''' </summary>
     Public Shared StartTime As String
 
     Public Shared Interval As Integer
