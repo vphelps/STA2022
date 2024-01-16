@@ -428,8 +428,13 @@ Public Class FormMain
         dgvInvItem.Rows.Add("SubCategory", InventoryItem.SubCatName)
 
 
+        Try
+            DeferredRevenue.pcDeferred = FormatNumber(DBConnector.dbQuery(DeferredRevenueQueries.pcDRValues), 2)
 
-        DeferredRevenue.pcDeferred = FormatNumber(DBConnector.dbQuery(DeferredRevenueQueries.pcDRValues), 2)
+        Catch ex As Exception
+            MsgBox("Error reading from PlayerCardExpValues table" & vbCrLf & "Examine data in SQL Management Studio", MsgBoxStyle.Critical, "DATA WARNING")
+
+        End Try
         tbOutstandingPCDR.Text = String.Format("${0}", DeferredRevenue.pcDeferred.ToString)
         Try
             Dim rowCount As Integer = DBConnector.getValue(String.Format(DeferredRevenueQueries.SalesCount, Today, InventoryItem.InvNo))
