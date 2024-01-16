@@ -1032,68 +1032,16 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Try
-            'Loading Datapumps Table
-            DataPumpStorage.DataPumps = DBConnector.dbQuery(DatapumpQueries.Datapumps)
-            dgvDatapumps.DataSource = DataPumpStorage.DataPumps.Tables(0)
-
-            'Loading DatapumpCredemtials table
-            DataPumpStorage.DataPumpCredentials = DBConnector.dbQuery(DatapumpQueries.DataPumpCredentials)
-            cbDataPumpCredentials.DataSource = DataPumpStorage.DataPumpCredentials.Tables(0)
-            cbDataPumpCredentials.DisplayMember = "Description"
-
-            'Loading DatapumpCredemtials table
-            DataPumpStorage.DataPumpDestinations = DBConnector.dbQuery(DatapumpQueries.DataPumpDestinations)
-            cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
-            cbDataPumpDestinations.DisplayMember = "Description"
-
-        Catch ex As Exception
-
-            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
-            PCInfo.ValidDatabase = False
-
-        End Try
-
-
-
-
-    End Sub
-
-    Private Sub cbDataPumpCredentials_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDataPumpCredentials.SelectedIndexChanged
-        Dim rowData As DataRowView = cbDataPumpCredentials.SelectedItem
-
-        tbDataPumpCredsCredentialID.Text = rowData.Row(0).ToString
-
-    End Sub
-
-    Private Sub cbDataPumpDestinations_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbDataPumpDestinations.SelectedIndexChanged
-        Dim rowData As DataRowView = cbDataPumpDestinations.SelectedItem
-
-        tbDataPumpDestinationsID.Text = rowData.Row(0).ToString
-        tbTest3.Text = rowData.Row(1).ToString
-    End Sub
-
     Private Sub btDpEdit_Click(sender As Object, e As EventArgs) Handles btDpEdit.Click, dgvDatapumps.CellDoubleClick
         Dim frmDataPump As New FormDataPump
 
         frmDataPump.ShowDialog()
-        tbTest3.Text = DataPump.IsStandard.ToString
         DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
-
+        dgvDatapumps.ClearSelection()
     End Sub
 
     Private Sub tpDatapump_Enter(sender As Object, e As EventArgs) Handles tpDatapump.Enter
         DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
-
-        cbDataPumpCredentials.DataSource = DataPumpStorage.DataPumpCredentials.Tables(0)
-        cbDataPumpCredentials.DisplayMember = "Description"
-
-        cbDataPumpDestinations.DataSource = DataPumpStorage.DataPumpDestinations.Tables(0)
-        cbDataPumpDestinations.DisplayMember = "Description"
-
-        dgvDPTest.DataSource = cbDataPumpDestinations.DataSource
-
     End Sub
 
     Private Sub dgvDatapumps_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvDatapumps.CellClick
@@ -1123,8 +1071,8 @@ Public Class FormMain
         DataPump.DestinationId = 0
         DataPump.Query = ""
         DataPump.FileName = ""
-        DataPump.StartTime = ""
-        DataPump.Interval = 0
+        DataPump.StartTime = "03:00"
+        DataPump.Interval = 60
         DataPump.Enabled = 0
         frmDataPump.ShowDialog()
         DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)

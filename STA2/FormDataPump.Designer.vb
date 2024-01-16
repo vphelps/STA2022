@@ -26,23 +26,22 @@ Partial Class FormDataPump
         Me.tbDescription = New System.Windows.Forms.TextBox()
         Me.lblDataPumpId = New System.Windows.Forms.Label()
         Me.lblDescription = New System.Windows.Forms.Label()
-        Me.lblIsStandard = New System.Windows.Forms.Label()
-        Me.tbIsStandard = New System.Windows.Forms.TextBox()
         Me.lblDestinationId = New System.Windows.Forms.Label()
-        Me.tbDestinationId = New System.Windows.Forms.TextBox()
         Me.lblQuery = New System.Windows.Forms.Label()
         Me.tbQuery = New System.Windows.Forms.TextBox()
         Me.lblFileName = New System.Windows.Forms.Label()
         Me.tbFileName = New System.Windows.Forms.TextBox()
         Me.lblStartTime = New System.Windows.Forms.Label()
-        Me.tbStartTime = New System.Windows.Forms.TextBox()
         Me.lblInterval = New System.Windows.Forms.Label()
-        Me.tbInterval = New System.Windows.Forms.TextBox()
-        Me.lblEnabled = New System.Windows.Forms.Label()
-        Me.tbEnabled = New System.Windows.Forms.TextBox()
         Me.btnDpSave = New System.Windows.Forms.Button()
         Me.btnDpCancel = New System.Windows.Forms.Button()
-        Me.lbDataPumpDestinations = New System.Windows.Forms.ListBox()
+        Me.dgvDataPumpDestinations = New System.Windows.Forms.DataGridView()
+        Me.cbIsStandard = New System.Windows.Forms.CheckBox()
+        Me.cbEnabled = New System.Windows.Forms.CheckBox()
+        Me.dtpStartTime = New System.Windows.Forms.DateTimePicker()
+        Me.nudInterval = New System.Windows.Forms.NumericUpDown()
+        CType(Me.dgvDataPumpDestinations, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.nudInterval, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'tbDataPumpId
@@ -77,37 +76,14 @@ Partial Class FormDataPump
         Me.lblDescription.TabIndex = 11
         Me.lblDescription.Text = "Description"
         '
-        'lblIsStandard
-        '
-        Me.lblIsStandard.AutoSize = True
-        Me.lblIsStandard.Location = New System.Drawing.Point(33, 120)
-        Me.lblIsStandard.Name = "lblIsStandard"
-        Me.lblIsStandard.Size = New System.Drawing.Size(58, 13)
-        Me.lblIsStandard.TabIndex = 12
-        Me.lblIsStandard.Text = "IsStandard"
-        '
-        'tbIsStandard
-        '
-        Me.tbIsStandard.Location = New System.Drawing.Point(99, 113)
-        Me.tbIsStandard.Name = "tbIsStandard"
-        Me.tbIsStandard.Size = New System.Drawing.Size(62, 20)
-        Me.tbIsStandard.TabIndex = 2
-        '
         'lblDestinationId
         '
         Me.lblDestinationId.AutoSize = True
-        Me.lblDestinationId.Location = New System.Drawing.Point(33, 156)
+        Me.lblDestinationId.Location = New System.Drawing.Point(289, 113)
         Me.lblDestinationId.Name = "lblDestinationId"
         Me.lblDestinationId.Size = New System.Drawing.Size(69, 13)
         Me.lblDestinationId.TabIndex = 13
         Me.lblDestinationId.Text = "DestinationId"
-        '
-        'tbDestinationId
-        '
-        Me.tbDestinationId.Location = New System.Drawing.Point(111, 153)
-        Me.tbDestinationId.Name = "tbDestinationId"
-        Me.tbDestinationId.Size = New System.Drawing.Size(62, 20)
-        Me.tbDestinationId.TabIndex = 3
         '
         'lblQuery
         '
@@ -152,13 +128,6 @@ Partial Class FormDataPump
         Me.lblStartTime.TabIndex = 16
         Me.lblStartTime.Text = "StartTime"
         '
-        'tbStartTime
-        '
-        Me.tbStartTime.Location = New System.Drawing.Point(90, 398)
-        Me.tbStartTime.Name = "tbStartTime"
-        Me.tbStartTime.Size = New System.Drawing.Size(181, 20)
-        Me.tbStartTime.TabIndex = 6
-        '
         'lblInterval
         '
         Me.lblInterval.AutoSize = True
@@ -167,29 +136,6 @@ Partial Class FormDataPump
         Me.lblInterval.Size = New System.Drawing.Size(42, 13)
         Me.lblInterval.TabIndex = 17
         Me.lblInterval.Text = "Interval"
-        '
-        'tbInterval
-        '
-        Me.tbInterval.Location = New System.Drawing.Point(79, 439)
-        Me.tbInterval.Name = "tbInterval"
-        Me.tbInterval.Size = New System.Drawing.Size(100, 20)
-        Me.tbInterval.TabIndex = 7
-        '
-        'lblEnabled
-        '
-        Me.lblEnabled.AutoSize = True
-        Me.lblEnabled.Location = New System.Drawing.Point(34, 482)
-        Me.lblEnabled.Name = "lblEnabled"
-        Me.lblEnabled.Size = New System.Drawing.Size(46, 13)
-        Me.lblEnabled.TabIndex = 18
-        Me.lblEnabled.Text = "Enabled"
-        '
-        'tbEnabled
-        '
-        Me.tbEnabled.Location = New System.Drawing.Point(79, 479)
-        Me.tbEnabled.Name = "tbEnabled"
-        Me.tbEnabled.Size = New System.Drawing.Size(100, 20)
-        Me.tbEnabled.TabIndex = 8
         '
         'btnDpSave
         '
@@ -209,42 +155,89 @@ Partial Class FormDataPump
         Me.btnDpCancel.Text = "Cancel"
         Me.btnDpCancel.UseVisualStyleBackColor = True
         '
-        'lbDataPumpDestinations
+        'dgvDataPumpDestinations
         '
-        Me.lbDataPumpDestinations.FormattingEnabled = True
-        Me.lbDataPumpDestinations.Location = New System.Drawing.Point(219, 146)
-        Me.lbDataPumpDestinations.Name = "lbDataPumpDestinations"
-        Me.lbDataPumpDestinations.Size = New System.Drawing.Size(120, 95)
-        Me.lbDataPumpDestinations.TabIndex = 19
+        Me.dgvDataPumpDestinations.AllowUserToAddRows = False
+        Me.dgvDataPumpDestinations.AllowUserToDeleteRows = False
+        Me.dgvDataPumpDestinations.AllowUserToOrderColumns = True
+        Me.dgvDataPumpDestinations.AllowUserToResizeColumns = False
+        Me.dgvDataPumpDestinations.AllowUserToResizeRows = False
+        Me.dgvDataPumpDestinations.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvDataPumpDestinations.ColumnHeadersVisible = False
+        Me.dgvDataPumpDestinations.Location = New System.Drawing.Point(381, 99)
+        Me.dgvDataPumpDestinations.MultiSelect = False
+        Me.dgvDataPumpDestinations.Name = "dgvDataPumpDestinations"
+        Me.dgvDataPumpDestinations.ReadOnly = True
+        Me.dgvDataPumpDestinations.RowHeadersVisible = False
+        Me.dgvDataPumpDestinations.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
+        Me.dgvDataPumpDestinations.Size = New System.Drawing.Size(302, 142)
+        Me.dgvDataPumpDestinations.TabIndex = 19
+        '
+        'cbIsStandard
+        '
+        Me.cbIsStandard.AutoSize = True
+        Me.cbIsStandard.Location = New System.Drawing.Point(36, 113)
+        Me.cbIsStandard.Name = "cbIsStandard"
+        Me.cbIsStandard.Size = New System.Drawing.Size(77, 17)
+        Me.cbIsStandard.TabIndex = 22
+        Me.cbIsStandard.Text = "IsStandard"
+        Me.cbIsStandard.UseVisualStyleBackColor = True
+        '
+        'cbEnabled
+        '
+        Me.cbEnabled.AutoSize = True
+        Me.cbEnabled.Location = New System.Drawing.Point(34, 478)
+        Me.cbEnabled.Name = "cbEnabled"
+        Me.cbEnabled.Size = New System.Drawing.Size(65, 17)
+        Me.cbEnabled.TabIndex = 23
+        Me.cbEnabled.Text = "Enabled"
+        Me.cbEnabled.UseVisualStyleBackColor = True
+        '
+        'dtpStartTime
+        '
+        Me.dtpStartTime.Location = New System.Drawing.Point(89, 400)
+        Me.dtpStartTime.Name = "dtpStartTime"
+        Me.dtpStartTime.ShowUpDown = True
+        Me.dtpStartTime.Size = New System.Drawing.Size(200, 20)
+        Me.dtpStartTime.TabIndex = 24
+        '
+        'nudInterval
+        '
+        Me.nudInterval.Location = New System.Drawing.Point(79, 440)
+        Me.nudInterval.Maximum = New Decimal(New Integer() {7200, 0, 0, 0})
+        Me.nudInterval.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.nudInterval.Name = "nudInterval"
+        Me.nudInterval.Size = New System.Drawing.Size(76, 20)
+        Me.nudInterval.TabIndex = 25
+        Me.nudInterval.Value = New Decimal(New Integer() {1, 0, 0, 0})
         '
         'FormDataPump
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 534)
-        Me.Controls.Add(Me.lbDataPumpDestinations)
+        Me.Controls.Add(Me.nudInterval)
+        Me.Controls.Add(Me.dtpStartTime)
+        Me.Controls.Add(Me.cbEnabled)
+        Me.Controls.Add(Me.cbIsStandard)
+        Me.Controls.Add(Me.dgvDataPumpDestinations)
         Me.Controls.Add(Me.btnDpCancel)
         Me.Controls.Add(Me.btnDpSave)
-        Me.Controls.Add(Me.tbEnabled)
-        Me.Controls.Add(Me.lblEnabled)
-        Me.Controls.Add(Me.tbInterval)
         Me.Controls.Add(Me.lblInterval)
-        Me.Controls.Add(Me.tbStartTime)
         Me.Controls.Add(Me.lblStartTime)
         Me.Controls.Add(Me.tbFileName)
         Me.Controls.Add(Me.lblFileName)
         Me.Controls.Add(Me.tbQuery)
         Me.Controls.Add(Me.lblQuery)
-        Me.Controls.Add(Me.tbDestinationId)
         Me.Controls.Add(Me.lblDestinationId)
-        Me.Controls.Add(Me.tbIsStandard)
-        Me.Controls.Add(Me.lblIsStandard)
         Me.Controls.Add(Me.lblDescription)
         Me.Controls.Add(Me.lblDataPumpId)
         Me.Controls.Add(Me.tbDescription)
         Me.Controls.Add(Me.tbDataPumpId)
         Me.Name = "FormDataPump"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
+        CType(Me.dgvDataPumpDestinations, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.nudInterval, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -254,21 +247,18 @@ Partial Class FormDataPump
     Friend WithEvents tbDescription As TextBox
     Friend WithEvents lblDataPumpId As Label
     Friend WithEvents lblDescription As Label
-    Friend WithEvents lblIsStandard As Label
-    Friend WithEvents tbIsStandard As TextBox
     Friend WithEvents lblDestinationId As Label
-    Friend WithEvents tbDestinationId As TextBox
     Friend WithEvents lblQuery As Label
     Friend WithEvents tbQuery As TextBox
     Friend WithEvents lblFileName As Label
     Friend WithEvents tbFileName As TextBox
     Friend WithEvents lblStartTime As Label
-    Friend WithEvents tbStartTime As TextBox
     Friend WithEvents lblInterval As Label
-    Friend WithEvents tbInterval As TextBox
-    Friend WithEvents lblEnabled As Label
-    Friend WithEvents tbEnabled As TextBox
     Friend WithEvents btnDpSave As Button
     Friend WithEvents btnDpCancel As Button
-    Friend WithEvents lbDataPumpDestinations As ListBox
+    Friend WithEvents dgvDataPumpDestinations As DataGridView
+    Friend WithEvents cbIsStandard As CheckBox
+    Friend WithEvents cbEnabled As CheckBox
+    Friend WithEvents dtpStartTime As DateTimePicker
+    Friend WithEvents nudInterval As NumericUpDown
 End Class
