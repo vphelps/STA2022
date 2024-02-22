@@ -32,3 +32,4 @@ Public Structure PCInfo
     Public Shared ExcelInstalled As Boolean = False
 
 End Structure
+

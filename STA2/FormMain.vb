@@ -6,6 +6,9 @@ Imports System.Net.NetworkInformation
 Imports System.ServiceProcess
 Imports STA2.AppData
 Imports STA2.NetworkData
+Imports System.ComponentModel
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
+Imports System.Web
 
 Public Class FormMain
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
@@ -127,6 +130,7 @@ Public Class FormMain
         dgvPFSConnect.Visible = Variables.LoggedIn
         nudDRInvNo.Value = 11564
         dtpEODB.Value = "05-17-2023"
+        tcSTA.SelectedTab = tpDatapump
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
@@ -424,8 +428,13 @@ Public Class FormMain
         dgvInvItem.Rows.Add("SubCategory", InventoryItem.SubCatName)
 
 
+        Try
+            DeferredRevenue.pcDeferred = FormatNumber(DBConnector.dbQuery(DeferredRevenueQueries.pcDRValues), 2)
 
-        DeferredRevenue.pcDeferred = FormatNumber(DBConnector.dbQuery(DeferredRevenueQueries.pcDRValues), 2)
+        Catch ex As Exception
+            MsgBox("Error reading from PlayerCardExpValues table" & vbCrLf & "Examine data in SQL Management Studio", MsgBoxStyle.Critical, "DATA WARNING")
+
+        End Try
         tbOutstandingPCDR.Text = String.Format("${0}", DeferredRevenue.pcDeferred.ToString)
         Try
             Dim rowCount As Integer = DBConnector.getValue(String.Format(DeferredRevenueQueries.SalesCount, Today, InventoryItem.InvNo))
@@ -1021,6 +1030,65 @@ Public Class FormMain
 
         EODBTroubleshooting.releaseObject(xlApp)
 
+    End Sub
+
+    Private Sub btDpEdit_Click(sender As Object, e As EventArgs) Handles btDpEdit.Click, dgvDatapumps.CellDoubleClick
+        Dim frmDataPump As New FormDataPump
+
+        frmDataPump.ShowDialog()
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
+        dgvDatapumps.ClearSelection()
+    End Sub
+
+    Private Sub tpDatapump_Enter(sender As Object, e As EventArgs) Handles tpDatapump.Enter
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
+    End Sub
+
+    Private Sub dgvDatapumps_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvDatapumps.CellClick
+        Dim time As TimeSpan
+        Dim rowIndex As Integer = dgvDatapumps.CurrentCell.RowIndex
+
+        DataPump.DataPumpId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DataPumpId").Index).Value
+        DataPump.Description = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Description").Index).Value
+        DataPump.IsStandard = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IsStandard").Index).Value
+        DataPump.DestinationId = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("DestinationId").Index).Value
+        DataPump.Query = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Query").Index).Value
+        DataPump.FileName = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("FileName").Index).Value
+        'DataPump.StartTime = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+        time = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("StartTime").Index).Value
+        DataPump.StartTime = time.ToString
+        DataPump.Interval = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("IntervalMinutes").Index).Value
+        DataPump.Enabled = dgvDatapumps.Rows.Item(rowIndex).Cells.Item(dgvDatapumps.Columns("Enabled").Index).Value
+        tbTest1.Text = DataPump.StartTime
+
+    End Sub
+
+    Private Sub btnDpNew_Click(sender As Object, e As EventArgs) Handles btnDpNew.Click
+        Dim frmDataPump As New FormDataPump
+        DataPump.DataPumpId = Nothing
+        DataPump.Description = ""
+        DataPump.IsStandard = 0
+        DataPump.DestinationId = 0
+        DataPump.Query = ""
+        DataPump.FileName = ""
+        DataPump.StartTime = "03:00"
+        DataPump.Interval = 60
+        DataPump.Enabled = 0
+        frmDataPump.ShowDialog()
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
+
+    End Sub
+
+    Private Sub btDpDelete_Click(sender As Object, e As EventArgs) Handles btDpDelete.Click
+        Dim MsgBoxAnswer As Object
+        Dim strTemp As String = DataPump.Description
+        MsgBoxAnswer = MsgBox(String.Format("Warning you are about to delete this DataPump:  {0}", DataPump.Description), MsgBoxStyle.YesNo, "WARNING:  Deleteing Datapump")
+        If MsgBoxAnswer = MsgBoxResult.Yes Then
+            DataPumpHelpers.DeleteDataPump(DataPump.DataPumpId)
+            MsgBox(String.Format("Datapump {0} has been deleted", strTemp), MsgBoxStyle.OkOnly)
+
+        End If
+        DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
     End Sub
 
 
