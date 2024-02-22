@@ -209,15 +209,6 @@ Partial Class FormMain
         Me.btDpDelete = New System.Windows.Forms.Button()
         Me.btnDpNew = New System.Windows.Forms.Button()
         Me.btDpEdit = New System.Windows.Forms.Button()
-        Me.dgvDPTest = New System.Windows.Forms.DataGridView()
-        Me.lblDataPumpDestinations = New System.Windows.Forms.Label()
-        Me.lblDataPumpCredentials = New System.Windows.Forms.Label()
-        Me.tbDataPumpDestinationsID = New System.Windows.Forms.TextBox()
-        Me.tbDataPumpCredsCredentialID = New System.Windows.Forms.TextBox()
-        Me.cbDataPumpDestinations = New System.Windows.Forms.ComboBox()
-        Me.cbDataPumpCredentials = New System.Windows.Forms.ComboBox()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.dgvDatapumps = New System.Windows.Forms.DataGridView()
         Me.gnAdvApps = New System.Windows.Forms.GroupBox()
         Me.btnAdvManager = New System.Windows.Forms.Button()
@@ -302,7 +293,6 @@ Partial Class FormMain
         Me.gbEODBExcel.SuspendLayout()
         Me.gbEODBParameter.SuspendLayout()
         Me.tpDatapump.SuspendLayout()
-        CType(Me.dgvDPTest, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gnAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
@@ -312,7 +302,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(990, 101)
+        Me.btnExit.Location = New System.Drawing.Point(990, 83)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(64, 20)
         Me.btnExit.TabIndex = 0
@@ -347,7 +337,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 701)
-        Me.SplitContainer1.SplitterDistance = 551
+        Me.SplitContainer1.SplitterDistance = 553
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -367,7 +357,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 547)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 549)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -381,7 +371,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 530)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 523)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1224,7 +1214,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 530)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 523)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1370,7 +1360,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 530)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 523)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1385,7 +1375,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 499)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 492)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1452,7 +1442,7 @@ Partial Class FormMain
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1053, 454)
+        Me.pnlDbData.Size = New System.Drawing.Size(1053, 445)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -1466,7 +1456,7 @@ Partial Class FormMain
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 454)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 445)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tpDbLogs
@@ -1477,7 +1467,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 530)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 523)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1497,7 +1487,7 @@ Partial Class FormMain
         Me.tlpLogData.RowCount = 1
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 371.0!))
-        Me.tlpLogData.Size = New System.Drawing.Size(1039, 353)
+        Me.tlpLogData.Size = New System.Drawing.Size(1039, 344)
         Me.tlpLogData.TabIndex = 5
         '
         'gpDbLogCount
@@ -1565,7 +1555,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 400)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 393)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1737,7 +1727,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 530)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 523)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1811,7 +1801,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 521)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 523)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -2005,7 +1995,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 530)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 523)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2108,7 +2098,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 530)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 523)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2164,7 +2154,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 530)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 523)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2288,27 +2278,18 @@ Partial Class FormMain
         Me.tpDatapump.Controls.Add(Me.btDpDelete)
         Me.tpDatapump.Controls.Add(Me.btnDpNew)
         Me.tpDatapump.Controls.Add(Me.btDpEdit)
-        Me.tpDatapump.Controls.Add(Me.dgvDPTest)
-        Me.tpDatapump.Controls.Add(Me.lblDataPumpDestinations)
-        Me.tpDatapump.Controls.Add(Me.lblDataPumpCredentials)
-        Me.tpDatapump.Controls.Add(Me.tbDataPumpDestinationsID)
-        Me.tpDatapump.Controls.Add(Me.tbDataPumpCredsCredentialID)
-        Me.tpDatapump.Controls.Add(Me.cbDataPumpDestinations)
-        Me.tpDatapump.Controls.Add(Me.cbDataPumpCredentials)
-        Me.tpDatapump.Controls.Add(Me.Button2)
-        Me.tpDatapump.Controls.Add(Me.Button1)
         Me.tpDatapump.Controls.Add(Me.dgvDatapumps)
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 530)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 523)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
         '
         'btDpDelete
         '
-        Me.btDpDelete.Location = New System.Drawing.Point(928, 337)
+        Me.btDpDelete.Location = New System.Drawing.Point(965, 479)
         Me.btDpDelete.Name = "btDpDelete"
         Me.btDpDelete.Size = New System.Drawing.Size(75, 23)
         Me.btDpDelete.TabIndex = 8
@@ -2317,7 +2298,7 @@ Partial Class FormMain
         '
         'btnDpNew
         '
-        Me.btnDpNew.Location = New System.Drawing.Point(733, 337)
+        Me.btnDpNew.Location = New System.Drawing.Point(770, 479)
         Me.btnDpNew.Name = "btnDpNew"
         Me.btnDpNew.Size = New System.Drawing.Size(75, 23)
         Me.btnDpNew.TabIndex = 7
@@ -2326,86 +2307,12 @@ Partial Class FormMain
         '
         'btDpEdit
         '
-        Me.btDpEdit.Location = New System.Drawing.Point(833, 337)
+        Me.btDpEdit.Location = New System.Drawing.Point(870, 479)
         Me.btDpEdit.Name = "btDpEdit"
         Me.btDpEdit.Size = New System.Drawing.Size(75, 23)
         Me.btDpEdit.TabIndex = 6
         Me.btDpEdit.Text = "Edit"
         Me.btDpEdit.UseVisualStyleBackColor = True
-        '
-        'dgvDPTest
-        '
-        Me.dgvDPTest.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvDPTest.Location = New System.Drawing.Point(6, 162)
-        Me.dgvDPTest.Name = "dgvDPTest"
-        Me.dgvDPTest.Size = New System.Drawing.Size(1041, 150)
-        Me.dgvDPTest.TabIndex = 5
-        '
-        'lblDataPumpDestinations
-        '
-        Me.lblDataPumpDestinations.AutoSize = True
-        Me.lblDataPumpDestinations.Location = New System.Drawing.Point(255, 432)
-        Me.lblDataPumpDestinations.Name = "lblDataPumpDestinations"
-        Me.lblDataPumpDestinations.Size = New System.Drawing.Size(63, 13)
-        Me.lblDataPumpDestinations.TabIndex = 4
-        Me.lblDataPumpDestinations.Text = "Destination:"
-        '
-        'lblDataPumpCredentials
-        '
-        Me.lblDataPumpCredentials.AutoSize = True
-        Me.lblDataPumpCredentials.Location = New System.Drawing.Point(258, 405)
-        Me.lblDataPumpCredentials.Name = "lblDataPumpCredentials"
-        Me.lblDataPumpCredentials.Size = New System.Drawing.Size(60, 13)
-        Me.lblDataPumpCredentials.TabIndex = 4
-        Me.lblDataPumpCredentials.Text = "Credential: "
-        '
-        'tbDataPumpDestinationsID
-        '
-        Me.tbDataPumpDestinationsID.Location = New System.Drawing.Point(451, 425)
-        Me.tbDataPumpDestinationsID.Name = "tbDataPumpDestinationsID"
-        Me.tbDataPumpDestinationsID.Size = New System.Drawing.Size(100, 20)
-        Me.tbDataPumpDestinationsID.TabIndex = 3
-        '
-        'tbDataPumpCredsCredentialID
-        '
-        Me.tbDataPumpCredsCredentialID.Location = New System.Drawing.Point(451, 397)
-        Me.tbDataPumpCredsCredentialID.Name = "tbDataPumpCredsCredentialID"
-        Me.tbDataPumpCredsCredentialID.Size = New System.Drawing.Size(100, 20)
-        Me.tbDataPumpCredsCredentialID.TabIndex = 3
-        '
-        'cbDataPumpDestinations
-        '
-        Me.cbDataPumpDestinations.FormattingEnabled = True
-        Me.cbDataPumpDestinations.Location = New System.Drawing.Point(324, 424)
-        Me.cbDataPumpDestinations.Name = "cbDataPumpDestinations"
-        Me.cbDataPumpDestinations.Size = New System.Drawing.Size(121, 21)
-        Me.cbDataPumpDestinations.TabIndex = 2
-        '
-        'cbDataPumpCredentials
-        '
-        Me.cbDataPumpCredentials.FormattingEnabled = True
-        Me.cbDataPumpCredentials.Location = New System.Drawing.Point(324, 397)
-        Me.cbDataPumpCredentials.Name = "cbDataPumpCredentials"
-        Me.cbDataPumpCredentials.Size = New System.Drawing.Size(121, 21)
-        Me.cbDataPumpCredentials.TabIndex = 2
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(806, 427)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(75, 23)
-        Me.Button2.TabIndex = 1
-        Me.Button2.Text = "Button2"
-        Me.Button2.UseVisualStyleBackColor = True
-        '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(806, 384)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(75, 23)
-        Me.Button1.TabIndex = 1
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
         '
         'dgvDatapumps
         '
@@ -2418,7 +2325,7 @@ Partial Class FormMain
         Me.dgvDatapumps.Name = "dgvDatapumps"
         Me.dgvDatapumps.ReadOnly = True
         Me.dgvDatapumps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.dgvDatapumps.Size = New System.Drawing.Size(1041, 150)
+        Me.dgvDatapumps.Size = New System.Drawing.Size(1041, 429)
         Me.dgvDatapumps.TabIndex = 0
         '
         'gnAdvApps
@@ -2744,8 +2651,6 @@ Partial Class FormMain
         Me.gbEODBParameter.ResumeLayout(False)
         Me.gbEODBParameter.PerformLayout()
         Me.tpDatapump.ResumeLayout(False)
-        Me.tpDatapump.PerformLayout()
-        CType(Me.dgvDPTest, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gnAdvApps.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
@@ -2963,17 +2868,8 @@ Partial Class FormMain
     Friend WithEvents lblEODBdate As Label
     Friend WithEvents gbEODBExcel As GroupBox
     Friend WithEvents tbEODBInstructions As TextBox
-    Friend WithEvents Button1 As Button
     Friend WithEvents dgvDatapumps As DataGridView
-    Friend WithEvents cbDataPumpCredentials As ComboBox
-    Friend WithEvents tbDataPumpCredsCredentialID As TextBox
-    Friend WithEvents lblDataPumpDestinations As Label
-    Friend WithEvents lblDataPumpCredentials As Label
-    Friend WithEvents tbDataPumpDestinationsID As TextBox
-    Friend WithEvents dgvDPTest As DataGridView
-    Friend WithEvents Button2 As Button
     Friend WithEvents btDpEdit As Button
     Friend WithEvents btnDpNew As Button
     Friend WithEvents btDpDelete As Button
-    Friend WithEvents cbDataPumpDestinations As ComboBox
 End Class
