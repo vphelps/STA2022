@@ -9,6 +9,7 @@ Imports STA2.NetworkData
 Imports System.ComponentModel
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Web
+Imports System.Net.Sockets
 
 Public Class FormMain
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
@@ -130,7 +131,7 @@ Public Class FormMain
         dgvPFSConnect.Visible = Variables.LoggedIn
         nudDRInvNo.Value = 11564
         dtpEODB.Value = "05-17-2023"
-        tcSTA.SelectedTab = tpDatapump
+        tcSTA.SelectedTab = tpNetwork
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
@@ -141,6 +142,11 @@ Public Class FormMain
         tbMLDRTest.visible = False
 
 #End If
+        tpEODB.Visible = False
+        tpPlayerCardDeferredRevenue.Visible = False
+        tcSTA.Refresh()
+        tcSTA.TabPages.Remove(tpEODB)
+        tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
 
     End Sub
 
@@ -345,8 +351,8 @@ Public Class FormMain
     Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click
 
         Dim caller As Button = DirectCast(sender, Button)
-        Dim temp As Integer
 
+        Dim temp As Integer
         caller.Enabled = False
         tmr1Sec.Enabled = True
         For index = 0 To ServiceControlList.Count - 1
@@ -508,26 +514,38 @@ Public Class FormMain
         Dim host As String = My.Settings.Server
         Dim tmpBoolean As Boolean
         NetworkDataHelper.NetworkPortListGenerate()
+        For Each row As DataGridViewRow In dgvPorts.Rows
+            Dim value As Integer = row.Cells("PortNo").Value
 
-        Dim rows As Integer = dgvPorts.Rows.Count - 1
-        For row As Integer = 0 To rows
-            tmpBoolean = TCPCheck(host, dgvPorts.Rows(row).Cells(0).Value)
-            tbPortScan.Text = String.Format("Scanning Port {0} | {1}", dgvPorts.Rows(row).Cells(0).Value, dgvPorts.Rows(row).Cells(1).Value)
+            tmpBoolean = TCPCheck(host, row.Cells(0).Value)
+            '    tbPortScan.Text = String.Format("Scanning Port {0} | {1}", dgvPorts.Rows(row).Cells(0).Value, dgvPorts.Rows(row).Cells(1).Value)
+            'Dim client As New TcpClient()
+            'Try
+            '    client.Connect(host, value)
+            '    row.Cells(2).Value = "Ready"
+            'Catch ex As Exception
+            '    row.Cells(2).Value = "Error"
+            'Finally
+            '    client.Close()
+            'End Try
 
             If tmpBoolean Then
-                dgvPorts.Rows(row).Cells(2).Value = "Ready"
+                row.Cells(2).Value = "Port Open"
             Else
-                dgvPorts.Rows(row).Cells(2).Value = "Error"
+                row.Cells(2).Value = "Error"
             End If
-        Next
 
+            ' Access cell value by column name
+            ' Do something with the value
+            tbMLTest1.Text = tbMLTest1.Text + value.ToString
+        Next
     End Sub
 
     Private Sub btnRelayRefresh_Click(sender As Object, e As EventArgs) Handles btnRelayRefresh.Click
         Dim tmpBoolean As Boolean = TCPCheck("relay-us-east-1.centeredgeonline.com", 50511)
 
         If tmpBoolean Then
-            tbStageRelayConn.Text = "Ready"
+            tbStageRelayConn.Text = "Connection Good"
             tbStageRelayConn.BackColor = TextboxColors.Green
         Else
             tbStageRelayConn.Text = "Error"
@@ -1091,5 +1109,19 @@ Public Class FormMain
         DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
     End Sub
 
+    Private Sub btnCustomPortCheck_Click(sender As Object, e As EventArgs) Handles btnCustomPortCheck.Click
 
+        Dim host As String = My.Settings.Server
+        Dim tmpBoolean As Boolean
+
+        tmpBoolean = TCPCheck(host, nudCustomPortCheck.Value)
+
+        If tmpBoolean Then
+            tbCustomPortCheck.Text = "Port Open"
+        Else
+            tbCustomPortCheck.Text = "Error"
+        End If
+
+
+    End Sub
 End Class

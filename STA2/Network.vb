@@ -19,7 +19,8 @@ Public Class NetworkData
 End Class
 Public Class NetworkDataHelper
     Public Shared Sub NetworkPortListGenerate()
-        FormMain.dgvPorts.Rows.Add(80, "HTTP used for signage median", "")
+        FormMain.dgvPorts.Rows.Clear()
+        'FormMain.dgvPorts.Rows.Add(80, "HTTP used for signage median", "")
         FormMain.dgvPorts.Rows.Add(1433, "SQL Server (by default, can be changed for named instances)n", "")
         FormMain.dgvPorts.Rows.Add(15050, "License Validation", "")
         FormMain.dgvPorts.Rows.Add(15051, "License File Request", "")
@@ -28,13 +29,12 @@ Public Class NetworkDataHelper
         FormMain.dgvPorts.Rows.Add(15056, "External Sales Interface (Embed)", "")
         FormMain.dgvPorts.Rows.Add(15059, "Advantage Api Service", "")
         FormMain.dgvPorts.Rows.Add(15060, "Stage/Web 2.0", "")
-        FormMain.dgvPorts.Rows.Add(12345, "Bogus", "")
-        FormMain.dgvPorts.Rows.Add(31419, "PCCharge Credit Cards", "")
-        FormMain.dgvPorts.Rows.Add(31420, "CenterEdge Credit Cards (if using Advantage Credit Cards service)", "")
-        FormMain.dgvPorts.Rows.Add(50510, "Standard listening And transmission port for Web 1.0 services", "")
-        FormMain.dgvPorts.Rows.Add(58008, "Embed Interface (if we're sharing the server with Embed)", "")
-        FormMain.dgvPorts.Rows.Add(9000, "NetEPay port", "")
-        FormMain.dgvPorts.Rows.Add(9100, "Mercury/Vantiv Gift Cards port", "")
+        'FormMain.dgvPorts.Rows.Add(31419, "PCCharge Credit Cards", "")
+        'FormMain.dgvPorts.Rows.Add(31420, "CenterEdge Credit Cards (if using Advantage Credit Cards service)", "")
+        'FormMain.dgvPorts.Rows.Add(50510, "Standard listening And transmission port for Web 1.0 services", "")
+        'FormMain.dgvPorts.Rows.Add(58008, "Embed Interface (if we're sharing the server with Embed)", "")
+        'FormMain.dgvPorts.Rows.Add(9000, "NetEPay port", "")
+        'FormMain.dgvPorts.Rows.Add(9100, "Mercury/Vantiv Gift Cards port", "")
     End Sub
 
     Public Shared Function GetLocalIP() As String
