@@ -177,16 +177,23 @@ Partial Class FormMain
         Me.InvItemValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.btnDRInvNo = New System.Windows.Forms.Button()
         Me.tpNetwork = New System.Windows.Forms.TabPage()
+        Me.gbCustomPortCheck = New System.Windows.Forms.GroupBox()
+        Me.lblCustomPortCheck = New System.Windows.Forms.Label()
+        Me.lblCustomPortCheckWarn = New System.Windows.Forms.Label()
+        Me.tbCustomPortCheck = New System.Windows.Forms.TextBox()
+        Me.btnCustomPortCheck = New System.Windows.Forms.Button()
+        Me.nudCustomPortCheck = New System.Windows.Forms.NumericUpDown()
+        Me.gbStandardPortCheck = New System.Windows.Forms.GroupBox()
+        Me.dgvPorts = New System.Windows.Forms.DataGridView()
+        Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.PortStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.btnPortCheck = New System.Windows.Forms.Button()
         Me.gpCloudComm = New System.Windows.Forms.GroupBox()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.btnRelayRefresh = New System.Windows.Forms.Button()
         Me.tbStageRelayConn = New System.Windows.Forms.TextBox()
         Me.lblStageRelayConn = New System.Windows.Forms.Label()
-        Me.btnPortCheck = New System.Windows.Forms.Button()
-        Me.dgvPorts = New System.Windows.Forms.DataGridView()
-        Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.PortStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.gpAdvUpgrade = New System.Windows.Forms.GroupBox()
         Me.cbAdvUpgradeNoBackup = New System.Windows.Forms.CheckBox()
@@ -237,13 +244,10 @@ Partial Class FormMain
         Me.tmr1Sec = New System.Windows.Forms.Timer(Me.components)
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
-        Me.gbStandardPortCheck = New System.Windows.Forms.GroupBox()
-        Me.gbCustomPortCheck = New System.Windows.Forms.GroupBox()
-        Me.nudCustomPortCheck = New System.Windows.Forms.NumericUpDown()
-        Me.btnCustomPortCheck = New System.Windows.Forms.Button()
-        Me.tbCustomPortCheck = New System.Windows.Forms.TextBox()
-        Me.lblCustomPortCheckWarn = New System.Windows.Forms.Label()
-        Me.lblCustomPortCheck = New System.Windows.Forms.Label()
+        Me.btnSaveApplicationInfoCSV = New System.Windows.Forms.Button()
+        Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
+        Me.btnSaveAppotionsCSV = New System.Windows.Forms.Button()
+        Me.btnSaveWebOptionsCSV = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -292,8 +296,11 @@ Partial Class FormMain
         CType(Me.nudDRInvNo, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvInvItem, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpNetwork.SuspendLayout()
-        Me.gpCloudComm.SuspendLayout()
+        Me.gbCustomPortCheck.SuspendLayout()
+        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.gbStandardPortCheck.SuspendLayout()
         CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.gpCloudComm.SuspendLayout()
         Me.tpOptions.SuspendLayout()
         Me.gpAdvUpgrade.SuspendLayout()
         Me.tpEODB.SuspendLayout()
@@ -303,9 +310,6 @@ Partial Class FormMain
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.gnAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
-        Me.gbStandardPortCheck.SuspendLayout()
-        Me.gbCustomPortCheck.SuspendLayout()
-        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'btnExit
@@ -347,7 +351,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 701)
-        Me.SplitContainer1.SplitterDistance = 557
+        Me.SplitContainer1.SplitterDistance = 558
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -367,7 +371,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 553)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 554)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -381,7 +385,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 527)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 528)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1216,6 +1220,9 @@ Partial Class FormMain
         '
         'tpAdvData
         '
+        Me.tpAdvData.Controls.Add(Me.btnSaveWebOptionsCSV)
+        Me.tpAdvData.Controls.Add(Me.btnSaveAppotionsCSV)
+        Me.tpAdvData.Controls.Add(Me.btnSaveApplicationInfoCSV)
         Me.tpAdvData.Controls.Add(Me.lblApplicationInfo)
         Me.tpAdvData.Controls.Add(Me.dgvApplicationInfo)
         Me.tpAdvData.Controls.Add(Me.lblWebOptions)
@@ -1224,7 +1231,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 527)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 528)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1254,7 +1261,7 @@ Partial Class FormMain
         Me.dgvApplicationInfo.Name = "dgvApplicationInfo"
         Me.dgvApplicationInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvApplicationInfo.ShowEditingIcon = False
-        Me.dgvApplicationInfo.Size = New System.Drawing.Size(291, 479)
+        Me.dgvApplicationInfo.Size = New System.Drawing.Size(291, 434)
         Me.dgvApplicationInfo.TabIndex = 4
         '
         'DataGridViewTextBoxColumn3
@@ -1318,7 +1325,7 @@ Partial Class FormMain
         Me.dgvWebOptions.Name = "dgvWebOptions"
         Me.dgvWebOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvWebOptions.ShowEditingIcon = False
-        Me.dgvWebOptions.Size = New System.Drawing.Size(291, 479)
+        Me.dgvWebOptions.Size = New System.Drawing.Size(291, 434)
         Me.dgvWebOptions.TabIndex = 1
         '
         'DataGridViewTextBoxColumn1
@@ -1347,7 +1354,7 @@ Partial Class FormMain
         Me.dgvAppOptions.Name = "dgvAppOptions"
         Me.dgvAppOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvAppOptions.ShowEditingIcon = False
-        Me.dgvAppOptions.Size = New System.Drawing.Size(449, 479)
+        Me.dgvAppOptions.Size = New System.Drawing.Size(449, 434)
         Me.dgvAppOptions.TabIndex = 0
         '
         'OptionName
@@ -1370,7 +1377,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 527)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 528)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1385,7 +1392,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 496)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 497)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1477,7 +1484,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 527)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 528)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1565,7 +1572,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 397)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 398)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1737,7 +1744,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 527)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 528)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1811,7 +1818,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 527)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 528)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -2004,10 +2011,125 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 527)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 528)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
+        '
+        'gbCustomPortCheck
+        '
+        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheck)
+        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheckWarn)
+        Me.gbCustomPortCheck.Controls.Add(Me.tbCustomPortCheck)
+        Me.gbCustomPortCheck.Controls.Add(Me.btnCustomPortCheck)
+        Me.gbCustomPortCheck.Controls.Add(Me.nudCustomPortCheck)
+        Me.gbCustomPortCheck.Location = New System.Drawing.Point(7, 336)
+        Me.gbCustomPortCheck.Name = "gbCustomPortCheck"
+        Me.gbCustomPortCheck.Size = New System.Drawing.Size(278, 141)
+        Me.gbCustomPortCheck.TabIndex = 8
+        Me.gbCustomPortCheck.TabStop = False
+        Me.gbCustomPortCheck.Text = "Custom Port Check"
+        '
+        'lblCustomPortCheck
+        '
+        Me.lblCustomPortCheck.AutoSize = True
+        Me.lblCustomPortCheck.Location = New System.Drawing.Point(6, 61)
+        Me.lblCustomPortCheck.Name = "lblCustomPortCheck"
+        Me.lblCustomPortCheck.Size = New System.Drawing.Size(40, 13)
+        Me.lblCustomPortCheck.TabIndex = 4
+        Me.lblCustomPortCheck.Text = "Result:"
+        '
+        'lblCustomPortCheckWarn
+        '
+        Me.lblCustomPortCheckWarn.AutoSize = True
+        Me.lblCustomPortCheckWarn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblCustomPortCheckWarn.Location = New System.Drawing.Point(45, 102)
+        Me.lblCustomPortCheckWarn.Name = "lblCustomPortCheckWarn"
+        Me.lblCustomPortCheckWarn.Size = New System.Drawing.Size(204, 26)
+        Me.lblCustomPortCheckWarn.TabIndex = 3
+        Me.lblCustomPortCheckWarn.Text = "Warning:  The Custom Port Check " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
+        '
+        'tbCustomPortCheck
+        '
+        Me.tbCustomPortCheck.Location = New System.Drawing.Point(52, 54)
+        Me.tbCustomPortCheck.Name = "tbCustomPortCheck"
+        Me.tbCustomPortCheck.Size = New System.Drawing.Size(164, 20)
+        Me.tbCustomPortCheck.TabIndex = 2
+        '
+        'btnCustomPortCheck
+        '
+        Me.btnCustomPortCheck.Location = New System.Drawing.Point(111, 20)
+        Me.btnCustomPortCheck.Name = "btnCustomPortCheck"
+        Me.btnCustomPortCheck.Size = New System.Drawing.Size(75, 23)
+        Me.btnCustomPortCheck.TabIndex = 1
+        Me.btnCustomPortCheck.Text = "Check Port"
+        Me.btnCustomPortCheck.UseVisualStyleBackColor = True
+        '
+        'nudCustomPortCheck
+        '
+        Me.nudCustomPortCheck.Location = New System.Drawing.Point(7, 20)
+        Me.nudCustomPortCheck.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
+        Me.nudCustomPortCheck.Name = "nudCustomPortCheck"
+        Me.nudCustomPortCheck.Size = New System.Drawing.Size(85, 20)
+        Me.nudCustomPortCheck.TabIndex = 0
+        '
+        'gbStandardPortCheck
+        '
+        Me.gbStandardPortCheck.Controls.Add(Me.dgvPorts)
+        Me.gbStandardPortCheck.Controls.Add(Me.btnPortCheck)
+        Me.gbStandardPortCheck.Location = New System.Drawing.Point(7, 7)
+        Me.gbStandardPortCheck.Name = "gbStandardPortCheck"
+        Me.gbStandardPortCheck.Size = New System.Drawing.Size(511, 323)
+        Me.gbStandardPortCheck.TabIndex = 7
+        Me.gbStandardPortCheck.TabStop = False
+        Me.gbStandardPortCheck.Text = "Standard Port Check"
+        '
+        'dgvPorts
+        '
+        Me.dgvPorts.AllowUserToAddRows = False
+        Me.dgvPorts.AllowUserToDeleteRows = False
+        Me.dgvPorts.AllowUserToResizeColumns = False
+        Me.dgvPorts.AllowUserToResizeRows = False
+        Me.dgvPorts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.dgvPorts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvPorts.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PortNo, Me.AppName, Me.PortStatus})
+        Me.dgvPorts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
+        Me.dgvPorts.Location = New System.Drawing.Point(6, 19)
+        Me.dgvPorts.Name = "dgvPorts"
+        Me.dgvPorts.ReadOnly = True
+        Me.dgvPorts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
+        Me.dgvPorts.Size = New System.Drawing.Size(483, 254)
+        Me.dgvPorts.TabIndex = 3
+        '
+        'PortNo
+        '
+        Me.PortNo.HeaderText = "Port"
+        Me.PortNo.Name = "PortNo"
+        Me.PortNo.ReadOnly = True
+        Me.PortNo.Width = 51
+        '
+        'AppName
+        '
+        Me.AppName.HeaderText = "Application"
+        Me.AppName.Name = "AppName"
+        Me.AppName.ReadOnly = True
+        Me.AppName.Width = 84
+        '
+        'PortStatus
+        '
+        Me.PortStatus.HeaderText = "Status"
+        Me.PortStatus.Name = "PortStatus"
+        Me.PortStatus.ReadOnly = True
+        Me.PortStatus.Width = 62
+        '
+        'btnPortCheck
+        '
+        Me.btnPortCheck.Location = New System.Drawing.Point(414, 279)
+        Me.btnPortCheck.Name = "btnPortCheck"
+        Me.btnPortCheck.Size = New System.Drawing.Size(75, 23)
+        Me.btnPortCheck.TabIndex = 4
+        Me.btnPortCheck.Text = "Check Ports"
+        Me.btnPortCheck.UseVisualStyleBackColor = True
         '
         'gpCloudComm
         '
@@ -2055,60 +2177,13 @@ Partial Class FormMain
         Me.lblStageRelayConn.TabIndex = 0
         Me.lblStageRelayConn.Text = "Stage Relay Connection"
         '
-        'btnPortCheck
-        '
-        Me.btnPortCheck.Location = New System.Drawing.Point(414, 279)
-        Me.btnPortCheck.Name = "btnPortCheck"
-        Me.btnPortCheck.Size = New System.Drawing.Size(75, 23)
-        Me.btnPortCheck.TabIndex = 4
-        Me.btnPortCheck.Text = "Check Ports"
-        Me.btnPortCheck.UseVisualStyleBackColor = True
-        '
-        'dgvPorts
-        '
-        Me.dgvPorts.AllowUserToAddRows = False
-        Me.dgvPorts.AllowUserToDeleteRows = False
-        Me.dgvPorts.AllowUserToResizeColumns = False
-        Me.dgvPorts.AllowUserToResizeRows = False
-        Me.dgvPorts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.dgvPorts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvPorts.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PortNo, Me.AppName, Me.PortStatus})
-        Me.dgvPorts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvPorts.Location = New System.Drawing.Point(6, 19)
-        Me.dgvPorts.Name = "dgvPorts"
-        Me.dgvPorts.ReadOnly = True
-        Me.dgvPorts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.dgvPorts.Size = New System.Drawing.Size(483, 254)
-        Me.dgvPorts.TabIndex = 3
-        '
-        'PortNo
-        '
-        Me.PortNo.HeaderText = "Port"
-        Me.PortNo.Name = "PortNo"
-        Me.PortNo.ReadOnly = True
-        Me.PortNo.Width = 51
-        '
-        'AppName
-        '
-        Me.AppName.HeaderText = "Application"
-        Me.AppName.Name = "AppName"
-        Me.AppName.ReadOnly = True
-        Me.AppName.Width = 84
-        '
-        'PortStatus
-        '
-        Me.PortStatus.HeaderText = "Status"
-        Me.PortStatus.Name = "PortStatus"
-        Me.PortStatus.ReadOnly = True
-        Me.PortStatus.Width = 62
-        '
         'tpOptions
         '
         Me.tpOptions.Controls.Add(Me.gpAdvUpgrade)
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 527)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 528)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2164,7 +2239,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 527)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 528)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2292,7 +2367,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 527)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 528)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2565,73 +2640,32 @@ Partial Class FormMain
         '
         Me.fbdEODB.Description = "EODB Troubleshooting"
         '
-        'gbStandardPortCheck
+        'btnSaveApplicationInfoCSV
         '
-        Me.gbStandardPortCheck.Controls.Add(Me.dgvPorts)
-        Me.gbStandardPortCheck.Controls.Add(Me.btnPortCheck)
-        Me.gbStandardPortCheck.Location = New System.Drawing.Point(7, 7)
-        Me.gbStandardPortCheck.Name = "gbStandardPortCheck"
-        Me.gbStandardPortCheck.Size = New System.Drawing.Size(511, 323)
-        Me.gbStandardPortCheck.TabIndex = 7
-        Me.gbStandardPortCheck.TabStop = False
-        Me.gbStandardPortCheck.Text = "Standard Port Check"
+        Me.btnSaveApplicationInfoCSV.Location = New System.Drawing.Point(188, 474)
+        Me.btnSaveApplicationInfoCSV.Name = "btnSaveApplicationInfoCSV"
+        Me.btnSaveApplicationInfoCSV.Size = New System.Drawing.Size(75, 23)
+        Me.btnSaveApplicationInfoCSV.TabIndex = 6
+        Me.btnSaveApplicationInfoCSV.Text = "Save CSV"
+        Me.btnSaveApplicationInfoCSV.UseVisualStyleBackColor = True
         '
-        'gbCustomPortCheck
+        'btnSaveAppotionsCSV
         '
-        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheckWarn)
-        Me.gbCustomPortCheck.Controls.Add(Me.tbCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.btnCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.nudCustomPortCheck)
-        Me.gbCustomPortCheck.Location = New System.Drawing.Point(7, 336)
-        Me.gbCustomPortCheck.Name = "gbCustomPortCheck"
-        Me.gbCustomPortCheck.Size = New System.Drawing.Size(278, 141)
-        Me.gbCustomPortCheck.TabIndex = 8
-        Me.gbCustomPortCheck.TabStop = False
-        Me.gbCustomPortCheck.Text = "Custom Port Check"
+        Me.btnSaveAppotionsCSV.Location = New System.Drawing.Point(675, 473)
+        Me.btnSaveAppotionsCSV.Name = "btnSaveAppotionsCSV"
+        Me.btnSaveAppotionsCSV.Size = New System.Drawing.Size(75, 23)
+        Me.btnSaveAppotionsCSV.TabIndex = 6
+        Me.btnSaveAppotionsCSV.Text = "Save CSV"
+        Me.btnSaveAppotionsCSV.UseVisualStyleBackColor = True
         '
-        'nudCustomPortCheck
+        'btnSaveWebOptionsCSV
         '
-        Me.nudCustomPortCheck.Location = New System.Drawing.Point(7, 20)
-        Me.nudCustomPortCheck.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
-        Me.nudCustomPortCheck.Name = "nudCustomPortCheck"
-        Me.nudCustomPortCheck.Size = New System.Drawing.Size(85, 20)
-        Me.nudCustomPortCheck.TabIndex = 0
-        '
-        'btnCustomPortCheck
-        '
-        Me.btnCustomPortCheck.Location = New System.Drawing.Point(111, 20)
-        Me.btnCustomPortCheck.Name = "btnCustomPortCheck"
-        Me.btnCustomPortCheck.Size = New System.Drawing.Size(75, 23)
-        Me.btnCustomPortCheck.TabIndex = 1
-        Me.btnCustomPortCheck.Text = "Check Port"
-        Me.btnCustomPortCheck.UseVisualStyleBackColor = True
-        '
-        'tbCustomPortCheck
-        '
-        Me.tbCustomPortCheck.Location = New System.Drawing.Point(52, 54)
-        Me.tbCustomPortCheck.Name = "tbCustomPortCheck"
-        Me.tbCustomPortCheck.Size = New System.Drawing.Size(164, 20)
-        Me.tbCustomPortCheck.TabIndex = 2
-        '
-        'lblCustomPortCheckWarn
-        '
-        Me.lblCustomPortCheckWarn.AutoSize = True
-        Me.lblCustomPortCheckWarn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblCustomPortCheckWarn.Location = New System.Drawing.Point(45, 102)
-        Me.lblCustomPortCheckWarn.Name = "lblCustomPortCheckWarn"
-        Me.lblCustomPortCheckWarn.Size = New System.Drawing.Size(204, 26)
-        Me.lblCustomPortCheckWarn.TabIndex = 3
-        Me.lblCustomPortCheckWarn.Text = "Warning:  The Custom Port Check " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
-        '
-        'lblCustomPortCheck
-        '
-        Me.lblCustomPortCheck.AutoSize = True
-        Me.lblCustomPortCheck.Location = New System.Drawing.Point(6, 61)
-        Me.lblCustomPortCheck.Name = "lblCustomPortCheck"
-        Me.lblCustomPortCheck.Size = New System.Drawing.Size(40, 13)
-        Me.lblCustomPortCheck.TabIndex = 4
-        Me.lblCustomPortCheck.Text = "Result:"
+        Me.btnSaveWebOptionsCSV.Location = New System.Drawing.Point(972, 473)
+        Me.btnSaveWebOptionsCSV.Name = "btnSaveWebOptionsCSV"
+        Me.btnSaveWebOptionsCSV.Size = New System.Drawing.Size(75, 23)
+        Me.btnSaveWebOptionsCSV.TabIndex = 6
+        Me.btnSaveWebOptionsCSV.Text = "Save CSV"
+        Me.btnSaveWebOptionsCSV.UseVisualStyleBackColor = True
         '
         'FormMain
         '
@@ -2716,9 +2750,13 @@ Partial Class FormMain
         CType(Me.nudDRInvNo, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvInvItem, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpNetwork.ResumeLayout(False)
+        Me.gbCustomPortCheck.ResumeLayout(False)
+        Me.gbCustomPortCheck.PerformLayout()
+        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.gbStandardPortCheck.ResumeLayout(False)
+        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).EndInit()
         Me.gpCloudComm.ResumeLayout(False)
         Me.gpCloudComm.PerformLayout()
-        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpOptions.ResumeLayout(False)
         Me.gpAdvUpgrade.ResumeLayout(False)
         Me.gpAdvUpgrade.PerformLayout()
@@ -2732,10 +2770,6 @@ Partial Class FormMain
         Me.gnAdvApps.ResumeLayout(False)
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
-        Me.gbStandardPortCheck.ResumeLayout(False)
-        Me.gbCustomPortCheck.ResumeLayout(False)
-        Me.gbCustomPortCheck.PerformLayout()
-        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2960,4 +2994,8 @@ Partial Class FormMain
     Friend WithEvents btnCustomPortCheck As Button
     Friend WithEvents nudCustomPortCheck As NumericUpDown
     Friend WithEvents lblCustomPortCheck As Label
+    Friend WithEvents btnSaveApplicationInfoCSV As Button
+    Friend WithEvents SaveFileDialog As SaveFileDialog
+    Friend WithEvents btnSaveWebOptionsCSV As Button
+    Friend WithEvents btnSaveAppotionsCSV As Button
 End Class

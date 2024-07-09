@@ -10,6 +10,10 @@ Imports System.ComponentModel
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Web
 Imports System.Net.Sockets
+Imports System.Security.Policy
+Imports System.CodeDom
+Imports System.Net.Mime.MediaTypeNames
+Imports System.Runtime.CompilerServices
 
 Public Class FormMain
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
@@ -131,7 +135,7 @@ Public Class FormMain
         dgvPFSConnect.Visible = Variables.LoggedIn
         nudDRInvNo.Value = 11564
         dtpEODB.Value = "05-17-2023"
-        tcSTA.SelectedTab = tpNetwork
+        tcSTA.SelectedTab = tpAdvData
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
@@ -142,9 +146,7 @@ Public Class FormMain
         tbMLDRTest.visible = False
 
 #End If
-        tpEODB.Visible = False
-        tpPlayerCardDeferredRevenue.Visible = False
-        tcSTA.Refresh()
+
         tcSTA.TabPages.Remove(tpEODB)
         tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
 
@@ -1122,6 +1124,48 @@ Public Class FormMain
             tbCustomPortCheck.Text = "Error"
         End If
 
+
+    End Sub
+
+    Private Sub btnSaveApplicationInfoCSV_Click(sender As Object, e As EventArgs) Handles btnSaveApplicationInfoCSV.Click, btnSaveWebOptionsCSV.Click, btnSaveAppotionsCSV.Click
+        Dim caller As Button = DirectCast(sender, Button)
+        Dim dgvSource As DataGridView
+        Select Case caller.Name.ToString
+            Case btnSaveApplicationInfoCSV.Name.ToString
+                SaveFileDialog.FileName = "ApplicationInfo.csv"
+                dgvSource = dgvApplicationInfo
+
+            Case btnSaveAppotionsCSV.Name.ToString
+                SaveFileDialog.FileName = "AppOptions.csv"
+                dgvSource = dgvAppOptions
+
+            Case btnSaveWebOptionsCSV.Name.ToString
+                SaveFileDialog.FileName = "WebOptions.csv"
+                dgvSource = dgvWebOptions
+
+            Case Else
+                Exit Sub
+
+        End Select
+
+        SaveFileDialog.InitialDirectory = "C:\CenterEdge"
+        SaveFileDialog.DefaultExt = "csv"
+        SaveFileDialog.CheckPathExists = True
+        SaveFileDialog.CreatePrompt = True
+        SaveFileDialog.AddExtension = True
+        SaveFileDialog.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*"
+        SaveFileDialog.ShowDialog()
+
+
+        Using writer As StreamWriter = New StreamWriter(SaveFileDialog.FileName)
+            ' Write the header
+            writer.WriteLine("OptionName,OptionValue")
+            For Each row As DataGridViewRow In dgvSource.Rows
+
+                ' Write data to the CSV file
+                writer.WriteLine(row.Cells(0).Value + "," + row.Cells(1).Value)
+            Next
+        End Using
 
     End Sub
 End Class
