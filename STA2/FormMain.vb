@@ -142,10 +142,11 @@ Public Class FormMain
         tbMLDRTest.visible = False
 
 #End If
-
+        tpEODB.Visible = False
+        tpPlayerCardDeferredRevenue.Visible = False
+        tcSTA.Refresh()
         tcSTA.TabPages.Remove(tpEODB)
         tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
-
 
     End Sub
 
@@ -514,7 +515,6 @@ Public Class FormMain
         Dim tmpBoolean As Boolean
         NetworkDataHelper.NetworkPortListGenerate()
         For Each row As DataGridViewRow In dgvPorts.Rows
-            tbPortScan.Text = "checking port " + row.Cells("PortNo").Value.ToString + "to server" + My.Settings.Server.ToString
             Dim value As Integer = row.Cells("PortNo").Value
 
             tmpBoolean = TCPCheck(host, row.Cells(0).Value)
@@ -1109,5 +1109,19 @@ Public Class FormMain
         DataPumpHelpers.LoadDataPumpInformation(dgvDatapumps)
     End Sub
 
+    Private Sub btnCustomPortCheck_Click(sender As Object, e As EventArgs) Handles btnCustomPortCheck.Click
 
+        Dim host As String = My.Settings.Server
+        Dim tmpBoolean As Boolean
+
+        tmpBoolean = TCPCheck(host, nudCustomPortCheck.Value)
+
+        If tmpBoolean Then
+            tbCustomPortCheck.Text = "Port Open"
+        Else
+            tbCustomPortCheck.Text = "Error"
+        End If
+
+
+    End Sub
 End Class
