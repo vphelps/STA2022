@@ -143,6 +143,10 @@ Public Class FormMain
 
 #End If
 
+        tcSTA.TabPages.Remove(tpEODB)
+        tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
+
+
     End Sub
 
     Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
@@ -526,7 +530,7 @@ Public Class FormMain
             'End Try
 
             If tmpBoolean Then
-                row.Cells(2).Value = "Ready"
+                row.Cells(2).Value = "Port Open"
             Else
                 row.Cells(2).Value = "Error"
             End If
@@ -541,7 +545,7 @@ Public Class FormMain
         Dim tmpBoolean As Boolean = TCPCheck("relay-us-east-1.centeredgeonline.com", 50511)
 
         If tmpBoolean Then
-            tbStageRelayConn.Text = "Ready"
+            tbStageRelayConn.Text = "Connection Good"
             tbStageRelayConn.BackColor = TextboxColors.Green
         Else
             tbStageRelayConn.Text = "Error"
