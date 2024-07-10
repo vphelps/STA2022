@@ -133,9 +133,6 @@ Public Class FormMain
 #If DEBUG Then
         Variables.LoggedIn = True
         dgvPFSConnect.Visible = Variables.LoggedIn
-        nudDRInvNo.Value = 11564
-        dtpEODB.Value = "05-17-2023"
-        tcSTA.SelectedTab = tpAdvData
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
@@ -539,7 +536,7 @@ Public Class FormMain
 
             ' Access cell value by column name
             ' Do something with the value
-            tbMLTest1.Text = tbMLTest1.Text + value.ToString
+
         Next
     End Sub
 
