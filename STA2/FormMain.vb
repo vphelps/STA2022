@@ -151,7 +151,8 @@ Public Class FormMain
 
         tcSTA.TabPages.Remove(tpEODB)
         tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
-
+        Dim fileExists As Boolean
+        btnAdvUpgrade.Visible = My.Computer.FileSystem.FileExists("C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe")
     End Sub
 
     Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
