@@ -2,19 +2,6 @@
 Imports System.Net.Sockets
 
 Public Class NetworkData
-    Public Shared Function TCPCheck(host As String, port As Integer) As Boolean
-        Dim client As New TcpClient
-
-        Try
-            client.Connect(host, port)
-            TCPCheck = client.Connected
-        Catch ex As ArgumentOutOfRangeException
-
-        Catch
-            TCPCheck = client.Connected
-        End Try
-        Return TCPCheck
-    End Function
     Public Shared Async Function ConnectAsync(host As String, port As Integer) As Task(Of Boolean)
         Dim client As New TcpClient
         Try
