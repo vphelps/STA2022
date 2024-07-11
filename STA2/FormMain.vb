@@ -65,6 +65,11 @@ Public Class FormMain
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        If Not (My.Application.CommandLineArgs.Contains("-engineer")) Then
+            tcSTA.TabPages.Remove(tpDatapump)
+        End If
+
         Connections.IniFileHandler(False)
         If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then FormLogin.ShowDialog()
         CodeHelper.AdminUser(Variables.LoggedIn)
