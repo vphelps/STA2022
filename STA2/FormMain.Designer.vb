@@ -99,10 +99,6 @@ Partial Class FormMain
         Me.lblWebEnabled = New System.Windows.Forms.Label()
         Me.tbDbVer = New System.Windows.Forms.TextBox()
         Me.lblLocName = New System.Windows.Forms.Label()
-        Me.gpPfsConnect = New System.Windows.Forms.GroupBox()
-        Me.dgvPFSConnect = New System.Windows.Forms.DataGridView()
-        Me.Setting = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Value = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.tpAdvData = New System.Windows.Forms.TabPage()
         Me.btnSaveWebOptionsCSV = New System.Windows.Forms.Button()
         Me.btnSaveAppotionsCSV = New System.Windows.Forms.Button()
@@ -267,8 +263,6 @@ Partial Class FormMain
         Me.gpAdvTurnstileEngine.SuspendLayout()
         Me.gpAdvantageUpgradeService.SuspendLayout()
         Me.gpLicInfo.SuspendLayout()
-        Me.gpPfsConnect.SuspendLayout()
-        CType(Me.dgvPFSConnect, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpAdvData.SuspendLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.cmsEditMenu.SuspendLayout()
@@ -351,7 +345,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 701)
-        Me.SplitContainer1.SplitterDistance = 559
+        Me.SplitContainer1.SplitterDistance = 560
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -371,7 +365,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 555)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 556)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -381,11 +375,10 @@ Partial Class FormMain
         Me.tpGeneral.Controls.Add(Me.gpPcInfo)
         Me.tpGeneral.Controls.Add(Me.flpServices)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
-        Me.tpGeneral.Controls.Add(Me.gpPfsConnect)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 529)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 530)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1165,59 +1158,6 @@ Partial Class FormMain
         Me.lblLocName.TabIndex = 0
         Me.lblLocName.Text = "Location Name:  "
         '
-        'gpPfsConnect
-        '
-        Me.gpPfsConnect.BackColor = System.Drawing.Color.LightGray
-        Me.gpPfsConnect.Controls.Add(Me.dgvPFSConnect)
-        Me.gpPfsConnect.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.gpPfsConnect.Location = New System.Drawing.Point(796, 3)
-        Me.gpPfsConnect.Name = "gpPfsConnect"
-        Me.gpPfsConnect.Size = New System.Drawing.Size(260, 135)
-        Me.gpPfsConnect.TabIndex = 11
-        Me.gpPfsConnect.TabStop = False
-        Me.gpPfsConnect.Text = "PFSConnect.ini data"
-        Me.gpPfsConnect.Visible = False
-        '
-        'dgvPFSConnect
-        '
-        Me.dgvPFSConnect.AllowUserToAddRows = False
-        Me.dgvPFSConnect.AllowUserToDeleteRows = False
-        Me.dgvPFSConnect.AllowUserToResizeColumns = False
-        Me.dgvPFSConnect.AllowUserToResizeRows = False
-        Me.dgvPFSConnect.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.dgvPFSConnect.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.dgvPFSConnect.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
-        Me.dgvPFSConnect.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvPFSConnect.ColumnHeadersVisible = False
-        Me.dgvPFSConnect.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Setting, Me.Value})
-        Me.dgvPFSConnect.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.dgvPFSConnect.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvPFSConnect.Location = New System.Drawing.Point(3, 16)
-        Me.dgvPFSConnect.MultiSelect = False
-        Me.dgvPFSConnect.Name = "dgvPFSConnect"
-        Me.dgvPFSConnect.ReadOnly = True
-        Me.dgvPFSConnect.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing
-        Me.dgvPFSConnect.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.dgvPFSConnect.ShowCellErrors = False
-        Me.dgvPFSConnect.ShowEditingIcon = False
-        Me.dgvPFSConnect.ShowRowErrors = False
-        Me.dgvPFSConnect.Size = New System.Drawing.Size(254, 116)
-        Me.dgvPFSConnect.TabIndex = 9
-        '
-        'Setting
-        '
-        Me.Setting.HeaderText = "Setting"
-        Me.Setting.Name = "Setting"
-        Me.Setting.ReadOnly = True
-        Me.Setting.Width = 5
-        '
-        'Value
-        '
-        Me.Value.HeaderText = "Value"
-        Me.Value.Name = "Value"
-        Me.Value.ReadOnly = True
-        Me.Value.Width = 5
-        '
         'tpAdvData
         '
         Me.tpAdvData.Controls.Add(Me.btnSaveWebOptionsCSV)
@@ -1231,7 +1171,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 529)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 530)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1404,7 +1344,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 529)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 530)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1419,7 +1359,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 498)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 499)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1511,7 +1451,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 529)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 530)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1599,7 +1539,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 399)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 400)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1771,7 +1711,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 529)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 530)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1845,7 +1785,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 529)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 530)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -2038,7 +1978,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 529)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 530)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2210,7 +2150,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 529)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 530)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2266,7 +2206,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 529)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 530)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2394,7 +2334,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 529)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 530)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2714,8 +2654,6 @@ Partial Class FormMain
         Me.gpAdvantageUpgradeService.PerformLayout()
         Me.gpLicInfo.ResumeLayout(False)
         Me.gpLicInfo.PerformLayout()
-        Me.gpPfsConnect.ResumeLayout(False)
-        CType(Me.dgvPFSConnect, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpAdvData.ResumeLayout(False)
         Me.tpAdvData.PerformLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).EndInit()
@@ -2781,9 +2719,6 @@ Partial Class FormMain
     Friend WithEvents tcSTA As TabControl
     Friend WithEvents tpGeneral As TabPage
     Friend WithEvents tpDbInfo As TabPage
-    Friend WithEvents dgvPFSConnect As DataGridView
-    Friend WithEvents Setting As DataGridViewTextBoxColumn
-    Friend WithEvents Value As DataGridViewTextBoxColumn
     Friend WithEvents gpLicInfo As GroupBox
     Friend WithEvents tbShiftDate As TextBox
     Friend WithEvents lblShiftDate As Label
@@ -2797,7 +2732,6 @@ Partial Class FormMain
     Friend WithEvents lblLicSvr As Label
     Friend WithEvents tbLocName As TextBox
     Friend WithEvents lblLocName As Label
-    Friend WithEvents gpPfsConnect As GroupBox
     Friend WithEvents StatusStrip1 As StatusStrip
     Friend WithEvents tslblCeVersion As ToolStripStatusLabel
     Friend WithEvents tslblTime As ToolStripStatusLabel

@@ -136,8 +136,7 @@ Public Class FormMain
         End If
 
 #If DEBUG Then
-        Variables.LoggedIn = True
-        dgvPFSConnect.Visible = Variables.LoggedIn
+
 #Else
         Variables.LoggedIn = False
         tbTest1.Visible = False
@@ -1171,4 +1170,5 @@ Public Class FormMain
         End Using
 
     End Sub
+
 End Class

@@ -2,13 +2,6 @@
 Public Class CodeHelper
     Public Shared Sub FirstLoad()
         Dim strTemp As String = ""
-        FormMain.dgvPFSConnect.Rows.Clear()
-        FormMain.dgvPFSConnect.Rows.Add("Server Name", My.Settings.Server)
-        FormMain.dgvPFSConnect.Rows.Add("Database Name", My.Settings.Database)
-        FormMain.dgvPFSConnect.Rows.Add("User ID", My.Settings.UserID)
-        FormMain.dgvPFSConnect.Rows.Add("Password", My.Settings.Password)
-        FormMain.dgvPFSConnect.Rows.Add("Station Number", My.Settings.StationNo)
-
         GetPcInfo()
         PCInfo.FrameworkVersion = DotNetInfo.Get45PlusFromRegistry
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
@@ -130,7 +123,6 @@ Public Class CodeHelper
     Public Shared Sub AdminUser(Admin As Boolean)
 
         FormMain.flpServices.Enabled = Admin
-        FormMain.dgvPFSConnect.Visible = Not (Admin)
         FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
 
 
