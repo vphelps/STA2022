@@ -15,6 +15,19 @@ Public Class NetworkData
         End Try
         Return TCPCheck
     End Function
+    Public Shared Async Function ConnectAsync(host As String, port As Integer) As Task(Of Boolean)
+        Dim client As New TcpClient
+        Try
+            Await client.ConnectAsync(host, port)
+            Return client.Connected
+        Catch ex As ArgumentOutOfRangeException
+            ' Handle exception
+            Return False
+        Catch
+            ' Handle exception
+            Return False
+        End Try
+    End Function
 
 End Class
 Public Class NetworkDataHelper
