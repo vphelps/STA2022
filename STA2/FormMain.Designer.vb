@@ -386,7 +386,7 @@ Partial Class FormMain
         '
         Me.tbServicesButtonsHelpMessage.Enabled = False
         Me.tbServicesButtonsHelpMessage.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.tbServicesButtonsHelpMessage.Location = New System.Drawing.Point(799, 163)
+        Me.tbServicesButtonsHelpMessage.Location = New System.Drawing.Point(161, 423)
         Me.tbServicesButtonsHelpMessage.Multiline = True
         Me.tbServicesButtonsHelpMessage.Name = "tbServicesButtonsHelpMessage"
         Me.tbServicesButtonsHelpMessage.Size = New System.Drawing.Size(248, 78)
