@@ -66,7 +66,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>CenterEdge.ico</ApplicationIcon>
+    <ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug with Arguments|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -177,6 +177,12 @@
     </Compile>
     <Compile Include="Network.vb" />
     <Compile Include="Services.vb" />
+    <Compile Include="SplashScreen1.Designer.vb">
+      <DependentUpon>SplashScreen1.vb</DependentUpon>
+    </Compile>
+    <Compile Include="SplashScreen1.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="SQLQueries.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +206,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SplashScreen1.resx">
+      <DependentUpon>SplashScreen1.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CenterEdge.ico" />
+    <Content Include="vernware_logo_XUD_icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">

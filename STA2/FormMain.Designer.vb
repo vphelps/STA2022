@@ -107,8 +107,6 @@ Partial Class FormMain
         Me.dgvApplicationInfo = New System.Windows.Forms.DataGridView()
         Me.DataGridViewTextBoxColumn3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.cmsEditMenu = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.tsmCopy = New System.Windows.Forms.ToolStripMenuItem()
         Me.lblWebOptions = New System.Windows.Forms.Label()
         Me.lblAppOptions = New System.Windows.Forms.Label()
         Me.dgvWebOptions = New System.Windows.Forms.DataGridView()
@@ -183,6 +181,7 @@ Partial Class FormMain
         Me.btnCustomPortCheck = New System.Windows.Forms.Button()
         Me.nudCustomPortCheck = New System.Windows.Forms.NumericUpDown()
         Me.gbStandardPortCheck = New System.Windows.Forms.GroupBox()
+        Me.lblStandardPortCheck = New System.Windows.Forms.Label()
         Me.dgvPorts = New System.Windows.Forms.DataGridView()
         Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -244,7 +243,6 @@ Partial Class FormMain
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
-        Me.lblStandardPortCheck = New System.Windows.Forms.Label()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -266,7 +264,6 @@ Partial Class FormMain
         Me.gpLicInfo.SuspendLayout()
         Me.tpAdvData.SuspendLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.cmsEditMenu.SuspendLayout()
         CType(Me.dgvWebOptions, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvAppOptions, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpDbInfo.SuspendLayout()
@@ -346,7 +343,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 701)
-        Me.SplitContainer1.SplitterDistance = 561
+        Me.SplitContainer1.SplitterDistance = 562
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -366,7 +363,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 557)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 558)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -379,7 +376,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 531)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 532)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1172,7 +1169,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 531)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 532)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1224,7 +1221,6 @@ Partial Class FormMain
         Me.dgvApplicationInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvApplicationInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvApplicationInfo.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4})
-        Me.dgvApplicationInfo.ContextMenuStrip = Me.cmsEditMenu
         Me.dgvApplicationInfo.Location = New System.Drawing.Point(4, 33)
         Me.dgvApplicationInfo.Name = "dgvApplicationInfo"
         Me.dgvApplicationInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
@@ -1243,21 +1239,6 @@ Partial Class FormMain
         Me.DataGridViewTextBoxColumn4.HeaderText = "OptionValue"
         Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
         Me.DataGridViewTextBoxColumn4.Width = 90
-        '
-        'cmsEditMenu
-        '
-        Me.cmsEditMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsmCopy})
-        Me.cmsEditMenu.Name = "cmsEditMenu"
-        Me.cmsEditMenu.ShowImageMargin = False
-        Me.cmsEditMenu.Size = New System.Drawing.Size(120, 26)
-        '
-        'tsmCopy
-        '
-        Me.tsmCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.tsmCopy.Name = "tsmCopy"
-        Me.tsmCopy.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
-        Me.tsmCopy.Size = New System.Drawing.Size(119, 22)
-        Me.tsmCopy.Text = "&Copy"
         '
         'lblWebOptions
         '
@@ -1288,7 +1269,6 @@ Partial Class FormMain
         Me.dgvWebOptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvWebOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvWebOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2})
-        Me.dgvWebOptions.ContextMenuStrip = Me.cmsEditMenu
         Me.dgvWebOptions.Location = New System.Drawing.Point(756, 33)
         Me.dgvWebOptions.Name = "dgvWebOptions"
         Me.dgvWebOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
@@ -1317,7 +1297,6 @@ Partial Class FormMain
         Me.dgvAppOptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvAppOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvAppOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.OptionName, Me.OptionValue})
-        Me.dgvAppOptions.ContextMenuStrip = Me.cmsEditMenu
         Me.dgvAppOptions.Location = New System.Drawing.Point(301, 33)
         Me.dgvAppOptions.Name = "dgvAppOptions"
         Me.dgvAppOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
@@ -1345,7 +1324,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 531)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 532)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1360,7 +1339,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 500)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 501)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1452,7 +1431,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 531)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 532)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1540,7 +1519,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 401)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 402)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1712,7 +1691,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 531)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 532)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1786,7 +1765,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 531)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 532)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1979,7 +1958,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 531)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 532)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2052,6 +2031,16 @@ Partial Class FormMain
         Me.gbStandardPortCheck.TabIndex = 7
         Me.gbStandardPortCheck.TabStop = False
         Me.gbStandardPortCheck.Text = "Standard Port Check"
+        '
+        'lblStandardPortCheck
+        '
+        Me.lblStandardPortCheck.AutoSize = True
+        Me.lblStandardPortCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblStandardPortCheck.Location = New System.Drawing.Point(55, 279)
+        Me.lblStandardPortCheck.Name = "lblStandardPortCheck"
+        Me.lblStandardPortCheck.Size = New System.Drawing.Size(198, 26)
+        Me.lblStandardPortCheck.TabIndex = 5
+        Me.lblStandardPortCheck.Text = "Warning:  The Port Checks" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
         '
         'dgvPorts
         '
@@ -2152,7 +2141,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 531)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 532)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2208,7 +2197,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 531)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 532)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2336,7 +2325,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 531)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 532)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2611,16 +2600,6 @@ Partial Class FormMain
         '
         Me.fbdEODB.Description = "EODB Troubleshooting"
         '
-        'lblStandardPortCheck
-        '
-        Me.lblStandardPortCheck.AutoSize = True
-        Me.lblStandardPortCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblStandardPortCheck.Location = New System.Drawing.Point(55, 279)
-        Me.lblStandardPortCheck.Name = "lblStandardPortCheck"
-        Me.lblStandardPortCheck.Size = New System.Drawing.Size(198, 26)
-        Me.lblStandardPortCheck.TabIndex = 5
-        Me.lblStandardPortCheck.Text = "Warning:  The Port Checks" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2669,7 +2648,6 @@ Partial Class FormMain
         Me.tpAdvData.ResumeLayout(False)
         Me.tpAdvData.PerformLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.cmsEditMenu.ResumeLayout(False)
         CType(Me.dgvWebOptions, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvAppOptions, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpDbInfo.ResumeLayout(False)
@@ -2844,8 +2822,6 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents lblAppOptions As Label
     Friend WithEvents lblWebOptions As Label
-    Friend WithEvents cmsEditMenu As ContextMenuStrip
-    Friend WithEvents tsmCopy As ToolStripMenuItem
     Friend WithEvents ttSTA2 As ToolTip
     Friend WithEvents gpPcInfo As GroupBox
     Friend WithEvents tlpPcInfo As TableLayoutPanel
