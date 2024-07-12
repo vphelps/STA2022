@@ -107,8 +107,6 @@ Partial Class FormMain
         Me.dgvApplicationInfo = New System.Windows.Forms.DataGridView()
         Me.DataGridViewTextBoxColumn3 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DataGridViewTextBoxColumn4 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.cmsEditMenu = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.tsmCopy = New System.Windows.Forms.ToolStripMenuItem()
         Me.lblWebOptions = New System.Windows.Forms.Label()
         Me.lblAppOptions = New System.Windows.Forms.Label()
         Me.dgvWebOptions = New System.Windows.Forms.DataGridView()
@@ -266,7 +264,6 @@ Partial Class FormMain
         Me.gpLicInfo.SuspendLayout()
         Me.tpAdvData.SuspendLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.cmsEditMenu.SuspendLayout()
         CType(Me.dgvWebOptions, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.dgvAppOptions, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpDbInfo.SuspendLayout()
@@ -1224,7 +1221,6 @@ Partial Class FormMain
         Me.dgvApplicationInfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvApplicationInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvApplicationInfo.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn3, Me.DataGridViewTextBoxColumn4})
-        Me.dgvApplicationInfo.ContextMenuStrip = Me.cmsEditMenu
         Me.dgvApplicationInfo.Location = New System.Drawing.Point(4, 33)
         Me.dgvApplicationInfo.Name = "dgvApplicationInfo"
         Me.dgvApplicationInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
@@ -1243,21 +1239,6 @@ Partial Class FormMain
         Me.DataGridViewTextBoxColumn4.HeaderText = "OptionValue"
         Me.DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
         Me.DataGridViewTextBoxColumn4.Width = 90
-        '
-        'cmsEditMenu
-        '
-        Me.cmsEditMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsmCopy})
-        Me.cmsEditMenu.Name = "cmsEditMenu"
-        Me.cmsEditMenu.ShowImageMargin = False
-        Me.cmsEditMenu.Size = New System.Drawing.Size(120, 26)
-        '
-        'tsmCopy
-        '
-        Me.tsmCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.tsmCopy.Name = "tsmCopy"
-        Me.tsmCopy.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
-        Me.tsmCopy.Size = New System.Drawing.Size(119, 22)
-        Me.tsmCopy.Text = "&Copy"
         '
         'lblWebOptions
         '
@@ -1288,7 +1269,6 @@ Partial Class FormMain
         Me.dgvWebOptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvWebOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvWebOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2})
-        Me.dgvWebOptions.ContextMenuStrip = Me.cmsEditMenu
         Me.dgvWebOptions.Location = New System.Drawing.Point(756, 33)
         Me.dgvWebOptions.Name = "dgvWebOptions"
         Me.dgvWebOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
@@ -1317,7 +1297,6 @@ Partial Class FormMain
         Me.dgvAppOptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvAppOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvAppOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.OptionName, Me.OptionValue})
-        Me.dgvAppOptions.ContextMenuStrip = Me.cmsEditMenu
         Me.dgvAppOptions.Location = New System.Drawing.Point(301, 33)
         Me.dgvAppOptions.Name = "dgvAppOptions"
         Me.dgvAppOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
@@ -2669,7 +2648,6 @@ Partial Class FormMain
         Me.tpAdvData.ResumeLayout(False)
         Me.tpAdvData.PerformLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.cmsEditMenu.ResumeLayout(False)
         CType(Me.dgvWebOptions, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.dgvAppOptions, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpDbInfo.ResumeLayout(False)
@@ -2844,8 +2822,6 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents lblAppOptions As Label
     Friend WithEvents lblWebOptions As Label
-    Friend WithEvents cmsEditMenu As ContextMenuStrip
-    Friend WithEvents tsmCopy As ToolStripMenuItem
     Friend WithEvents ttSTA2 As ToolTip
     Friend WithEvents gpPcInfo As GroupBox
     Friend WithEvents tlpPcInfo As TableLayoutPanel
