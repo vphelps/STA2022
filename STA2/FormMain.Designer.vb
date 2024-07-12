@@ -131,8 +131,6 @@ Partial Class FormMain
         Me.gpDbLogData = New System.Windows.Forms.GroupBox()
         Me.dgvDbLogData = New System.Windows.Forms.DataGridView()
         Me.pnlDbLogs = New System.Windows.Forms.Panel()
-        Me.btnCloudRestart = New System.Windows.Forms.Button()
-        Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
         Me.gpMessageLogFilters = New System.Windows.Forms.GroupBox()
         Me.lblMsgLogNumRows = New System.Windows.Forms.Label()
         Me.lblMsgLogEndDate = New System.Windows.Forms.Label()
@@ -190,10 +188,12 @@ Partial Class FormMain
         Me.gpCloudComm = New System.Windows.Forms.GroupBox()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.btnRelayRefresh = New System.Windows.Forms.Button()
+        Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
         Me.tbStageRelayConn = New System.Windows.Forms.TextBox()
         Me.lblStageRelayConn = New System.Windows.Forms.Label()
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.gpAdvUpgrade = New System.Windows.Forms.GroupBox()
+        Me.tbAdvupgrade = New System.Windows.Forms.TextBox()
         Me.cbAdvUpgradeNoBackup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
@@ -243,6 +243,7 @@ Partial Class FormMain
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
+        Me.lblAdvUpgrade = New System.Windows.Forms.Label()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -343,7 +344,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 701)
-        Me.SplitContainer1.SplitterDistance = 562
+        Me.SplitContainer1.SplitterDistance = 565
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -363,7 +364,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 558)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 561)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -376,7 +377,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 532)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 535)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1169,7 +1170,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 532)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 535)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1324,7 +1325,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 532)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 535)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1339,7 +1340,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 501)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 504)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1406,7 +1407,7 @@ Partial Class FormMain
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1053, 445)
+        Me.pnlDbData.Size = New System.Drawing.Size(1053, 493)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -1420,7 +1421,7 @@ Partial Class FormMain
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 445)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 493)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tpDbLogs
@@ -1431,7 +1432,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 532)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 535)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1450,8 +1451,8 @@ Partial Class FormMain
         Me.tlpLogData.Name = "tlpLogData"
         Me.tlpLogData.RowCount = 1
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 371.0!))
-        Me.tlpLogData.Size = New System.Drawing.Size(1039, 344)
+        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 396.0!))
+        Me.tlpLogData.Size = New System.Drawing.Size(1039, 396)
         Me.tlpLogData.TabIndex = 5
         '
         'gpDbLogCount
@@ -1461,7 +1462,7 @@ Partial Class FormMain
         Me.gpDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gpDbLogCount.Location = New System.Drawing.Point(3, 3)
         Me.gpDbLogCount.Name = "gpDbLogCount"
-        Me.gpDbLogCount.Size = New System.Drawing.Size(245, 365)
+        Me.gpDbLogCount.Size = New System.Drawing.Size(245, 390)
         Me.gpDbLogCount.TabIndex = 3
         Me.gpDbLogCount.TabStop = False
         Me.gpDbLogCount.Text = "Log Count"
@@ -1478,7 +1479,7 @@ Partial Class FormMain
         Me.dgvDbLogCount.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
         Me.dgvDbLogCount.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogCount.Name = "dgvDbLogCount"
-        Me.dgvDbLogCount.Size = New System.Drawing.Size(239, 346)
+        Me.dgvDbLogCount.Size = New System.Drawing.Size(239, 371)
         Me.dgvDbLogCount.TabIndex = 1
         '
         'gpDbLogData
@@ -1488,7 +1489,7 @@ Partial Class FormMain
         Me.gpDbLogData.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gpDbLogData.Location = New System.Drawing.Point(254, 3)
         Me.gpDbLogData.Name = "gpDbLogData"
-        Me.gpDbLogData.Size = New System.Drawing.Size(782, 365)
+        Me.gpDbLogData.Size = New System.Drawing.Size(782, 390)
         Me.gpDbLogData.TabIndex = 4
         Me.gpDbLogData.TabStop = False
         Me.gpDbLogData.Text = "Log Data"
@@ -1506,40 +1507,22 @@ Partial Class FormMain
         Me.dgvDbLogData.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogData.Name = "dgvDbLogData"
         Me.dgvDbLogData.ReadOnly = True
-        Me.dgvDbLogData.Size = New System.Drawing.Size(776, 346)
+        Me.dgvDbLogData.Size = New System.Drawing.Size(776, 371)
         Me.dgvDbLogData.TabIndex = 2
         '
         'pnlDbLogs
         '
         Me.pnlDbLogs.BackColor = System.Drawing.Color.LightGray
         Me.pnlDbLogs.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.pnlDbLogs.Controls.Add(Me.btnCloudRestart)
         Me.pnlDbLogs.Controls.Add(Me.gpMessageLogFilters)
         Me.pnlDbLogs.Controls.Add(Me.btnDbLogRefresh)
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 402)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 405)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
-        '
-        'btnCloudRestart
-        '
-        Me.btnCloudRestart.ImageIndex = 0
-        Me.btnCloudRestart.ImageList = Me.ImageList1
-        Me.btnCloudRestart.Location = New System.Drawing.Point(788, 44)
-        Me.btnCloudRestart.Name = "btnCloudRestart"
-        Me.btnCloudRestart.Size = New System.Drawing.Size(56, 58)
-        Me.btnCloudRestart.TabIndex = 5
-        Me.btnCloudRestart.UseVisualStyleBackColor = True
-        '
-        'ImageList1
-        '
-        Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
-        Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
-        Me.ImageList1.Images.SetKeyName(0, "RestartCloud2.bmp")
-        Me.ImageList1.Images.SetKeyName(1, "reload-icon-8.jpg")
         '
         'gpMessageLogFilters
         '
@@ -1655,7 +1638,7 @@ Partial Class FormMain
         '
         'btnDbLogRefresh
         '
-        Me.btnDbLogRefresh.Location = New System.Drawing.Point(837, 3)
+        Me.btnDbLogRefresh.Location = New System.Drawing.Point(959, 93)
         Me.btnDbLogRefresh.Name = "btnDbLogRefresh"
         Me.btnDbLogRefresh.Size = New System.Drawing.Size(75, 23)
         Me.btnDbLogRefresh.TabIndex = 2
@@ -1691,7 +1674,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 532)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 535)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1765,7 +1748,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 532)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 535)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1958,7 +1941,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 532)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 535)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2119,6 +2102,13 @@ Partial Class FormMain
         Me.btnRelayRefresh.TabIndex = 2
         Me.btnRelayRefresh.UseVisualStyleBackColor = True
         '
+        'ImageList1
+        '
+        Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
+        Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
+        Me.ImageList1.Images.SetKeyName(0, "RestartCloud2.bmp")
+        Me.ImageList1.Images.SetKeyName(1, "reload-icon-8.jpg")
+        '
         'tbStageRelayConn
         '
         Me.tbStageRelayConn.Location = New System.Drawing.Point(159, 28)
@@ -2141,31 +2131,41 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 532)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 535)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
         '
         'gpAdvUpgrade
         '
+        Me.gpAdvUpgrade.Controls.Add(Me.lblAdvUpgrade)
+        Me.gpAdvUpgrade.Controls.Add(Me.tbAdvupgrade)
         Me.gpAdvUpgrade.Controls.Add(Me.cbAdvUpgradeNoBackup)
         Me.gpAdvUpgrade.Controls.Add(Me.cbAdvUpgradeNoSetup)
         Me.gpAdvUpgrade.Controls.Add(Me.cbAdvUpgradeQuiet)
-        Me.gpAdvUpgrade.Location = New System.Drawing.Point(568, 26)
+        Me.gpAdvUpgrade.Location = New System.Drawing.Point(6, 6)
         Me.gpAdvUpgrade.Name = "gpAdvUpgrade"
-        Me.gpAdvUpgrade.Size = New System.Drawing.Size(274, 127)
+        Me.gpAdvUpgrade.Size = New System.Drawing.Size(274, 156)
         Me.gpAdvUpgrade.TabIndex = 0
         Me.gpAdvUpgrade.TabStop = False
         Me.gpAdvUpgrade.Text = "Advantage Upgrade"
+        '
+        'tbAdvupgrade
+        '
+        Me.tbAdvupgrade.Location = New System.Drawing.Point(17, 130)
+        Me.tbAdvupgrade.Name = "tbAdvupgrade"
+        Me.tbAdvupgrade.Size = New System.Drawing.Size(269, 20)
+        Me.tbAdvupgrade.TabIndex = 3
+        Me.tbAdvupgrade.Text = "AdvUpgrade.exe"
         '
         'cbAdvUpgradeNoBackup
         '
         Me.cbAdvUpgradeNoBackup.AutoSize = True
         Me.cbAdvUpgradeNoBackup.Location = New System.Drawing.Point(17, 77)
         Me.cbAdvUpgradeNoBackup.Name = "cbAdvUpgradeNoBackup"
-        Me.cbAdvUpgradeNoBackup.Size = New System.Drawing.Size(135, 17)
+        Me.cbAdvUpgradeNoBackup.Size = New System.Drawing.Size(197, 17)
         Me.cbAdvUpgradeNoBackup.TabIndex = 2
-        Me.cbAdvUpgradeNoBackup.Text = "Do not make a backup"
+        Me.cbAdvUpgradeNoBackup.Text = "Do not make a backup [/nobackup]"
         Me.cbAdvUpgradeNoBackup.UseVisualStyleBackColor = True
         '
         'cbAdvUpgradeNoSetup
@@ -2173,9 +2173,9 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoSetup.AutoSize = True
         Me.cbAdvUpgradeNoSetup.Location = New System.Drawing.Point(17, 54)
         Me.cbAdvUpgradeNoSetup.Name = "cbAdvUpgradeNoSetup"
-        Me.cbAdvUpgradeNoSetup.Size = New System.Drawing.Size(162, 17)
+        Me.cbAdvUpgradeNoSetup.Size = New System.Drawing.Size(214, 17)
         Me.cbAdvUpgradeNoSetup.TabIndex = 1
-        Me.cbAdvUpgradeNoSetup.Text = "Do not run Advantage Setup"
+        Me.cbAdvUpgradeNoSetup.Text = "Do not run Advantage Setup [/nosetup]"
         Me.cbAdvUpgradeNoSetup.UseVisualStyleBackColor = True
         '
         'cbAdvUpgradeQuiet
@@ -2183,9 +2183,9 @@ Partial Class FormMain
         Me.cbAdvUpgradeQuiet.AutoSize = True
         Me.cbAdvUpgradeQuiet.Location = New System.Drawing.Point(17, 31)
         Me.cbAdvUpgradeQuiet.Name = "cbAdvUpgradeQuiet"
-        Me.cbAdvUpgradeQuiet.Size = New System.Drawing.Size(228, 17)
+        Me.cbAdvUpgradeQuiet.Size = New System.Drawing.Size(248, 17)
         Me.cbAdvUpgradeQuiet.TabIndex = 0
-        Me.cbAdvUpgradeQuiet.Text = "Quiet Mode (Runs in Cmd Prompt Window)"
+        Me.cbAdvUpgradeQuiet.Text = "Quiet Mode (Runs in Cmd Prompt Window) [/q]"
         Me.cbAdvUpgradeQuiet.UseVisualStyleBackColor = True
         '
         'tpEODB
@@ -2197,7 +2197,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 532)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 535)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2325,7 +2325,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 532)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 535)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2600,6 +2600,15 @@ Partial Class FormMain
         '
         Me.fbdEODB.Description = "EODB Troubleshooting"
         '
+        'lblAdvUpgrade
+        '
+        Me.lblAdvUpgrade.AutoSize = True
+        Me.lblAdvUpgrade.Location = New System.Drawing.Point(14, 114)
+        Me.lblAdvUpgrade.Name = "lblAdvUpgrade"
+        Me.lblAdvUpgrade.Size = New System.Drawing.Size(77, 13)
+        Me.lblAdvUpgrade.TabIndex = 4
+        Me.lblAdvUpgrade.Text = "Command Line"
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2863,7 +2872,6 @@ Partial Class FormMain
     Friend WithEvents lblPcDrInstr2b As Label
     Friend WithEvents lblPcDrInstr2a As Label
     Friend WithEvents lblPcDrInstr2 As Label
-    Friend WithEvents btnCloudRestart As Button
     Friend WithEvents ImageList1 As ImageList
     Friend WithEvents btnAdvManager As Button
     Friend WithEvents btnAdvGroups As Button
@@ -2924,4 +2932,6 @@ Partial Class FormMain
     Friend WithEvents btnSaveWebOptionsCSV As Button
     Friend WithEvents btnSaveAppotionsCSV As Button
     Friend WithEvents lblStandardPortCheck As Label
+    Friend WithEvents tbAdvupgrade As TextBox
+    Friend WithEvents lblAdvUpgrade As Label
 End Class

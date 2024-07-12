@@ -1161,4 +1161,31 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub cbAdvUpgradeQuiet_CheckedChanged(sender As Object, e As EventArgs) Handles cbAdvUpgradeQuiet.CheckedChanged, cbAdvUpgradeNoBackup.CheckedChanged, cbAdvUpgradeNoSetup.CheckedChanged
+        Dim quiet As String
+        Dim nobackup As String
+        Dim nosetup As String
+        If cbAdvUpgradeQuiet.Checked Then
+            quiet = "/q "
+        Else
+            quiet = ""
+        End If
+        If cbAdvUpgradeNoBackup.Checked Then
+            nobackup = "/nobackup "
+        Else
+            nobackup = ""
+        End If
+        If cbAdvUpgradeNoSetup.Checked Then
+            nosetup = "/nosetup "
+        Else
+            nosetup = ""
+        End If
+        tbAdvupgrade.Text = "AdvUpgrade.exe " + quiet + nobackup + nosetup
+
+    End Sub
+
+    Private Sub tbAdvupgrade_KeyPress(sender As Object, e As KeyPressEventArgs) Handles tbAdvupgrade.KeyPress
+        e.KeyChar = Chr(0)
+
+    End Sub
 End Class
