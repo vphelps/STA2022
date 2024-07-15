@@ -1,4 +1,6 @@
 ﻿
+Imports Microsoft.Office.Interop.Excel
+
 Public Class CodeHelper
     Public Shared Sub FirstLoad()
         Dim strTemp As String = ""
@@ -124,8 +126,12 @@ Public Class CodeHelper
 
         FormMain.flpServices.Enabled = Admin
         FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
-
-
-
     End Sub
+    Public Shared Function AdvExeCheck(Executable As String)
+        Dim fileExists As Boolean
+
+        fileExists = My.Computer.FileSystem.FileExists(String.Format("{0}{1}.exe", AppData.CEPath, Executable))
+        Return fileExists
+
+    End Function
 End Class

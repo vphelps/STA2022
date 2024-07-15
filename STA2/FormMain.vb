@@ -152,6 +152,13 @@ Public Class FormMain
         tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
 
         btnAdvUpgrade.Visible = My.Computer.FileSystem.FileExists("C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe")
+        btnAdvRedeem.Enabled = CodeHelper.AdvExeCheck("AdvRedeem")
+        btnAdvCardTech.Enabled = CodeHelper.AdvExeCheck("AdvCardTech")
+        btnAdvReportEditor.Enabled = CodeHelper.AdvExeCheck("AdvReportEditor")
+        btnAdvManager.Enabled = CodeHelper.AdvExeCheck("AdvManager")
+        btnPos.Enabled = CodeHelper.AdvExeCheck("Pos")
+        btnAdvGroups.Enabled = CodeHelper.AdvExeCheck("AdvGroups")
+
     End Sub
 
     Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
@@ -504,12 +511,16 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click
 
         Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
 
         Dim Executable As String = caller.Name.Replace("btn", "")
         Executable = String.Format("{0}{1}.exe", AppData.CEPath, Executable)
+
+
+        Dim fileExists As Boolean
+        fileExists = My.Computer.FileSystem.FileExists(Executable)
         Diagnostics.Process.Start(Executable)
 
     End Sub
@@ -521,7 +532,7 @@ Public Class FormMain
             Dim value As Integer = row.Cells("PortNo").Value
 
             'tmpBoolean = TCPCheck(host, row.Cells(0).Value)
-            Dim result As Boolean = Await ConnectAsync("L-CE1456", 80)
+            Dim result As Boolean = Await ConnectAsync("L-CE1456", value)
 
             If result Then
                 row.Cells(2).Value = "Port Open"
@@ -536,6 +547,8 @@ Public Class FormMain
     End Sub
 
     Private Async Sub btnRelayRefresh_Click(sender As Object, e As EventArgs) Handles btnRelayRefresh.Click
+        tbStageRelayConn.Text = "Testing Stage Relay Connection..."
+        tbStageRelayConn.BackColor = TextboxColors.White
         Dim result As Boolean = Await ConnectAsync("relay-us-east-1.centeredgeonline.com", 50511)
 
         If result Then

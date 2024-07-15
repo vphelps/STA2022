@@ -193,6 +193,7 @@ Partial Class FormMain
         Me.lblStageRelayConn = New System.Windows.Forms.Label()
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.gpAdvUpgrade = New System.Windows.Forms.GroupBox()
+        Me.lblAdvUpgrade = New System.Windows.Forms.Label()
         Me.tbAdvupgrade = New System.Windows.Forms.TextBox()
         Me.cbAdvUpgradeNoBackup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
@@ -215,8 +216,10 @@ Partial Class FormMain
         Me.btnDpNew = New System.Windows.Forms.Button()
         Me.btDpEdit = New System.Windows.Forms.Button()
         Me.dgvDatapumps = New System.Windows.Forms.DataGridView()
-        Me.gnAdvApps = New System.Windows.Forms.GroupBox()
+        Me.gbAdvApps = New System.Windows.Forms.GroupBox()
         Me.btnAdvManager = New System.Windows.Forms.Button()
+        Me.btnAdvCardTech = New System.Windows.Forms.Button()
+        Me.btnAdvRedeem = New System.Windows.Forms.Button()
         Me.btnPos = New System.Windows.Forms.Button()
         Me.btnAdvReportEditor = New System.Windows.Forms.Button()
         Me.btnAdvGroups = New System.Windows.Forms.Button()
@@ -243,7 +246,7 @@ Partial Class FormMain
         Me.ttSTA2 = New System.Windows.Forms.ToolTip(Me.components)
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
-        Me.lblAdvUpgrade = New System.Windows.Forms.Label()
+        Me.lblAdvApps = New System.Windows.Forms.Label()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -301,7 +304,7 @@ Partial Class FormMain
         Me.gbEODBParameter.SuspendLayout()
         Me.tpDatapump.SuspendLayout()
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.gnAdvApps.SuspendLayout()
+        Me.gbAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -309,7 +312,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(990, 83)
+        Me.btnExit.Location = New System.Drawing.Point(990, 111)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(64, 20)
         Me.btnExit.TabIndex = 0
@@ -332,7 +335,7 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.gnAdvApps)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbMLTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest3)
@@ -343,8 +346,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnLogin)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 701)
-        Me.SplitContainer1.SplitterDistance = 565
+        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 776)
+        Me.SplitContainer1.SplitterDistance = 614
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -364,7 +367,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 561)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 610)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -377,7 +380,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 535)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 584)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1170,7 +1173,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 535)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 584)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1325,7 +1328,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 535)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 584)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1340,7 +1343,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 504)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 553)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1407,7 +1410,7 @@ Partial Class FormMain
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1053, 493)
+        Me.pnlDbData.Size = New System.Drawing.Size(1053, 540)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -1421,7 +1424,7 @@ Partial Class FormMain
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 493)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1053, 540)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tpDbLogs
@@ -1432,7 +1435,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 535)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 584)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1451,8 +1454,8 @@ Partial Class FormMain
         Me.tlpLogData.Name = "tlpLogData"
         Me.tlpLogData.RowCount = 1
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 396.0!))
-        Me.tlpLogData.Size = New System.Drawing.Size(1039, 396)
+        Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 443.0!))
+        Me.tlpLogData.Size = New System.Drawing.Size(1039, 443)
         Me.tlpLogData.TabIndex = 5
         '
         'gpDbLogCount
@@ -1462,7 +1465,7 @@ Partial Class FormMain
         Me.gpDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gpDbLogCount.Location = New System.Drawing.Point(3, 3)
         Me.gpDbLogCount.Name = "gpDbLogCount"
-        Me.gpDbLogCount.Size = New System.Drawing.Size(245, 390)
+        Me.gpDbLogCount.Size = New System.Drawing.Size(245, 437)
         Me.gpDbLogCount.TabIndex = 3
         Me.gpDbLogCount.TabStop = False
         Me.gpDbLogCount.Text = "Log Count"
@@ -1479,7 +1482,7 @@ Partial Class FormMain
         Me.dgvDbLogCount.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
         Me.dgvDbLogCount.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogCount.Name = "dgvDbLogCount"
-        Me.dgvDbLogCount.Size = New System.Drawing.Size(239, 371)
+        Me.dgvDbLogCount.Size = New System.Drawing.Size(239, 418)
         Me.dgvDbLogCount.TabIndex = 1
         '
         'gpDbLogData
@@ -1489,7 +1492,7 @@ Partial Class FormMain
         Me.gpDbLogData.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gpDbLogData.Location = New System.Drawing.Point(254, 3)
         Me.gpDbLogData.Name = "gpDbLogData"
-        Me.gpDbLogData.Size = New System.Drawing.Size(782, 390)
+        Me.gpDbLogData.Size = New System.Drawing.Size(782, 437)
         Me.gpDbLogData.TabIndex = 4
         Me.gpDbLogData.TabStop = False
         Me.gpDbLogData.Text = "Log Data"
@@ -1507,7 +1510,7 @@ Partial Class FormMain
         Me.dgvDbLogData.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogData.Name = "dgvDbLogData"
         Me.dgvDbLogData.ReadOnly = True
-        Me.dgvDbLogData.Size = New System.Drawing.Size(776, 371)
+        Me.dgvDbLogData.Size = New System.Drawing.Size(776, 418)
         Me.dgvDbLogData.TabIndex = 2
         '
         'pnlDbLogs
@@ -1519,7 +1522,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 405)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 454)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1674,7 +1677,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 535)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 584)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1748,7 +1751,7 @@ Partial Class FormMain
         Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
         Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
         Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 535)
+        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 584)
         Me.tpPlayerCardDeferredRevenue.TabIndex = 5
         Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
         '
@@ -1941,7 +1944,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 535)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 584)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2131,7 +2134,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 535)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 584)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2149,6 +2152,15 @@ Partial Class FormMain
         Me.gpAdvUpgrade.TabIndex = 0
         Me.gpAdvUpgrade.TabStop = False
         Me.gpAdvUpgrade.Text = "Advantage Upgrade"
+        '
+        'lblAdvUpgrade
+        '
+        Me.lblAdvUpgrade.AutoSize = True
+        Me.lblAdvUpgrade.Location = New System.Drawing.Point(14, 114)
+        Me.lblAdvUpgrade.Name = "lblAdvUpgrade"
+        Me.lblAdvUpgrade.Size = New System.Drawing.Size(77, 13)
+        Me.lblAdvUpgrade.TabIndex = 4
+        Me.lblAdvUpgrade.Text = "Command Line"
         '
         'tbAdvupgrade
         '
@@ -2197,7 +2209,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 535)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 584)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2325,7 +2337,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 535)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 584)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2371,21 +2383,25 @@ Partial Class FormMain
         Me.dgvDatapumps.Size = New System.Drawing.Size(1041, 429)
         Me.dgvDatapumps.TabIndex = 0
         '
-        'gnAdvApps
+        'gbAdvApps
         '
-        Me.gnAdvApps.Controls.Add(Me.btnAdvManager)
-        Me.gnAdvApps.Controls.Add(Me.btnPos)
-        Me.gnAdvApps.Controls.Add(Me.btnAdvReportEditor)
-        Me.gnAdvApps.Controls.Add(Me.btnAdvGroups)
-        Me.gnAdvApps.Location = New System.Drawing.Point(3, 3)
-        Me.gnAdvApps.Name = "gnAdvApps"
-        Me.gnAdvApps.Size = New System.Drawing.Size(267, 115)
-        Me.gnAdvApps.TabIndex = 19
-        Me.gnAdvApps.TabStop = False
-        Me.gnAdvApps.Text = "Advantage Applications"
+        Me.gbAdvApps.Controls.Add(Me.lblAdvApps)
+        Me.gbAdvApps.Controls.Add(Me.btnAdvManager)
+        Me.gbAdvApps.Controls.Add(Me.btnAdvCardTech)
+        Me.gbAdvApps.Controls.Add(Me.btnAdvRedeem)
+        Me.gbAdvApps.Controls.Add(Me.btnPos)
+        Me.gbAdvApps.Controls.Add(Me.btnAdvReportEditor)
+        Me.gbAdvApps.Controls.Add(Me.btnAdvGroups)
+        Me.gbAdvApps.Location = New System.Drawing.Point(3, 3)
+        Me.gbAdvApps.Name = "gbAdvApps"
+        Me.gbAdvApps.Size = New System.Drawing.Size(267, 127)
+        Me.gbAdvApps.TabIndex = 19
+        Me.gbAdvApps.TabStop = False
+        Me.gbAdvApps.Text = "Advantage Applications"
         '
         'btnAdvManager
         '
+        Me.btnAdvManager.Enabled = False
         Me.btnAdvManager.Location = New System.Drawing.Point(7, 20)
         Me.btnAdvManager.Name = "btnAdvManager"
         Me.btnAdvManager.Size = New System.Drawing.Size(75, 48)
@@ -2393,8 +2409,29 @@ Partial Class FormMain
         Me.btnAdvManager.Text = "Manager " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Console"
         Me.btnAdvManager.UseVisualStyleBackColor = True
         '
+        'btnAdvCardTech
+        '
+        Me.btnAdvCardTech.Enabled = False
+        Me.btnAdvCardTech.Location = New System.Drawing.Point(169, 71)
+        Me.btnAdvCardTech.Name = "btnAdvCardTech"
+        Me.btnAdvCardTech.Size = New System.Drawing.Size(75, 38)
+        Me.btnAdvCardTech.TabIndex = 15
+        Me.btnAdvCardTech.Text = "Card Tech"
+        Me.btnAdvCardTech.UseVisualStyleBackColor = True
+        '
+        'btnAdvRedeem
+        '
+        Me.btnAdvRedeem.Enabled = False
+        Me.btnAdvRedeem.Location = New System.Drawing.Point(88, 71)
+        Me.btnAdvRedeem.Name = "btnAdvRedeem"
+        Me.btnAdvRedeem.Size = New System.Drawing.Size(75, 38)
+        Me.btnAdvRedeem.TabIndex = 15
+        Me.btnAdvRedeem.Text = "Redemption"
+        Me.btnAdvRedeem.UseVisualStyleBackColor = True
+        '
         'btnPos
         '
+        Me.btnPos.Enabled = False
         Me.btnPos.Location = New System.Drawing.Point(88, 20)
         Me.btnPos.Name = "btnPos"
         Me.btnPos.Size = New System.Drawing.Size(75, 48)
@@ -2404,6 +2441,7 @@ Partial Class FormMain
         '
         'btnAdvReportEditor
         '
+        Me.btnAdvReportEditor.Enabled = False
         Me.btnAdvReportEditor.Location = New System.Drawing.Point(7, 71)
         Me.btnAdvReportEditor.Name = "btnAdvReportEditor"
         Me.btnAdvReportEditor.Size = New System.Drawing.Size(75, 38)
@@ -2413,6 +2451,7 @@ Partial Class FormMain
         '
         'btnAdvGroups
         '
+        Me.btnAdvGroups.Enabled = False
         Me.btnAdvGroups.Location = New System.Drawing.Point(169, 20)
         Me.btnAdvGroups.Name = "btnAdvGroups"
         Me.btnAdvGroups.Size = New System.Drawing.Size(75, 48)
@@ -2423,7 +2462,7 @@ Partial Class FormMain
         'btnAdvUpgrade
         '
         Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAdvUpgrade.Location = New System.Drawing.Point(919, 30)
+        Me.btnAdvUpgrade.Location = New System.Drawing.Point(919, 58)
         Me.btnAdvUpgrade.Name = "btnAdvUpgrade"
         Me.btnAdvUpgrade.Size = New System.Drawing.Size(80, 44)
         Me.btnAdvUpgrade.TabIndex = 18
@@ -2466,7 +2505,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(833, 30)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(833, 58)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2477,7 +2516,7 @@ Partial Class FormMain
         '
         Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(830, 10)
+        Me.Label1.Location = New System.Drawing.Point(830, 38)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(140, 13)
         Me.Label1.TabIndex = 11
@@ -2495,7 +2534,7 @@ Partial Class FormMain
         'btnLogin
         '
         Me.btnLogin.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnLogin.Location = New System.Drawing.Point(976, 5)
+        Me.btnLogin.Location = New System.Drawing.Point(976, 33)
         Me.btnLogin.Name = "btnLogin"
         Me.btnLogin.Size = New System.Drawing.Size(75, 23)
         Me.btnLogin.TabIndex = 10
@@ -2508,7 +2547,7 @@ Partial Class FormMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 677)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 752)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1068, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2600,21 +2639,22 @@ Partial Class FormMain
         '
         Me.fbdEODB.Description = "EODB Troubleshooting"
         '
-        'lblAdvUpgrade
+        'lblAdvApps
         '
-        Me.lblAdvUpgrade.AutoSize = True
-        Me.lblAdvUpgrade.Location = New System.Drawing.Point(14, 114)
-        Me.lblAdvUpgrade.Name = "lblAdvUpgrade"
-        Me.lblAdvUpgrade.Size = New System.Drawing.Size(77, 13)
-        Me.lblAdvUpgrade.TabIndex = 4
-        Me.lblAdvUpgrade.Text = "Command Line"
+        Me.lblAdvApps.AutoSize = True
+        Me.lblAdvApps.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAdvApps.Location = New System.Drawing.Point(13, 112)
+        Me.lblAdvApps.Name = "lblAdvApps"
+        Me.lblAdvApps.Size = New System.Drawing.Size(205, 13)
+        Me.lblAdvApps.TabIndex = 18
+        Me.lblAdvApps.Text = "Button disabled if App not installed"
         '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1068, 701)
+        Me.ClientSize = New System.Drawing.Size(1068, 776)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -2707,7 +2747,8 @@ Partial Class FormMain
         Me.gbEODBParameter.PerformLayout()
         Me.tpDatapump.ResumeLayout(False)
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.gnAdvApps.ResumeLayout(False)
+        Me.gbAdvApps.ResumeLayout(False)
+        Me.gbAdvApps.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ResumeLayout(False)
@@ -2904,7 +2945,7 @@ Partial Class FormMain
     Friend WithEvents btnSaveToXml As Button
     Friend WithEvents btnXmltoWorkbook As Button
     Friend WithEvents tbEodbProgress As TextBox
-    Friend WithEvents gnAdvApps As GroupBox
+    Friend WithEvents gbAdvApps As GroupBox
     Friend WithEvents tbServicesButtonsHelpMessage As TextBox
     Friend WithEvents lblApplicationInfo As Label
     Friend WithEvents dgvApplicationInfo As DataGridView
@@ -2934,4 +2975,7 @@ Partial Class FormMain
     Friend WithEvents lblStandardPortCheck As Label
     Friend WithEvents tbAdvupgrade As TextBox
     Friend WithEvents lblAdvUpgrade As Label
+    Friend WithEvents btnAdvRedeem As Button
+    Friend WithEvents btnAdvCardTech As Button
+    Friend WithEvents lblAdvApps As Label
 End Class
