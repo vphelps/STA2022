@@ -2,6 +2,13 @@
 Imports Microsoft.Office.Interop.Excel
 
 Public Class CodeHelper
+
+    Public Enum AppInstallState
+        NotInstalled = 0
+        InstalledX86 = 1
+        InstalledX64 = 2
+    End Enum
+
     Public Shared Sub FirstLoad()
         Dim strTemp As String = ""
         GetPcInfo()
@@ -128,10 +135,25 @@ Public Class CodeHelper
         FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
     End Sub
     Public Shared Function AdvExeCheck(Executable As String)
-        Dim fileExists As Boolean
+        Dim fileExistsx86 As Boolean
+        Dim fileExistsx64 As Boolean
+        Dim Version As Integer = AppInstallState.NotInstalled
 
-        fileExists = My.Computer.FileSystem.FileExists(String.Format("{0}{1}.exe", AppData.CEPath, Executable))
-        Return fileExists
+        fileExistsx86 = My.Computer.FileSystem.FileExists(String.Format("{0}{1}.exe", AppData.CEPath86, Executable))
+        fileExistsx64 = My.Computer.FileSystem.FileExists(String.Format("{0}{1}.exe", AppData.CEPath64, Executable))
+        If fileExistsx64 Then
+            Version = AppInstallState.InstalledX64
+            Console.WriteLine("x64")
+        ElseIf fileExistsx86 Then
+            Version = AppInstallState.InstalledX86
+            Console.WriteLine("x86")
+
+        End If
+
+        Console.WriteLine(fileExistsx86)
+        Console.WriteLine(fileExistsx64)
+
+        Return Version
 
     End Function
 End Class

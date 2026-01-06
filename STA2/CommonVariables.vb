@@ -6,7 +6,8 @@ Public Class AppData
     Public Shared dbApplicationInfo As New DataSet
 
     Public Shared dbLicData As New DataSet
-    Public Shared CEPath As String = "C:\Program Files (x86)\CenterEdge Software\"
+    Public Shared CEPath86 As String = "C:\Program Files (x86)\CenterEdge Software\"
+    Public Shared CEPath64 As String = "C:\Program Files\CenterEdge Software\"
     Public Shared UpgradePath As String = ""
 End Class
 Public Class Variables
