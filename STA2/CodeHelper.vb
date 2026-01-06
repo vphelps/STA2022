@@ -143,16 +143,10 @@ Public Class CodeHelper
         fileExistsx64 = My.Computer.FileSystem.FileExists(String.Format("{0}{1}.exe", AppData.CEPath64, Executable))
         If fileExistsx64 Then
             Version = AppInstallState.InstalledX64
-            Console.WriteLine("x64")
         ElseIf fileExistsx86 Then
             Version = AppInstallState.InstalledX86
-            Console.WriteLine("x86")
 
         End If
-
-        Console.WriteLine(fileExistsx86)
-        Console.WriteLine(fileExistsx64)
-
         Return Version
 
     End Function
