@@ -150,7 +150,7 @@ Public Class FormMain
         tbTest3.Visible = False
         tbMLTest1.Visible = False
         btnTest.Visible = False
-        tbMLDRTest.visible = False
+        tbMLDRTest.Visible = False
 
 #End If
 
@@ -165,8 +165,6 @@ Public Class FormMain
         btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
 
-        tbTest1.Text = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
-        tbTest2.Text = CodeHelper.AdvExeCheck("AdvManager")
     End Sub
 
     Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
@@ -499,7 +497,7 @@ Public Class FormMain
         MsgBox("Running in Debug Mode, Database not changed", MsgBoxStyle.Information, "DEBUG Mode")
 
 #Else
-                result = DBConnector.CreateCommand(DeferredRevenueQueries.pcDRswitch)
+        result = DBConnector.CreateCommand(DeferredRevenueQueries.pcDRswitch)
         result = DBConnector.CreateCommand((String.Format(DeferredRevenueQueries.SubCatSalesUpdate, DeferredRevenue.pcDeferred, Today, InventoryItem.CatNo, InventoryItem.SubCatNo)))
         result = DBConnector.CreateCommand((String.Format(DeferredRevenueQueries.SaleInsert, Today, InventoryItem.InvNo, DeferredRevenue.pcDeferred, InventoryItem.CatNo, InventoryItem.SubCatNo)))
         result = DBConnector.CreateCommand(DeferredRevenueQueries.pcCardValues)
