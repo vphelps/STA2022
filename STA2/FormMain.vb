@@ -21,6 +21,12 @@ Public Class FormMain
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
     Public Shared LastServiceEntry As ServiceControlEntry
 
+    Public Enum AppInstallState
+        NotInstalled = 0
+        InstalledX86 = 1
+        InstalledX64 = 2
+    End Enum
+
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
 
         If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
@@ -152,13 +158,15 @@ Public Class FormMain
         tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
 
         btnAdvUpgrade.Visible = My.Computer.FileSystem.FileExists("C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe")
-        btnAdvRedeem.Enabled = CodeHelper.AdvExeCheck("AdvRedeem")
-        btnAdvCardTech.Enabled = CodeHelper.AdvExeCheck("AdvCardTech")
-        btnAdvReportEditor.Enabled = CodeHelper.AdvExeCheck("AdvReportEditor")
-        btnAdvManager.Enabled = CodeHelper.AdvExeCheck("AdvManager")
-        btnPos.Enabled = CodeHelper.AdvExeCheck("Pos")
-        btnAdvGroups.Enabled = CodeHelper.AdvExeCheck("AdvGroups")
+        btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
+        btnAdvCardTech.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvCardTech"))
+        btnAdvReportEditor.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvReportEditor"))
+        btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
+        btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
+        btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
 
+        tbTest1.Text = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
+        tbTest2.Text = CodeHelper.AdvExeCheck("AdvManager")
     End Sub
 
     Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
@@ -514,15 +522,17 @@ Public Class FormMain
     Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click
 
         Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
-
         Dim Executable As String = caller.Name.Replace("btn", "")
-        Executable = String.Format("{0}{1}.exe", AppData.CEPath, Executable)
+        Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
+
+        tbTest3.Text = CodeHelper.AdvExeCheck(Executable)
+        If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
+        If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
 
 
         Dim fileExists As Boolean
         fileExists = My.Computer.FileSystem.FileExists(Executable)
         Diagnostics.Process.Start(Executable)
-
     End Sub
 
     Private Async Sub btnPortCheck_Click(sender As Object, e As EventArgs) Handles btnPortCheck.Click
