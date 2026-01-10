@@ -77,7 +77,8 @@ Public Class FormMain
         End If
 
         Connections.IniFileHandler(False)
-        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then FormLogin.ShowDialog()
+        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then Variables.LoggedIn = True Else Variables.LoggedIn = False
+
         CodeHelper.AdminUser(Variables.LoggedIn)
         CodeHelper.FirstLoad()
 
@@ -223,12 +224,6 @@ Public Class FormMain
 
         End Try
 
-
-    End Sub
-
-    Private Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
-        FormLogin.ShowDialog()
-        tmr10Seconds_Tick(sender, e)
 
     End Sub
 
@@ -1209,4 +1204,5 @@ Public Class FormMain
         e.KeyChar = Chr(0)
 
     End Sub
+
 End Class

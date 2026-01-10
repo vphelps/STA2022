@@ -9,6 +9,8 @@ Public Class AppData
     Public Shared CEPath86 As String = "C:\Program Files (x86)\CenterEdge Software\"
     Public Shared CEPath64 As String = "C:\Program Files\CenterEdge Software\"
     Public Shared UpgradePath As String = ""
+    Public Shared InstalledVersion As Integer = 0
+
 End Class
 Public Class Variables
     Public Shared LoggedIn As Boolean = False
