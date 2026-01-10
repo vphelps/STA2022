@@ -152,25 +152,6 @@ Partial Class FormMain
         Me.btnStParse = New System.Windows.Forms.Button()
         Me.btnSTClear = New System.Windows.Forms.Button()
         Me.tbSTParse = New System.Windows.Forms.TextBox()
-        Me.tpPlayerCardDeferredRevenue = New System.Windows.Forms.TabPage()
-        Me.gpPcDrCommit = New System.Windows.Forms.GroupBox()
-        Me.lblPcDrInstr3 = New System.Windows.Forms.Label()
-        Me.lblPcDrInstr2b = New System.Windows.Forms.Label()
-        Me.lblPcDrInstr2a = New System.Windows.Forms.Label()
-        Me.lblPcDrInstr2 = New System.Windows.Forms.Label()
-        Me.lblPcDrInstr1 = New System.Windows.Forms.Label()
-        Me.btnPcDrCommit = New System.Windows.Forms.Button()
-        Me.tbMLDRTest = New System.Windows.Forms.TextBox()
-        Me.gpOutstandingPCDR = New System.Windows.Forms.GroupBox()
-        Me.lblOutstandingPCDR = New System.Windows.Forms.Label()
-        Me.tbOutstandingPCDR = New System.Windows.Forms.TextBox()
-        Me.gpInvItem = New System.Windows.Forms.GroupBox()
-        Me.lblDRInvNo = New System.Windows.Forms.Label()
-        Me.nudDRInvNo = New System.Windows.Forms.NumericUpDown()
-        Me.dgvInvItem = New System.Windows.Forms.DataGridView()
-        Me.InvItemData = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.InvItemValue = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.btnDRInvNo = New System.Windows.Forms.Button()
         Me.tpNetwork = New System.Windows.Forms.TabPage()
         Me.gbCustomPortCheck = New System.Windows.Forms.GroupBox()
         Me.lblCustomPortCheck = New System.Windows.Forms.Label()
@@ -283,12 +264,6 @@ Partial Class FormMain
         CType(Me.nudMsgLog, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpStParse.SuspendLayout()
         Me.Panel1.SuspendLayout()
-        Me.tpPlayerCardDeferredRevenue.SuspendLayout()
-        Me.gpPcDrCommit.SuspendLayout()
-        Me.gpOutstandingPCDR.SuspendLayout()
-        Me.gpInvItem.SuspendLayout()
-        CType(Me.nudDRInvNo, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.dgvInvItem, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpNetwork.SuspendLayout()
         Me.gbCustomPortCheck.SuspendLayout()
         CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -343,7 +318,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 776)
-        Me.SplitContainer1.SplitterDistance = 618
+        Me.SplitContainer1.SplitterDistance = 619
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -354,7 +329,6 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpDbInfo)
         Me.tcSTA.Controls.Add(Me.tpDbLogs)
         Me.tcSTA.Controls.Add(Me.tpStParse)
-        Me.tcSTA.Controls.Add(Me.tpPlayerCardDeferredRevenue)
         Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Controls.Add(Me.tpOptions)
         Me.tcSTA.Controls.Add(Me.tpEODB)
@@ -363,7 +337,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 614)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 615)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -376,7 +350,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 588)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 589)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1169,7 +1143,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 588)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 589)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1324,7 +1298,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 588)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 589)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1339,7 +1313,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 557)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 558)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1431,7 +1405,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 588)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 589)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1518,7 +1492,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 458)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 459)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1673,7 +1647,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 588)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 589)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1736,202 +1710,6 @@ Partial Class FormMain
         Me.tbSTParse.Size = New System.Drawing.Size(836, 435)
         Me.tbSTParse.TabIndex = 2
         '
-        'tpPlayerCardDeferredRevenue
-        '
-        Me.tpPlayerCardDeferredRevenue.BackColor = System.Drawing.Color.DarkGray
-        Me.tpPlayerCardDeferredRevenue.Controls.Add(Me.gpPcDrCommit)
-        Me.tpPlayerCardDeferredRevenue.Controls.Add(Me.btnPcDrCommit)
-        Me.tpPlayerCardDeferredRevenue.Controls.Add(Me.tbMLDRTest)
-        Me.tpPlayerCardDeferredRevenue.Controls.Add(Me.gpOutstandingPCDR)
-        Me.tpPlayerCardDeferredRevenue.Controls.Add(Me.gpInvItem)
-        Me.tpPlayerCardDeferredRevenue.Location = New System.Drawing.Point(4, 22)
-        Me.tpPlayerCardDeferredRevenue.Name = "tpPlayerCardDeferredRevenue"
-        Me.tpPlayerCardDeferredRevenue.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpPlayerCardDeferredRevenue.Size = New System.Drawing.Size(1056, 588)
-        Me.tpPlayerCardDeferredRevenue.TabIndex = 5
-        Me.tpPlayerCardDeferredRevenue.Text = "PlayerCard Def Rev"
-        '
-        'gpPcDrCommit
-        '
-        Me.gpPcDrCommit.BackColor = System.Drawing.Color.LightGray
-        Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr3)
-        Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr2b)
-        Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr2a)
-        Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr2)
-        Me.gpPcDrCommit.Controls.Add(Me.lblPcDrInstr1)
-        Me.gpPcDrCommit.Location = New System.Drawing.Point(23, 280)
-        Me.gpPcDrCommit.Name = "gpPcDrCommit"
-        Me.gpPcDrCommit.Size = New System.Drawing.Size(479, 143)
-        Me.gpPcDrCommit.TabIndex = 25
-        Me.gpPcDrCommit.TabStop = False
-        Me.gpPcDrCommit.Text = "Instructions"
-        '
-        'lblPcDrInstr3
-        '
-        Me.lblPcDrInstr3.AutoSize = True
-        Me.lblPcDrInstr3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPcDrInstr3.Location = New System.Drawing.Point(9, 84)
-        Me.lblPcDrInstr3.Name = "lblPcDrInstr3"
-        Me.lblPcDrInstr3.Size = New System.Drawing.Size(357, 13)
-        Me.lblPcDrInstr3.TabIndex = 4
-        Me.lblPcDrInstr3.Text = "3.  By pressing commit changes will be made to the database."
-        '
-        'lblPcDrInstr2b
-        '
-        Me.lblPcDrInstr2b.AutoSize = True
-        Me.lblPcDrInstr2b.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPcDrInstr2b.Location = New System.Drawing.Point(34, 66)
-        Me.lblPcDrInstr2b.Name = "lblPcDrInstr2b"
-        Me.lblPcDrInstr2b.Size = New System.Drawing.Size(363, 13)
-        Me.lblPcDrInstr2b.TabIndex = 3
-        Me.lblPcDrInstr2b.Text = "b.  a warning will be displayed or will enable the Commit button"
-        '
-        'lblPcDrInstr2a
-        '
-        Me.lblPcDrInstr2a.AutoSize = True
-        Me.lblPcDrInstr2a.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPcDrInstr2a.Location = New System.Drawing.Point(34, 50)
-        Me.lblPcDrInstr2a.Name = "lblPcDrInstr2a"
-        Me.lblPcDrInstr2a.Size = New System.Drawing.Size(434, 13)
-        Me.lblPcDrInstr2a.TabIndex = 2
-        Me.lblPcDrInstr2a.Text = "a.  System will display Inventory Item information and Player Card DR Value"
-        '
-        'lblPcDrInstr2
-        '
-        Me.lblPcDrInstr2.AutoSize = True
-        Me.lblPcDrInstr2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPcDrInstr2.Location = New System.Drawing.Point(9, 33)
-        Me.lblPcDrInstr2.Name = "lblPcDrInstr2"
-        Me.lblPcDrInstr2.Size = New System.Drawing.Size(403, 13)
-        Me.lblPcDrInstr2.TabIndex = 1
-        Me.lblPcDrInstr2.Text = "2.  Enter Inventory Detail No into Inventory Item box and press Select"
-        '
-        'lblPcDrInstr1
-        '
-        Me.lblPcDrInstr1.AutoSize = True
-        Me.lblPcDrInstr1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblPcDrInstr1.Location = New System.Drawing.Point(9, 16)
-        Me.lblPcDrInstr1.Name = "lblPcDrInstr1"
-        Me.lblPcDrInstr1.Size = New System.Drawing.Size(337, 13)
-        Me.lblPcDrInstr1.TabIndex = 0
-        Me.lblPcDrInstr1.Text = "1.  Determine Inventory Number from Advantage Inventory"
-        '
-        'btnPcDrCommit
-        '
-        Me.btnPcDrCommit.Location = New System.Drawing.Point(427, 429)
-        Me.btnPcDrCommit.Name = "btnPcDrCommit"
-        Me.btnPcDrCommit.Size = New System.Drawing.Size(75, 23)
-        Me.btnPcDrCommit.TabIndex = 24
-        Me.btnPcDrCommit.Text = "Commit"
-        Me.btnPcDrCommit.UseVisualStyleBackColor = True
-        '
-        'tbMLDRTest
-        '
-        Me.tbMLDRTest.Location = New System.Drawing.Point(508, 82)
-        Me.tbMLDRTest.Multiline = True
-        Me.tbMLDRTest.Name = "tbMLDRTest"
-        Me.tbMLDRTest.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.tbMLDRTest.Size = New System.Drawing.Size(455, 318)
-        Me.tbMLDRTest.TabIndex = 22
-        '
-        'gpOutstandingPCDR
-        '
-        Me.gpOutstandingPCDR.BackColor = System.Drawing.Color.LightGray
-        Me.gpOutstandingPCDR.Controls.Add(Me.lblOutstandingPCDR)
-        Me.gpOutstandingPCDR.Controls.Add(Me.tbOutstandingPCDR)
-        Me.gpOutstandingPCDR.Location = New System.Drawing.Point(508, 17)
-        Me.gpOutstandingPCDR.Name = "gpOutstandingPCDR"
-        Me.gpOutstandingPCDR.Size = New System.Drawing.Size(223, 59)
-        Me.gpOutstandingPCDR.TabIndex = 21
-        Me.gpOutstandingPCDR.TabStop = False
-        Me.gpOutstandingPCDR.Text = "Outstanding Deferred Revenue"
-        '
-        'lblOutstandingPCDR
-        '
-        Me.lblOutstandingPCDR.AutoSize = True
-        Me.lblOutstandingPCDR.Location = New System.Drawing.Point(6, 26)
-        Me.lblOutstandingPCDR.Name = "lblOutstandingPCDR"
-        Me.lblOutstandingPCDR.Size = New System.Drawing.Size(75, 13)
-        Me.lblOutstandingPCDR.TabIndex = 18
-        Me.lblOutstandingPCDR.Text = "Player Cards:  "
-        '
-        'tbOutstandingPCDR
-        '
-        Me.tbOutstandingPCDR.Location = New System.Drawing.Point(81, 23)
-        Me.tbOutstandingPCDR.Name = "tbOutstandingPCDR"
-        Me.tbOutstandingPCDR.Size = New System.Drawing.Size(100, 20)
-        Me.tbOutstandingPCDR.TabIndex = 19
-        '
-        'gpInvItem
-        '
-        Me.gpInvItem.BackColor = System.Drawing.Color.LightGray
-        Me.gpInvItem.Controls.Add(Me.lblDRInvNo)
-        Me.gpInvItem.Controls.Add(Me.nudDRInvNo)
-        Me.gpInvItem.Controls.Add(Me.dgvInvItem)
-        Me.gpInvItem.Controls.Add(Me.btnDRInvNo)
-        Me.gpInvItem.Location = New System.Drawing.Point(23, 17)
-        Me.gpInvItem.Name = "gpInvItem"
-        Me.gpInvItem.Size = New System.Drawing.Size(479, 257)
-        Me.gpInvItem.TabIndex = 20
-        Me.gpInvItem.TabStop = False
-        Me.gpInvItem.Text = "Inventory Item"
-        '
-        'lblDRInvNo
-        '
-        Me.lblDRInvNo.AutoSize = True
-        Me.lblDRInvNo.Location = New System.Drawing.Point(6, 16)
-        Me.lblDRInvNo.Name = "lblDRInvNo"
-        Me.lblDRInvNo.Size = New System.Drawing.Size(253, 13)
-        Me.lblDRInvNo.TabIndex = 16
-        Me.lblDRInvNo.Text = "Enter Detail Item Number (Inventory.InvNo) to select"
-        '
-        'nudDRInvNo
-        '
-        Me.nudDRInvNo.Location = New System.Drawing.Point(266, 14)
-        Me.nudDRInvNo.Maximum = New Decimal(New Integer() {9999999, 0, 0, 0})
-        Me.nudDRInvNo.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.nudDRInvNo.Name = "nudDRInvNo"
-        Me.nudDRInvNo.Size = New System.Drawing.Size(80, 20)
-        Me.nudDRInvNo.TabIndex = 0
-        Me.nudDRInvNo.Value = New Decimal(New Integer() {1, 0, 0, 0})
-        '
-        'dgvInvItem
-        '
-        Me.dgvInvItem.AllowUserToAddRows = False
-        Me.dgvInvItem.AllowUserToDeleteRows = False
-        Me.dgvInvItem.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
-        Me.dgvInvItem.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
-        Me.dgvInvItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvInvItem.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.InvItemData, Me.InvItemValue})
-        Me.dgvInvItem.Location = New System.Drawing.Point(9, 46)
-        Me.dgvInvItem.MultiSelect = False
-        Me.dgvInvItem.Name = "dgvInvItem"
-        Me.dgvInvItem.ReadOnly = True
-        Me.dgvInvItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.dgvInvItem.Size = New System.Drawing.Size(455, 195)
-        Me.dgvInvItem.TabIndex = 15
-        '
-        'InvItemData
-        '
-        Me.InvItemData.HeaderText = "Setting"
-        Me.InvItemData.Name = "InvItemData"
-        Me.InvItemData.ReadOnly = True
-        '
-        'InvItemValue
-        '
-        Me.InvItemValue.HeaderText = "Value"
-        Me.InvItemValue.Name = "InvItemValue"
-        Me.InvItemValue.ReadOnly = True
-        '
-        'btnDRInvNo
-        '
-        Me.btnDRInvNo.Location = New System.Drawing.Point(352, 14)
-        Me.btnDRInvNo.Name = "btnDRInvNo"
-        Me.btnDRInvNo.Size = New System.Drawing.Size(75, 23)
-        Me.btnDRInvNo.TabIndex = 17
-        Me.btnDRInvNo.Text = "Select"
-        Me.btnDRInvNo.UseVisualStyleBackColor = True
-        '
         'tpNetwork
         '
         Me.tpNetwork.Controls.Add(Me.gbCustomPortCheck)
@@ -1940,7 +1718,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 588)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 589)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -2130,7 +1908,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 588)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 589)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2205,7 +1983,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 588)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 589)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2333,7 +2111,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 588)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 589)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2690,16 +2468,6 @@ Partial Class FormMain
         Me.tpStParse.ResumeLayout(False)
         Me.tpStParse.PerformLayout()
         Me.Panel1.ResumeLayout(False)
-        Me.tpPlayerCardDeferredRevenue.ResumeLayout(False)
-        Me.tpPlayerCardDeferredRevenue.PerformLayout()
-        Me.gpPcDrCommit.ResumeLayout(False)
-        Me.gpPcDrCommit.PerformLayout()
-        Me.gpOutstandingPCDR.ResumeLayout(False)
-        Me.gpOutstandingPCDR.PerformLayout()
-        Me.gpInvItem.ResumeLayout(False)
-        Me.gpInvItem.PerformLayout()
-        CType(Me.nudDRInvNo, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.dgvInvItem, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpNetwork.ResumeLayout(False)
         Me.gbCustomPortCheck.ResumeLayout(False)
         Me.gbCustomPortCheck.PerformLayout()
@@ -2863,26 +2631,7 @@ Partial Class FormMain
     Friend WithEvents tbPcArch As TextBox
     Friend WithEvents tbPcNetVersion As TextBox
     Friend WithEvents tbPcAdvVersion As TextBox
-    Friend WithEvents tpPlayerCardDeferredRevenue As TabPage
-    Friend WithEvents nudDRInvNo As NumericUpDown
-    Friend WithEvents dgvInvItem As DataGridView
-    Friend WithEvents InvItemData As DataGridViewTextBoxColumn
-    Friend WithEvents InvItemValue As DataGridViewTextBoxColumn
-    Friend WithEvents btnDRInvNo As Button
-    Friend WithEvents lblDRInvNo As Label
-    Friend WithEvents tbOutstandingPCDR As TextBox
-    Friend WithEvents lblOutstandingPCDR As Label
     Friend WithEvents tbMLTest1 As TextBox
-    Friend WithEvents gpOutstandingPCDR As GroupBox
-    Friend WithEvents gpInvItem As GroupBox
-    Friend WithEvents tbMLDRTest As TextBox
-    Friend WithEvents btnPcDrCommit As Button
-    Friend WithEvents gpPcDrCommit As GroupBox
-    Friend WithEvents lblPcDrInstr1 As Label
-    Friend WithEvents lblPcDrInstr3 As Label
-    Friend WithEvents lblPcDrInstr2b As Label
-    Friend WithEvents lblPcDrInstr2a As Label
-    Friend WithEvents lblPcDrInstr2 As Label
     Friend WithEvents ImageList1 As ImageList
     Friend WithEvents btnAdvManager As Button
     Friend WithEvents btnAdvGroups As Button

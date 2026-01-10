@@ -116,7 +116,6 @@ Public Class FormMain
 
             End Try
         End If
-        btnPcDrCommit.Enabled = False
 
         EODBTroubleshooting.filePath = "C:\CenterEdge"
         fbdEODB.SelectedPath = EODBTroubleshooting.filePath
@@ -156,7 +155,6 @@ Public Class FormMain
 #End If
 
         tcSTA.TabPages.Remove(tpEODB)
-        tcSTA.TabPages.Remove(tpPlayerCardDeferredRevenue)
 
         btnAdvUpgrade.Visible = My.Computer.FileSystem.FileExists("C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe")
         btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
@@ -416,94 +414,6 @@ Public Class FormMain
         caller.SelectionLength = 0
     End Sub
 
-    Private Sub btnDRInvNo_Click(sender As Object, e As EventArgs) Handles btnDRInvNo.Click
-        Dim dsResult As DataSet
-        Dim Today As String = Now.ToShortDateString
-
-
-        Dim query As String = String.Format(DeferredRevenueQueries.InventoryItem, nudDRInvNo.Value)
-        dsResult = DBConnector.dbQuery(query)
-        If dsResult.Tables(0).Rows.Count = 0 Then
-            MsgBox(String.Format("Invalid Inventory Item Number:  {0}", nudDRInvNo.Value), MsgBoxStyle.Exclamation, "DATA WARNING")
-            btnPcDrCommit.Enabled = False
-            Exit Sub
-        End If
-        InventoryItem.InvNo = dsResult.Tables(0).Rows(0).Item(0)
-        InventoryItem.MasterInvNo = dsResult.Tables(0).Rows(0).Item(1)
-        InventoryItem.InvName = dsResult.Tables(0).Rows(0).Item(2)
-        InventoryItem.CatNo = dsResult.Tables(0).Rows(0).Item(3)
-        InventoryItem.SubCatNo = dsResult.Tables(0).Rows(0).Item(4)
-        InventoryItem.CatName = dsResult.Tables(0).Rows(0).Item(5)
-        InventoryItem.SubCatName = dsResult.Tables(0).Rows(0).Item(6)
-        dgvInvItem.Rows.Clear()
-
-        dgvInvItem.Rows.Add("InvNo", InventoryItem.InvNo)
-        dgvInvItem.Rows.Add("MasterInvNo", InventoryItem.MasterInvNo)
-        dgvInvItem.Rows.Add("Description", InventoryItem.InvName)
-        dgvInvItem.Rows.Add("CatNo", InventoryItem.CatNo)
-        dgvInvItem.Rows.Add("Category", InventoryItem.CatName)
-        dgvInvItem.Rows.Add("SubCatNo", InventoryItem.SubCatNo)
-        dgvInvItem.Rows.Add("SubCategory", InventoryItem.SubCatName)
-
-
-        Try
-            DeferredRevenue.pcDeferred = FormatNumber(DBConnector.dbQuery(DeferredRevenueQueries.pcDRValues), 2)
-
-        Catch ex As Exception
-            MsgBox("Error reading from PlayerCardExpValues table" & vbCrLf & "Examine data in SQL Management Studio", MsgBoxStyle.Critical, "DATA WARNING")
-
-        End Try
-        tbOutstandingPCDR.Text = String.Format("${0}", DeferredRevenue.pcDeferred.ToString)
-        Try
-            Dim rowCount As Integer = DBConnector.getValue(String.Format(DeferredRevenueQueries.SalesCount, Today, InventoryItem.InvNo))
-
-            If rowCount = 0 Then
-                tbMLDRTest.Text = "Ready to Commit"
-                btnPcDrCommit.Enabled = True
-            Else
-                MsgBox(String.Format("There is already data in the Sales table for {0}", InventoryItem.InvName), MsgBoxStyle.Exclamation, "DATA WARNING")
-                btnPcDrCommit.Enabled = False
-                Exit Try
-
-            End If
-
-        Catch ex As Exception
-            ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
-        End Try
-
-    End Sub
-
-    Private Sub btnPcDrCommit_Click(sender As Object, e As EventArgs) Handles btnPcDrCommit.Click
-        Dim Today As String = Now.ToShortDateString
-        Dim result As Integer = 0
-        tbMLDRTest.Text = ""
-        tbMLDRTest.AppendText("-- UPDATE Command to turn off Deferred Revenue for Player Cards" & vbCrLf)
-        tbMLDRTest.AppendText(DeferredRevenueQueries.pcDRswitch & vbCrLf & vbCrLf)
-        tbMLDRTest.AppendText("-- UPDATE Command to add Deferred Revenue Value to SubCatSales table" & vbCrLf)
-        tbMLDRTest.AppendText(String.Format(DeferredRevenueQueries.SubCatSalesUpdate, DeferredRevenue.pcDeferred, Today, InventoryItem.CatNo, InventoryItem.SubCatNo) & vbCrLf & vbCrLf)
-        tbMLDRTest.AppendText("-- INSERT Command to add Deferred Revenue Value to Sales table" & vbCrLf)
-        tbMLDRTest.AppendText(String.Format(DeferredRevenueQueries.SaleInsert, Today, InventoryItem.InvNo, DeferredRevenue.pcDeferred, InventoryItem.CatNo, InventoryItem.SubCatNo) & vbCrLf & vbCrLf)
-        tbMLDRTest.AppendText("-- UPDATE Command to clear deferred revenue amount from Player Cards" & vbCrLf)
-        tbMLDRTest.AppendText(DeferredRevenueQueries.pcCardValues & vbCrLf & vbCrLf)
-        tbMLDRTest.AppendText("-- INSERT Command to offset for deferred revenue posting to sales" & vbCrLf)
-        tbMLDRTest.AppendText(String.Format(DeferredRevenueQueries.DRUpdate, Today, DeferredRevenue.pcDeferred) & vbCrLf & vbCrLf)
-
-#If DEBUG Then
-        MsgBox("Running in Debug Mode, Database not changed", MsgBoxStyle.Information, "DEBUG Mode")
-
-#Else
-        result = DBConnector.CreateCommand(DeferredRevenueQueries.pcDRswitch)
-        result = DBConnector.CreateCommand((String.Format(DeferredRevenueQueries.SubCatSalesUpdate, DeferredRevenue.pcDeferred, Today, InventoryItem.CatNo, InventoryItem.SubCatNo)))
-        result = DBConnector.CreateCommand((String.Format(DeferredRevenueQueries.SaleInsert, Today, InventoryItem.InvNo, DeferredRevenue.pcDeferred, InventoryItem.CatNo, InventoryItem.SubCatNo)))
-        result = DBConnector.CreateCommand(DeferredRevenueQueries.pcCardValues)
-        result = DBConnector.CreateCommand(String.Format(DeferredRevenueQueries.DRUpdate, Today, DeferredRevenue.pcDeferred))
-
-#End If
-
-        btnPcDrCommit.Enabled = False
-
-
-    End Sub
 
     Private Sub tcSTA_Click(sender As Object, e As EventArgs) Handles tcSTA.Click
         btnDbLogRefresh.PerformClick()
