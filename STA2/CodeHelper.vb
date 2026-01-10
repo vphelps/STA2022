@@ -14,6 +14,7 @@ Public Class CodeHelper
         GetPcInfo()
         PCInfo.FrameworkVersion = DotNetInfo.Get45PlusFromRegistry
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
+
         FormMain.tbPcName.Text = PCInfo.Name
         FormMain.tbPcOsInfo.Text = PCInfo.OpSys
         FormMain.tbPcRam.Text = PCInfo.Ram
@@ -107,7 +108,12 @@ Public Class CodeHelper
         If Environment.Is64BitOperatingSystem Then PCInfo.Architecture = "x64" Else PCInfo.Architecture = "x86"
     End Sub
     Public Shared Function CeInfo() As String
-        Dim Path As String = "C:\Program Files (x86)\CenterEdge Software\AdvCommon.dll"
+        Dim Path As String = ""
+        AdvExeCheck("AdvManager")
+
+        If AppData.InstalledVersion = AppInstallState.InstalledX86 Then Path = "C:\Program Files (x86)\CenterEdge Software\AdvCommon.dll"
+        If AppData.InstalledVersion = AppInstallState.InstalledX64 Then Path = "C:\Program Files\CenterEdge Software\AdvCommon.dll"
+
         Dim CeVersion As String = ""
         Try
             Dim temp As String = FileVersionInfo.GetVersionInfo(Path).FileVersion.ToString
@@ -119,7 +125,6 @@ Public Class CodeHelper
             CeVersion = "Advantage Not Installed"
             PCInfo.IsAdvantageInstalled = False
         End Try
-
         Return CeVersion
     End Function
 
@@ -129,11 +134,7 @@ Public Class CodeHelper
 
 
     End Sub
-    Public Shared Sub AdminUser(Admin As Boolean)
 
-        FormMain.flpServices.Enabled = Admin
-        FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
-    End Sub
     Public Shared Function AdvExeCheck(Executable As String)
         Dim fileExistsx86 As Boolean
         Dim fileExistsx64 As Boolean
@@ -147,7 +148,16 @@ Public Class CodeHelper
             Version = AppInstallState.InstalledX86
 
         End If
+        AppData.InstalledVersion = Version
+
         Return Version
 
     End Function
+
+    Public Shared Sub AdminUser(Admin As Boolean)
+
+        FormMain.flpServices.Enabled = Admin
+        FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
+    End Sub
+
 End Class
