@@ -88,7 +88,6 @@ Public Class CodeHelper
 
             End If
         Next
-        If list.Contains(True) Then FormMain.tmr1Sec.Enabled = True Else FormMain.tmr1Sec.Enabled = False
 
     End Sub
 

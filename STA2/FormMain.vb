@@ -150,7 +150,6 @@ Public Class FormMain
         tbTest3.Visible = False
         tbMLTest1.Visible = False
         btnTest.Visible = False
-        tbMLDRTest.Visible = False
 
 #End If
 
@@ -205,7 +204,7 @@ Public Class FormMain
             If PCInfo.AreServicesInstalled Then
                 If IsNothing(LastServiceEntry) Then Exit Sub
 
-                tmr1Sec.Enabled = Services.GetServiceStatus(LastServiceEntry)
+                Services.GetServiceStatus(LastServiceEntry)
 
                 If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
                     Services.RestartService(LastServiceEntry)
@@ -221,8 +220,6 @@ Public Class FormMain
 
 
         End Try
-
-
     End Sub
 
     Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
@@ -364,7 +361,6 @@ Public Class FormMain
 
         Dim temp As Integer
         caller.Enabled = False
-        tmr1Sec.Enabled = True
         For index = 0 To ServiceControlList.Count - 1
             If ServiceControlList.Item(index).SSButton.Equals(caller) Then
 
@@ -391,7 +387,6 @@ Public Class FormMain
     Private Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click
         Dim temp As Integer
         Dim caller As Button = DirectCast(sender, Button)
-        tmr1Sec.Enabled = True
         caller.Enabled = False
 
         For index = 0 To ServiceControlList.Count - 1
@@ -403,7 +398,6 @@ Public Class FormMain
         LastServiceEntry.RSButton.Tag = "restart"
         Services.RestartService(LastServiceEntry)
 
-        tmr1Sec.Enabled = Not caller.Enabled
 
     End Sub
 
@@ -1115,4 +1109,29 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub btnRefreshServices_Click(sender As Object, e As EventArgs) Handles btnRefreshGeneralTab.Click
+        'PCInfo.AreServicesInstalled = False
+        'Try
+
+        '    If PCInfo.AreServicesInstalled Then
+        '        If IsNothing(LastServiceEntry) Then Exit Sub
+
+
+        '        If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
+        '            Services.RestartService(LastServiceEntry)
+        '        Else
+        '            LastServiceEntry.RSButton.Tag = ""
+
+        '        End If
+        '    Else
+
+        '    End If
+        'Catch ex As Exception
+
+
+
+        'End Try
+        CodeHelper.Refresher()
+
+    End Sub
 End Class
