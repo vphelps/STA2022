@@ -36,3 +36,24 @@ Public Structure PCInfo
 
 End Structure
 
+Public Class LauncherConfig
+    Public Property Version As Integer = 1
+    Public Property Programs As List(Of ProgramEntry) = New List(Of ProgramEntry)
+End Class
+
+Public Class ProgramEntry
+    Public Property Name As String
+    Public Property Path As String
+    Public Property Arguments As String
+    Public Property WorkingDirectory As String
+    Public Property RunAsAdmin As Boolean
+    Public Property IconPath As String
+    Public Property Enabled As Boolean = True
+    Public Property IncludeInBatch As Boolean = False
+
+
+    Public Overrides Function ToString() As String
+        Return $"{Name} ({Path})"
+    End Function
+
+End Class

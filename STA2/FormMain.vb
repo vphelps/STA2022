@@ -1,25 +1,28 @@
-﻿Imports System.Data.SqlClient
-Imports System.Net
-Imports System.Xml
+﻿Imports System.CodeDom
+Imports System.ComponentModel
+Imports System.Data.SqlClient
 Imports System.IO
+Imports System.Net
+Imports System.Net.Mime.MediaTypeNames
 Imports System.Net.NetworkInformation
+Imports System.Net.Sockets
+Imports System.Runtime.CompilerServices
+Imports System.Security.Policy
 Imports System.ServiceProcess
+Imports System.Web
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
+Imports System.Xml
+Imports Newtonsoft.Json
 Imports STA2.AppData
 Imports STA2.NetworkData
-Imports System.ComponentModel
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
-Imports System.Web
-Imports System.Net.Sockets
-Imports System.Security.Policy
-Imports System.CodeDom
-Imports System.Net.Mime.MediaTypeNames
-Imports System.Runtime.CompilerServices
 
 Public Class FormMain
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
 
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
     Public Shared LastServiceEntry As ServiceControlEntry
+
+    Private _config As LauncherConfig
 
     Public Enum AppInstallState
         NotInstalled = 0
@@ -28,40 +31,6 @@ Public Class FormMain
     End Enum
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-
-        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then
-            flpServices.Enabled = True
-            MsgBox("Admin")
-        Else
-            flpServices.Enabled = False
-            MsgBox("Standard")
-        End If
-
-        Exit Sub
-
-        Dim hostname = NetworkDataHelper.GetLocalIP
-        Dim portno = 15050
-        Dim ipa = Dns.GetHostAddresses(hostname)(0)
-        MessageBox.Show(hostname & " " & ipa.ToString)
-        Try
-            ' Get active TCP connections - the GetActiveTcpListeners is also useful if you're starting up a server...
-            Dim active = IPGlobalProperties.GetIPGlobalProperties.GetActiveTcpConnections
-            If (From connection In active Where connection.LocalEndPoint.Address.Equals(ipa) AndAlso connection.LocalEndPoint.Port = portno).Any Then
-                ' Port is being used by an active connection
-                MessageBox.Show("Port is in use!")
-
-            Else
-                ' Proceed with connection
-                Using sock As New Sockets.Socket(Sockets.AddressFamily.InterNetwork, Sockets.SocketType.Stream, Sockets.ProtocolType.Tcp)
-                    sock.Connect(ipa, portno)
-                    ' Do something more interesting with the socket here...
-                End Using
-            End If
-
-        Catch ex As Sockets.SocketException
-            MessageBox.Show(ex.Message)
-        End Try
-        NetworkDataHelper.GetIPv4Address()
 
     End Sub
 
@@ -144,13 +113,13 @@ Public Class FormMain
 #If DEBUG Then
 
 #Else
-        Variables.LoggedIn = False
-        tbTest1.Visible = False
-        tbTest2.Visible = False
-        tbTest3.Visible = False
-        tbMLTest1.Visible = False
-        btnTest.Visible = False
-
+                Variables.LoggedIn = False
+                tbTest1.Visible = False
+                tbTest2.Visible = False
+                tbTest3.Visible = False
+                tbMLTest1.Visible = False
+                btnTest.Visible = False
+       
 #End If
 
         tcSTA.TabPages.Remove(tpEODB)
@@ -162,6 +131,40 @@ Public Class FormMain
         btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
         btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
+
+        _config = LoadConfig()
+        lstPrograms.DisplayMember = "Name"  ' shows ProgramEntry.Name
+        RefreshProgramsList()
+
+    End Sub
+
+    Private Sub RefreshProgramsList(Optional preserveSelection As Boolean = False)
+        Dim selected As ProgramEntry = Nothing
+        If preserveSelection AndAlso lstPrograms.SelectedItem IsNot Nothing Then
+            selected = DirectCast(lstPrograms.SelectedItem, ProgramEntry)
+        End If
+
+        lstPrograms.BeginUpdate()
+        lstPrograms.Items.Clear()
+        For Each p In _config.Programs.Where(Function(x) x.Enabled)
+            lstPrograms.Items.Add(p)
+        Next
+        lstPrograms.EndUpdate()
+
+        If preserveSelection AndAlso selected IsNot Nothing Then
+            For i = 0 To lstPrograms.Items.Count - 1
+                If Object.ReferenceEquals(lstPrograms.Items(i), selected) Then
+                    lstPrograms.SelectedIndex = i
+                    Exit For
+                End If
+            Next
+        End If
+    End Sub
+    Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
+#If DEBUG Then
+        tcSTA.SelectedTab = tpQATools
+
+#End If
 
     End Sub
 
@@ -198,6 +201,18 @@ Public Class FormMain
     End Sub
 
     Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
+        If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
+            tbDbVer.BackColor = TextboxColors.White
+            tbDbVer.ForeColor = TextboxColors.Black
+            tbPcAdvVersion.BackColor = TextboxColors.White
+            tbPcAdvVersion.ForeColor = TextboxColors.Black
+        Else
+            tbDbVer.BackColor = TextboxColors.Red
+            tbDbVer.ForeColor = TextboxColors.White
+            tbPcAdvVersion.BackColor = TextboxColors.Red
+            tbPcAdvVersion.ForeColor = TextboxColors.White
+        End If
+
         PCInfo.AreServicesInstalled = False
         Try
 
@@ -216,8 +231,6 @@ Public Class FormMain
 
             End If
         Catch ex As Exception
-
-
 
         End Try
     End Sub
@@ -1110,28 +1123,252 @@ Public Class FormMain
     End Sub
 
     Private Sub btnRefreshServices_Click(sender As Object, e As EventArgs) Handles btnRefreshGeneralTab.Click
-        'PCInfo.AreServicesInstalled = False
-        'Try
-
-        '    If PCInfo.AreServicesInstalled Then
-        '        If IsNothing(LastServiceEntry) Then Exit Sub
+        Dim TabName As String
 
 
-        '        If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
-        '            Services.RestartService(LastServiceEntry)
-        '        Else
-        '            LastServiceEntry.RSButton.Tag = ""
+        If tcSTA.SelectedTab.Equals(tpAdvData) Then
 
-        '        End If
-        '    Else
+            If PCInfo.ValidDatabase Then
 
-        '    End If
-        'Catch ex As Exception
+                Try
+                    dbAppOptions.Reset()
+                    dgvAppOptions.Rows.Clear()
+                    dbAppOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM AppOptions")
+                    For index = 0 To dbAppOptions.Tables(0).Rows.Count - 1
+                        dgvAppOptions.Rows.Add(dbAppOptions.Tables(0).Rows(index).ItemArray)
+                    Next
+                    dbWebOptions.Reset()
+                    dgvWebOptions.Rows.Clear()
+                    dbWebOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM WebOptions")
+                    For index = 0 To dbWebOptions.Tables(0).Rows.Count - 1
+                        dgvWebOptions.Rows.Add(dbWebOptions.Tables(0).Rows(index).ItemArray)
+                    Next
+                    dbApplicationInfo.Reset()
+                    dgvApplicationInfo.Rows.Clear()
+                    dbApplicationInfo = DBConnector.dbQuery("SELECT * FROM ApplicationInfo")
+                    For index = 0 To dbApplicationInfo.Tables(0).Columns.Count - 1
+                        dgvApplicationInfo.Rows.Add(dbApplicationInfo.Tables(0).Columns(index).ColumnName, dbApplicationInfo.Tables(0).Rows(0).ItemArray(index).ToString)
+                    Next
+                    dgvAppOptions.Refresh()
+
+                Catch ex As Exception
+
+                    ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
+                    PCInfo.ValidDatabase = False
+
+                End Try
+            End If
+        ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
+            CodeHelper.Refresher()
+
+        Else
+            TabName = tcSTA.SelectedTab.Name
+            tbTest1.Text = TabName
+        End If
+
+
+    End Sub
+
+    Private Sub btnOpenFile_Click(sender As Object, e As EventArgs) Handles btnOpenFile.Click
+        Dim openFile As New OpenFileDialog()
+
+
+        openFile.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
+        openFile.Title = "Select a file"
+        openFile.FilterIndex = 1
+
+        If openFile.ShowDialog() = DialogResult.OK Then
+            ' The user selected a file
+            Dim selectedFile As String = openFile.FileName
+            'MessageBox.Show("You selected: " & selectedFile)
+            tbSelectedFile.Text = selectedFile
+
+        End If
 
 
 
-        'End Try
-        CodeHelper.Refresher()
+    End Sub
 
+    Private Sub btnRunAppTest_Click(sender As Object, e As EventArgs) Handles btnRunAppTest.Click
+        Try
+            Dim psi As New ProcessStartInfo With
+            {
+            .FileName = tbSelectedFile.Text,
+            .UseShellExecute = True
+            }
+            Process.Start(psi)
+
+        Catch ex As Exception
+
+            MessageBox.Show("Couldn't open the file: " & ex.Message)
+
+        End Try
+    End Sub
+    Private ReadOnly _jsonSettings As New JsonSerializerSettings With {
+        .Formatting = Newtonsoft.Json.Formatting.Indented.Indented,
+        .NullValueHandling = NullValueHandling.Ignore
+    }
+
+    Public Function LoadConfig() As LauncherConfig
+        Dim path = GetConfigPath()
+        If Not File.Exists(path) Then Return New LauncherConfig()
+
+        Try
+            Dim json = File.ReadAllText(path)
+            Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
+            If cfg Is Nothing Then cfg = New LauncherConfig()
+            Return cfg
+        Catch ex As Exception
+            MessageBox.Show("Failed to load config: " & ex.Message)
+            Return New LauncherConfig()
+        End Try
+    End Function
+
+    Public Sub SaveConfig(cfg As LauncherConfig)
+        Try
+            Dim path = GetConfigPath()
+            Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
+            File.WriteAllText(path, json)
+        Catch ex As Exception
+            MessageBox.Show("Failed to save config: " & ex.Message)
+        End Try
+    End Sub
+
+    Public Shared Function GetConfigPath() As String
+        Dim dir = System.IO.Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "STA2") ' your app folder
+        If Not IO.Directory.Exists(dir) Then IO.Directory.CreateDirectory(dir)
+        Return IO.Path.Combine(dir, "launcher.config.json")
+    End Function
+
+    Private Sub btnAddProg_Click(sender As Object, e As EventArgs) Handles btnAddProg.Click
+        Using dlg As New OpenFileDialog()
+            dlg.Title = "Select an application"
+            dlg.Filter = "Programs (*.exe)|*.exe|All Files (*.*)|*.*"
+            dlg.FilterIndex = 1 ' Make .exe the default filter
+            dlg.CheckFileExists = True
+            dlg.Multiselect = False
+
+            If dlg.ShowDialog() = DialogResult.OK Then
+                Dim entry As New ProgramEntry With {
+                .Name = IO.Path.GetFileNameWithoutExtension(dlg.FileName),
+                .Path = dlg.FileName,
+                .WorkingDirectory = IO.Path.GetDirectoryName(dlg.FileName),
+                .Arguments = "",
+                .RunAsAdmin = False,
+                .Enabled = True,
+                .IncludeInBatch = False
+            }
+                _config.Programs.Add(entry)
+                SaveConfig(_config)
+                RefreshProgramsList()
+            End If
+        End Using
+    End Sub
+
+
+    Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click
+        Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        If entry Is Nothing Then
+            MessageBox.Show("Please select a program.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+        LaunchProgram(entry)
+    End Sub
+
+    Private Sub LaunchProgram(entry As ProgramEntry)
+        If String.IsNullOrWhiteSpace(entry.Path) OrElse Not IO.File.Exists(entry.Path) Then
+            MessageBox.Show("File not found: " & entry.Path, "Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            Dim psi As New ProcessStartInfo() With {
+                .FileName = entry.Path,
+                .Arguments = If(entry.Arguments, ""),
+                .WorkingDirectory = If(String.IsNullOrWhiteSpace(entry.WorkingDirectory),
+                                       IO.Path.GetDirectoryName(entry.Path),
+                                       entry.WorkingDirectory),
+                .UseShellExecute = True
+            }
+
+            If entry.RunAsAdmin Then
+                psi.Verb = "runas" ' shows UAC prompt
+            End If
+
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show("Failed to launch:" & Environment.NewLine & ex.Message,
+                            "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub lstPrograms_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstPrograms.SelectedIndexChanged
+
+        'Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        'If entry Is Nothing Then Return
+
+        'tbAppPath.Text = entry.Path
+        'tbWorkDir.Text = entry.WorkingDirectory
+        'tbAppArgs.Text = entry.Arguments
+        'cbAppRunAsAdmin.Checked = entry.RunAsAdmin
+        'cbIncludeInBatch.Checked = entry.IncludeInBatch
+
+    End Sub
+
+    Private Sub btnReload_Click(sender As Object, e As EventArgs) Handles btnReload.Click
+        _config = LoadConfig()
+        RefreshProgramsList()
+
+    End Sub
+
+    Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
+        Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        If entry Is Nothing Then
+            MessageBox.Show("Select a program to edit.", "Edit", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        Using dlg As New EditProgramForm()
+            ' Clone to support Cancel without side effects
+            Dim clone As New ProgramEntry With {
+                .Name = entry.Name,
+                .Path = entry.Path,
+                .Arguments = entry.Arguments,
+                .WorkingDirectory = entry.WorkingDirectory,
+                .RunAsAdmin = entry.RunAsAdmin,
+                .IconPath = entry.IconPath,
+                .Enabled = entry.Enabled,
+                .IncludeInBatch = entry.IncludeInBatch
+            }
+
+            dlg.Entry = clone
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                entry.Name = clone.Name
+                entry.Path = clone.Path
+                entry.Arguments = clone.Arguments
+                entry.WorkingDirectory = clone.WorkingDirectory
+                entry.RunAsAdmin = clone.RunAsAdmin
+                entry.IconPath = clone.IconPath
+                entry.Enabled = clone.Enabled
+                entry.IncludeInBatch = clone.IncludeInBatch
+
+                SaveConfig(_config)
+                RefreshProgramsList(preserveSelection:=True)
+            End If
+        End Using
+    End Sub
+
+    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
+        Using dlg As New EditProgramForm()
+            dlg.Entry = New ProgramEntry()
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                _config.Programs.Add(dlg.Entry)
+                SaveConfig(_config)
+                RefreshProgramsList()
+            End If
+        End Using
     End Sub
 End Class
