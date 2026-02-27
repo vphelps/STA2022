@@ -1169,41 +1169,6 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub btnOpenFile_Click(sender As Object, e As EventArgs) Handles btnOpenFile.Click
-        Dim openFile As New OpenFileDialog()
-
-
-        openFile.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
-        openFile.Title = "Select a file"
-        openFile.FilterIndex = 1
-
-        If openFile.ShowDialog() = DialogResult.OK Then
-            ' The user selected a file
-            Dim selectedFile As String = openFile.FileName
-            'MessageBox.Show("You selected: " & selectedFile)
-            tbSelectedFile.Text = selectedFile
-
-        End If
-
-
-
-    End Sub
-
-    Private Sub btnRunAppTest_Click(sender As Object, e As EventArgs) Handles btnRunAppTest.Click
-        Try
-            Dim psi As New ProcessStartInfo With
-            {
-            .FileName = tbSelectedFile.Text,
-            .UseShellExecute = True
-            }
-            Process.Start(psi)
-
-        Catch ex As Exception
-
-            MessageBox.Show("Couldn't open the file: " & ex.Message)
-
-        End Try
-    End Sub
     Private ReadOnly _jsonSettings As New JsonSerializerSettings With {
         .Formatting = Newtonsoft.Json.Formatting.Indented.Indented,
         .NullValueHandling = NullValueHandling.Ignore
@@ -1242,7 +1207,7 @@ Public Class FormMain
         Return IO.Path.Combine(dir, "launcher.config.json")
     End Function
 
-    Private Sub btnAddProg_Click(sender As Object, e As EventArgs) Handles btnAddProg.Click
+    Private Sub btnAddProg_Click(sender As Object, e As EventArgs)
         Using dlg As New OpenFileDialog()
             dlg.Title = "Select an application"
             dlg.Filter = "Programs (*.exe)|*.exe|All Files (*.*)|*.*"
@@ -1268,7 +1233,7 @@ Public Class FormMain
     End Sub
 
 
-    Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click
+    Private Sub btnLaunch_Click(sender As Object, e As EventArgs)
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then
             MessageBox.Show("Please select a program.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -1278,46 +1243,33 @@ Public Class FormMain
     End Sub
 
     Private Sub LaunchProgram(entry As ProgramEntry)
-        If String.IsNullOrWhiteSpace(entry.Path) OrElse Not IO.File.Exists(entry.Path) Then
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Path) Then
+            MessageBox.Show("Invalid program entry.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+        If Not IO.File.Exists(entry.Path) Then
             MessageBox.Show("File not found: " & entry.Path, "Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         Try
             Dim psi As New ProcessStartInfo() With {
-                .FileName = entry.Path,
-                .Arguments = If(entry.Arguments, ""),
-                .WorkingDirectory = If(String.IsNullOrWhiteSpace(entry.WorkingDirectory),
-                                       IO.Path.GetDirectoryName(entry.Path),
-                                       entry.WorkingDirectory),
-                .UseShellExecute = True
-            }
-
-            If entry.RunAsAdmin Then
-                psi.Verb = "runas" ' shows UAC prompt
-            End If
-
+            .FileName = entry.Path,
+            .Arguments = If(entry.Arguments, ""),
+            .WorkingDirectory = If(String.IsNullOrWhiteSpace(entry.WorkingDirectory),
+                                   IO.Path.GetDirectoryName(entry.Path),
+                                   entry.WorkingDirectory),
+            .UseShellExecute = True
+        }
+            If entry.RunAsAdmin Then psi.Verb = "runas"
             Process.Start(psi)
         Catch ex As Exception
             MessageBox.Show("Failed to launch:" & Environment.NewLine & ex.Message,
-                            "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
-    Private Sub lstPrograms_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstPrograms.SelectedIndexChanged
-
-        'Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
-        'If entry Is Nothing Then Return
-
-        'tbAppPath.Text = entry.Path
-        'tbWorkDir.Text = entry.WorkingDirectory
-        'tbAppArgs.Text = entry.Arguments
-        'cbAppRunAsAdmin.Checked = entry.RunAsAdmin
-        'cbIncludeInBatch.Checked = entry.IncludeInBatch
-
-    End Sub
-
-    Private Sub btnReload_Click(sender As Object, e As EventArgs) Handles btnReload.Click
+    Private Sub btnReload_Click(sender As Object, e As EventArgs)
         _config = LoadConfig()
         RefreshProgramsList()
 
@@ -1370,5 +1322,23 @@ Public Class FormMain
                 RefreshProgramsList()
             End If
         End Using
+    End Sub
+
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+        Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        If entry Is Nothing Then Return
+
+        If MessageBox.Show($"Remove '{entry.Name}'?", "Confirm",
+                       MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
+            _config.Programs.Remove(entry)
+            SaveConfig(_config)
+            RefreshProgramsList()
+        End If
+    End Sub
+
+    Private Sub btnBatchLaunch_Click(sender As Object, e As EventArgs) Handles btnBatchLaunch.Click
+        For Each p In _config.Programs.Where(Function(x) x.Enabled AndAlso x.IncludeInBatch)
+            LaunchProgram(p) ' reuse your existing launcher method
+        Next
     End Sub
 End Class

@@ -198,12 +198,11 @@ Partial Class FormMain
         Me.btDpEdit = New System.Windows.Forms.Button()
         Me.dgvDatapumps = New System.Windows.Forms.DataGridView()
         Me.tpQATools = New System.Windows.Forms.TabPage()
-        Me.btnLaunch = New System.Windows.Forms.Button()
-        Me.btnAddProg = New System.Windows.Forms.Button()
+        Me.btnBatchLaunch = New System.Windows.Forms.Button()
+        Me.btnDelete = New System.Windows.Forms.Button()
+        Me.btnAdd = New System.Windows.Forms.Button()
+        Me.btnEdit = New System.Windows.Forms.Button()
         Me.lstPrograms = New System.Windows.Forms.ListBox()
-        Me.tbSelectedFile = New System.Windows.Forms.TextBox()
-        Me.btnOpenFile = New System.Windows.Forms.Button()
-        Me.btnRunAppTest = New System.Windows.Forms.Button()
         Me.btnRefreshGeneralTab = New System.Windows.Forms.Button()
         Me.gbAdvApps = New System.Windows.Forms.GroupBox()
         Me.lblAdvApps = New System.Windows.Forms.Label()
@@ -235,17 +234,8 @@ Partial Class FormMain
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
-        Me.tbWorkDir = New System.Windows.Forms.TextBox()
-        Me.tbAppArgs = New System.Windows.Forms.TextBox()
-        Me.btnReload = New System.Windows.Forms.Button()
-        Me.lblWorkDir = New System.Windows.Forms.Label()
-        Me.lblAppArgs = New System.Windows.Forms.Label()
-        Me.lblAppPath = New System.Windows.Forms.Label()
-        Me.tbAppPath = New System.Windows.Forms.TextBox()
-        Me.cbAppRunAsAdmin = New System.Windows.Forms.CheckBox()
-        Me.cbIncludeInBatch = New System.Windows.Forms.CheckBox()
-        Me.btnEdit = New System.Windows.Forms.Button()
-        Me.btnAdd = New System.Windows.Forms.Button()
+        Me.gbAppLaunchSettings = New System.Windows.Forms.GroupBox()
+        Me.lblPrgListbox = New System.Windows.Forms.Label()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -300,6 +290,7 @@ Partial Class FormMain
         Me.tpQATools.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.gbAppLaunchSettings.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -330,6 +321,7 @@ Partial Class FormMain
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnRefreshGeneralTab)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.btnBatchLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbMLTest1)
@@ -340,7 +332,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 776)
-        Me.SplitContainer1.SplitterDistance = 599
+        Me.SplitContainer1.SplitterDistance = 601
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -360,7 +352,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 595)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 597)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -373,7 +365,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 569)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 571)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1166,7 +1158,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 569)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 571)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1321,7 +1313,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 569)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 571)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1336,7 +1328,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 538)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 540)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1428,7 +1420,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 569)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 571)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1515,7 +1507,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 439)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 441)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1670,7 +1662,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 569)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 571)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1741,7 +1733,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 569)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 571)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -1931,7 +1923,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 569)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 571)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2006,7 +1998,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 569)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 571)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2134,7 +2126,7 @@ Partial Class FormMain
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 569)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 571)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
@@ -2182,80 +2174,57 @@ Partial Class FormMain
         '
         'tpQATools
         '
-        Me.tpQATools.Controls.Add(Me.btnAdd)
-        Me.tpQATools.Controls.Add(Me.btnEdit)
-        Me.tpQATools.Controls.Add(Me.cbIncludeInBatch)
-        Me.tpQATools.Controls.Add(Me.cbAppRunAsAdmin)
-        Me.tpQATools.Controls.Add(Me.tbAppPath)
-        Me.tpQATools.Controls.Add(Me.lblAppPath)
-        Me.tpQATools.Controls.Add(Me.lblAppArgs)
-        Me.tpQATools.Controls.Add(Me.lblWorkDir)
-        Me.tpQATools.Controls.Add(Me.btnReload)
-        Me.tpQATools.Controls.Add(Me.btnLaunch)
-        Me.tpQATools.Controls.Add(Me.btnAddProg)
-        Me.tpQATools.Controls.Add(Me.lstPrograms)
-        Me.tpQATools.Controls.Add(Me.tbAppArgs)
-        Me.tpQATools.Controls.Add(Me.tbWorkDir)
-        Me.tpQATools.Controls.Add(Me.tbSelectedFile)
-        Me.tpQATools.Controls.Add(Me.btnOpenFile)
-        Me.tpQATools.Controls.Add(Me.btnRunAppTest)
+        Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1056, 569)
+        Me.tpQATools.Size = New System.Drawing.Size(1056, 571)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
         '
-        'btnLaunch
+        'btnBatchLaunch
         '
-        Me.btnLaunch.Location = New System.Drawing.Point(883, 191)
-        Me.btnLaunch.Name = "btnLaunch"
-        Me.btnLaunch.Size = New System.Drawing.Size(100, 23)
-        Me.btnLaunch.TabIndex = 5
-        Me.btnLaunch.Text = "Launch"
-        Me.btnLaunch.UseVisualStyleBackColor = True
+        Me.btnBatchLaunch.Location = New System.Drawing.Point(839, 106)
+        Me.btnBatchLaunch.Name = "btnBatchLaunch"
+        Me.btnBatchLaunch.Size = New System.Drawing.Size(104, 23)
+        Me.btnBatchLaunch.TabIndex = 15
+        Me.btnBatchLaunch.Text = "Batch Launch"
+        Me.btnBatchLaunch.UseVisualStyleBackColor = True
         '
-        'btnAddProg
+        'btnDelete
         '
-        Me.btnAddProg.Location = New System.Drawing.Point(883, 162)
-        Me.btnAddProg.Name = "btnAddProg"
-        Me.btnAddProg.Size = New System.Drawing.Size(100, 23)
-        Me.btnAddProg.TabIndex = 4
-        Me.btnAddProg.Text = "Add Program"
-        Me.btnAddProg.UseVisualStyleBackColor = True
+        Me.btnDelete.Location = New System.Drawing.Point(353, 109)
+        Me.btnDelete.Name = "btnDelete"
+        Me.btnDelete.Size = New System.Drawing.Size(75, 23)
+        Me.btnDelete.TabIndex = 14
+        Me.btnDelete.Text = "Delete"
+        Me.btnDelete.UseVisualStyleBackColor = True
+        '
+        'btnAdd
+        '
+        Me.btnAdd.Location = New System.Drawing.Point(353, 51)
+        Me.btnAdd.Name = "btnAdd"
+        Me.btnAdd.Size = New System.Drawing.Size(75, 23)
+        Me.btnAdd.TabIndex = 13
+        Me.btnAdd.Text = "Add"
+        Me.btnAdd.UseVisualStyleBackColor = True
+        '
+        'btnEdit
+        '
+        Me.btnEdit.Location = New System.Drawing.Point(353, 80)
+        Me.btnEdit.Name = "btnEdit"
+        Me.btnEdit.Size = New System.Drawing.Size(75, 23)
+        Me.btnEdit.TabIndex = 12
+        Me.btnEdit.Text = "Edit"
+        Me.btnEdit.UseVisualStyleBackColor = True
         '
         'lstPrograms
         '
         Me.lstPrograms.FormattingEnabled = True
-        Me.lstPrograms.Location = New System.Drawing.Point(15, 162)
+        Me.lstPrograms.Location = New System.Drawing.Point(12, 51)
         Me.lstPrograms.Name = "lstPrograms"
-        Me.lstPrograms.Size = New System.Drawing.Size(737, 121)
+        Me.lstPrograms.Size = New System.Drawing.Size(335, 121)
         Me.lstPrograms.TabIndex = 3
-        '
-        'tbSelectedFile
-        '
-        Me.tbSelectedFile.Location = New System.Drawing.Point(15, 117)
-        Me.tbSelectedFile.Name = "tbSelectedFile"
-        Me.tbSelectedFile.Size = New System.Drawing.Size(830, 20)
-        Me.tbSelectedFile.TabIndex = 2
-        '
-        'btnOpenFile
-        '
-        Me.btnOpenFile.Location = New System.Drawing.Point(953, 117)
-        Me.btnOpenFile.Name = "btnOpenFile"
-        Me.btnOpenFile.Size = New System.Drawing.Size(75, 23)
-        Me.btnOpenFile.TabIndex = 1
-        Me.btnOpenFile.Text = "Select File"
-        Me.btnOpenFile.UseVisualStyleBackColor = True
-        '
-        'btnRunAppTest
-        '
-        Me.btnRunAppTest.Location = New System.Drawing.Point(953, 44)
-        Me.btnRunAppTest.Name = "btnRunAppTest"
-        Me.btnRunAppTest.Size = New System.Drawing.Size(75, 23)
-        Me.btnRunAppTest.TabIndex = 0
-        Me.btnRunAppTest.Text = "Launch"
-        Me.btnRunAppTest.UseVisualStyleBackColor = True
         '
         'btnRefreshGeneralTab
         '
@@ -2513,102 +2482,28 @@ Partial Class FormMain
         '
         Me.OpenFileDialog.FileName = "OpenFileDialog"
         '
-        'tbWorkDir
+        'gbAppLaunchSettings
         '
-        Me.tbWorkDir.Location = New System.Drawing.Point(119, 359)
-        Me.tbWorkDir.Name = "tbWorkDir"
-        Me.tbWorkDir.Size = New System.Drawing.Size(699, 20)
-        Me.tbWorkDir.TabIndex = 2
+        Me.gbAppLaunchSettings.Controls.Add(Me.lblPrgListbox)
+        Me.gbAppLaunchSettings.Controls.Add(Me.lstPrograms)
+        Me.gbAppLaunchSettings.Controls.Add(Me.btnEdit)
+        Me.gbAppLaunchSettings.Controls.Add(Me.btnDelete)
+        Me.gbAppLaunchSettings.Controls.Add(Me.btnAdd)
+        Me.gbAppLaunchSettings.Location = New System.Drawing.Point(3, 3)
+        Me.gbAppLaunchSettings.Name = "gbAppLaunchSettings"
+        Me.gbAppLaunchSettings.Size = New System.Drawing.Size(475, 182)
+        Me.gbAppLaunchSettings.TabIndex = 17
+        Me.gbAppLaunchSettings.TabStop = False
+        Me.gbAppLaunchSettings.Text = "Application Launcher Settings"
         '
-        'tbAppArgs
+        'lblPrgListbox
         '
-        Me.tbAppArgs.Location = New System.Drawing.Point(119, 385)
-        Me.tbAppArgs.Name = "tbAppArgs"
-        Me.tbAppArgs.Size = New System.Drawing.Size(699, 20)
-        Me.tbAppArgs.TabIndex = 2
-        '
-        'btnReload
-        '
-        Me.btnReload.Location = New System.Drawing.Point(883, 220)
-        Me.btnReload.Name = "btnReload"
-        Me.btnReload.Size = New System.Drawing.Size(100, 23)
-        Me.btnReload.TabIndex = 5
-        Me.btnReload.Text = "Reload"
-        Me.btnReload.UseVisualStyleBackColor = True
-        '
-        'lblWorkDir
-        '
-        Me.lblWorkDir.AutoSize = True
-        Me.lblWorkDir.Location = New System.Drawing.Point(21, 366)
-        Me.lblWorkDir.Name = "lblWorkDir"
-        Me.lblWorkDir.Size = New System.Drawing.Size(95, 13)
-        Me.lblWorkDir.TabIndex = 6
-        Me.lblWorkDir.Text = "Working Directory:"
-        '
-        'lblAppArgs
-        '
-        Me.lblAppArgs.AutoSize = True
-        Me.lblAppArgs.Location = New System.Drawing.Point(21, 392)
-        Me.lblAppArgs.Name = "lblAppArgs"
-        Me.lblAppArgs.Size = New System.Drawing.Size(60, 13)
-        Me.lblAppArgs.TabIndex = 7
-        Me.lblAppArgs.Text = "Arguments:"
-        '
-        'lblAppPath
-        '
-        Me.lblAppPath.AutoSize = True
-        Me.lblAppPath.Location = New System.Drawing.Point(21, 333)
-        Me.lblAppPath.Name = "lblAppPath"
-        Me.lblAppPath.Size = New System.Drawing.Size(93, 13)
-        Me.lblAppPath.TabIndex = 8
-        Me.lblAppPath.Text = "Application Path:  "
-        '
-        'tbAppPath
-        '
-        Me.tbAppPath.Location = New System.Drawing.Point(119, 326)
-        Me.tbAppPath.Name = "tbAppPath"
-        Me.tbAppPath.Size = New System.Drawing.Size(699, 20)
-        Me.tbAppPath.TabIndex = 9
-        '
-        'cbAppRunAsAdmin
-        '
-        Me.cbAppRunAsAdmin.AutoSize = True
-        Me.cbAppRunAsAdmin.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.cbAppRunAsAdmin.Location = New System.Drawing.Point(21, 425)
-        Me.cbAppRunAsAdmin.Name = "cbAppRunAsAdmin"
-        Me.cbAppRunAsAdmin.Size = New System.Drawing.Size(93, 17)
-        Me.cbAppRunAsAdmin.TabIndex = 10
-        Me.cbAppRunAsAdmin.Text = "Run As Admin"
-        Me.cbAppRunAsAdmin.UseVisualStyleBackColor = True
-        '
-        'cbIncludeInBatch
-        '
-        Me.cbIncludeInBatch.AutoSize = True
-        Me.cbIncludeInBatch.CheckAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.cbIncludeInBatch.Location = New System.Drawing.Point(21, 448)
-        Me.cbIncludeInBatch.Name = "cbIncludeInBatch"
-        Me.cbIncludeInBatch.Size = New System.Drawing.Size(179, 17)
-        Me.cbIncludeInBatch.TabIndex = 11
-        Me.cbIncludeInBatch.Text = "Include in batch App Processing"
-        Me.cbIncludeInBatch.UseVisualStyleBackColor = True
-        '
-        'btnEdit
-        '
-        Me.btnEdit.Location = New System.Drawing.Point(883, 296)
-        Me.btnEdit.Name = "btnEdit"
-        Me.btnEdit.Size = New System.Drawing.Size(75, 23)
-        Me.btnEdit.TabIndex = 12
-        Me.btnEdit.Text = "Edit"
-        Me.btnEdit.UseVisualStyleBackColor = True
-        '
-        'btnAdd
-        '
-        Me.btnAdd.Location = New System.Drawing.Point(883, 350)
-        Me.btnAdd.Name = "btnAdd"
-        Me.btnAdd.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdd.TabIndex = 13
-        Me.btnAdd.Text = "Add"
-        Me.btnAdd.UseVisualStyleBackColor = True
+        Me.lblPrgListbox.AutoSize = True
+        Me.lblPrgListbox.Location = New System.Drawing.Point(12, 32)
+        Me.lblPrgListbox.Name = "lblPrgListbox"
+        Me.lblPrgListbox.Size = New System.Drawing.Size(78, 13)
+        Me.lblPrgListbox.TabIndex = 15
+        Me.lblPrgListbox.Text = "Application List"
         '
         'FormMain
         '
@@ -2699,11 +2594,12 @@ Partial Class FormMain
         Me.tpDatapump.ResumeLayout(False)
         CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpQATools.ResumeLayout(False)
-        Me.tpQATools.PerformLayout()
         Me.gbAdvApps.ResumeLayout(False)
         Me.gbAdvApps.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.gbAppLaunchSettings.ResumeLayout(False)
+        Me.gbAppLaunchSettings.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2912,22 +2808,12 @@ Partial Class FormMain
     Friend WithEvents lblAdvApps As Label
     Friend WithEvents tpQATools As TabPage
     Friend WithEvents btnRefreshGeneralTab As Button
-    Friend WithEvents btnOpenFile As Button
-    Friend WithEvents btnRunAppTest As Button
     Friend WithEvents OpenFileDialog As OpenFileDialog
-    Friend WithEvents tbSelectedFile As TextBox
-    Friend WithEvents btnLaunch As Button
-    Friend WithEvents btnAddProg As Button
     Friend WithEvents lstPrograms As ListBox
-    Friend WithEvents tbWorkDir As TextBox
-    Friend WithEvents tbAppArgs As TextBox
-    Friend WithEvents btnReload As Button
-    Friend WithEvents lblAppArgs As Label
-    Friend WithEvents lblWorkDir As Label
-    Friend WithEvents lblAppPath As Label
-    Friend WithEvents tbAppPath As TextBox
-    Friend WithEvents cbAppRunAsAdmin As CheckBox
-    Friend WithEvents cbIncludeInBatch As CheckBox
     Friend WithEvents btnEdit As Button
     Friend WithEvents btnAdd As Button
+    Friend WithEvents btnBatchLaunch As Button
+    Friend WithEvents btnDelete As Button
+    Friend WithEvents gbAppLaunchSettings As GroupBox
+    Friend WithEvents lblPrgListbox As Label
 End Class
