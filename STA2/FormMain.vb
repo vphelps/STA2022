@@ -1207,33 +1207,8 @@ Public Class FormMain
         Return IO.Path.Combine(dir, "launcher.config.json")
     End Function
 
-    Private Sub btnAddProg_Click(sender As Object, e As EventArgs)
-        Using dlg As New OpenFileDialog()
-            dlg.Title = "Select an application"
-            dlg.Filter = "Programs (*.exe)|*.exe|All Files (*.*)|*.*"
-            dlg.FilterIndex = 1 ' Make .exe the default filter
-            dlg.CheckFileExists = True
-            dlg.Multiselect = False
 
-            If dlg.ShowDialog() = DialogResult.OK Then
-                Dim entry As New ProgramEntry With {
-                .Name = IO.Path.GetFileNameWithoutExtension(dlg.FileName),
-                .Path = dlg.FileName,
-                .WorkingDirectory = IO.Path.GetDirectoryName(dlg.FileName),
-                .Arguments = "",
-                .RunAsAdmin = False,
-                .Enabled = True,
-                .IncludeInBatch = False
-            }
-                _config.Programs.Add(entry)
-                SaveConfig(_config)
-                RefreshProgramsList()
-            End If
-        End Using
-    End Sub
-
-
-    Private Sub btnLaunch_Click(sender As Object, e As EventArgs)
+    Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then
             MessageBox.Show("Please select a program.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -1267,12 +1242,6 @@ Public Class FormMain
             MessageBox.Show("Failed to launch:" & Environment.NewLine & ex.Message,
                         "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
-    End Sub
-
-    Private Sub btnReload_Click(sender As Object, e As EventArgs)
-        _config = LoadConfig()
-        RefreshProgramsList()
-
     End Sub
 
     Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
