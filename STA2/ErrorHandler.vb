@@ -1,10 +1,10 @@
 ﻿Public Class ErrorHandler
     Public Shared Sub ErrorHandler(Message As String, StackTrace As String)
 
-        'FormError.errMessage = Message
-        'FormError.errStack = StackTrace
-        'FormError.ShowDialog()
-        'FormMain.Close()
+        FormError.errMessage = Message
+        FormError.errStack = StackTrace
+        FormError.ShowDialog()
+        FormMain.Close()
         ' From inside the parent form
 
         Using dlg As New FormError()
