@@ -242,7 +242,7 @@ Public Class FormMain
             Dim query As String = ""
             If rbDbTableSize.Checked Then query = DbInfo.DbSizeByTable
             If rbDbFragmentation.Checked Then query = DbInfo.DbFragmentation
-            If rbDbSizeByDay.Checked Then query = String.Format(DbInfo.DbSizeByDay, My.Settings.Database)
+            If rbDbSizeByDay.Checked Then query = String.Format(DbInfo.DbSizeByDay, ConfigValues.Database)
             If rbDbDeadlocks.Checked Then query = DbInfo.DbDeadlocks
 
             dbResult = DBConnector.dbQuery(query)
@@ -446,7 +446,7 @@ Public Class FormMain
     End Sub
 
     Private Async Sub btnPortCheck_Click(sender As Object, e As EventArgs) Handles btnPortCheck.Click
-        Dim host As String = My.Settings.Server
+        Dim host As String = ConfigValues.Server
         NetworkDataHelper.NetworkPortListGenerate()
         For Each row As DataGridViewRow In dgvPorts.Rows
             Dim value As Integer = row.Cells("PortNo").Value
@@ -1038,10 +1038,10 @@ Public Class FormMain
 
     Private Async Sub btnCustomPortCheck_Click(sender As Object, e As EventArgs) Handles btnCustomPortCheck.Click
 
-        Dim host As String = My.Settings.Server
+        Dim host As String = ConfigValues.Server
         tbCustomPortCheck.Text = String.Format("Testing Port...{0}", nudCustomPortCheck.Value)
 
-        Dim result As Boolean = Await ConnectAsync(My.Settings.Server, nudCustomPortCheck.Value)
+        Dim result As Boolean = Await ConnectAsync(ConfigValues.Server, nudCustomPortCheck.Value)
 
         If result Then
             tbCustomPortCheck.Text = String.Format("{0} Port Open", nudCustomPortCheck.Value)

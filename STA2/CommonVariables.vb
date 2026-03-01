@@ -57,3 +57,15 @@ Public Class ProgramEntry
     End Function
 
 End Class
+
+Public Class ConfigValues
+    Public Shared Server As String
+    Public Shared Database As String
+    Public Shared UserID As String
+    Public Shared StationNo As Integer
+    Public Shared IntegratedSecurity As Integer
+    Public Shared PasswordEncryption As Integer
+    Public Shared Password As String
+
+
+End Class

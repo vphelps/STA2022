@@ -12,11 +12,11 @@ Public Class DBConnector
 
 #Region "Build Connection String"
 
-        builder.Add("Data Source", My.Settings.Server)
+        builder.Add("Data Source", ConfigValues.Server)
         builder("Integrated Security") = False
-        builder.Add("Initial Catalog", My.Settings.Database)
-        builder.Add("UID", My.Settings.UserID)
-        builder.Add("PWD", My.Settings.Password)
+        builder.Add("Initial Catalog", ConfigValues.Database)
+        builder.Add("UID", ConfigValues.UserID)
+        builder.Add("PWD", ConfigValues.Password)
         strTemp = builder.ConnectionString
 
 
@@ -57,11 +57,11 @@ Public Class DBConnector
 
 #Region "Build Connection String"
 
-        builder.Add("Data Source", My.Settings.Server)
+        builder.Add("Data Source", ConfigValues.Server)
         builder("Integrated Security") = False
-        builder.Add("Initial Catalog", My.Settings.Database)
-        builder.Add("UID", My.Settings.UserID)
-        builder.Add("PWD", My.Settings.Password)
+        builder.Add("Initial Catalog", ConfigValues.Database)
+        builder.Add("UID", ConfigValues.UserID)
+        builder.Add("PWD", ConfigValues.Password)
         strTemp = builder.ConnectionString
 
 
@@ -107,11 +107,11 @@ Public Class DBConnector
 
 #Region "Build Connection String"
 
-        builder.Add("Data Source", My.Settings.Server)
+        builder.Add("Data Source", ConfigValues.Server)
         builder("Integrated Security") = False
-        builder.Add("Initial Catalog", My.Settings.Database)
-        builder.Add("UID", My.Settings.UserID)
-        builder.Add("PWD", My.Settings.Password)
+        builder.Add("Initial Catalog", ConfigValues.Database)
+        builder.Add("UID", ConfigValues.UserID)
+        builder.Add("PWD", ConfigValues.Password)
         'strTemp = builder.ConnectionString
 
 
