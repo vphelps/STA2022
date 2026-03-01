@@ -40,6 +40,7 @@ Public Class FormMain
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        CodeHelper.GetPcInfo()
 
         If Not (My.Application.CommandLineArgs.Contains("-engineer")) Then
             tcSTA.TabPages.Remove(tpDatapump)
@@ -162,7 +163,7 @@ Public Class FormMain
     End Sub
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpQATools
+        'tcSTA.SelectedTab = tpQATools
 
 #End If
 
