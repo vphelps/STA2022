@@ -133,7 +133,6 @@
     <Compile Include="EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EODBTroubleshooting.vb" />
     <Compile Include="ErrorHandler.vb" />
     <Compile Include="FormError.Designer.vb">
       <DependentUpon>FormError.vb</DependentUpon>
