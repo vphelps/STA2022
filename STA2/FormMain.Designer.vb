@@ -193,12 +193,9 @@ Partial Class FormMain
         Me.btnEODBFolder = New System.Windows.Forms.Button()
         Me.tbEodbProgress = New System.Windows.Forms.TextBox()
         Me.tpDatapump = New System.Windows.Forms.TabPage()
-        Me.btDpDelete = New System.Windows.Forms.Button()
-        Me.btnDpNew = New System.Windows.Forms.Button()
-        Me.btDpEdit = New System.Windows.Forms.Button()
-        Me.dgvDatapumps = New System.Windows.Forms.DataGridView()
         Me.tpQATools = New System.Windows.Forms.TabPage()
         Me.gbAppLaunchSettings = New System.Windows.Forms.GroupBox()
+        Me.btnLaunch = New System.Windows.Forms.Button()
         Me.lblPrgListbox = New System.Windows.Forms.Label()
         Me.lstPrograms = New System.Windows.Forms.ListBox()
         Me.btnEdit = New System.Windows.Forms.Button()
@@ -236,7 +233,6 @@ Partial Class FormMain
         Me.fbdEODB = New System.Windows.Forms.FolderBrowserDialog()
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
-        Me.btnLaunch = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -286,8 +282,6 @@ Partial Class FormMain
         Me.tpEODB.SuspendLayout()
         Me.gbEODBExcel.SuspendLayout()
         Me.gbEODBParameter.SuspendLayout()
-        Me.tpDatapump.SuspendLayout()
-        CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpQATools.SuspendLayout()
         Me.gbAppLaunchSettings.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
@@ -333,7 +327,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest1)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 776)
-        Me.SplitContainer1.SplitterDistance = 602
+        Me.SplitContainer1.SplitterDistance = 603
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -353,7 +347,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 598)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 599)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -366,7 +360,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 572)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 573)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1159,7 +1153,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 572)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 573)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1314,7 +1308,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 572)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 573)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1329,7 +1323,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 541)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 542)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1421,7 +1415,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 572)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 573)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1508,7 +1502,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 442)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 443)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1663,7 +1657,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 572)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 573)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1734,7 +1728,7 @@ Partial Class FormMain
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 572)
+        Me.tpNetwork.Size = New System.Drawing.Size(1056, 573)
         Me.tpNetwork.TabIndex = 6
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
@@ -1924,7 +1918,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 572)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 573)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -1999,7 +1993,7 @@ Partial Class FormMain
         Me.tpEODB.Location = New System.Drawing.Point(4, 22)
         Me.tpEODB.Name = "tpEODB"
         Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 572)
+        Me.tpEODB.Size = New System.Drawing.Size(1056, 573)
         Me.tpEODB.TabIndex = 8
         Me.tpEODB.Text = "EODB Troubleshooting"
         Me.tpEODB.UseVisualStyleBackColor = True
@@ -2120,65 +2114,20 @@ Partial Class FormMain
         '
         'tpDatapump
         '
-        Me.tpDatapump.Controls.Add(Me.btDpDelete)
-        Me.tpDatapump.Controls.Add(Me.btnDpNew)
-        Me.tpDatapump.Controls.Add(Me.btDpEdit)
-        Me.tpDatapump.Controls.Add(Me.dgvDatapumps)
         Me.tpDatapump.Location = New System.Drawing.Point(4, 22)
         Me.tpDatapump.Name = "tpDatapump"
         Me.tpDatapump.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDatapump.Size = New System.Drawing.Size(1056, 572)
+        Me.tpDatapump.Size = New System.Drawing.Size(1056, 573)
         Me.tpDatapump.TabIndex = 9
         Me.tpDatapump.Text = "DataPump Maintenance"
         Me.tpDatapump.UseVisualStyleBackColor = True
-        '
-        'btDpDelete
-        '
-        Me.btDpDelete.Location = New System.Drawing.Point(965, 479)
-        Me.btDpDelete.Name = "btDpDelete"
-        Me.btDpDelete.Size = New System.Drawing.Size(75, 23)
-        Me.btDpDelete.TabIndex = 8
-        Me.btDpDelete.Text = "Delete"
-        Me.btDpDelete.UseVisualStyleBackColor = True
-        '
-        'btnDpNew
-        '
-        Me.btnDpNew.Location = New System.Drawing.Point(770, 479)
-        Me.btnDpNew.Name = "btnDpNew"
-        Me.btnDpNew.Size = New System.Drawing.Size(75, 23)
-        Me.btnDpNew.TabIndex = 7
-        Me.btnDpNew.Text = "New"
-        Me.btnDpNew.UseVisualStyleBackColor = True
-        '
-        'btDpEdit
-        '
-        Me.btDpEdit.Location = New System.Drawing.Point(870, 479)
-        Me.btDpEdit.Name = "btDpEdit"
-        Me.btDpEdit.Size = New System.Drawing.Size(75, 23)
-        Me.btDpEdit.TabIndex = 6
-        Me.btDpEdit.Text = "Edit"
-        Me.btDpEdit.UseVisualStyleBackColor = True
-        '
-        'dgvDatapumps
-        '
-        Me.dgvDatapumps.AllowUserToAddRows = False
-        Me.dgvDatapumps.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.dgvDatapumps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvDatapumps.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvDatapumps.Location = New System.Drawing.Point(6, 6)
-        Me.dgvDatapumps.Name = "dgvDatapumps"
-        Me.dgvDatapumps.ReadOnly = True
-        Me.dgvDatapumps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.dgvDatapumps.Size = New System.Drawing.Size(1041, 429)
-        Me.dgvDatapumps.TabIndex = 0
         '
         'tpQATools
         '
         Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1056, 572)
+        Me.tpQATools.Size = New System.Drawing.Size(1056, 573)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -2197,6 +2146,15 @@ Partial Class FormMain
         Me.gbAppLaunchSettings.TabIndex = 17
         Me.gbAppLaunchSettings.TabStop = False
         Me.gbAppLaunchSettings.Text = "Application Launcher Settings"
+        '
+        'btnLaunch
+        '
+        Me.btnLaunch.Location = New System.Drawing.Point(354, 139)
+        Me.btnLaunch.Name = "btnLaunch"
+        Me.btnLaunch.Size = New System.Drawing.Size(75, 23)
+        Me.btnLaunch.TabIndex = 16
+        Me.btnLaunch.Text = "Launch"
+        Me.btnLaunch.UseVisualStyleBackColor = True
         '
         'lblPrgListbox
         '
@@ -2507,15 +2465,6 @@ Partial Class FormMain
         '
         Me.OpenFileDialog.FileName = "OpenFileDialog"
         '
-        'btnLaunch
-        '
-        Me.btnLaunch.Location = New System.Drawing.Point(354, 139)
-        Me.btnLaunch.Name = "btnLaunch"
-        Me.btnLaunch.Size = New System.Drawing.Size(75, 23)
-        Me.btnLaunch.TabIndex = 16
-        Me.btnLaunch.Text = "Launch"
-        Me.btnLaunch.UseVisualStyleBackColor = True
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2602,8 +2551,6 @@ Partial Class FormMain
         Me.gbEODBExcel.ResumeLayout(False)
         Me.gbEODBParameter.ResumeLayout(False)
         Me.gbEODBParameter.PerformLayout()
-        Me.tpDatapump.ResumeLayout(False)
-        CType(Me.dgvDatapumps, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tpQATools.ResumeLayout(False)
         Me.gbAppLaunchSettings.ResumeLayout(False)
         Me.gbAppLaunchSettings.PerformLayout()
@@ -2795,10 +2742,6 @@ Partial Class FormMain
     Friend WithEvents lblEODBdate As Label
     Friend WithEvents gbEODBExcel As GroupBox
     Friend WithEvents tbEODBInstructions As TextBox
-    Friend WithEvents dgvDatapumps As DataGridView
-    Friend WithEvents btDpEdit As Button
-    Friend WithEvents btnDpNew As Button
-    Friend WithEvents btDpDelete As Button
     Friend WithEvents Panel2 As Panel
     Friend WithEvents gbStandardPortCheck As GroupBox
     Friend WithEvents gbCustomPortCheck As GroupBox

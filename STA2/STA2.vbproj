@@ -125,7 +125,6 @@
     <Compile Include="CommonVariables.vb" />
     <Compile Include="Connections.vb" />
     <Compile Include="Constants.vb" />
-    <Compile Include="DataPumps.vb" />
     <Compile Include="DBConnector.vb" />
     <Compile Include="DotNetInfo.vb" />
     <Compile Include="EditProgramForm .Designer.vb">
@@ -136,12 +135,6 @@
     </Compile>
     <Compile Include="EODBTroubleshooting.vb" />
     <Compile Include="ErrorHandler.vb" />
-    <Compile Include="FormDataPump.Designer.vb">
-      <DependentUpon>FormDataPump.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormDataPump.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="FormError.Designer.vb">
       <DependentUpon>FormError.vb</DependentUpon>
     </Compile>
@@ -192,9 +185,6 @@
   <ItemGroup>
     <EmbeddedResource Include="EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormDataPump.resx">
-      <DependentUpon>FormDataPump.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormError.resx">
       <DependentUpon>FormError.vb</DependentUpon>
