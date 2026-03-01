@@ -124,79 +124,88 @@ Public Class Services
 
     Public Shared Function BuildServiceControlList()
         '"AdvApiServer", "AdvCoreService", "AdvantageCloudSyncService", "AdvCreditService", "AdvLicService", "AdvNotifyService", "AdvantageUpgradeService", "AdvSignageService"
+        Dim frm As FormMain = TryCast(System.Windows.Forms.Application.OpenForms.Cast(Of Form)().
+                                  FirstOrDefault(Function(f) TypeOf f Is FormMain), FormMain)
+        If frm Is Nothing OrElse frm.IsDisposed Then Return (Nothing)
+
+        'If frm.InvokeRequired Then
+        '    frm.BeginInvoke(CType(Sub() Refresher(), MethodInvoker))
+        '    Return
+        'End If
+
         Dim item As New ServiceControlEntry
         Dim mylist As New List(Of ServiceControlEntry)
 
 #Region "API Service"
-        item.TextBox = FormMain.tbApiService
-        item.SSButton = FormMain.btnApiServiceSS
-        item.RSButton = FormMain.btnApiServiceRS
+        item.TextBox = frm.tbApiService
+        item.SSButton = frm.btnApiServiceSS
+        item.RSButton = frm.btnApiServiceRS
         item.Service = "AdvApiServer"
-        item.GroupBox = FormMain.gpApiService
+        item.GroupBox = frm.gpApiService
         mylist.Add(item)
 #End Region
 #Region "Core Service"
-        item.TextBox = FormMain.tbCoreService
-        item.SSButton = FormMain.btnCoreServiceSS
-        item.RSButton = FormMain.btnCoreServiceRS
+        item.TextBox = frm.tbCoreService
+        item.SSButton = frm.btnCoreServiceSS
+        item.RSButton = frm.btnCoreServiceRS
         item.Service = "AdvCoreService"
-        item.GroupBox = FormMain.gpCoreService
+        item.GroupBox = frm.gpCoreService
         mylist.Add(item)
 #End Region
 #Region "Cloud Service"
-        item.TextBox = FormMain.tbCloudService
-        item.SSButton = FormMain.btnCloudServiceSS
-        item.RSButton = FormMain.btnCloudServiceRS
+        item.TextBox = frm.tbCloudService
+        item.SSButton = frm.btnCloudServiceSS
+        item.RSButton = frm.btnCloudServiceRS
         item.Service = "AdvantageCloudSyncService"
-        item.GroupBox = FormMain.gpCloudService
+        item.GroupBox = frm.gpCloudService
         mylist.Add(item)
 #End Region
 #Region "Credit Service"
-        item.TextBox = FormMain.tbAdvCreditService
-        item.SSButton = FormMain.btnAdvCreditServiceSS
-        item.RSButton = FormMain.btnAdvCreditServiceRS
+        item.TextBox = frm.tbAdvCreditService
+        item.SSButton = frm.btnAdvCreditServiceSS
+        item.RSButton = frm.btnAdvCreditServiceRS
         item.Service = "AdvCreditService"
-        item.GroupBox = FormMain.gpAdvCreditService
+        item.GroupBox = frm.gpAdvCreditService
         mylist.Add(item)
 #End Region
 #Region "License Service"
-        item.TextBox = FormMain.tbAdvLicService
-        item.SSButton = FormMain.btnAdvLicServiceSS
-        item.RSButton = FormMain.btnAdvLicServiceRS
+        item.TextBox = frm.tbAdvLicService
+        item.SSButton = frm.btnAdvLicServiceSS
+        item.RSButton = frm.btnAdvLicServiceRS
         item.Service = "AdvLicService"
-        item.GroupBox = FormMain.gpAdvLicService
+        item.GroupBox = frm.gpAdvLicService
         mylist.Add(item)
 #End Region
 #Region "Signage Service"
-        item.TextBox = FormMain.tbAdvSignageService
-        item.SSButton = FormMain.btnAdvSignageServiceSS
-        item.RSButton = FormMain.btnAdvSignageServiceRS
+        item.TextBox = frm.tbAdvSignageService
+        item.SSButton = frm.btnAdvSignageServiceSS
+        item.RSButton = frm.btnAdvSignageServiceRS
         item.Service = "AdvSignageService"
-        item.GroupBox = FormMain.gpAdvSignageService
+        item.GroupBox = frm.gpAdvSignageService
         mylist.Add(item)
 #End Region
 #Region "Turnstile Service"
-        item.TextBox = FormMain.tbAdvTurnstileEngine
-        item.SSButton = FormMain.btnAdvTurnstileEngineSS
-        item.RSButton = FormMain.btnAdvTurnstileEngineRS
+        item.TextBox = frm.tbAdvTurnstileEngine
+        item.SSButton = frm.btnAdvTurnstileEngineSS
+        item.RSButton = frm.btnAdvTurnstileEngineRS
         item.Service = "AdvTurnstileEngine"
-        item.GroupBox = FormMain.gpAdvTurnstileEngine
+        item.GroupBox = frm.gpAdvTurnstileEngine
         mylist.Add(item)
 #End Region
 #Region "Notification Service"
-        item.TextBox = FormMain.tbAdvNotifyService
-        item.SSButton = FormMain.btnAdvNotifyServiceSS
-        item.RSButton = FormMain.btnAdvNotifyServiceRS
+        item.TextBox = frm.tbAdvNotifyService
+        item.SSButton = frm.btnAdvNotifyServiceSS
+        item.RSButton = frm.btnAdvNotifyServiceRS
         item.Service = "AdvNotifyService"
-        item.GroupBox = FormMain.gpAdvNotifyService
+        item.GroupBox = frm.gpAdvNotifyService
         mylist.Add(item)
 #End Region
 #Region "Upgrade Service"
-        item.TextBox = FormMain.tbAdvantageUpgradeService
-        item.SSButton = FormMain.btnAdvantageUpgradeServiceSS
-        item.RSButton = FormMain.btnAdvantageUpgradeServiceRS
+        item.TextBox = frm.tbAdvantageUpgradeService
+        item.SSButton = frm.btnAdvantageUpgradeServiceSS
+        item.RSButton = frm.btnAdvantageUpgradeServiceRS
         item.Service = "AdvantageUpgradeService"
-        item.GroupBox = FormMain.gpAdvantageUpgradeService
+        item.GroupBox = frm.gpAdvantageUpgradeService
         mylist.Add(item)
 #End Region
 

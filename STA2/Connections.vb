@@ -28,18 +28,18 @@ Public Class Connections
         Try
             Dim Ini As New IniFile("C:\PFSCommon\PFSConnect.ini")
 
-            My.Settings.Server = Ini.ReadString("SQL2000", "DataSource")
-            My.Settings.Database = Ini.ReadString("SQL2000", "Catalog")
+            ConfigValues.Server = Ini.ReadString("SQL2000", "DataSource")
+            ConfigValues.Database = Ini.ReadString("SQL2000", "Catalog")
             _Password = Ini.ReadString("SQL2000", "Password")
-            My.Settings.UserID = Ini.ReadString("SQL2000", "UserID")
-            My.Settings.StationNo = Ini.ReadInteger("Info", "StationNo")
-            My.Settings.IntegratedSecurity = Ini.ReadInteger("SQL2000", "IntegratedSecurity")
-            My.Settings.PasswordEncryption = Ini.ReadInteger("SQL2000", "PasswordEncryption")
+            ConfigValues.UserID = Ini.ReadString("SQL2000", "UserID")
+            ConfigValues.StationNo = Ini.ReadInteger("Info", "StationNo")
+            ConfigValues.IntegratedSecurity = Ini.ReadInteger("SQL2000", "IntegratedSecurity")
+            ConfigValues.PasswordEncryption = Ini.ReadInteger("SQL2000", "PasswordEncryption")
 
-            If My.Settings.PasswordEncryption = 1 Then
-                My.Settings.Password = Encoding.UTF8.GetString(ProtectedData.Unprotect(Convert.FromBase64String(_Password), PasswordEntropy, DataProtectionScope.LocalMachine))
-            ElseIf My.Settings.PasswordEncryption = 0 Then
-                My.Settings.Password = _Password
+            If ConfigValues.PasswordEncryption = 1 Then
+                ConfigValues.Password = Encoding.UTF8.GetString(ProtectedData.Unprotect(Convert.FromBase64String(_Password), PasswordEntropy, DataProtectionScope.LocalMachine))
+            ElseIf ConfigValues.PasswordEncryption = 0 Then
+                ConfigValues.Password = _Password
             End If
 
         Catch ex As Exception
@@ -47,13 +47,13 @@ Public Class Connections
             'FormError.Title = "PFSConnect.ini Error"
             'FormError.Message = "PFSConnect.ini file was not found in C:\PFSCommon"
             'FormError.StackTrace = ex.StackTrace
-            'FormError.Settings = "Server = " + My.Settings.Server + vbCrLf
-            'FormError.Settings = FormError.Settings + "Database = " + My.Settings.Database + vbCrLf
-            'FormError.Settings = FormError.Settings + "UserID = " + My.Settings.UserID + vbCrLf
-            'FormError.Settings = FormError.Settings + "StationNo = " + My.Settings.StationNo.ToString + vbCrLf
-            'FormError.Settings = FormError.Settings + "IntegratedSecurity = " + My.Settings.IntegratedSecurity.ToString + vbCrLf
-            'FormError.Settings = FormError.Settings + "Password = " + My.Settings.Password + vbCrLf
-            'FormError.Settings = FormError.Settings + "PasswordEncryption = " + My.Settings.PasswordEncryption.ToString + vbCrLf
+            'FormError.Settings = "Server = " + ConfigValues.Server + vbCrLf
+            'FormError.Settings = FormError.Settings + "Database = " + ConfigValues.Database + vbCrLf
+            'FormError.Settings = FormError.Settings + "UserID = " + ConfigValues.UserID + vbCrLf
+            'FormError.Settings = FormError.Settings + "StationNo = " + ConfigValues.StationNo.ToString + vbCrLf
+            'FormError.Settings = FormError.Settings + "IntegratedSecurity = " + ConfigValues.IntegratedSecurity.ToString + vbCrLf
+            'FormError.Settings = FormError.Settings + "Password = " + ConfigValues.Password + vbCrLf
+            'FormError.Settings = FormError.Settings + "PasswordEncryption = " + ConfigValues.PasswordEncryption.ToString + vbCrLf
             'If FormError.ShowDialog() = DialogResult.Cancel Then
             '    End
 

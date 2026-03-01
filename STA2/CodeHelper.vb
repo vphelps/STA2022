@@ -1,5 +1,6 @@
 ﻿
 Imports Microsoft.Office.Interop.Excel
+Imports System.Windows.Forms
 
 Public Class CodeHelper
 
@@ -43,54 +44,86 @@ Public Class CodeHelper
         End If
 
 
-
     End Sub
     Public Shared Sub Refresher()
+        Dim strTemp As String = ""
+        ' Find the real running MainForm instance
+        Dim frm As FormMain = TryCast(System.Windows.Forms.Application.OpenForms.Cast(Of Form)().
+                                  FirstOrDefault(Function(f) TypeOf f Is FormMain), FormMain)
+        If frm Is Nothing OrElse frm.IsDisposed Then Return
+
+        If frm.InvokeRequired Then
+            frm.BeginInvoke(CType(Sub() Refresher(), MethodInvoker))
+            Return
+        End If
+
         If PCInfo.ValidDatabase Then
             Try
-
                 AppData.dbLicData = DBConnector.dbQuery(GeneralQueries.LicenseData)
-                FormMain.tbLocName.Text = AppData.dbLicData.Tables.Item(0).Rows.Item(0).Item("LocName").ToString
-                FormMain.tbLicSvr.Text = AppData.dbLicData.Tables.Item(0).Rows.Item(0).Item("LicenseServer").ToString
-                FormMain.tbCoreSvr.Text = AppData.dbLicData.Tables.Item(0).Rows.Item(0).Item("CoreServiceServerName").ToString
-                FormMain.tbDbVer.Text = AppData.dbLicData.Tables.Item(0).Rows.Item(0).Item("Version").ToString
-                FormMain.tbWebEnabled.Text = AppData.dbLicData.Tables.Item(0).Rows.Item(0).Item("EnableWeb").ToString
-                FormMain.tbShiftDate.Text = AppData.dbLicData.Tables.Item(0).Rows.Item(0).Item("ShiftDate").ToString
+
+                frm.tbLocName.Text = AppData.dbLicData.Tables(0).Rows(0)("LocName").ToString()
+                frm.tbLicSvr.Text = AppData.dbLicData.Tables(0).Rows(0)("LicenseServer").ToString()
+                frm.tbCoreSvr.Text = AppData.dbLicData.Tables(0).Rows(0)("CoreServiceServerName").ToString()
+                frm.tbDbVer.Text = AppData.dbLicData.Tables(0).Rows(0)("Version").ToString()
+                frm.tbWebEnabled.Text = AppData.dbLicData.Tables(0).Rows(0)("EnableWeb").ToString()
+                frm.tbShiftDate.Text = AppData.dbLicData.Tables(0).Rows(0)("ShiftDate").ToString()
             Catch ex As Exception
-                FormMain.tbLocName.Text = "Database Error"
-                FormMain.tbLicSvr.Text = "Database Error"
-                FormMain.tbCoreSvr.Text = "Database Error"
-                FormMain.tbDbVer.Text = "Database Error"
-                FormMain.tbWebEnabled.Text = "Database Error"
-                FormMain.tbShiftDate.Text = "Database Error"
-
+                frm.tbLocName.Text = "Database Error"
+                frm.tbLicSvr.Text = "Database Error"
+                frm.tbCoreSvr.Text = "Database Error"
+                frm.tbDbVer.Text = "Database Error"
+                frm.tbWebEnabled.Text = "Database Error"
+                frm.tbShiftDate.Text = "Database Error"
             End Try
-
-
         End If
-        FormMain.tmr10Seconds.Start()
-        FormMain.tslblNetVersion.Text = PCInfo.FrameworkVersion
-        FormMain.dtpMsgLogDateFrom.Enabled = FormMain.cbMsgLogDateRange.Checked
-        FormMain.dtpMsgLogTimeFrom.Enabled = FormMain.cbMsgLogDateRange.Checked
 
-        FormMain.dtpMsgLogDateTo.Enabled = FormMain.cbMsgLogDateRange.Checked
-        FormMain.dtpMsgLogTimeTo.Enabled = FormMain.cbMsgLogDateRange.Checked
+        frm.tmr10Seconds.Start()
+        frm.tslblNetVersion.Text = PCInfo.FrameworkVersion
 
-        FormMain.tslblCeVersion.Text = PCInfo.AdvantageVersion
-        FormMain.tslblTime.Text = My.Computer.Clock.LocalTime.ToShortDateString & " " & My.Computer.Clock.LocalTime.ToShortTimeString
+        frm.dtpMsgLogDateFrom.Enabled = frm.cbMsgLogDateRange.Checked
+        frm.dtpMsgLogTimeFrom.Enabled = frm.cbMsgLogDateRange.Checked
+        frm.dtpMsgLogDateTo.Enabled = frm.cbMsgLogDateRange.Checked
+        frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
+
+        frm.tslblCeVersion.Text = PCInfo.AdvantageVersion
+        frm.tslblTime.Text = My.Computer.Clock.LocalTime.ToShortDateString() & " " &
+                         My.Computer.Clock.LocalTime.ToShortTimeString()
 
         Dim list As New List(Of Boolean)
-
-        For index = 0 To FormMain.ServiceControlList.Count - 1
-            If FormMain.ServiceControlList.Item(index).GroupBox.Enabled Then
-                'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
-                list.Add(Services.GetServiceStatus(FormMain.ServiceControlList.Item(index)))
-
+        For i = 0 To FormMain.ServiceControlList.Count - 1
+            If FormMain.ServiceControlList(i).GroupBox.Enabled Then
+                list.Add(Services.GetServiceStatus(FormMain.ServiceControlList(i)))
             End If
         Next
 
-    End Sub
+        frm.tbPcName.Text = PCInfo.Name
+        frm.tbPcOsInfo.Text = PCInfo.OpSys
+        frm.tbPcRam.Text = PCInfo.Ram
+        frm.tbPcHardDrive.Text = PCInfo.FreeSpace
+        frm.tbPcArch.Text = PCInfo.Architecture
+        frm.tbPcNetVersion.Text = PCInfo.FrameworkVersion
+        frm.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
 
+        Try
+            Dim SQLStats As DataSet = DBConnector.dbQuery(GeneralQueries.DbStats)
+            PCInfo.DbSize = SQLStats.Tables(0).Rows(0).Item(0)
+            PCInfo.SqlVersion = SQLStats.Tables(0).Rows(0).Item(1)
+        Catch ex As Exception
+            PCInfo.ValidDatabase = False
+            PCInfo.DbSize = "Invalid Database"
+            PCInfo.SqlVersion = "Invalid Database"
+        End Try
+
+        If PCInfo.IsSQLInstalled Then
+            If PCInfo.DbSize.Length < 4 Then frm.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize) Else frm.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
+            If PCInfo.SqlVersion.Contains("Developer") Then strTemp = "Developer"
+            If PCInfo.SqlVersion.Contains("Express") Then strTemp = "Express"
+            If PCInfo.SqlVersion.Contains("Evaluation") Then strTemp = "Evaluation"
+            If PCInfo.SqlVersion.Contains("Standard") Then strTemp = "Standard"
+            If PCInfo.SqlVersion.Length > 0 And strTemp.Length > 0 Then frm.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", PCInfo.SqlVersion.Substring(PCInfo.SqlVersion.IndexOf("20"), 4), strTemp)
+        End If
+
+    End Sub
     Public Shared Sub GetPcInfo()
         PCInfo.Name = My.Computer.Name
         PCInfo.OpSys = My.Computer.Info.OSFullName

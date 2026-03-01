@@ -6,11 +6,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{65B5DB15-BC2B-484D-AC89-855E070E87AE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>STA2.My.MyApplication</StartupObject>
+    <StartupObject>STA2.Startup</StartupObject>
     <RootNamespace>STA2</RootNamespace>
     <AssemblyName>STA2</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>WindowsForms</MyType>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -80,6 +80,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -117,6 +120,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigFileFunctions.vb" />
     <Compile Include="CodeHelper.vb" />
     <Compile Include="CommonVariables.vb" />
     <Compile Include="Connections.vb" />
@@ -124,6 +128,12 @@
     <Compile Include="DataPumps.vb" />
     <Compile Include="DBConnector.vb" />
     <Compile Include="DotNetInfo.vb" />
+    <Compile Include="EditProgramForm .Designer.vb">
+      <DependentUpon>EditProgramForm .vb</DependentUpon>
+    </Compile>
+    <Compile Include="EditProgramForm .vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="EODBTroubleshooting.vb" />
     <Compile Include="ErrorHandler.vb" />
     <Compile Include="FormDataPump.Designer.vb">
@@ -177,8 +187,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SQLQueries.vb" />
+    <Compile Include="Startup.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditProgramForm .resx">
+      <DependentUpon>EditProgramForm .vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormDataPump.resx">
       <DependentUpon>FormDataPump.vb</DependentUpon>
     </EmbeddedResource>

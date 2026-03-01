@@ -126,11 +126,11 @@ Public Class DataPumpHelpers
             Dim DataPumpInsert As String = "INSERT INTO DataPumps(DataPumpId, Description, IsStandard, Query, FileName, StartTime, IntervalMinutes, Enabled, DestinationId)
 	VALUES(NEWID(),@Description,@IsStandard,@Query, @FileName, @StartTime, @IntervalMinutes, @Enabled, @DestinationId)"
 
-            builder.Add("Data Source", My.Settings.Server)
+            builder.Add("Data Source", ConfigValues.Server)
             builder("Integrated Security") = False
-            builder.Add("Initial Catalog", My.Settings.Database)
-            builder.Add("UID", My.Settings.UserID)
-            builder.Add("PWD", My.Settings.Password)
+            builder.Add("Initial Catalog", ConfigValues.Database)
+            builder.Add("UID", ConfigValues.UserID)
+            builder.Add("PWD", ConfigValues.Password)
             Dim cn As New SqlConnection(builder.ConnectionString)
             cn.Open()
             If DataPumpId = Nothing Then MsgBox("Nothing")
@@ -152,11 +152,11 @@ Public Class DataPumpHelpers
 
         Else
 
-            builder.Add("Data Source", My.Settings.Server)
+            builder.Add("Data Source", ConfigValues.Server)
             builder("Integrated Security") = False
-            builder.Add("Initial Catalog", My.Settings.Database)
-            builder.Add("UID", My.Settings.UserID)
-            builder.Add("PWD", My.Settings.Password)
+            builder.Add("Initial Catalog", ConfigValues.Database)
+            builder.Add("UID", ConfigValues.UserID)
+            builder.Add("PWD", ConfigValues.Password)
             Dim cn As New SqlConnection(builder.ConnectionString)
             cn.Open()
             If DataPumpId = Nothing Then MsgBox("Nothing")
@@ -183,11 +183,11 @@ Public Class DataPumpHelpers
     Public Shared Sub DeleteDataPump(DataPumpId As Guid)
         Dim builder As New SqlConnectionStringBuilder
 
-        builder.Add("Data Source", My.Settings.Server)
+        builder.Add("Data Source", ConfigValues.Server)
         builder("Integrated Security") = False
-            builder.Add("Initial Catalog", My.Settings.Database)
-            builder.Add("UID", My.Settings.UserID)
-            builder.Add("PWD", My.Settings.Password)
+            builder.Add("Initial Catalog", ConfigValues.Database)
+            builder.Add("UID", ConfigValues.UserID)
+            builder.Add("PWD", ConfigValues.Password)
             Dim cn As New SqlConnection(builder.ConnectionString)
             cn.Open()
             If DataPumpId = Nothing Then MsgBox("Nothing")
