@@ -179,19 +179,6 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoBackup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
-        Me.tpEODB = New System.Windows.Forms.TabPage()
-        Me.tbEODBInstructions = New System.Windows.Forms.TextBox()
-        Me.gbEODBExcel = New System.Windows.Forms.GroupBox()
-        Me.btnEODBSave = New System.Windows.Forms.Button()
-        Me.btnSaveToXml = New System.Windows.Forms.Button()
-        Me.btnXmltoWorkbook = New System.Windows.Forms.Button()
-        Me.gbEODBParameter = New System.Windows.Forms.GroupBox()
-        Me.lblEODBdate = New System.Windows.Forms.Label()
-        Me.dtpEODB = New System.Windows.Forms.DateTimePicker()
-        Me.tbEODBFolder = New System.Windows.Forms.TextBox()
-        Me.lblEODBFolder = New System.Windows.Forms.Label()
-        Me.btnEODBFolder = New System.Windows.Forms.Button()
-        Me.tbEodbProgress = New System.Windows.Forms.TextBox()
         Me.tpQATools = New System.Windows.Forms.TabPage()
         Me.gbAppLaunchSettings = New System.Windows.Forms.GroupBox()
         Me.btnLaunch = New System.Windows.Forms.Button()
@@ -278,9 +265,6 @@ Partial Class FormMain
         Me.gpCloudComm.SuspendLayout()
         Me.tpOptions.SuspendLayout()
         Me.gpAdvUpgrade.SuspendLayout()
-        Me.tpEODB.SuspendLayout()
-        Me.gbEODBExcel.SuspendLayout()
-        Me.gbEODBParameter.SuspendLayout()
         Me.tpQATools.SuspendLayout()
         Me.gbAppLaunchSettings.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
@@ -339,7 +323,6 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpStParse)
         Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Controls.Add(Me.tpOptions)
-        Me.tcSTA.Controls.Add(Me.tpEODB)
         Me.tcSTA.Controls.Add(Me.tpQATools)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
@@ -1982,134 +1965,6 @@ Partial Class FormMain
         Me.cbAdvUpgradeQuiet.Text = "Quiet Mode (Runs in Cmd Prompt Window) [/q]"
         Me.cbAdvUpgradeQuiet.UseVisualStyleBackColor = True
         '
-        'tpEODB
-        '
-        Me.tpEODB.Controls.Add(Me.tbEODBInstructions)
-        Me.tpEODB.Controls.Add(Me.gbEODBExcel)
-        Me.tpEODB.Controls.Add(Me.gbEODBParameter)
-        Me.tpEODB.Controls.Add(Me.tbEodbProgress)
-        Me.tpEODB.Location = New System.Drawing.Point(4, 22)
-        Me.tpEODB.Name = "tpEODB"
-        Me.tpEODB.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpEODB.Size = New System.Drawing.Size(1056, 574)
-        Me.tpEODB.TabIndex = 8
-        Me.tpEODB.Text = "EODB Troubleshooting"
-        Me.tpEODB.UseVisualStyleBackColor = True
-        '
-        'tbEODBInstructions
-        '
-        Me.tbEODBInstructions.Location = New System.Drawing.Point(550, 121)
-        Me.tbEODBInstructions.Multiline = True
-        Me.tbEODBInstructions.Name = "tbEODBInstructions"
-        Me.tbEODBInstructions.ReadOnly = True
-        Me.tbEODBInstructions.Size = New System.Drawing.Size(489, 97)
-        Me.tbEODBInstructions.TabIndex = 9
-        Me.tbEODBInstructions.Text = resources.GetString("tbEODBInstructions.Text")
-        '
-        'gbEODBExcel
-        '
-        Me.gbEODBExcel.Controls.Add(Me.btnEODBSave)
-        Me.gbEODBExcel.Controls.Add(Me.btnSaveToXml)
-        Me.gbEODBExcel.Controls.Add(Me.btnXmltoWorkbook)
-        Me.gbEODBExcel.Location = New System.Drawing.Point(550, 15)
-        Me.gbEODBExcel.Name = "gbEODBExcel"
-        Me.gbEODBExcel.Size = New System.Drawing.Size(175, 100)
-        Me.gbEODBExcel.TabIndex = 8
-        Me.gbEODBExcel.TabStop = False
-        Me.gbEODBExcel.Text = "GroupBox1"
-        '
-        'btnEODBSave
-        '
-        Me.btnEODBSave.Location = New System.Drawing.Point(11, 19)
-        Me.btnEODBSave.Name = "btnEODBSave"
-        Me.btnEODBSave.Size = New System.Drawing.Size(75, 23)
-        Me.btnEODBSave.TabIndex = 4
-        Me.btnEODBSave.Text = "Save"
-        Me.btnEODBSave.UseVisualStyleBackColor = True
-        '
-        'btnSaveToXml
-        '
-        Me.btnSaveToXml.Location = New System.Drawing.Point(11, 48)
-        Me.btnSaveToXml.Name = "btnSaveToXml"
-        Me.btnSaveToXml.Size = New System.Drawing.Size(75, 23)
-        Me.btnSaveToXml.TabIndex = 5
-        Me.btnSaveToXml.Text = "Save XML"
-        Me.btnSaveToXml.UseVisualStyleBackColor = True
-        '
-        'btnXmltoWorkbook
-        '
-        Me.btnXmltoWorkbook.Location = New System.Drawing.Point(92, 48)
-        Me.btnXmltoWorkbook.Name = "btnXmltoWorkbook"
-        Me.btnXmltoWorkbook.Size = New System.Drawing.Size(75, 23)
-        Me.btnXmltoWorkbook.TabIndex = 5
-        Me.btnXmltoWorkbook.Text = "Read XML"
-        Me.btnXmltoWorkbook.UseVisualStyleBackColor = True
-        '
-        'gbEODBParameter
-        '
-        Me.gbEODBParameter.Controls.Add(Me.lblEODBdate)
-        Me.gbEODBParameter.Controls.Add(Me.dtpEODB)
-        Me.gbEODBParameter.Controls.Add(Me.tbEODBFolder)
-        Me.gbEODBParameter.Controls.Add(Me.lblEODBFolder)
-        Me.gbEODBParameter.Controls.Add(Me.btnEODBFolder)
-        Me.gbEODBParameter.Location = New System.Drawing.Point(15, 15)
-        Me.gbEODBParameter.Name = "gbEODBParameter"
-        Me.gbEODBParameter.Size = New System.Drawing.Size(520, 105)
-        Me.gbEODBParameter.TabIndex = 7
-        Me.gbEODBParameter.TabStop = False
-        Me.gbEODBParameter.Text = "Set Parameters"
-        '
-        'lblEODBdate
-        '
-        Me.lblEODBdate.AutoSize = True
-        Me.lblEODBdate.Location = New System.Drawing.Point(6, 70)
-        Me.lblEODBdate.Name = "lblEODBdate"
-        Me.lblEODBdate.Size = New System.Drawing.Size(74, 13)
-        Me.lblEODBdate.TabIndex = 4
-        Me.lblEODBdate.Text = "Date to query:"
-        '
-        'dtpEODB
-        '
-        Me.dtpEODB.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.dtpEODB.Location = New System.Drawing.Point(86, 63)
-        Me.dtpEODB.Name = "dtpEODB"
-        Me.dtpEODB.Size = New System.Drawing.Size(109, 20)
-        Me.dtpEODB.TabIndex = 3
-        Me.dtpEODB.Value = New Date(2022, 7, 7, 0, 0, 0, 0)
-        '
-        'tbEODBFolder
-        '
-        Me.tbEODBFolder.Location = New System.Drawing.Point(94, 19)
-        Me.tbEODBFolder.Name = "tbEODBFolder"
-        Me.tbEODBFolder.Size = New System.Drawing.Size(310, 20)
-        Me.tbEODBFolder.TabIndex = 0
-        '
-        'lblEODBFolder
-        '
-        Me.lblEODBFolder.AutoSize = True
-        Me.lblEODBFolder.Location = New System.Drawing.Point(6, 22)
-        Me.lblEODBFolder.Name = "lblEODBFolder"
-        Me.lblEODBFolder.Size = New System.Drawing.Size(89, 13)
-        Me.lblEODBFolder.TabIndex = 1
-        Me.lblEODBFolder.Text = "Folder to save to:"
-        '
-        'btnEODBFolder
-        '
-        Me.btnEODBFolder.Location = New System.Drawing.Point(410, 17)
-        Me.btnEODBFolder.Name = "btnEODBFolder"
-        Me.btnEODBFolder.Size = New System.Drawing.Size(79, 23)
-        Me.btnEODBFolder.TabIndex = 2
-        Me.btnEODBFolder.Text = "Select Folder"
-        Me.btnEODBFolder.UseVisualStyleBackColor = True
-        '
-        'tbEodbProgress
-        '
-        Me.tbEodbProgress.Location = New System.Drawing.Point(15, 384)
-        Me.tbEodbProgress.Multiline = True
-        Me.tbEodbProgress.Name = "tbEodbProgress"
-        Me.tbEodbProgress.Size = New System.Drawing.Size(292, 107)
-        Me.tbEodbProgress.TabIndex = 6
-        '
         'tpQATools
         '
         Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
@@ -2534,11 +2389,6 @@ Partial Class FormMain
         Me.tpOptions.ResumeLayout(False)
         Me.gpAdvUpgrade.ResumeLayout(False)
         Me.gpAdvUpgrade.PerformLayout()
-        Me.tpEODB.ResumeLayout(False)
-        Me.tpEODB.PerformLayout()
-        Me.gbEODBExcel.ResumeLayout(False)
-        Me.gbEODBParameter.ResumeLayout(False)
-        Me.gbEODBParameter.PerformLayout()
         Me.tpQATools.ResumeLayout(False)
         Me.gbAppLaunchSettings.ResumeLayout(False)
         Me.gbAppLaunchSettings.PerformLayout()
@@ -2709,26 +2559,13 @@ Partial Class FormMain
     Friend WithEvents cbAdvUpgradeQuiet As CheckBox
     Friend WithEvents cbAdvUpgradeNoBackup As CheckBox
     Friend WithEvents cbAdvUpgradeNoSetup As CheckBox
-    Friend WithEvents tpEODB As TabPage
-    Friend WithEvents btnEODBFolder As Button
-    Friend WithEvents lblEODBFolder As Label
-    Friend WithEvents tbEODBFolder As TextBox
     Friend WithEvents fbdEODB As FolderBrowserDialog
-    Friend WithEvents dtpEODB As DateTimePicker
-    Friend WithEvents btnEODBSave As Button
-    Friend WithEvents btnSaveToXml As Button
-    Friend WithEvents btnXmltoWorkbook As Button
-    Friend WithEvents tbEodbProgress As TextBox
     Friend WithEvents gbAdvApps As GroupBox
     Friend WithEvents tbServicesButtonsHelpMessage As TextBox
     Friend WithEvents lblApplicationInfo As Label
     Friend WithEvents dgvApplicationInfo As DataGridView
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
-    Friend WithEvents gbEODBParameter As GroupBox
-    Friend WithEvents lblEODBdate As Label
-    Friend WithEvents gbEODBExcel As GroupBox
-    Friend WithEvents tbEODBInstructions As TextBox
     Friend WithEvents Panel2 As Panel
     Friend WithEvents gbStandardPortCheck As GroupBox
     Friend WithEvents gbCustomPortCheck As GroupBox
