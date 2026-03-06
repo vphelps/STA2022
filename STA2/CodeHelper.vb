@@ -16,13 +16,13 @@ Public Class CodeHelper
         PCInfo.FrameworkVersion = DotNetInfo.Get45PlusFromRegistry
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
 
-        FormMain.tbPcName.Text = PCInfo.Name
-        FormMain.tbPcOsInfo.Text = PCInfo.OpSys
-        FormMain.tbPcRam.Text = PCInfo.Ram
-        FormMain.tbPcHardDrive.Text = PCInfo.FreeSpace
-        FormMain.tbPcArch.Text = PCInfo.Architecture
-        FormMain.tbPcNetVersion.Text = PCInfo.FrameworkVersion
-        FormMain.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
+        Startup.MainFormInstance.tbPcName.Text = PCInfo.Name
+        Startup.MainFormInstance.tbPcOsInfo.Text = PCInfo.OpSys
+        Startup.MainFormInstance.tbPcRam.Text = PCInfo.Ram
+        Startup.MainFormInstance.tbPcHardDrive.Text = PCInfo.FreeSpace
+        Startup.MainFormInstance.tbPcArch.Text = PCInfo.Architecture
+        Startup.MainFormInstance.tbPcNetVersion.Text = PCInfo.FrameworkVersion
+        Startup.MainFormInstance.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
 
         Try
             Dim SQLStats As DataSet = DBConnector.dbQuery(GeneralQueries.DbStats)
@@ -35,12 +35,12 @@ Public Class CodeHelper
         End Try
 
         If PCInfo.IsSQLInstalled Then
-            If PCInfo.DbSize.Length < 4 Then FormMain.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize) Else FormMain.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
+            If PCInfo.DbSize.Length < 4 Then Startup.MainFormInstance.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize) Else Startup.MainFormInstance.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
             If PCInfo.SqlVersion.Contains("Developer") Then strTemp = "Developer"
             If PCInfo.SqlVersion.Contains("Express") Then strTemp = "Express"
             If PCInfo.SqlVersion.Contains("Evaluation") Then strTemp = "Evaluation"
             If PCInfo.SqlVersion.Contains("Standard") Then strTemp = "Standard"
-            If PCInfo.SqlVersion.Length > 0 And strTemp.Length > 0 Then FormMain.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", PCInfo.SqlVersion.Substring(PCInfo.SqlVersion.IndexOf("20"), 4), strTemp)
+            If PCInfo.SqlVersion.Length > 0 And strTemp.Length > 0 Then Startup.MainFormInstance.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", PCInfo.SqlVersion.Substring(PCInfo.SqlVersion.IndexOf("20"), 4), strTemp)
         End If
 
 
@@ -85,7 +85,10 @@ Public Class CodeHelper
         frm.dtpMsgLogDateTo.Enabled = frm.cbMsgLogDateRange.Checked
         frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
 
-        frm.tslblCeVersion.Text = PCInfo.AdvantageVersion
+        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService") ' Advantage Core Service
+        frm.tslblCeVersion.Text = "Version:  " + info.Version
+
+
         frm.tslblTime.Text = My.Computer.Clock.LocalTime.ToShortDateString() & " " &
                          My.Computer.Clock.LocalTime.ToShortTimeString()
 
@@ -188,8 +191,8 @@ Public Class CodeHelper
 
     Public Shared Sub AdminUser(Admin As Boolean)
 
-        FormMain.flpServices.Enabled = Admin
-        FormMain.tbServicesButtonsHelpMessage.Visible = Not (Admin)
+        Startup.MainFormInstance.flpServices.Enabled = Admin
+        Startup.MainFormInstance.tbServicesButtonsHelpMessage.Visible = Not (Admin)
     End Sub
 
 End Class

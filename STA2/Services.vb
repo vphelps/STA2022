@@ -20,7 +20,6 @@ Public Class Services
         controller.Stop()
         Do
             Changing = GetServiceStatus(list)
-            FormMain.tbTest1.Text = serviceControllerStatus.ToString
         Loop Until list.Status = ServiceControllerStatus.Stopped And Changing = False
 
 
@@ -36,7 +35,6 @@ Public Class Services
         Do
             Changing = GetServiceStatus(list)
             serviceControllerStatus = controller.Status
-            FormMain.tbTest1.Text = serviceControllerStatus.ToString
         Loop Until list.Status = ServiceControllerStatus.Running And Changing = False
 
 

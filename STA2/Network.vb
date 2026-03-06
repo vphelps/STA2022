@@ -19,16 +19,16 @@ Public Class NetworkData
 End Class
 Public Class NetworkDataHelper
     Public Shared Sub NetworkPortListGenerate()
-        FormMain.dgvPorts.Rows.Clear()
+        Startup.MainFormInstance.dgvPorts.Rows.Clear()
         'FormMain.dgvPorts.Rows.Add(80, "HTTP used for signage median", "")
-        FormMain.dgvPorts.Rows.Add(1433, "SQL Server (by default, can be changed for named instances)n", "")
-        FormMain.dgvPorts.Rows.Add(15050, "License Validation", "")
-        FormMain.dgvPorts.Rows.Add(15051, "License File Request", "")
-        FormMain.dgvPorts.Rows.Add(15054, "Fingerprint Service And Reporting", "")
-        FormMain.dgvPorts.Rows.Add(15055, "Signage Service And Qubica And Alvarado", "")
-        FormMain.dgvPorts.Rows.Add(15056, "External Sales Interface (Embed)", "")
-        FormMain.dgvPorts.Rows.Add(15059, "Advantage Api Service", "")
-        FormMain.dgvPorts.Rows.Add(15060, "Stage/Web 2.0", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(1433, "SQL Server (by default, can be changed for named instances)n", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15050, "License Validation", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15051, "License File Request", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15054, "Fingerprint Service And Reporting", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15055, "Signage Service And Qubica And Alvarado", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15056, "External Sales Interface (Embed)", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15059, "Advantage Api Service", "")
+        Startup.MainFormInstance.dgvPorts.Rows.Add(15060, "Stage/Web 2.0", "")
         'FormMain.dgvPorts.Rows.Add(31419, "PCCharge Credit Cards", "")
         'FormMain.dgvPorts.Rows.Add(31420, "CenterEdge Credit Cards (if using Advantage Credit Cards service)", "")
         'FormMain.dgvPorts.Rows.Add(50510, "Standard listening And transmission port for Web 1.0 services", "")
@@ -53,11 +53,11 @@ Public Class NetworkDataHelper
         GetIPv4Address = String.Empty
         Dim strHostName As String = System.Net.Dns.GetHostName()
         Dim iphe As System.Net.IPHostEntry = System.Net.Dns.GetHostEntry(ConfigValues.Server)
-        FormMain.tbMLTest1.Text = ""
+        Startup.MainFormInstance.tbMLTest1.Text = ""
         For Each ipheal As System.Net.IPAddress In iphe.AddressList
             If ipheal.AddressFamily = System.Net.Sockets.AddressFamily.InterNetwork Then
                 GetIPv4Address = ipheal.ToString()
-                FormMain.tbMLTest1.Text += GetIPv4Address + "|" + iphe.HostName + vbCrLf
+                Startup.MainFormInstance.tbMLTest1.Text += GetIPv4Address + "|" + iphe.HostName + vbCrLf
             End If
         Next
 

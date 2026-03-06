@@ -4,7 +4,7 @@
         FormError.errMessage = Message
         FormError.errStack = StackTrace
         FormError.ShowDialog()
-        FormMain.Close()
+        Startup.MainFormInstance.Close()
         ' From inside the parent form
 
         Using dlg As New FormError()
@@ -12,7 +12,7 @@
             dlg.tbErrStack.Text = StackTrace
             dlg.StartPosition = FormStartPosition.CenterParent  ' center over parent
             'dlg.ShowInTaskbar = False                           ' optional
-            dlg.ShowDialog(FormMain)                                  ' <-- pass the owner!
+            dlg.ShowDialog(Startup.MainFormInstance)                                  ' <-- pass the owner!
         End Using
 
     End Sub
@@ -23,7 +23,7 @@
             dlg.rtbErrMessage.Text = Message
             dlg.StartPosition = FormStartPosition.CenterParent  ' center over parent
             'dlg.ShowInTaskbar = False                           ' optional
-            dlg.ShowDialog(FormMain)                                  ' <-- pass the owner!
+            dlg.ShowDialog(Startup.MainFormInstance)                                  ' <-- pass the owner!
         End Using
 
 

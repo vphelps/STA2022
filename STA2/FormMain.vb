@@ -12,11 +12,33 @@ Imports System.ServiceProcess
 Imports System.Web
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Xml
+Imports Microsoft.Office.Interop.Excel
 Imports Newtonsoft.Json
+Imports Newtonsoft.Json.Linq
 Imports STA2.AppData
 Imports STA2.NetworkData
 
 Public Class FormMain
+
+    Private ReadOnly _options As AppOptions
+
+    Public Sub New(options As AppOptions)
+        InitializeComponent()     ' Designer-required
+
+        _options = options
+
+        ' Apply the window title from options.
+        ' Falls back to the existing Form.Text if WindowTitle is empty.
+        If Not String.IsNullOrWhiteSpace(_options.WindowTitle) Then
+            Me.Text = _options.WindowTitle
+        End If
+    End Sub
+
+    ' Later, if you add an Options dialog, you can update:
+    ' _options.WindowTitle = txtTitle.Text
+    ' OptionsManager.Save(_options)
+    ' Me.Text = _options.WindowTitle
+
     Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
 
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
@@ -32,6 +54,37 @@ Public Class FormMain
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
 
+
+        Dim cs As String =
+             String.Format("Server={0};Database={1};User ID={2};Password={3};", ConfigValues.Server, ConfigValues.Database, ConfigValues.UserID, ConfigValues.Password)
+        '"Server=localhost,1433;Database=master;User ID=sa;Password=YourPassword;TrustServerCertificate=True;"
+        tbMLTest1.Text = ""
+
+        Using cn As New SqlConnection(cs),
+              cmd As New SqlCommand("
+                SELECT
+                  SERVERPROPERTY('MachineName')       AS MachineName,
+                  SERVERPROPERTY('ServerName')        AS ServerName,
+                  SERVERPROPERTY('InstanceName')      AS InstanceName,
+                  SERVERPROPERTY('Edition')           AS Edition,
+                  SERVERPROPERTY('ProductVersion')    AS ProductVersion,
+                  SERVERPROPERTY('ProductLevel')      AS ProductLevel,
+                  SERVERPROPERTY('EngineEdition')     AS EngineEdition;", cn)
+
+            cn.Open()
+            Using rdr = cmd.ExecuteReader()
+                If rdr.Read() Then
+                    tbMLTest1.Text += ($"MachineName: {rdr("MachineName")}") + Environment.NewLine
+                    tbMLTest1.Text += ($"ServerName: {rdr("ServerName")}") + Environment.NewLine
+                    tbMLTest1.Text += ($"InstanceName: {rdr("InstanceName")}") + Environment.NewLine
+                    tbMLTest1.Text += ($"Edition: {rdr("Edition")}") + Environment.NewLine
+                    tbMLTest1.Text += ($"ProductVersion: {rdr("ProductVersion")}") + Environment.NewLine
+                    tbMLTest1.Text += ($"ProductLevel: {rdr("ProductLevel")}") + Environment.NewLine
+                    tbMLTest1.Text += ($"EngineEdition: {rdr("EngineEdition")}") + Environment.NewLine
+                End If
+            End Using
+        End Using
+
     End Sub
 
 
@@ -42,8 +95,11 @@ Public Class FormMain
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         CodeHelper.GetPcInfo()
 
-        If Not (My.Application.CommandLineArgs.Contains("-engineer")) Then
-
+        If (My.Application.CommandLineArgs.Contains("-test")) Then
+            For i As Integer = tcSTA.TabPages.Count - 1 To 0 Step -1
+                Dim page As TabPage = tcSTA.TabPages(i)
+                If Not page.Equals(tpGeneral) Then tcSTA.TabPages.Remove(page)
+            Next
         End If
 
         Connections.IniFileHandler(False)
@@ -104,13 +160,13 @@ Public Class FormMain
                 tbTest1.Visible = False
                 tbTest2.Visible = False
                 tbTest3.Visible = False
-                tbMLTest1.Visible = False
-                btnTest.Visible = False
-       
+        tbMLTest1.Visible = False
+        btnTest.Visible = False
+
 #End If
 
 
-        btnAdvUpgrade.Visible = My.Computer.FileSystem.FileExists("C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe")
+        btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
         btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
         btnAdvCardTech.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvCardTech"))
         btnAdvReportEditor.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvReportEditor"))
@@ -121,6 +177,8 @@ Public Class FormMain
         _config = LoadConfig()
         lstPrograms.DisplayMember = "Name"  ' shows ProgramEntry.Name
         RefreshProgramsList()
+        FillComboFromListBox()
+        tbWindowTitle.Text = _options.WindowTitle
 
     End Sub
 
@@ -145,10 +203,22 @@ Public Class FormMain
                 End If
             Next
         End If
+
     End Sub
+
+    Private Sub FillComboFromListBox()
+        cmbboxAppLaunch.Items.Clear()
+
+        For Each entry As ProgramEntry In lstPrograms.Items
+            cmbboxAppLaunch.Items.Add(entry)
+        Next
+        cmbboxAppLaunch.DisplayMember = "Name"
+
+    End Sub
+
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        'tcSTA.SelectedTab = tpQATools
+        tcSTA.SelectedTab = tpQATools
 
 #End If
 
@@ -165,18 +235,20 @@ Public Class FormMain
     End Sub
 
     Private Sub tmr10Seconds_Tick(sender As Object, e As EventArgs) Handles tmr10Seconds.Tick
-        If Not PCInfo.AdvantageVersion.Contains("Not") Then tslblCeVersion.Text = "Version:  " + PCInfo.AdvantageVersion
+        'If Not PCInfo.AdvantageVersion.Contains("Not") Then tslblCeVersion.Text = "Version:  " + PCInfo.AdvantageVersion
 
-        'Dim list As New List(Of Boolean)
+        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService") ' Advantage Core Service
+        tslblCeVersion.Text = "Version:  " + info.Version
 
-        'For index = 0 To ServiceControlList.Count - 1
-        '    If ServiceControlList.Item(index).GroupBox.Enabled Then
-        '        'ServiceControlList.Item(index).TextBox.Text = Services.GetServiceStatus(ServiceControlList.Item(index))
-        '        list.Add(Services.GetServiceStatus(ServiceControlList.Item(index)))
+        'If info.Path <> "" Then
+        '    Dim kind = If(info.IsDll, "DLL", "EXE")
+        '    tbTest1.Text = (info.Version)
+        '    tbMLTest1.Text = info.Path
+        'Else
+        '    tbTest1.Text = ("Could not resolve service binary.")
+        'End If
 
-        '    End If
-        'Next
-        'If list.Contains(True) Then tmr1Sec.Enabled = True Else tmr1Sec.Enabled = False
+
         CodeHelper.Refresher()
         If Not PCInfo.ValidDatabase Then
             tpAdvData.Enabled = False
@@ -468,23 +540,23 @@ Public Class FormMain
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
+        Dim Executable As String = "AdvUpgrade"
+        Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
 
-        Dim Path As String = "C:\Program Files (x86)\CenterEdge Software\AdvCoreService.exe"
+        If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
+        If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
+
         Dim temp As String = ""
-        temp = DBConnector.getValue("SELECT OptionValue FROM AppOptions WHERE OptionName = 'UpgradePath'").ToString
-
-        temp += "\Version " + FileVersionInfo.GetVersionInfo(Path).FileVersion.ToString
-        temp += "\AdvUpgrade.exe "
-        Dim startinfo As ProcessStartInfo = New ProcessStartInfo(temp)
+        Dim startinfo As ProcessStartInfo = New ProcessStartInfo(Executable)
         startinfo.Arguments = ""
-        startinfo.FileName = temp
-        temp = ""
+        startinfo.FileName = Executable
 
-        If cbAdvUpgradeNoBackup.Checked Then temp += AdvUpgradeConstants.NoBackup
-        If cbAdvUpgradeQuiet.Checked Then temp += AdvUpgradeConstants.Quiet
+        If cbAdvUpgradeNoBackup.Checked Then temp += AdvUpgradeConstants.NoBackup + " "
+        If cbAdvUpgradeQuiet.Checked Then temp += AdvUpgradeConstants.Quiet + " "
         If cbAdvUpgradeNoSetup.Checked Then temp += AdvUpgradeConstants.NoSetup
         startinfo.Arguments = temp
 
+        tbMLTest1.Text = startinfo.FileName + " " + startinfo.Arguments
         Process.Start(startinfo)
 
     End Sub
@@ -661,14 +733,14 @@ Public Class FormMain
     End Function
 
 
-    Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click
-        Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
-        If entry Is Nothing Then
-            MessageBox.Show("Please select a program.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Return
-        End If
-        LaunchProgram(entry)
-    End Sub
+    'Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click, lstPrograms.DoubleClick
+    '    Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+    '    If entry Is Nothing Then
+    '        MessageBox.Show("Please select a program.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    '        Return
+    '    End If
+    '    LaunchProgram(entry)
+    'End Sub
 
     Private Sub LaunchProgram(entry As ProgramEntry)
         If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Path) Then
@@ -731,6 +803,7 @@ Public Class FormMain
 
                 SaveConfig(_config)
                 RefreshProgramsList(preserveSelection:=True)
+                FillComboFromListBox()
             End If
         End Using
     End Sub
@@ -742,6 +815,7 @@ Public Class FormMain
                 _config.Programs.Add(dlg.Entry)
                 SaveConfig(_config)
                 RefreshProgramsList()
+                FillComboFromListBox()
             End If
         End Using
     End Sub
@@ -755,6 +829,7 @@ Public Class FormMain
             _config.Programs.Remove(entry)
             SaveConfig(_config)
             RefreshProgramsList()
+            FillComboFromListBox()
         End If
     End Sub
 
@@ -762,5 +837,37 @@ Public Class FormMain
         For Each p In _config.Programs.Where(Function(x) x.Enabled AndAlso x.IncludeInBatch)
             LaunchProgram(p) ' reuse your existing launcher method
         Next
+    End Sub
+
+    Private Sub cbListSort_CheckedChanged(sender As Object, e As EventArgs) Handles cbListSort.CheckedChanged
+        lstPrograms.Sorted = cbListSort.Checked
+
+    End Sub
+
+    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click, lstPrograms.DoubleClick
+
+        Dim entry As ProgramEntry = Nothing
+
+        If sender Is btnLaunch OrElse sender Is lstPrograms Then
+            ' From ListBox button OR double-click on the ListBox
+            entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+
+        ElseIf sender Is btnComboAppLaunch Then
+            ' From ComboBox button
+            entry = TryCast(cmbboxAppLaunch.SelectedItem, ProgramEntry)
+        End If
+
+        LaunchProgram(entry)
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        OptionsManager.Save(_options)
+
+    End Sub
+
+    Private Sub tbWindowTitle_TextChanged(sender As Object, e As EventArgs) Handles tbWindowTitle.TextChanged
+        _options.WindowTitle = tbWindowTitle.Text
+
     End Sub
 End Class
