@@ -3,7 +3,6 @@ Imports System.ComponentModel
 Imports System.Data.SqlClient
 Imports System.IO
 Imports System.Net
-Imports System.Net.Mime.MediaTypeNames
 Imports System.Net.NetworkInformation
 Imports System.Net.Sockets
 Imports System.Runtime.CompilerServices
@@ -12,7 +11,6 @@ Imports System.ServiceProcess
 Imports System.Web
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Xml
-Imports Microsoft.Office.Interop.Excel
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports STA2.AppData
@@ -22,10 +20,13 @@ Public Class FormMain
 
     Private ReadOnly _options As AppOptions
 
-    Public Sub New(options As AppOptions)
+    Private _launcherConfig As LauncherConfig
+
+    Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
 
         _options = options
+        _launcherConfig = If(launcher, New LauncherConfig())
 
         ' Apply the window title from options.
         ' Falls back to the existing Form.Text if WindowTitle is empty.
@@ -53,37 +54,35 @@ Public Class FormMain
     End Enum
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        'Dim cs As String =
+        '     String.Format("Server={0};Database={1};User ID={2};Password={3};", ConfigValues.Server, ConfigValues.Database, ConfigValues.UserID, ConfigValues.Password)
+        ''"Server=localhost,1433;Database=master;User ID=sa;Password=YourPassword;TrustServerCertificate=True;"
+        'tbMLTest1.Text = ""
 
+        'Using cn As New SqlConnection(cs),
+        '      cmd As New SqlCommand("
+        '        SELECT
+        '          SERVERPROPERTY('MachineName')       AS MachineName,
+        '          SERVERPROPERTY('ServerName')        AS ServerName,
+        '          SERVERPROPERTY('InstanceName')      AS InstanceName,
+        '          SERVERPROPERTY('Edition')           AS Edition,
+        '          SERVERPROPERTY('ProductVersion')    AS ProductVersion,
+        '          SERVERPROPERTY('ProductLevel')      AS ProductLevel,
+        '          SERVERPROPERTY('EngineEdition')     AS EngineEdition;", cn)
 
-        Dim cs As String =
-             String.Format("Server={0};Database={1};User ID={2};Password={3};", ConfigValues.Server, ConfigValues.Database, ConfigValues.UserID, ConfigValues.Password)
-        '"Server=localhost,1433;Database=master;User ID=sa;Password=YourPassword;TrustServerCertificate=True;"
-        tbMLTest1.Text = ""
-
-        Using cn As New SqlConnection(cs),
-              cmd As New SqlCommand("
-                SELECT
-                  SERVERPROPERTY('MachineName')       AS MachineName,
-                  SERVERPROPERTY('ServerName')        AS ServerName,
-                  SERVERPROPERTY('InstanceName')      AS InstanceName,
-                  SERVERPROPERTY('Edition')           AS Edition,
-                  SERVERPROPERTY('ProductVersion')    AS ProductVersion,
-                  SERVERPROPERTY('ProductLevel')      AS ProductLevel,
-                  SERVERPROPERTY('EngineEdition')     AS EngineEdition;", cn)
-
-            cn.Open()
-            Using rdr = cmd.ExecuteReader()
-                If rdr.Read() Then
-                    tbMLTest1.Text += ($"MachineName: {rdr("MachineName")}") + Environment.NewLine
-                    tbMLTest1.Text += ($"ServerName: {rdr("ServerName")}") + Environment.NewLine
-                    tbMLTest1.Text += ($"InstanceName: {rdr("InstanceName")}") + Environment.NewLine
-                    tbMLTest1.Text += ($"Edition: {rdr("Edition")}") + Environment.NewLine
-                    tbMLTest1.Text += ($"ProductVersion: {rdr("ProductVersion")}") + Environment.NewLine
-                    tbMLTest1.Text += ($"ProductLevel: {rdr("ProductLevel")}") + Environment.NewLine
-                    tbMLTest1.Text += ($"EngineEdition: {rdr("EngineEdition")}") + Environment.NewLine
-                End If
-            End Using
-        End Using
+        '    cn.Open()
+        '    Using rdr = cmd.ExecuteReader()
+        '        If rdr.Read() Then
+        '            tbMLTest1.Text += ($"MachineName: {rdr("MachineName")}") + Environment.NewLine
+        '            tbMLTest1.Text += ($"ServerName: {rdr("ServerName")}") + Environment.NewLine
+        '            tbMLTest1.Text += ($"InstanceName: {rdr("InstanceName")}") + Environment.NewLine
+        '            tbMLTest1.Text += ($"Edition: {rdr("Edition")}") + Environment.NewLine
+        '            tbMLTest1.Text += ($"ProductVersion: {rdr("ProductVersion")}") + Environment.NewLine
+        '            tbMLTest1.Text += ($"ProductLevel: {rdr("ProductLevel")}") + Environment.NewLine
+        '            tbMLTest1.Text += ($"EngineEdition: {rdr("EngineEdition")}") + Environment.NewLine
+        '        End If
+        '    End Using
+        'End Using
 
     End Sub
 
@@ -103,9 +102,8 @@ Public Class FormMain
         End If
 
         Connections.IniFileHandler(False)
-        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then Variables.LoggedIn = True Else Variables.LoggedIn = False
 
-        CodeHelper.AdminUser(Variables.LoggedIn)
+        'CodeHelper.AdminUser(Variables.LoggedIn)
         CodeHelper.FirstLoad()
 
         Dim strTemp As String = ""
@@ -156,10 +154,9 @@ Public Class FormMain
 #If DEBUG Then
 
 #Else
-                Variables.LoggedIn = False
-                tbTest1.Visible = False
-                tbTest2.Visible = False
-                tbTest3.Visible = False
+        tbTest1.Visible = False
+        tbTest2.Visible = False
+        tbTest3.Visible = False
         tbMLTest1.Visible = False
         btnTest.Visible = False
 
@@ -174,27 +171,44 @@ Public Class FormMain
         btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
 
-        _config = LoadConfig()
+        '_config = LoadConfig()
+
+        _launcherConfig = OptionsManager.LoadLauncherConfig()
+
         lstPrograms.DisplayMember = "Name"  ' shows ProgramEntry.Name
         RefreshProgramsList()
         FillComboFromListBox()
         tbWindowTitle.Text = _options.WindowTitle
-
+        If IsRunningAsAdmin() Then
+            btnAdminRestart.Enabled = False
+            btnAdminRestart.Text = "Running as Admin"
+        Else
+            btnAdminRestart.Enabled = True
+            btnAdminRestart.Text = "Restart as Administrator"
+        End If
     End Sub
 
     Private Sub RefreshProgramsList(Optional preserveSelection As Boolean = False)
         Dim selected As ProgramEntry = Nothing
+
+        ' Preserve the currently selected ProgramEntry
         If preserveSelection AndAlso lstPrograms.SelectedItem IsNot Nothing Then
             selected = DirectCast(lstPrograms.SelectedItem, ProgramEntry)
         End If
 
         lstPrograms.BeginUpdate()
         lstPrograms.Items.Clear()
-        For Each p In _config.Programs.Where(Function(x) x.Enabled)
-            lstPrograms.Items.Add(p)
-        Next
+
+        ' Load from the new config object (_launcherConfig)
+        If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
+            For Each p As ProgramEntry In _launcherConfig.Programs.Where(Function(x) x.Enabled)
+                lstPrograms.Items.Add(p)
+            Next
+        End If
+
         lstPrograms.EndUpdate()
 
+        ' Restore selection
         If preserveSelection AndAlso selected IsNot Nothing Then
             For i = 0 To lstPrograms.Items.Count - 1
                 If Object.ReferenceEquals(lstPrograms.Items(i), selected) Then
@@ -203,9 +217,7 @@ Public Class FormMain
                 End If
             Next
         End If
-
     End Sub
-
     Private Sub FillComboFromListBox()
         cmbboxAppLaunch.Items.Clear()
 
@@ -235,18 +247,9 @@ Public Class FormMain
     End Sub
 
     Private Sub tmr10Seconds_Tick(sender As Object, e As EventArgs) Handles tmr10Seconds.Tick
-        'If Not PCInfo.AdvantageVersion.Contains("Not") Then tslblCeVersion.Text = "Version:  " + PCInfo.AdvantageVersion
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService") ' Advantage Core Service
         tslblCeVersion.Text = "Version:  " + info.Version
-
-        'If info.Path <> "" Then
-        '    Dim kind = If(info.IsDll, "DLL", "EXE")
-        '    tbTest1.Text = (info.Version)
-        '    tbMLTest1.Text = info.Path
-        'Else
-        '    tbTest1.Text = ("Could not resolve service binary.")
-        'End If
 
 
         CodeHelper.Refresher()
@@ -440,7 +443,6 @@ Public Class FormMain
         Next
 
         LastServiceEntry = ServiceControlList.Item(temp)
-        tbTest2.Text = LastServiceEntry.Service
         Dim controller As New ServiceController(LastServiceEntry.Service)
         Dim serviceControllerStatus = controller.Status
 
@@ -493,7 +495,6 @@ Public Class FormMain
         Dim Executable As String = caller.Name.Replace("btn", "")
         Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
 
-        tbTest3.Text = CodeHelper.AdvExeCheck(Executable)
         If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
         If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
 
@@ -688,49 +689,48 @@ Public Class FormMain
 
         Else
             TabName = tcSTA.SelectedTab.Name
-            tbTest1.Text = TabName
         End If
 
 
     End Sub
 
-    Private ReadOnly _jsonSettings As New JsonSerializerSettings With {
-        .Formatting = Newtonsoft.Json.Formatting.Indented.Indented,
-        .NullValueHandling = NullValueHandling.Ignore
-    }
+    'Private ReadOnly _jsonSettings As New JsonSerializerSettings With {
+    '    .Formatting = Newtonsoft.Json.Formatting.Indented.Indented,
+    '    .NullValueHandling = NullValueHandling.Ignore
+    '}
 
-    Public Function LoadConfig() As LauncherConfig
-        Dim path = GetConfigPath()
-        If Not File.Exists(path) Then Return New LauncherConfig()
+    'Public Function LoadConfig() As LauncherConfig
+    '    Dim path = GetConfigPath()
+    '    If Not File.Exists(path) Then Return New LauncherConfig()
 
-        Try
-            Dim json = File.ReadAllText(path)
-            Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
-            If cfg Is Nothing Then cfg = New LauncherConfig()
-            Return cfg
-        Catch ex As Exception
-            MessageBox.Show("Failed to load config: " & ex.Message)
-            Return New LauncherConfig()
-        End Try
-    End Function
+    '    Try
+    '        Dim json = File.ReadAllText(path)
+    '        Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
+    '        If cfg Is Nothing Then cfg = New LauncherConfig()
+    '        Return cfg
+    '    Catch ex As Exception
+    '        MessageBox.Show("Failed to load config: " & ex.Message)
+    '        Return New LauncherConfig()
+    '    End Try
+    'End Function
 
-    Public Sub SaveConfig(cfg As LauncherConfig)
-        Try
-            Dim path = GetConfigPath()
-            Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
-            File.WriteAllText(path, json)
-        Catch ex As Exception
-            MessageBox.Show("Failed to save config: " & ex.Message)
-        End Try
-    End Sub
+    'Public Sub SaveConfig(cfg As LauncherConfig)
+    '    Try
+    '        Dim path = GetConfigPath()
+    '        Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
+    '        File.WriteAllText(path, json)
+    '    Catch ex As Exception
+    '        MessageBox.Show("Failed to save config: " & ex.Message)
+    '    End Try
+    'End Sub
 
-    Public Shared Function GetConfigPath() As String
-        Dim dir = System.IO.Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "STA2") ' your app folder
-        If Not IO.Directory.Exists(dir) Then IO.Directory.CreateDirectory(dir)
-        Return IO.Path.Combine(dir, "launcher.config.json")
-    End Function
+    'Public Shared Function GetConfigPath() As String
+    '    Dim dir = System.IO.Path.Combine(
+    '    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+    '    "STA2") ' your app folder
+    '    If Not IO.Directory.Exists(dir) Then IO.Directory.CreateDirectory(dir)
+    '    Return IO.Path.Combine(dir, "launcher.config.json")
+    'End Function
 
 
     'Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click, lstPrograms.DoubleClick
@@ -779,19 +779,20 @@ Public Class FormMain
         Using dlg As New EditProgramForm()
             ' Clone to support Cancel without side effects
             Dim clone As New ProgramEntry With {
-                .Name = entry.Name,
-                .Path = entry.Path,
-                .Arguments = entry.Arguments,
-                .WorkingDirectory = entry.WorkingDirectory,
-                .RunAsAdmin = entry.RunAsAdmin,
-                .IconPath = entry.IconPath,
-                .Enabled = entry.Enabled,
-                .IncludeInBatch = entry.IncludeInBatch
-            }
+            .Name = entry.Name,
+            .Path = entry.Path,
+            .Arguments = entry.Arguments,
+            .WorkingDirectory = entry.WorkingDirectory,
+            .RunAsAdmin = entry.RunAsAdmin,
+            .IconPath = entry.IconPath,
+            .Enabled = entry.Enabled,
+            .IncludeInBatch = entry.IncludeInBatch
+        }
 
             dlg.Entry = clone
 
             If dlg.ShowDialog(Me) = DialogResult.OK Then
+                ' Apply changes back to the selected entry
                 entry.Name = clone.Name
                 entry.Path = clone.Path
                 entry.Arguments = clone.Arguments
@@ -801,7 +802,10 @@ Public Class FormMain
                 entry.Enabled = clone.Enabled
                 entry.IncludeInBatch = clone.IncludeInBatch
 
-                SaveConfig(_config)
+                ' Persist via OptionsManager
+                SaveLauncher()
+
+                ' Refresh UI (preserve selection) & keep combo in sync
                 RefreshProgramsList(preserveSelection:=True)
                 FillComboFromListBox()
             End If
@@ -809,30 +813,54 @@ Public Class FormMain
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
+
         Using dlg As New EditProgramForm()
             dlg.Entry = New ProgramEntry()
+
             If dlg.ShowDialog(Me) = DialogResult.OK Then
-                _config.Programs.Add(dlg.Entry)
-                SaveConfig(_config)
+
+                ' Ensure config object exists
+                If _launcherConfig Is Nothing Then
+                    _launcherConfig = New LauncherConfig()
+                End If
+
+                ' Ensure Programs list exists
+                If _launcherConfig.Programs Is Nothing Then
+                    _launcherConfig.Programs = New List(Of ProgramEntry)()
+                End If
+
+                ' Add the new entry to the underlying config list
+                _launcherConfig.Programs.Add(dlg.Entry)
+
+                ' Persist using new OptionsManager
+                SaveLauncher()
+                ' Reload UI controls
                 RefreshProgramsList()
                 FillComboFromListBox()
+
             End If
         End Using
-    End Sub
 
+    End Sub
     Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then Return
 
         If MessageBox.Show($"Remove '{entry.Name}'?", "Confirm",
                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
-            _config.Programs.Remove(entry)
-            SaveConfig(_config)
+
+            If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
+                _launcherConfig.Programs.Remove(entry)
+            End If
+
+            ' Persist via OptionsManager
+            SaveLauncher()
+
+            ' Refresh UI & combo
             RefreshProgramsList()
             FillComboFromListBox()
         End If
     End Sub
-
     Private Sub btnBatchLaunch_Click(sender As Object, e As EventArgs) Handles btnBatchLaunch.Click
         For Each p In _config.Programs.Where(Function(x) x.Enabled AndAlso x.IncludeInBatch)
             LaunchProgram(p) ' reuse your existing launcher method
@@ -869,5 +897,40 @@ Public Class FormMain
     Private Sub tbWindowTitle_TextChanged(sender As Object, e As EventArgs) Handles tbWindowTitle.TextChanged
         _options.WindowTitle = tbWindowTitle.Text
 
+    End Sub
+
+    Private Sub SaveLauncher(Optional syncFromList As Boolean = False)
+        If syncFromList Then
+            _launcherConfig.Programs = lstPrograms.Items.Cast(Of ProgramEntry)().ToList()
+        End If
+        OptionsManager.SaveLauncherConfig(_launcherConfig)
+    End Sub
+
+    Private Sub btnAdminRestart_Click(sender As Object, e As EventArgs) Handles btnAdminRestart.Click
+        If IsRunningAsAdmin() Then
+            MessageBox.Show("Already running as Administrator.")
+            Return
+        End If
+
+        Try
+            Dim exePath As String = Application.ExecutablePath
+
+            Dim psi As New ProcessStartInfo(exePath)
+            psi.Verb = "runas"   ' <-- This triggers UAC elevation
+            psi.UseShellExecute = True
+
+            Process.Start(psi)
+
+            Application.Exit()   ' <-- Cleanly close the current non-admin instance
+        Catch ex As Exception
+            MessageBox.Show("Elevation canceled or failed: " & ex.Message)
+        End Try
+        If IsRunningAsAdmin() Then
+            btnAdminRestart.Enabled = False
+            btnAdminRestart.Text = "Running as Admin"
+        Else
+            btnAdminRestart.Enabled = True
+        btnAdminRestart.Text = "Restart as Administrator"
+        End If
     End Sub
 End Class

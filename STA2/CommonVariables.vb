@@ -36,10 +36,10 @@ Public Structure PCInfo
 
 End Structure
 
-Public Class LauncherConfig
-    Public Property Version As Integer = 1
-    Public Property Programs As List(Of ProgramEntry) = New List(Of ProgramEntry)
-End Class
+'Public Class LauncherConfig
+'    Public Property Version As Integer = 1
+'    Public Property Programs As List(Of ProgramEntry) = New List(Of ProgramEntry)
+'End Class
 
 Public Class ProgramEntry
     Public Property Name As String

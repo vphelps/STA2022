@@ -1,4 +1,5 @@
-﻿Imports System.Windows.Forms
+﻿Imports System.Security.Principal
+Imports System.Windows.Forms
 
 Module Startup
 
@@ -13,13 +14,7 @@ Module Startup
         '' ============================
         '' Load your INI / AppSettings here
         '' ============================
-        'Dim iniPath = IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dbconfig.ini")
-        'LoadAppSettingsFromIni(iniPath)   ' <-- YOUR loader
         Connections.IniFileHandler(False)
-        If My.User.IsInRole(ApplicationServices.BuiltInRole.Administrator) Then Variables.LoggedIn = True Else Variables.LoggedIn = False
-
-        'CodeHelper.AdminUser(Variables.LoggedIn)
-        'CodeHelper.FirstLoad()
 
         ' ============================
         ' Process command‑line switches here
@@ -42,11 +37,11 @@ Module Startup
         CodeHelper.GetPcInfo()
 
         Dim options As AppOptions = OptionsManager.LoadOrCreate()
-        Console.Write(options.WindowTitle)
+        Dim launcher = OptionsManager.LoadLauncherConfig()
 
         ' Create the main form and pass options in the constructor.
-
-        MainFormInstance = New FormMain(options)
+        MainFormInstance = New FormMain(options, launcher)
+        AdminUser(IsRunningAsAdmin())
         Application.Run(MainFormInstance)
 
         ' If you later add options like StartMinimized, apply here.
@@ -55,5 +50,16 @@ Module Startup
 
 
     End Sub
+    Public Function IsRunningAsAdmin() As Boolean
+        Dim identity = WindowsIdentity.GetCurrent()
+        Dim principal = New WindowsPrincipal(identity)
+        Return principal.IsInRole(WindowsBuiltInRole.Administrator)
+    End Function
 
+    Public Sub AdminUser(Admin As Boolean)
+
+        MainFormInstance.flpServices.Enabled = Admin
+        MainFormInstance.tbServicesButtonsHelpMessage.Visible = Not (Admin)
+
+    End Sub
 End Module
