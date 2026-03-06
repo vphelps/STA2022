@@ -189,10 +189,5 @@ Public Class CodeHelper
 
     End Function
 
-    Public Shared Sub AdminUser(Admin As Boolean)
-
-        Startup.MainFormInstance.flpServices.Enabled = Admin
-        Startup.MainFormInstance.tbServicesButtonsHelpMessage.Visible = Not (Admin)
-    End Sub
 
 End Class
