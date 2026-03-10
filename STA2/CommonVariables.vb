@@ -14,7 +14,7 @@ Public Class AppData
 End Class
 Public Class Variables
     Public Shared LoggedIn As Boolean = False
-
+    Public Shared OfflineMode As Boolean = False
 
 End Class
 
@@ -36,12 +36,9 @@ Public Structure PCInfo
 
 End Structure
 
-'Public Class LauncherConfig
-'    Public Property Version As Integer = 1
-'    Public Property Programs As List(Of ProgramEntry) = New List(Of ProgramEntry)
-'End Class
-
+' ProgramEntry.vb
 Public Class ProgramEntry
+    Public Property Id As String = Guid.NewGuid().ToString("N")
     Public Property Name As String
     Public Property Path As String
     Public Property Arguments As String
@@ -51,11 +48,9 @@ Public Class ProgramEntry
     Public Property Enabled As Boolean = True
     Public Property IncludeInBatch As Boolean = False
 
-
     Public Overrides Function ToString() As String
         Return $"{Name} ({Path})"
     End Function
-
 End Class
 
 Public Class ConfigValues
@@ -66,6 +61,7 @@ Public Class ConfigValues
     Public Shared IntegratedSecurity As Integer
     Public Shared PasswordEncryption As Integer
     Public Shared Password As String
+    Public Shared ConnectionString As String
 
 
 End Class

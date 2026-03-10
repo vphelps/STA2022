@@ -1,5 +1,4 @@
 ﻿
-Imports Microsoft.Office.Interop.Excel
 Imports System.Windows.Forms
 
 Public Class CodeHelper
@@ -11,63 +10,181 @@ Public Class CodeHelper
     End Enum
 
     Public Shared Sub FirstLoad()
+        Dim form = Startup.MainFormInstance
         Dim strTemp As String = ""
+        If Variables.OfflineMode Then
+            PCInfo.ValidDatabase = False
+            ' Paint UI offline state
+            form.tbPcDbSize.Text = "Offline"
+            form.tbPcSqlVersion.Text = "Offline"
+            Return
+        End If
+
+        ' Populate PC info
         GetPcInfo()
         PCInfo.FrameworkVersion = DotNetInfo.Get45PlusFromRegistry
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
 
-        Startup.MainFormInstance.tbPcName.Text = PCInfo.Name
-        Startup.MainFormInstance.tbPcOsInfo.Text = PCInfo.OpSys
-        Startup.MainFormInstance.tbPcRam.Text = PCInfo.Ram
-        Startup.MainFormInstance.tbPcHardDrive.Text = PCInfo.FreeSpace
-        Startup.MainFormInstance.tbPcArch.Text = PCInfo.Architecture
-        Startup.MainFormInstance.tbPcNetVersion.Text = PCInfo.FrameworkVersion
-        Startup.MainFormInstance.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
+        ' --- Safely update UI (handle cross-thread) ---
+        If Form IsNot Nothing AndAlso Form.IsHandleCreated Then
+            If Form.InvokeRequired Then
+                Form.Invoke(Sub() ApplyPcInfoToForm(Form))
+            Else
+                ApplyPcInfoToForm(Form)
+            End If
+        End If
 
+        ' --- Query DB stats with ReliableSql (Retry/Cancel aware) ---
         Try
-            Dim SQLStats As DataSet = DBConnector.dbQuery(GeneralQueries.DbStats)
-            PCInfo.DbSize = SQLStats.Tables(0).Rows(0).Item(0)
-            PCInfo.SqlVersion = SQLStats.Tables(0).Rows(0).Item(1)
+            Dim q As Object = ReliableSql.Query(GeneralQueries.DbStats)
+            Dim ds As DataSet = TryCast(q, DataSet)
+
+            If ds Is Nothing OrElse ds.Tables.Count = 0 OrElse ds.Tables(0).Rows.Count = 0 Then
+                Throw New Exception("DbStats returned no rows.")
+            End If
+
+            ' Expecting: [DbSize, SqlVersion] in the first row
+            Dim row0 = ds.Tables(0).Rows(0)
+            PCInfo.DbSize = Convert.ToString(row0.Item(0))
+            PCInfo.SqlVersion = Convert.ToString(row0.Item(1))
+            PCInfo.ValidDatabase = True
+
+        Catch oce As OperationCanceledException
+            ' User cancelled the Retry/Cancel prompt
+            PCInfo.ValidDatabase = False
+            PCInfo.DbSize = "Invalid Database"
+            PCInfo.SqlVersion = "Invalid Database"
+
         Catch ex As Exception
+            ' Non-transient error or empty result
             PCInfo.ValidDatabase = False
             PCInfo.DbSize = "Invalid Database"
             PCInfo.SqlVersion = "Invalid Database"
         End Try
 
+        ' --- Reflect DB info to UI if SQL is installed ---
         If PCInfo.IsSQLInstalled Then
-            If PCInfo.DbSize.Length < 4 Then Startup.MainFormInstance.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize) Else Startup.MainFormInstance.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
-            If PCInfo.SqlVersion.Contains("Developer") Then strTemp = "Developer"
-            If PCInfo.SqlVersion.Contains("Express") Then strTemp = "Express"
-            If PCInfo.SqlVersion.Contains("Evaluation") Then strTemp = "Evaluation"
-            If PCInfo.SqlVersion.Contains("Standard") Then strTemp = "Standard"
-            If PCInfo.SqlVersion.Length > 0 And strTemp.Length > 0 Then Startup.MainFormInstance.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", PCInfo.SqlVersion.Substring(PCInfo.SqlVersion.IndexOf("20"), 4), strTemp)
+            If form IsNot Nothing AndAlso form.IsHandleCreated Then
+
+                Dim updateUi =
+        Sub()
+            ' Size display
+            If Not String.IsNullOrWhiteSpace(PCInfo.DbSize) AndAlso IsNumericLike(PCInfo.DbSize) Then
+                If PCInfo.DbSize.Length < 4 Then
+                    form.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize)
+                Else
+                    form.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
+                End If
+            Else
+                form.tbPcDbSize.Text = PCInfo.DbSize
+            End If
+
+            Dim edition As String = ""
+            If PCInfo.SqlVersion.IndexOf("Developer", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Developer"
+            If PCInfo.SqlVersion.IndexOf("Express", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Express"
+            If PCInfo.SqlVersion.IndexOf("Evaluation", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Evaluation"
+            If PCInfo.SqlVersion.IndexOf("Standard", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Standard"
+
+            If PCInfo.SqlVersion.Length > 0 AndAlso edition.Length > 0 Then
+                Dim yearText As String = ExtractYearFromVersion(PCInfo.SqlVersion)
+                form.tbPcSqlVersion.Text = $"SQL Server {yearText} {edition} Edition"
+            Else
+                form.tbPcSqlVersion.Text = PCInfo.SqlVersion
+            End If
+        End Sub
+
+                If form.InvokeRequired Then
+                    form.Invoke(updateUi)
+                Else
+                    updateUi()
+                End If
+
+            End If
         End If
-
-
     End Sub
+
+    ' --- Helpers ---
+
+    ' Apply basic PC info fields to the form
+    Private Shared Sub ApplyPcInfoToForm(form As FormMain)
+        form.tbPcName.Text = PCInfo.Name
+        form.tbPcOsInfo.Text = PCInfo.OpSys
+        form.tbPcRam.Text = PCInfo.Ram
+        form.tbPcHardDrive.Text = PCInfo.FreeSpace
+        form.tbPcArch.Text = PCInfo.Architecture
+        form.tbPcNetVersion.Text = PCInfo.FrameworkVersion
+        form.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
+    End Sub
+
+    ' Basic numeric check (string can be parsed to a number)
+    Private Shared Function IsNumericLike(value As String) As Boolean
+        If String.IsNullOrWhiteSpace(value) Then Return False
+        Dim dummy As Double
+        Return Double.TryParse(value, Globalization.NumberStyles.Any, Globalization.CultureInfo.InvariantCulture, dummy) OrElse
+           Double.TryParse(value, Globalization.NumberStyles.Any, Globalization.CultureInfo.CurrentCulture, dummy)
+    End Function
+
+    ' Extract a 4-digit year (20xx) from version text; fallback to raw version if none
+    Private Shared Function ExtractYearFromVersion(versionText As String) As String
+        If String.IsNullOrWhiteSpace(versionText) Then Return ""
+        ' Try to find "20xx"
+        Dim idx As Integer = versionText.IndexOf("20", StringComparison.Ordinal)
+        If idx >= 0 AndAlso versionText.Length >= idx + 4 Then
+            Dim yearCandidate = versionText.Substring(idx, 4)
+            If yearCandidate.All(AddressOf Char.IsDigit) Then
+                Return yearCandidate
+            End If
+        End If
+        ' Fallback: first token or the whole string
+        Return versionText
+    End Function
     Public Shared Sub Refresher()
+        If Variables.OfflineMode Then Exit Sub
+
         Dim strTemp As String = ""
+
         ' Find the real running MainForm instance
-        Dim frm As FormMain = TryCast(System.Windows.Forms.Application.OpenForms.Cast(Of Form)().
-                                  FirstOrDefault(Function(f) TypeOf f Is FormMain), FormMain)
+        Dim frm As FormMain = TryCast(Application.OpenForms.Cast(Of Form)().FirstOrDefault(Function(f) TypeOf f Is FormMain), FormMain)
         If frm Is Nothing OrElse frm.IsDisposed Then Return
 
+        ' Ensure we're on the UI thread
         If frm.InvokeRequired Then
             frm.BeginInvoke(CType(Sub() Refresher(), MethodInvoker))
             Return
         End If
 
+        ' ================================
+        ' LicenseData block (ReliableSql)
+        ' ================================
         If PCInfo.ValidDatabase Then
             Try
-                AppData.dbLicData = DBConnector.dbQuery(GeneralQueries.LicenseData)
+                Dim qLic As Object = ReliableSql.Query(GeneralQueries.LicenseData)
+                Dim dsLic As DataSet = TryCast(qLic, DataSet)
 
-                frm.tbLocName.Text = AppData.dbLicData.Tables(0).Rows(0)("LocName").ToString()
-                frm.tbLicSvr.Text = AppData.dbLicData.Tables(0).Rows(0)("LicenseServer").ToString()
-                frm.tbCoreSvr.Text = AppData.dbLicData.Tables(0).Rows(0)("CoreServiceServerName").ToString()
-                frm.tbDbVer.Text = AppData.dbLicData.Tables(0).Rows(0)("Version").ToString()
-                frm.tbWebEnabled.Text = AppData.dbLicData.Tables(0).Rows(0)("EnableWeb").ToString()
-                frm.tbShiftDate.Text = AppData.dbLicData.Tables(0).Rows(0)("ShiftDate").ToString()
+                If dsLic IsNot Nothing AndAlso dsLic.Tables.Count > 0 AndAlso dsLic.Tables(0).Rows.Count > 0 Then
+                    AppData.dbLicData = dsLic
+                    Dim r = dsLic.Tables(0).Rows(0)
+                    frm.tbLocName.Text = r("LocName").ToString()
+                    frm.tbLicSvr.Text = r("LicenseServer").ToString()
+                    frm.tbCoreSvr.Text = r("CoreServiceServerName").ToString()
+                    frm.tbDbVer.Text = r("Version").ToString()
+                    frm.tbWebEnabled.Text = r("EnableWeb").ToString()
+                    frm.tbShiftDate.Text = r("ShiftDate").ToString()
+                Else
+                    Throw New Exception("LicenseData returned no rows.")
+                End If
+
+            Catch oce As OperationCanceledException
+                ' User clicked Cancel on Retry/Cancel dialog — show friendly error state
+                frm.tbLocName.Text = "Database Error"
+                frm.tbLicSvr.Text = "Database Error"
+                frm.tbCoreSvr.Text = "Database Error"
+                frm.tbDbVer.Text = "Database Error"
+                frm.tbWebEnabled.Text = "Database Error"
+                frm.tbShiftDate.Text = "Database Error"
+
             Catch ex As Exception
+                ' Non-transient/empty-result error
                 frm.tbLocName.Text = "Database Error"
                 frm.tbLicSvr.Text = "Database Error"
                 frm.tbCoreSvr.Text = "Database Error"
@@ -77,6 +194,9 @@ Public Class CodeHelper
             End Try
         End If
 
+        ' ================================
+        ' Timers / status labels / toggles
+        ' ================================
         frm.tmr10Seconds.Start()
         frm.tslblNetVersion.Text = PCInfo.FrameworkVersion
 
@@ -86,8 +206,7 @@ Public Class CodeHelper
         frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService") ' Advantage Core Service
-        frm.tslblCeVersion.Text = "Version:  " + info.Version
-
+        frm.tslblCeVersion.Text = "Version:  " & info.Version
 
         frm.tslblTime.Text = My.Computer.Clock.LocalTime.ToShortDateString() & " " &
                          My.Computer.Clock.LocalTime.ToShortTimeString()
@@ -99,6 +218,9 @@ Public Class CodeHelper
             End If
         Next
 
+        ' ================================
+        ' PC info to UI
+        ' ================================
         frm.tbPcName.Text = PCInfo.Name
         frm.tbPcOsInfo.Text = PCInfo.OpSys
         frm.tbPcRam.Text = PCInfo.Ram
@@ -107,25 +229,64 @@ Public Class CodeHelper
         frm.tbPcNetVersion.Text = PCInfo.FrameworkVersion
         frm.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
 
+        ' ================================
+        ' DbStats block (ReliableSql)
+        ' ================================
         Try
-            Dim SQLStats As DataSet = DBConnector.dbQuery(GeneralQueries.DbStats)
-            PCInfo.DbSize = SQLStats.Tables(0).Rows(0).Item(0)
-            PCInfo.SqlVersion = SQLStats.Tables(0).Rows(0).Item(1)
+            Dim qStats As Object = ReliableSql.Query(GeneralQueries.DbStats)
+            Dim dsStats As DataSet = TryCast(qStats, DataSet)
+
+            If dsStats Is Nothing OrElse dsStats.Tables.Count = 0 OrElse dsStats.Tables(0).Rows.Count = 0 Then
+                Throw New Exception("DbStats returned no rows.")
+            End If
+
+            Dim row0 = dsStats.Tables(0).Rows(0)
+            PCInfo.DbSize = Convert.ToString(row0.Item(0))
+            PCInfo.SqlVersion = Convert.ToString(row0.Item(1))
+            PCInfo.ValidDatabase = True
+
+        Catch oce As OperationCanceledException
+            PCInfo.ValidDatabase = False
+            PCInfo.DbSize = "Invalid Database"
+            PCInfo.SqlVersion = "Invalid Database"
+
         Catch ex As Exception
             PCInfo.ValidDatabase = False
             PCInfo.DbSize = "Invalid Database"
             PCInfo.SqlVersion = "Invalid Database"
         End Try
 
+        ' ================================
+        ' Reflect DB summary to UI
+        ' ================================
         If PCInfo.IsSQLInstalled Then
-            If PCInfo.DbSize.Length < 4 Then frm.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize) Else frm.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
-            If PCInfo.SqlVersion.Contains("Developer") Then strTemp = "Developer"
-            If PCInfo.SqlVersion.Contains("Express") Then strTemp = "Express"
-            If PCInfo.SqlVersion.Contains("Evaluation") Then strTemp = "Evaluation"
-            If PCInfo.SqlVersion.Contains("Standard") Then strTemp = "Standard"
-            If PCInfo.SqlVersion.Length > 0 And strTemp.Length > 0 Then frm.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", PCInfo.SqlVersion.Substring(PCInfo.SqlVersion.IndexOf("20"), 4), strTemp)
-        End If
+            If Not String.IsNullOrWhiteSpace(PCInfo.DbSize) AndAlso IsNumericLike(PCInfo.DbSize) Then
+                If PCInfo.DbSize.Length < 4 Then
+                    frm.tbPcDbSize.Text = String.Format("{0} MB", PCInfo.DbSize)
+                Else
+                    frm.tbPcDbSize.Text = String.Format("{0} GB", PCInfo.DbSize)
+                End If
+            Else
+                frm.tbPcDbSize.Text = PCInfo.DbSize
+            End If
 
+            strTemp = ""
+            If Not String.IsNullOrWhiteSpace(PCInfo.SqlVersion) Then
+                If PCInfo.SqlVersion.IndexOf("Developer", StringComparison.OrdinalIgnoreCase) >= 0 Then strTemp = "Developer"
+                If PCInfo.SqlVersion.IndexOf("Express", StringComparison.OrdinalIgnoreCase) >= 0 Then strTemp = "Express"
+                If PCInfo.SqlVersion.IndexOf("Evaluation", StringComparison.OrdinalIgnoreCase) >= 0 Then strTemp = "Evaluation"
+                If PCInfo.SqlVersion.IndexOf("Standard", StringComparison.OrdinalIgnoreCase) >= 0 Then strTemp = "Standard"
+
+                If PCInfo.SqlVersion.Length > 0 AndAlso strTemp.Length > 0 Then
+                    Dim yearText As String = ExtractYearFromVersion(PCInfo.SqlVersion)
+                    frm.tbPcSqlVersion.Text = String.Format("SQL Server {0} {1} Edition", yearText, strTemp)
+                Else
+                    frm.tbPcSqlVersion.Text = PCInfo.SqlVersion
+                End If
+            Else
+                frm.tbPcSqlVersion.Text = "Invalid Database"
+            End If
+        End If
     End Sub
     Public Shared Sub GetPcInfo()
         PCInfo.Name = My.Computer.Name
