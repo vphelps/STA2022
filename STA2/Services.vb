@@ -1,225 +1,483 @@
 ﻿Imports System.ServiceProcess
+Imports System.Drawing
+Imports System.Security.Principal
+Imports System.Linq
 
-Public Structure ServiceControlEntry
-
-    Public TextBox As TextBox
-    Public SSButton As Button
-    Public RSButton As Button
-    Public Service As String
-    Public GroupBox As GroupBox
-    Public Status As ServiceControllerStatus
-End Structure
+' ServiceControlEntry is a Class (reference type).
+Public Class ServiceControlEntry
+    Public Property TextBox As System.Windows.Forms.TextBox
+    Public Property SSButton As System.Windows.Forms.Button
+    Public Property RSButton As System.Windows.Forms.Button
+    Public Property Service As String
+    Public Property GroupBox As System.Windows.Forms.GroupBox
+    Public Property Status As System.ServiceProcess.ServiceControllerStatus
+End Class
 
 Public Class Services
 
-    Public Shared Sub StopService(ByRef list As ServiceControlEntry)
-        Dim controller As New ServiceController(list.Service)
-        Dim serviceControllerStatus = controller.Status
-        Dim Changing As Boolean = True
+    ' ---------------------------
+    ' Start/Stop/Restart helpers
+    ' ---------------------------
 
-        controller.Stop()
-        Do
-            Changing = GetServiceStatus(list)
-        Loop Until list.Status = ServiceControllerStatus.Stopped And Changing = False
+    Public Shared Sub StopService(ByRef entry As ServiceControlEntry)
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Service) Then Return
 
+        Using controller As New ServiceController(entry.Service)
+            Try
+                controller.Stop()
+                controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30))
+            Catch
+                ' ignore; UI will reflect state via GetServiceStatus
+            End Try
+        End Using
 
+        GetServiceStatus(entry)
     End Sub
 
+    Public Shared Sub StartService(ByRef entry As ServiceControlEntry)
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Service) Then Return
 
-    Public Shared Sub StartService(ByRef list As ServiceControlEntry)
-        Dim controller As New ServiceController(list.Service)
-        Dim serviceControllerStatus = controller.Status
-        Dim Changing As Boolean = True
+        Using controller As New ServiceController(entry.Service)
+            Try
+                controller.Start()
+                controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30))
+            Catch
+                ' ignore; UI will reflect state via GetServiceStatus
+            End Try
+        End Using
 
-        controller.Start()
-        Do
-            Changing = GetServiceStatus(list)
-            serviceControllerStatus = controller.Status
-        Loop Until list.Status = ServiceControllerStatus.Running And Changing = False
-
-
-
+        GetServiceStatus(entry)
     End Sub
 
-    Public Shared Function GetServiceStatus(ByRef caller As ServiceControlEntry) 'ByRef buttonSS As Button, ByRef textbox As TextBox, ByRef buttonRS As Button)
+    Public Shared Sub RestartService(ByRef entry As ServiceControlEntry)
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Service) Then Return
+
+        Using controller As New ServiceController(entry.Service)
+            Try
+                controller.Stop()
+                controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30))
+                controller.Start()
+                controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30))
+            Catch
+                ' ignore; UI will reflect state via GetServiceStatus
+            End Try
+        End Using
+
+        GetServiceStatus(entry)
+    End Sub
+
+    ' ---------------------------
+    ' Discovery / UI population
+    ' ---------------------------
+
+    Public Shared Function ServicesExistCheck() As List(Of ServiceControlEntry)
+        Dim localServiceList As List(Of ServiceControlEntry)
+
+        ' Build list of UI entries wired to the form's controls
         Try
-            Dim service As New ServiceController(caller.Service)
-            Dim serviceControllerStatus As String = ""
-            serviceControllerStatus = service.Status.ToString
-            caller.Status = service.Status
-
-            caller.TextBox.Text = serviceControllerStatus
-            If caller.TextBox.Text = "Running" Then
-                caller.SSButton.Enabled = True
-                caller.RSButton.Enabled = True
-                caller.RSButton.Text = "Restart"
-                caller.SSButton.Text = "Stop"
-                caller.TextBox.ForeColor = TextboxColors.Black
-                caller.TextBox.BackColor = TextboxColors.White
-            ElseIf caller.TextBox.Text = "Stopped" Then
-                caller.SSButton.Enabled = True
-                caller.RSButton.Enabled = False
-                caller.RSButton.Text = "Restart"
-                caller.SSButton.Text = "Start"
-                caller.TextBox.ForeColor = TextboxColors.White
-                caller.TextBox.BackColor = TextboxColors.Red
-            Else
-                caller.SSButton.Enabled = False
-                caller.RSButton.Enabled = False
-                caller.RSButton.Text = "Restart"
-                caller.SSButton.Text = "Working"
-                caller.TextBox.ForeColor = TextboxColors.Black
-                caller.TextBox.BackColor = TextboxColors.Yellow
-
-            End If
-        Catch ex As Exception
-            PCInfo.AreServicesInstalled = False
-            Return Not caller.SSButton.Enabled
-
-            Exit Function
+            localServiceList = BuildServiceControlList()
+        Catch
+            Return New List(Of ServiceControlEntry)()
         End Try
 
-        Return Not caller.SSButton.Enabled
+        If localServiceList Is Nothing OrElse localServiceList.Count = 0 Then
+            Return New List(Of ServiceControlEntry)()
+        End If
 
-    End Function
+        ' Pre-enumerate installed service names (best-effort)
+        Dim installedNames As HashSet(Of String)
+        Try
+            installedNames = ServiceController.GetServices().
+                             Select(Function(s) s.ServiceName).
+                             ToHashSet(StringComparer.OrdinalIgnoreCase)
+        Catch
+            installedNames = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        End Try
 
-    Public Shared Function ServicesExistCheck()
-        Dim Temp As String = Nothing
-        Dim controller As New ServiceController
-        Dim localServiceList As New List(Of ServiceControlEntry)
-        localServiceList = BuildServiceControlList()
+        ' Probe each listed service safely (DO NOT hide any controls on failure)
+        For Each entry In localServiceList
+            If entry Is Nothing Then Continue For
 
-        For index As Integer = 0 To localServiceList.Count - 1
-
-            controller.ServiceName = localServiceList.Item(index).Service
-            Try     'Check if Service is installed
-                Temp = controller.Status.ToString
-                If Not controller.StartType.Equals(ServiceStartMode.Automatic) Then localServiceList.Item(index).GroupBox.Text = localServiceList.Item(index).GroupBox.Text & " (" & controller.StartType.ToString & ")"
-
-
-                localServiceList.Item(index).TextBox.Text = controller.Status.ToString
-            Catch ex As Exception
-                localServiceList.Item(index).TextBox.Text = "Not Installed"
-                localServiceList.Item(index).GroupBox.Enabled = False
-                localServiceList.Item(index).SSButton.Visible = False
-                localServiceList.Item(index).RSButton.Visible = False
-            End Try
-
-        Next
-        For index As Integer = localServiceList.Count - 1 To 0
-            If localServiceList.Item(index).GroupBox.Enabled = False Then
-                localServiceList.Item(index).GroupBox.Visible = False
-                localServiceList.Item(index).TextBox.Text = "Not Installed"
-                localServiceList.RemoveAt(index)
-            Else
-                GetServiceStatus(localServiceList.Item(index))
-
+            Dim svcName As String = entry.Service
+            If String.IsNullOrWhiteSpace(svcName) Then
+                MarkNotInstalled(entry)
+                Continue For
             End If
-        Next
-        Return localServiceList
 
+            ' If we could enumerate and the service isn't present → "Not Installed"
+            If installedNames.Count > 0 AndAlso Not installedNames.Contains(svcName) Then
+                MarkNotInstalled(entry)
+                Continue For
+            End If
+
+            ' Try querying the service
+            Try
+                Using controller As New ServiceController(svcName)
+                    Dim status As ServiceControllerStatus = controller.Status
+                    entry.Status = status
+                    SafeSetText(entry.TextBox, status.ToString())
+
+                    ' Reflect StartType to GroupBox text (optional, guarded)
+                    Try
+                        Dim startType As ServiceStartMode = controller.StartType
+                        If entry.GroupBox IsNot Nothing AndAlso startType <> ServiceStartMode.Automatic Then
+                            entry.GroupBox.Text = $"{entry.GroupBox.Text} ({startType})"
+                        End If
+                    Catch
+                        ' ignore StartType failures
+                    End Try
+                End Using
+            Catch
+                ' Access denied/missing/etc. → "Not Installed" behavior (but visible!)
+                MarkNotInstalled(entry)
+            End Try
+        Next
+
+        ' Reflect live button states and colors for each entry
+        For Each entry In localServiceList
+            Try
+                GetServiceStatus(entry)
+            Catch
+                ' keep UI resilient
+            End Try
+        Next
+
+        ' If not admin, disable all service interaction but keep everything visible
+        If Not IsRunningAsAdmin() Then
+            For Each entry In localServiceList
+                If entry.GroupBox IsNot Nothing Then entry.GroupBox.Enabled = False
+                If entry.SSButton IsNot Nothing Then entry.SSButton.Enabled = False
+                If entry.RSButton IsNot Nothing Then entry.RSButton.Enabled = False
+                ' leave textbox text as provided (status or "Not Installed")
+            Next
+        End If
+
+        Return localServiceList
     End Function
 
-    Public Shared Function BuildServiceControlList()
-        '"AdvApiServer", "AdvCoreService", "AdvantageCloudSyncService", "AdvCreditService", "AdvLicService", "AdvNotifyService", "AdvantageUpgradeService", "AdvSignageService"
-        Dim frm As FormMain = TryCast(System.Windows.Forms.Application.OpenForms.Cast(Of Form)().
-                                  FirstOrDefault(Function(f) TypeOf f Is FormMain), FormMain)
-        If frm Is Nothing OrElse frm.IsDisposed Then Return (Nothing)
+    ' ---------------------------
+    ' UI state helpers
+    ' ---------------------------
 
-        'If frm.InvokeRequired Then
-        '    frm.BeginInvoke(CType(Sub() Refresher(), MethodInvoker))
-        '    Return
-        'End If
+    ' Ensures "Not Installed" is shown, but NEVER hides controls
+    ' CHANGE: Now uses default TextBox colors for Not Installed.
+    Private Shared Sub MarkNotInstalled(entry As ServiceControlEntry)
+        If entry Is Nothing Then Return
 
-        Dim item As New ServiceControlEntry
-        Dim mylist As New List(Of ServiceControlEntry)
+        ' TextBox -> "Not Installed", disabled, DEFAULT system colors
+        If entry.TextBox IsNot Nothing Then
+            entry.TextBox.Text = "Not Installed"
+            entry.TextBox.Enabled = False
+            entry.TextBox.ForeColor = SystemColors.WindowText
+            entry.TextBox.BackColor = SystemColors.Window
+        End If
 
-#Region "API Service"
-        item.TextBox = frm.tbApiService
-        item.SSButton = frm.btnApiServiceSS
-        item.RSButton = frm.btnApiServiceRS
-        item.Service = "AdvApiServer"
-        item.GroupBox = frm.gpApiService
-        mylist.Add(item)
-#End Region
-#Region "Core Service"
-        item.TextBox = frm.tbCoreService
-        item.SSButton = frm.btnCoreServiceSS
-        item.RSButton = frm.btnCoreServiceRS
-        item.Service = "AdvCoreService"
-        item.GroupBox = frm.gpCoreService
-        mylist.Add(item)
-#End Region
-#Region "Cloud Service"
-        item.TextBox = frm.tbCloudService
-        item.SSButton = frm.btnCloudServiceSS
-        item.RSButton = frm.btnCloudServiceRS
-        item.Service = "AdvantageCloudSyncService"
-        item.GroupBox = frm.gpCloudService
-        mylist.Add(item)
-#End Region
-#Region "Credit Service"
-        item.TextBox = frm.tbAdvCreditService
-        item.SSButton = frm.btnAdvCreditServiceSS
-        item.RSButton = frm.btnAdvCreditServiceRS
-        item.Service = "AdvCreditService"
-        item.GroupBox = frm.gpAdvCreditService
-        mylist.Add(item)
-#End Region
-#Region "License Service"
-        item.TextBox = frm.tbAdvLicService
-        item.SSButton = frm.btnAdvLicServiceSS
-        item.RSButton = frm.btnAdvLicServiceRS
-        item.Service = "AdvLicService"
-        item.GroupBox = frm.gpAdvLicService
-        mylist.Add(item)
-#End Region
-#Region "Signage Service"
-        item.TextBox = frm.tbAdvSignageService
-        item.SSButton = frm.btnAdvSignageServiceSS
-        item.RSButton = frm.btnAdvSignageServiceRS
-        item.Service = "AdvSignageService"
-        item.GroupBox = frm.gpAdvSignageService
-        mylist.Add(item)
-#End Region
-#Region "Turnstile Service"
-        item.TextBox = frm.tbAdvTurnstileEngine
-        item.SSButton = frm.btnAdvTurnstileEngineSS
-        item.RSButton = frm.btnAdvTurnstileEngineRS
-        item.Service = "AdvTurnstileEngine"
-        item.GroupBox = frm.gpAdvTurnstileEngine
-        mylist.Add(item)
-#End Region
-#Region "Notification Service"
-        item.TextBox = frm.tbAdvNotifyService
-        item.SSButton = frm.btnAdvNotifyServiceSS
-        item.RSButton = frm.btnAdvNotifyServiceRS
-        item.Service = "AdvNotifyService"
-        item.GroupBox = frm.gpAdvNotifyService
-        mylist.Add(item)
-#End Region
-#Region "Upgrade Service"
-        item.TextBox = frm.tbAdvantageUpgradeService
-        item.SSButton = frm.btnAdvantageUpgradeServiceSS
-        item.RSButton = frm.btnAdvantageUpgradeServiceRS
-        item.Service = "AdvantageUpgradeService"
-        item.GroupBox = frm.gpAdvantageUpgradeService
-        mylist.Add(item)
-#End Region
+        ' GroupBox stays visible but disabled
+        If entry.GroupBox IsNot Nothing Then
+            entry.GroupBox.Enabled = False
+            entry.GroupBox.Visible = True
+        End If
+
+        ' Buttons: visible but disabled
+        If entry.SSButton IsNot Nothing Then
+            entry.SSButton.Enabled = False
+            entry.SSButton.Visible = True
+            entry.SSButton.Text = "Start"
+        End If
+        If entry.RSButton IsNot Nothing Then
+            entry.RSButton.Enabled = False
+            entry.RSButton.Visible = True
+            entry.RSButton.Text = "Restart"
+        End If
+
+        ' Track status (optional)
+        entry.Status = ServiceControllerStatus.Stopped
+    End Sub
+
+    Private Shared Sub SafeSetText(tb As System.Windows.Forms.TextBox, value As String)
+        If tb Is Nothing Then Return
+        ' If this is called from a worker thread in the future, add InvokeRequired/Invoke here.
+        tb.Text = value
+    End Sub
+
+    Private Shared Sub SetTextboxColors(entry As ServiceControlEntry, fore As Color, back As Color)
+        If entry Is Nothing OrElse entry.TextBox Is Nothing Then Return
+        entry.TextBox.ForeColor = fore
+        entry.TextBox.BackColor = back
+    End Sub
+
+    Private Shared Sub EnableForRunning(entry As ServiceControlEntry)
+        If entry Is Nothing Then Return
+
+        ' Running → standard colors
+        SetTextboxColors(entry, Color.Black, Color.White)
+
+        If entry.SSButton IsNot Nothing Then
+            entry.SSButton.Enabled = True
+            entry.SSButton.Visible = True
+            entry.SSButton.Text = "Stop"
+        End If
+        If entry.RSButton IsNot Nothing Then
+            entry.RSButton.Enabled = True
+            entry.RSButton.Visible = True
+            entry.RSButton.Text = "Restart"
+        End If
+
+        If entry.GroupBox IsNot Nothing Then
+            entry.GroupBox.Visible = True
+            entry.GroupBox.Enabled = True
+        End If
+
+        If entry.TextBox IsNot Nothing Then entry.TextBox.Enabled = True
+    End Sub
+
+    Private Shared Sub EnableForStopped(entry As ServiceControlEntry)
+        If entry Is Nothing Then Return
+
+        ' Stopped → white text on red background
+        SetTextboxColors(entry, Color.White, Color.Red)
+
+        If entry.SSButton IsNot Nothing Then
+            entry.SSButton.Enabled = True
+            entry.SSButton.Visible = True
+            entry.SSButton.Text = "Start"
+        End If
+        If entry.RSButton IsNot Nothing Then
+            entry.RSButton.Enabled = False
+            entry.RSButton.Visible = True
+            entry.RSButton.Text = "Restart"
+        End If
+
+        If entry.GroupBox IsNot Nothing Then
+            entry.GroupBox.Visible = True
+            entry.GroupBox.Enabled = True
+        End If
+
+        If entry.TextBox IsNot Nothing Then entry.TextBox.Enabled = True
+    End Sub
+
+    ' CHANGE: Only StartPending/StopPending get Yellow background.
+    Private Shared Sub EnableForSpecificPending(entry As ServiceControlEntry, pendingStatus As ServiceControllerStatus)
+        If entry Is Nothing Then Return
+
+        ' Yellow background for StartPending and StopPending (black text)
+        SetTextboxColors(entry, Color.Black, Color.Yellow)
+
+        If entry.SSButton IsNot Nothing Then
+            entry.SSButton.Enabled = False
+            entry.SSButton.Visible = True
+            entry.SSButton.Text = "Working"
+        End If
+        If entry.RSButton IsNot Nothing Then
+            entry.RSButton.Enabled = False
+            entry.RSButton.Visible = True
+            entry.RSButton.Text = "Restart"
+        End If
+
+        If entry.GroupBox IsNot Nothing Then
+            entry.GroupBox.Visible = True
+            entry.GroupBox.Enabled = True
+        End If
+
+        If entry.TextBox IsNot Nothing Then entry.TextBox.Enabled = True
+    End Sub
+
+    ' For other pending/paused states (not StartPending/StopPending), use standard colors.
+    Private Shared Sub EnableForOtherPending(entry As ServiceControlEntry)
+        If entry Is Nothing Then Return
+
+        ' Default back to standard text on white background
+        SetTextboxColors(entry, Color.Black, Color.White)
+
+        If entry.SSButton IsNot Nothing Then
+            entry.SSButton.Enabled = False
+            entry.SSButton.Visible = True
+            entry.SSButton.Text = "Working"
+        End If
+        If entry.RSButton IsNot Nothing Then
+            entry.RSButton.Enabled = False
+            entry.RSButton.Visible = True
+            entry.RSButton.Text = "Restart"
+        End If
+
+        If entry.GroupBox IsNot Nothing Then
+            entry.GroupBox.Visible = True
+            entry.GroupBox.Enabled = True
+        End If
+
+        If entry.TextBox IsNot Nothing Then entry.TextBox.Enabled = True
+    End Sub
+
+    Private Shared Sub SetUiOffline(entry As ServiceControlEntry)
+        If entry Is Nothing Then Return
+
+        If entry.TextBox IsNot Nothing Then
+            entry.TextBox.Text = "Offline"
+            entry.TextBox.Enabled = False
+            ' keep default colors
+            entry.TextBox.ForeColor = SystemColors.WindowText
+            entry.TextBox.BackColor = SystemColors.Window
+        End If
+        If entry.SSButton IsNot Nothing Then entry.SSButton.Enabled = False
+        If entry.RSButton IsNot Nothing Then entry.RSButton.Enabled = False
+        If entry.GroupBox IsNot Nothing Then entry.GroupBox.Enabled = False
+    End Sub
+
+    ' ---------------------------
+    ' Status reflection
+    ' ---------------------------
+
+    Public Shared Function GetServiceStatus(ByVal caller As ServiceControlEntry) As Boolean
+        If caller Is Nothing Then Return True
+
+        ' Missing name -> treat as not installed (visible but disabled, default colors)
+        If String.IsNullOrWhiteSpace(caller.Service) Then
+            MarkNotInstalled(caller)
+            Return False
+        End If
+
+        Try
+            Using svc As New ServiceController(caller.Service)
+                Dim status As ServiceControllerStatus = svc.Status
+                caller.Status = status
+
+                If caller.TextBox IsNot Nothing Then caller.TextBox.Text = status.ToString()
+
+                Select Case status
+                    Case ServiceControllerStatus.Running
+                        EnableForRunning(caller)
+
+                    Case ServiceControllerStatus.Stopped
+                        EnableForStopped(caller)
+
+                    Case ServiceControllerStatus.StartPending, ServiceControllerStatus.StopPending
+                        ' CHANGE: Yellow background for these two pending states
+                        EnableForSpecificPending(caller, status)
+
+                    Case ServiceControllerStatus.PausePending, ServiceControllerStatus.ContinuePending, ServiceControllerStatus.Paused
+                        ' Other pending/paused states → default (black on white)
+                        EnableForOtherPending(caller)
+                End Select
+
+            End Using
+        Catch
+            ' Not installed or inaccessible → keep visible but disabled, default colors
+            MarkNotInstalled(caller)
+            Return False
+        End Try
+
+        Return True
+    End Function
+
+    ' ---------------------------
+    ' UI wiring to form controls
+    ' ---------------------------
+
+    Public Shared Function BuildServiceControlList() As List(Of ServiceControlEntry)
+        Dim frm As FormMain = TryCast(System.Windows.Forms.Application.OpenForms.Cast(Of System.Windows.Forms.Form)().
+                                      FirstOrDefault(Function(f) TypeOf f Is FormMain), FormMain)
+        If frm Is Nothing OrElse frm.IsDisposed Then
+            Return New List(Of ServiceControlEntry)()
+        End If
+
+        Dim mylist As New List(Of ServiceControlEntry)()
+
+        ' --- API Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbApiService,
+            .SSButton = frm.btnApiServiceSS,
+            .RSButton = frm.btnApiServiceRS,
+            .Service = "AdvApiServer",
+            .GroupBox = frm.gpApiService
+        })
+
+        ' --- Core Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbCoreService,
+            .SSButton = frm.btnCoreServiceSS,
+            .RSButton = frm.btnCoreServiceRS,
+            .Service = "AdvCoreService",
+            .GroupBox = frm.gpCoreService
+        })
+
+        ' --- Cloud Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbCloudService,
+            .SSButton = frm.btnCloudServiceSS,
+            .RSButton = frm.btnCloudServiceRS,
+            .Service = "AdvantageCloudSyncService",
+            .GroupBox = frm.gpCloudService
+        })
+
+        ' --- Credit Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbAdvCreditService,
+            .SSButton = frm.btnAdvCreditServiceSS,
+            .RSButton = frm.btnAdvCreditServiceRS,
+            .Service = "AdvCreditService",
+            .GroupBox = frm.gpAdvCreditService
+        })
+
+        ' --- License Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbAdvLicService,
+            .SSButton = frm.btnAdvLicServiceSS,
+            .RSButton = frm.btnAdvLicServiceRS,
+            .Service = "AdvLicService",
+            .GroupBox = frm.gpAdvLicService
+        })
+
+        ' --- Signage Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbAdvSignageService,
+            .SSButton = frm.btnAdvSignageServiceSS,
+            .RSButton = frm.btnAdvSignageServiceRS,
+            .Service = "AdvSignageService",
+            .GroupBox = frm.gpAdvSignageService
+        })
+
+        ' --- Turnstile Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbAdvTurnstileEngine,
+            .SSButton = frm.btnAdvTurnstileEngineSS,
+            .RSButton = frm.btnAdvTurnstileEngineRS,
+            .Service = "AdvTurnstileEngine",
+            .GroupBox = frm.gpAdvTurnstileEngine
+        })
+
+        ' --- Notification Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbAdvNotifyService,
+            .SSButton = frm.btnAdvNotifyServiceSS,
+            .RSButton = frm.btnAdvNotifyServiceRS,
+            .Service = "AdvNotifyService",
+            .GroupBox = frm.gpAdvNotifyService
+        })
+
+        ' --- Upgrade Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbAdvantageUpgradeService,
+            .SSButton = frm.btnAdvantageUpgradeServiceSS,
+            .RSButton = frm.btnAdvantageUpgradeServiceRS,
+            .Service = "AdvantageUpgradeService",
+            .GroupBox = frm.gpAdvantageUpgradeService
+        })
 
         Return mylist
     End Function
-    Public Shared Sub RestartService(ByRef list As ServiceControlEntry)
-        Dim controller As New ServiceController(list.Service)
-        Dim serviceControllerStatus = controller.Status
-        Dim counter As Integer = 0
 
-        controller.Stop()
+    ' ---------------------------
+    ' Admin detection
+    ' ---------------------------
 
-        controller.WaitForStatus(ServiceControllerStatus.Stopped)
-
-        controller.Start()
-
-    End Sub
+    Private Shared Function IsRunningAsAdmin() As Boolean
+        Try
+            Dim wi = WindowsIdentity.GetCurrent()
+            Dim wp = New WindowsPrincipal(wi)
+            Return wp.IsInRole(WindowsBuiltInRole.Administrator)
+        Catch
+            Return False
+        End Try
+    End Function
 
 End Class

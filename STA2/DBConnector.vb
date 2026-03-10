@@ -1,4 +1,6 @@
 ﻿Imports System.Data.SqlClient
+Imports System.Threading
+
 Imports STA2.FormMain
 Imports STA2.FormError
 
@@ -8,6 +10,8 @@ Public Class DBConnector
         Dim Ds As New DataSet
         Dim result As Object = Nothing
         Dim strTemp As String = ""
+        If Variables.OfflineMode Then Return Nothing
+
         If Not PCInfo.ValidDatabase Then Return Ds
 
 #Region "Build Connection String"
@@ -53,6 +57,10 @@ Public Class DBConnector
         Dim Ds As New DataSet
         Dim result As String = ""
         Dim strTemp As String = ""
+
+        If Variables.OfflineMode Then
+            Return New DataSet() ' empty data
+        End If
         If Not PCInfo.ValidDatabase Then Return Ds
 
 #Region "Build Connection String"
@@ -101,29 +109,79 @@ Public Class DBConnector
     End Function
 
 
-    Public Shared Function CreateCommand(ByVal queryString As String)
-        Dim builder As New SqlConnectionStringBuilder
-        Dim result As Integer = 0
+    '    Public Shared Function CreateCommand(ByVal queryString As String)
+    '        Dim builder As New SqlConnectionStringBuilder
+    '        Dim result As Integer = 0
 
-#Region "Build Connection String"
+    '        If Variables.OfflineMode Then
+    '            Return 0
+    '        End If
 
+    '#Region "Build Connection String"
+
+    '        builder.Add("Data Source", ConfigValues.Server)
+    '        builder("Integrated Security") = False
+    '        builder.Add("Initial Catalog", ConfigValues.Database)
+    '        builder.Add("UID", ConfigValues.UserID)
+    '        builder.Add("PWD", ConfigValues.Password)
+    '        'strTemp = builder.ConnectionString
+
+
+    '#End Region
+
+    '        Using connection As New SqlConnection(builder.ConnectionString)
+    '            Dim command As New SqlCommand(queryString, connection)
+    '            command.Connection.Open()
+    '            result = command.ExecuteNonQuery()
+    '            command.Connection.Close()
+
+    '        End Using
+    '        Return result
+    '    End Function
+
+
+    Public Shared Function dbExecute(query As String) As Integer
+
+
+        If Variables.OfflineMode Then
+            Return 0
+        End If
+        If Not PCInfo.ValidDatabase Then Return 0
+
+        Dim builder As New SqlConnectionStringBuilder()
         builder.Add("Data Source", ConfigValues.Server)
         builder("Integrated Security") = False
         builder.Add("Initial Catalog", ConfigValues.Database)
         builder.Add("UID", ConfigValues.UserID)
         builder.Add("PWD", ConfigValues.Password)
-        'strTemp = builder.ConnectionString
 
+        Dim affected As Integer = 0
 
-#End Region
+        Try
+            Using cn As New SqlConnection(builder.ConnectionString)
+                cn.Open()
+                Using cmd As New SqlCommand(query, cn)
+                    affected = cmd.ExecuteNonQuery()
+                End Using
+                cn.Close()
+            End Using
 
-        Using connection As New SqlConnection(builder.ConnectionString)
-            Dim command As New SqlCommand(queryString, connection)
-            command.Connection.Open()
-            result = command.ExecuteNonQuery()
-            command.Connection.Close()
+        Catch ex As SqlException
+            Dim msg As String
+            If ex.Number = 233 Then
+                ErrorHandler.WarningHandler("Database Connection Failure")
+                msg = "Database Connection Failure"
+            ElseIf ex.Message.StartsWith("Cannot Open") Then
+                msg = "Database Error"
+            Else
+                msg = String.Format("ErrorCode = {0} | Message = {1}", ex.Number, ex.Message)
+            End If
+            ErrorHandler.ErrorHandler(msg, ex.StackTrace)
+        Catch ex As Exception
+            ErrorHandler.ErrorHandler("dbExecute failed: " & ex.Message, ex.StackTrace)
+        End Try
 
-        End Using
-        Return result
+        Return affected
     End Function
+
 End Class

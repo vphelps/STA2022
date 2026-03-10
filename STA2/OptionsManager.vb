@@ -112,16 +112,68 @@ Public Module OptionsManager
     ' ---- LauncherConfig (programs list) ------------------------------------------------------
     ' Uses Newtonsoft.Json to match your existing JSON formatting & behavior.
 
+
+    '    Public Function LoadLauncherConfig() As LauncherConfig
+    '        Dim path = GetLauncherConfigPath()
+
+    '        If Not File.Exists(path) Then
+    '            ' First run: empty config (no programs yet)
+    '            Return New LauncherConfig()
+    '        End If
+
+    '        Try
+    '            ' Robust read: bytes -> strip BOM -> trim leading whitespace -> decode UTF8 -> deserialize
+    '            Dim bytes = File.ReadAllBytes(path)
+    '            bytes = StripUtf8Bom(bytes)
+    '            bytes = TrimLeadingWhitespace(bytes)
+    '            Dim json = Encoding.UTF8.GetString(bytes)
+
+    '            Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
+    '            If cfg Is Nothing Then cfg = New LauncherConfig()
+    '            If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
+
+    '            ' --- Migration: ensure every entry has a stable Id ---
+    '            Dim changed As Boolean = False
+    '            For Each p In cfg.Programs
+    '                If p Is Nothing Then Continue For
+
+    '                ' Assign Id if missing
+    '                If String.IsNullOrWhiteSpace(p.Id) Then
+    '                    p.Id = Guid.NewGuid().ToString("N")
+    '                    changed = True
+    '                End If
+
+    '                ' (Optional) Normalize other defaults if you want to be defensive:
+    '                ' If p.Enabled Is Nothing Then p.Enabled = True  ' (Enabled already defaults to True in your class)
+    '                ' If p.IncludeInBatch Is Nothing Then p.IncludeInBatch = False
+    '                ' If p.RunAsAdmin Is Nothing Then p.RunAsAdmin = False
+    '            Next
+
+    '            ' If we generated any new Ids (or normalized values), persist them so future runs can resolve QuickLaunchIds
+    '            If changed Then
+    '#If DEBUG Then
+    '                Debug.WriteLine("Launcher migration: added/normalized one or more ProgramEntry properties (Ids). Saving launcher.config.json …")
+    '#End If
+    '                SaveLauncherConfig(cfg)
+    '            End If
+
+    '            Return cfg
+
+    '        Catch ex As Exception
+    '            MessageBox.Show("Failed to load launcher config. A blank config will be used." &
+    '                        Environment.NewLine & ex.Message,
+    '                        "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+    '            Return New LauncherConfig()
+    '        End Try
+    '    End Function
     Public Function LoadLauncherConfig() As LauncherConfig
         Dim path = GetLauncherConfigPath()
 
         If Not File.Exists(path) Then
-            ' First run: empty config (no programs yet)
             Return New LauncherConfig()
         End If
 
         Try
-            ' Robust read: bytes -> strip BOM -> trim leading WS -> decode UTF8 -> deserialize
             Dim bytes = File.ReadAllBytes(path)
             bytes = StripUtf8Bom(bytes)
             bytes = TrimLeadingWhitespace(bytes)
@@ -130,12 +182,31 @@ Public Module OptionsManager
             Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
             If cfg Is Nothing Then cfg = New LauncherConfig()
             If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
+
+            ' --- Migration: assign Ids if missing ---
+            Dim changed As Boolean = False
+            For Each p In cfg.Programs
+                If p Is Nothing Then Continue For
+                If String.IsNullOrWhiteSpace(p.Id) Then
+                    p.Id = Guid.NewGuid().ToString("N")
+                    changed = True
+                End If
+            Next
+
+            ' --- Persist to disk if we added any Ids ---
+            If changed Then
+                SaveLauncherConfig(cfg)
+#If DEBUG Then
+                Debug.WriteLine("LoadLauncherConfig: Migrated ProgramEntry Ids and saved launcher.config.json")
+#End If
+            End If
+
             Return cfg
 
         Catch ex As Exception
             MessageBox.Show("Failed to load launcher config. A blank config will be used." &
-                            Environment.NewLine & ex.Message,
-                            "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Environment.NewLine & ex.Message,
+                        "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return New LauncherConfig()
         End Try
     End Function
@@ -143,26 +214,63 @@ Public Module OptionsManager
     Public Sub SaveLauncherConfig(cfg As LauncherConfig)
         Dim path = GetLauncherConfigPath()
         Dim dir = System.IO.Path.GetDirectoryName(path)
-        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+        If Not System.IO.Directory.Exists(dir) Then System.IO.Directory.CreateDirectory(dir)
 
+        ' Normalize
         If cfg Is Nothing Then cfg = New LauncherConfig()
         If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
         Try
-            Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
+            ' Serialize with your existing Newtonsoft settings (_jsonSettings)
+            Dim json As String = JsonConvert.SerializeObject(cfg, _jsonSettings)
 
-            ' Atomic-ish save: write temp with UTF-8 (no BOM), then replace
+            ' Write to temp file in same directory
             Dim tmp = path & ".tmp"
-            File.WriteAllText(tmp, json, Utf8NoBom)
+
+            ' Stronger durability: write with WriteThrough + Flush(True)
+            Dim bytes = Encoding.UTF8.GetBytes(json) ' Utf8NoBom is used on WriteAllText, but here we control bytes directly
+            Using fs As New FileStream(tmp,
+                                   FileMode.Create,
+                                   FileAccess.Write,
+                                   FileShare.None,
+                                   bufferSize:=4096,
+                                   options:=FileOptions.WriteThrough)
+                fs.Write(bytes, 0, bytes.Length)
+                fs.Flush(True) ' flush data + metadata
+            End Using
+
+            ' Try atomic replace with backup; fall back if needed
             If File.Exists(path) Then
-                File.Replace(tmp, path, Nothing)
+                Try
+                    Dim backup = path & ".bak"
+                    File.Replace(tmp, path, backup, ignoreMetadataErrors:=False)
+                    ' (Optional) clean backup if you don't want to keep it
+                    ' Try : File.Delete(backup) : Catch : End Try
+                Catch exReplace As Exception
+                    ' Fallback: overwrite target
+                    Try
+                        File.Copy(tmp, path, overwrite:=True)
+                        File.Delete(tmp)
+                    Catch exCopy As Exception
+                        ' Last resort: delete and move
+                        Try
+                            File.Delete(path)
+                            File.Move(tmp, path)
+                        Catch exMove As Exception
+                            ' Clean up temp on failure
+                            Try : File.Delete(tmp) : Catch : End Try
+                            Throw New IOException("Failed to save launcher config (replace/copy/move all failed).", exMove)
+                        End Try
+                    End Try
+                End Try
             Else
+                ' First save—just move temp into place
                 File.Move(tmp, path)
             End If
 
         Catch ex As Exception
             MessageBox.Show("Failed to save launcher config:" & Environment.NewLine & ex.Message,
-                            "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -213,5 +321,11 @@ Public Module OptionsManager
                             "Options", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    ' OptionsManager.vb
+    Public Function ReloadLauncherConfig() As LauncherConfig
+        ' Re-read from disk using the hardened loader (with ID migration + save)
+        Return LoadLauncherConfig()
+    End Function
 
 End Module

@@ -109,7 +109,7 @@ Partial Class EditProgramForm
         '
         'btnBrowsePath
         '
-        Me.btnBrowsePath.Location = New System.Drawing.Point(594, 19)
+        Me.btnBrowsePath.Location = New System.Drawing.Point(560, 46)
         Me.btnBrowsePath.Name = "btnBrowsePath"
         Me.btnBrowsePath.Size = New System.Drawing.Size(103, 23)
         Me.btnBrowsePath.TabIndex = 8
@@ -118,7 +118,7 @@ Partial Class EditProgramForm
         '
         'btnBrowseWD
         '
-        Me.btnBrowseWD.Location = New System.Drawing.Point(594, 57)
+        Me.btnBrowseWD.Location = New System.Drawing.Point(560, 101)
         Me.btnBrowseWD.Name = "btnBrowseWD"
         Me.btnBrowseWD.Size = New System.Drawing.Size(103, 23)
         Me.btnBrowseWD.TabIndex = 9
@@ -127,7 +127,7 @@ Partial Class EditProgramForm
         '
         'btnBrowseIcon
         '
-        Me.btnBrowseIcon.Location = New System.Drawing.Point(594, 86)
+        Me.btnBrowseIcon.Location = New System.Drawing.Point(560, 125)
         Me.btnBrowseIcon.Name = "btnBrowseIcon"
         Me.btnBrowseIcon.Size = New System.Drawing.Size(103, 23)
         Me.btnBrowseIcon.TabIndex = 10
@@ -136,7 +136,7 @@ Partial Class EditProgramForm
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(594, 120)
+        Me.btnOK.Location = New System.Drawing.Point(685, 225)
         Me.btnOK.Name = "btnOK"
         Me.btnOK.Size = New System.Drawing.Size(103, 23)
         Me.btnOK.TabIndex = 11
@@ -145,7 +145,7 @@ Partial Class EditProgramForm
         '
         'btnCancel
         '
-        Me.btnCancel.Location = New System.Drawing.Point(594, 164)
+        Me.btnCancel.Location = New System.Drawing.Point(685, 254)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(103, 23)
         Me.btnCancel.TabIndex = 12

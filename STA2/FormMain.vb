@@ -18,18 +18,29 @@ Imports STA2.NetworkData
 
 Public Class FormMain
 
-    Private ReadOnly _options As AppOptions
+    Private _options As AppOptions
 
     Private _launcherConfig As LauncherConfig
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
 
-        _options = options
-        _launcherConfig = If(launcher, New LauncherConfig())
+        '_options = options
+        '_launcherConfig = If(launcher, New LauncherConfig())
 
         ' Apply the window title from options.
         ' Falls back to the existing Form.Text if WindowTitle is empty.
+
+        _options = options
+        _launcherConfig = launcher
+
+        ' Your existing setup...
+        RefreshProgramsList()
+        FillComboFromListBox()
+
+        InitializeProgramsContextMenu()
+        RefreshQuickLaunchButtons()    ' 4) Render buttons AFTER both _options and 
+
         If Not String.IsNullOrWhiteSpace(_options.WindowTitle) Then
             Me.Text = _options.WindowTitle
         End If
@@ -53,45 +64,18 @@ Public Class FormMain
         InstalledX64 = 2
     End Enum
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-        'Dim cs As String =
-        '     String.Format("Server={0};Database={1};User ID={2};Password={3};", ConfigValues.Server, ConfigValues.Database, ConfigValues.UserID, ConfigValues.Password)
-        ''"Server=localhost,1433;Database=master;User ID=sa;Password=YourPassword;TrustServerCertificate=True;"
-        'tbMLTest1.Text = ""
-
-        'Using cn As New SqlConnection(cs),
-        '      cmd As New SqlCommand("
-        '        SELECT
-        '          SERVERPROPERTY('MachineName')       AS MachineName,
-        '          SERVERPROPERTY('ServerName')        AS ServerName,
-        '          SERVERPROPERTY('InstanceName')      AS InstanceName,
-        '          SERVERPROPERTY('Edition')           AS Edition,
-        '          SERVERPROPERTY('ProductVersion')    AS ProductVersion,
-        '          SERVERPROPERTY('ProductLevel')      AS ProductLevel,
-        '          SERVERPROPERTY('EngineEdition')     AS EngineEdition;", cn)
-
-        '    cn.Open()
-        '    Using rdr = cmd.ExecuteReader()
-        '        If rdr.Read() Then
-        '            tbMLTest1.Text += ($"MachineName: {rdr("MachineName")}") + Environment.NewLine
-        '            tbMLTest1.Text += ($"ServerName: {rdr("ServerName")}") + Environment.NewLine
-        '            tbMLTest1.Text += ($"InstanceName: {rdr("InstanceName")}") + Environment.NewLine
-        '            tbMLTest1.Text += ($"Edition: {rdr("Edition")}") + Environment.NewLine
-        '            tbMLTest1.Text += ($"ProductVersion: {rdr("ProductVersion")}") + Environment.NewLine
-        '            tbMLTest1.Text += ($"ProductLevel: {rdr("ProductLevel")}") + Environment.NewLine
-        '            tbMLTest1.Text += ($"EngineEdition: {rdr("EngineEdition")}") + Environment.NewLine
-        '        End If
-        '    End Using
-        'End Using
-
-    End Sub
-
-
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        If Variables.OfflineMode Then
+            ' Disable DB buttons, timers, etc.
+            DisableDatabaseSections()
+            Return
+        End If
+
         CodeHelper.GetPcInfo()
 
         If (My.Application.CommandLineArgs.Contains("-test")) Then
@@ -103,11 +87,19 @@ Public Class FormMain
 
         Connections.IniFileHandler(False)
 
-        'CodeHelper.AdminUser(Variables.LoggedIn)
         CodeHelper.FirstLoad()
 
         Dim strTemp As String = ""
         ServiceControlList = Services.ServicesExistCheck()
+
+        If Not IsRunningAsAdmin() Then
+            For Each svc In ServiceControlList
+                If svc.GroupBox IsNot Nothing Then svc.GroupBox.Enabled = False
+                If svc.SSButton IsNot Nothing Then svc.SSButton.Enabled = False
+                If svc.RSButton IsNot Nothing Then svc.RSButton.Enabled = False
+            Next
+        End If
+
         CodeHelper.Refresher()
         rbDbTableSize.Checked = True
         rbMessageLog.Checked = True
@@ -115,30 +107,9 @@ Public Class FormMain
         gpMessageLogFilters.Enabled = rbMessageLog.Checked
         btnDbLogRefresh.PerformClick()
 
-        Me.Text = Me.Text & " " & My.Application.Info.Version.Major
         If PCInfo.ValidDatabase Then
+            AdvantageDataRefresh("Form Load")
 
-            Try
-                dbAppOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM AppOptions")
-                For index = 0 To dbAppOptions.Tables(0).Rows.Count - 1
-                    dgvAppOptions.Rows.Add(dbAppOptions.Tables(0).Rows(index).ItemArray)
-                Next
-                dbWebOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM WebOptions")
-                For index = 0 To dbWebOptions.Tables(0).Rows.Count - 1
-                    dgvWebOptions.Rows.Add(dbWebOptions.Tables(0).Rows(index).ItemArray)
-                Next
-                dbApplicationInfo = DBConnector.dbQuery("SELECT * FROM ApplicationInfo")
-                For index = 0 To dbApplicationInfo.Tables(0).Columns.Count - 1
-                    dgvApplicationInfo.Rows.Add(dbApplicationInfo.Tables(0).Columns(index).ColumnName, dbApplicationInfo.Tables(0).Rows(0).ItemArray(index).ToString)
-                Next
-                dgvAppOptions.Refresh()
-
-            Catch ex As Exception
-
-                ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
-                PCInfo.ValidDatabase = False
-
-            End Try
         End If
 
         Try
@@ -171,13 +142,19 @@ Public Class FormMain
         btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
 
-        '_config = LoadConfig()
+        '_launcherConfig = OptionsManager.LoadLauncherConfig()
 
+        'lstPrograms.DisplayMember = "Name"  ' shows ProgramEntry.Name
+        'RefreshProgramsList()
+        'FillComboFromListBox()
+
+
+        _options = OptionsManager.LoadOrCreate()
         _launcherConfig = OptionsManager.LoadLauncherConfig()
-
-        lstPrograms.DisplayMember = "Name"  ' shows ProgramEntry.Name
         RefreshProgramsList()
         FillComboFromListBox()
+        RefreshQuickLaunchButtons()
+
         tbWindowTitle.Text = _options.WindowTitle
         If IsRunningAsAdmin() Then
             btnAdminRestart.Enabled = False
@@ -191,7 +168,6 @@ Public Class FormMain
     Private Sub RefreshProgramsList(Optional preserveSelection As Boolean = False)
         Dim selected As ProgramEntry = Nothing
 
-        ' Preserve the currently selected ProgramEntry
         If preserveSelection AndAlso lstPrograms.SelectedItem IsNot Nothing Then
             selected = DirectCast(lstPrograms.SelectedItem, ProgramEntry)
         End If
@@ -199,7 +175,6 @@ Public Class FormMain
         lstPrograms.BeginUpdate()
         lstPrograms.Items.Clear()
 
-        ' Load from the new config object (_launcherConfig)
         If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
             For Each p As ProgramEntry In _launcherConfig.Programs.Where(Function(x) x.Enabled)
                 lstPrograms.Items.Add(p)
@@ -208,7 +183,9 @@ Public Class FormMain
 
         lstPrograms.EndUpdate()
 
-        ' Restore selection
+        ' IMPORTANT: display only the Name property
+        lstPrograms.DisplayMember = "Name"
+
         If preserveSelection AndAlso selected IsNot Nothing Then
             For i = 0 To lstPrograms.Items.Count - 1
                 If Object.ReferenceEquals(lstPrograms.Items(i), selected) Then
@@ -218,6 +195,7 @@ Public Class FormMain
             Next
         End If
     End Sub
+
     Private Sub FillComboFromListBox()
         cmbboxAppLaunch.Items.Clear()
 
@@ -233,11 +211,6 @@ Public Class FormMain
         tcSTA.SelectedTab = tpQATools
 
 #End If
-
-    End Sub
-
-    Private Sub btnUnlockAdminAccount_Click(sender As Object, e As EventArgs)
-        DBConnector.CreateCommand(GeneralQueries.UnlockAdminAccount)
 
     End Sub
 
@@ -297,23 +270,75 @@ Public Class FormMain
     End Sub
 
     Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
-        If rbDbTableSize.Checked Or rbDbFragmentation.Checked Or rbDbSizeByDay.Checked Or rbDbDeadlocks.Checked Then
 
-            Dim dbResult As DataSet
-            Dim query As String = ""
-            If rbDbTableSize.Checked Then query = DbInfo.DbSizeByTable
-            If rbDbFragmentation.Checked Then query = DbInfo.DbFragmentation
-            If rbDbSizeByDay.Checked Then query = String.Format(DbInfo.DbSizeByDay, ConfigValues.Database)
-            If rbDbDeadlocks.Checked Then query = DbInfo.DbDeadlocks
-
-            dbResult = DBConnector.dbQuery(query)
-            dgvDbTableSize.DataSource = dbResult.Tables(0)
-            dgvDbTableSize.Refresh()
-
+        If Variables.OfflineMode Then
+            'MessageBox.Show("Database is offline.")
+            Return
+        End If
+        ' Only run if one of the choices is selected
+        If Not (rbDbTableSize.Checked Or rbDbFragmentation.Checked Or rbDbSizeByDay.Checked Or rbDbDeadlocks.Checked) Then
+            Return
         End If
 
-    End Sub
+        ' Optional: prevent double clicks during refresh
+        btnDbInfoRefresh.Enabled = False
+        Cursor.Current = Cursors.WaitCursor
 
+        Try
+            Dim query As String = String.Empty
+
+            If rbDbTableSize.Checked Then
+                query = DbInfo.DbSizeByTable
+            ElseIf rbDbFragmentation.Checked Then
+                query = DbInfo.DbFragmentation
+            ElseIf rbDbSizeByDay.Checked Then
+                query = String.Format(DbInfo.DbSizeByDay, ConfigValues.Database)
+            ElseIf rbDbDeadlocks.Checked Then
+                query = DbInfo.DbDeadlocks
+            End If
+
+            ' Execute via ReliableSql (shows Retry/Cancel on connection loss and retries)
+            Dim q As Object = ReliableSql.Query(query)
+            Dim ds As DataSet = TryCast(q, DataSet)
+
+            ' Bind safely
+            If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
+                dgvDbTableSize.DataSource = ds.Tables(0)
+            Else
+                ' If nothing came back, clear the grid so old data isn't shown
+                dgvDbTableSize.DataSource = Nothing
+            End If
+
+            dgvDbTableSize.Refresh()
+
+        Catch oce As OperationCanceledException
+            ' User canceled after connection-lost prompt — keep app responsive
+            MessageBox.Show(
+            "Operation canceled by user due to lost database connection.",
+            "Database",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+        )
+            ' Optionally clear the grid to reflect no data
+            dgvDbTableSize.DataSource = Nothing
+
+        Catch ex As Exception
+            ' Non-transient issue (bad SQL, unexpected shape, etc.)
+            MessageBox.Show(
+            $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
+            "Database Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+        )
+            ' Optionally clear the grid on failure
+            dgvDbTableSize.DataSource = Nothing
+
+        Finally
+            ' Restore UI state
+            Cursor.Current = Cursors.Default
+            btnDbInfoRefresh.Enabled = True
+        End Try
+    End Sub
     Private Sub rbDbTableSize_CheckedChanged(sender As Object, e As EventArgs) Handles rbDbTableSize.CheckedChanged, rbDbFragmentation.CheckedChanged, rbDbSizeByDay.CheckedChanged, rbDbDeadlocks.CheckedChanged
 
         btnDbInfoRefresh.PerformClick()
@@ -331,56 +356,121 @@ Public Class FormMain
     End Sub
 
     Private Sub btnDbLogRefresh_Click(sender As Object, e As EventArgs) Handles btnDbLogRefresh.Click, rbWebCloudUpdates.Click, rbMessageLog.Click
-        Dim dbResultCount As DataSet
-        Dim dbResultData As DataSet
+
+        If Variables.OfflineMode Then
+            'MessageBox.Show("Database is offline.")
+            Return
+        End If
+
+        Dim dbResultCount As DataSet = Nothing
+        Dim dbResultData As DataSet = Nothing
 
         Dim queryData As String = ""
         Dim queryCount As String = ""
 
-        If rbWebCloudUpdates.Checked Then
-            gpDbLogCount.Text = "Count per table"
-            gpDbLogData.Text = "All WebCloudUpdates Entries"
-            queryCount = LogQueries.WebCloudTotalCount
-            dbResultCount = DBConnector.dbQuery(queryCount)
-            dgvDbLogCount.DataSource = dbResultCount.Tables(0)
+        Try
+            If rbWebCloudUpdates.Checked Then
 
-            queryData = LogQueries.WebCloudUpdates
-            dbResultData = DBConnector.dbQuery(queryData)
-            dgvDbLogData.DataSource = dbResultData.Tables(0)
-            dgvDbLogCount.Columns(0).Visible = False
-            dgvDbLogCount.Columns(1).HeaderText = "Table"
-            dgvDbLogCount.Columns(2).HeaderText = "Count"
+                gpDbLogCount.Text = "Count per table"
+                gpDbLogData.Text = "All WebCloudUpdates Entries"
 
-            dbResultData = DBConnector.dbQuery(queryData)
-            dgvDbLogData.DataSource = dbResultData.Tables(0)
-        ElseIf rbMessageLog.Checked Then
-            CodeHelper.MsgLogBuilder(MessageLogFilters.Errors, MessageLogFilters.Limit, MessageLogFilters.DateRange)
+                ' --------------------------
+                ' Query COUNT
+                ' --------------------------
+                queryCount = LogQueries.WebCloudTotalCount
+                Dim qCount As Object = ReliableSql.Query(queryCount)
+                dbResultCount = TryCast(qCount, DataSet)
 
-            gpDbLogCount.Text = "Errors per day"
-            gpDbLogData.Text = "MessageLog"
-            queryCount = LogQueries.MessageLogErrorCount
-            dbResultCount = DBConnector.dbQuery(queryCount)
-            dgvDbLogCount.DataSource = dbResultCount.Tables(0)
-            dgvDbLogCount.Columns(0).Visible = True
-            dgvDbLogCount.Columns(0).HeaderText = "Date"
-            dgvDbLogCount.Columns(1).HeaderText = "Program"
-            dgvDbLogCount.Columns(2).HeaderText = "Count"
+                If dbResultCount IsNot Nothing AndAlso dbResultCount.Tables.Count > 0 Then
+                    dgvDbLogCount.DataSource = dbResultCount.Tables(0)
+                    dgvDbLogCount.Columns(0).Visible = False
+                    dgvDbLogCount.Columns(1).HeaderText = "Table"
+                    dgvDbLogCount.Columns(2).HeaderText = "Count"
+                Else
+                    dgvDbLogCount.DataSource = Nothing
+                End If
 
-            queryData = LogQueries.MessageLog
-            dbResultData = DBConnector.dbQuery(queryData)
+                ' --------------------------
+                ' Query DATA
+                ' --------------------------
+                queryData = LogQueries.WebCloudUpdates
+                Dim qData As Object = ReliableSql.Query(queryData)
+                dbResultData = TryCast(qData, DataSet)
 
-            dgvDbLogData.DataSource = dbResultData.Tables(0)
-            dgvDbLogData.Sort(dgvDbLogData.Columns(0), System.ComponentModel.ListSortDirection.Descending)
-        Else
-            gpDbLogData.Text = ""
-            gpDbLogCount.Text = ""
+                If dbResultData IsNot Nothing AndAlso dbResultData.Tables.Count > 0 Then
+                    dgvDbLogData.DataSource = dbResultData.Tables(0)
+                Else
+                    dgvDbLogData.DataSource = Nothing
+                End If
 
-            Exit Sub
-        End If
-        dgvDbLogData.Refresh()
+
+            ElseIf rbMessageLog.Checked Then
+
+                ' Build the MessageLog queries based on filters
+                CodeHelper.MsgLogBuilder(MessageLogFilters.Errors, MessageLogFilters.Limit, MessageLogFilters.DateRange)
+
+                gpDbLogCount.Text = "Errors per day"
+                gpDbLogData.Text = "MessageLog"
+
+                ' --------------------------
+                ' Query ERROR COUNT
+                ' --------------------------
+                queryCount = LogQueries.MessageLogErrorCount
+                Dim qCount As Object = ReliableSql.Query(queryCount)
+                dbResultCount = TryCast(qCount, DataSet)
+
+                If dbResultCount IsNot Nothing AndAlso dbResultCount.Tables.Count > 0 Then
+                    dgvDbLogCount.DataSource = dbResultCount.Tables(0)
+                    dgvDbLogCount.Columns(0).Visible = True
+                    dgvDbLogCount.Columns(0).HeaderText = "Date"
+                    dgvDbLogCount.Columns(1).HeaderText = "Program"
+                    dgvDbLogCount.Columns(2).HeaderText = "Count"
+                Else
+                    dgvDbLogCount.DataSource = Nothing
+                End If
+
+                ' --------------------------
+                ' Query LOG DATA
+                ' --------------------------
+                queryData = LogQueries.MessageLog
+                Dim qData As Object = ReliableSql.Query(queryData)
+                dbResultData = TryCast(qData, DataSet)
+
+                If dbResultData IsNot Nothing AndAlso dbResultData.Tables.Count > 0 Then
+                    dgvDbLogData.DataSource = dbResultData.Tables(0)
+                    ' Sort by first column (date)
+                    dgvDbLogData.Sort(dgvDbLogData.Columns(0), ComponentModel.ListSortDirection.Descending)
+                Else
+                    dgvDbLogData.DataSource = Nothing
+                End If
+
+            Else
+                gpDbLogData.Text = ""
+                gpDbLogCount.Text = ""
+                Exit Sub
+            End If
+
+            dgvDbLogData.Refresh()
+
+        Catch oce As OperationCanceledException
+            ' User clicked Cancel on the ReliableSql Retry/Cancel prompt
+            MessageBox.Show(
+            "Operation canceled by user due to lost database connection.",
+            "Database Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning
+        )
+
+        Catch ex As Exception
+            MessageBox.Show(
+            $"Database log refresh failed:{Environment.NewLine}{ex.Message}",
+            "Database Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+        )
+        End Try
 
     End Sub
-
     Private Sub btnSTParse_Click(sender As Object, e As EventArgs) Handles btnStParse.Click, btnSTClear.Click
         If sender.Equals(btnSTClear) Then
             tbSTParse.Text = ""
@@ -651,38 +741,16 @@ Public Class FormMain
     Private Sub btnRefreshServices_Click(sender As Object, e As EventArgs) Handles btnRefreshGeneralTab.Click
         Dim TabName As String
 
+        If Variables.OfflineMode Then
+            MessageBox.Show("Database is offline.")
+            Return
+        End If
+
 
         If tcSTA.SelectedTab.Equals(tpAdvData) Then
 
             If PCInfo.ValidDatabase Then
-
-                Try
-                    dbAppOptions.Reset()
-                    dgvAppOptions.Rows.Clear()
-                    dbAppOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM AppOptions")
-                    For index = 0 To dbAppOptions.Tables(0).Rows.Count - 1
-                        dgvAppOptions.Rows.Add(dbAppOptions.Tables(0).Rows(index).ItemArray)
-                    Next
-                    dbWebOptions.Reset()
-                    dgvWebOptions.Rows.Clear()
-                    dbWebOptions = DBConnector.dbQuery("SELECT OptionName, OptionValue FROM WebOptions")
-                    For index = 0 To dbWebOptions.Tables(0).Rows.Count - 1
-                        dgvWebOptions.Rows.Add(dbWebOptions.Tables(0).Rows(index).ItemArray)
-                    Next
-                    dbApplicationInfo.Reset()
-                    dgvApplicationInfo.Rows.Clear()
-                    dbApplicationInfo = DBConnector.dbQuery("SELECT * FROM ApplicationInfo")
-                    For index = 0 To dbApplicationInfo.Tables(0).Columns.Count - 1
-                        dgvApplicationInfo.Rows.Add(dbApplicationInfo.Tables(0).Columns(index).ColumnName, dbApplicationInfo.Tables(0).Rows(0).ItemArray(index).ToString)
-                    Next
-                    dgvAppOptions.Refresh()
-
-                Catch ex As Exception
-
-                    ErrorHandler.ErrorHandler(ex.Message, ex.StackTrace)
-                    PCInfo.ValidDatabase = False
-
-                End Try
+                AdvantageDataRefresh("Refresh Button")
             End If
         ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
             CodeHelper.Refresher()
@@ -693,55 +761,6 @@ Public Class FormMain
 
 
     End Sub
-
-    'Private ReadOnly _jsonSettings As New JsonSerializerSettings With {
-    '    .Formatting = Newtonsoft.Json.Formatting.Indented.Indented,
-    '    .NullValueHandling = NullValueHandling.Ignore
-    '}
-
-    'Public Function LoadConfig() As LauncherConfig
-    '    Dim path = GetConfigPath()
-    '    If Not File.Exists(path) Then Return New LauncherConfig()
-
-    '    Try
-    '        Dim json = File.ReadAllText(path)
-    '        Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
-    '        If cfg Is Nothing Then cfg = New LauncherConfig()
-    '        Return cfg
-    '    Catch ex As Exception
-    '        MessageBox.Show("Failed to load config: " & ex.Message)
-    '        Return New LauncherConfig()
-    '    End Try
-    'End Function
-
-    'Public Sub SaveConfig(cfg As LauncherConfig)
-    '    Try
-    '        Dim path = GetConfigPath()
-    '        Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
-    '        File.WriteAllText(path, json)
-    '    Catch ex As Exception
-    '        MessageBox.Show("Failed to save config: " & ex.Message)
-    '    End Try
-    'End Sub
-
-    'Public Shared Function GetConfigPath() As String
-    '    Dim dir = System.IO.Path.Combine(
-    '    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-    '    "STA2") ' your app folder
-    '    If Not IO.Directory.Exists(dir) Then IO.Directory.CreateDirectory(dir)
-    '    Return IO.Path.Combine(dir, "launcher.config.json")
-    'End Function
-
-
-    'Private Sub btnLaunch_Click(sender As Object, e As EventArgs) Handles btnLaunch.Click, lstPrograms.DoubleClick
-    '    Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
-    '    If entry Is Nothing Then
-    '        MessageBox.Show("Please select a program.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '        Return
-    '    End If
-    '    LaunchProgram(entry)
-    'End Sub
-
     Private Sub LaunchProgram(entry As ProgramEntry)
         If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Path) Then
             MessageBox.Show("Invalid program entry.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -778,7 +797,9 @@ Public Class FormMain
 
         Using dlg As New EditProgramForm()
             ' Clone to support Cancel without side effects
+
             Dim clone As New ProgramEntry With {
+            .Id = entry.Id, ' <--- keep the same Id
             .Name = entry.Name,
             .Path = entry.Path,
             .Arguments = entry.Arguments,
@@ -787,7 +808,8 @@ Public Class FormMain
             .IconPath = entry.IconPath,
             .Enabled = entry.Enabled,
             .IncludeInBatch = entry.IncludeInBatch
-        }
+}
+
 
             dlg.Entry = clone
 
@@ -815,7 +837,7 @@ Public Class FormMain
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
 
         Using dlg As New EditProgramForm()
-            dlg.Entry = New ProgramEntry()
+            dlg.Entry = New ProgramEntry() With {.Enabled = True}
 
             If dlg.ShowDialog(Me) = DialogResult.OK Then
 
@@ -888,12 +910,6 @@ Public Class FormMain
         LaunchProgram(entry)
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-        OptionsManager.Save(_options)
-
-    End Sub
-
     Private Sub tbWindowTitle_TextChanged(sender As Object, e As EventArgs) Handles tbWindowTitle.TextChanged
         _options.WindowTitle = tbWindowTitle.Text
 
@@ -930,7 +946,349 @@ Public Class FormMain
             btnAdminRestart.Text = "Running as Admin"
         Else
             btnAdminRestart.Enabled = True
-        btnAdminRestart.Text = "Restart as Administrator"
+            btnAdminRestart.Text = "Restart as Administrator"
         End If
     End Sub
+
+    Private Sub FormMain_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+
+
+        Try
+            ' If you made edits directly to lstPrograms.Items and not to _launcherConfig.Programs,
+            ' you can sync the UI back into the model here. If not necessary, skip this.
+            ' _launcherConfig.Programs = lstPrograms.Items.Cast(Of ProgramEntry)().ToList()
+
+            OptionsManager.SaveLauncherConfig(_launcherConfig)
+        Catch ex As Exception
+            ' Log or show; don’t rethrow to avoid blocking shutdown
+            Debug.WriteLine("Error saving launcher config on exit: " & ex.Message)
+        End Try
+
+        ' Also persist options if you want:
+        Try
+            If _options IsNot Nothing Then OptionsManager.Save(_options)
+        Catch
+        End Try
+
+    End Sub
+
+    ' Rebuilds the quick launch buttons inside the FlowLayoutPanel flpQuickLaunch,
+    ' showing ONLY buttons for assigned apps (no placeholders).
+    Private Sub RefreshQuickLaunchButtons()
+        If flpQuickLaunch Is Nothing Then Return
+
+        ' Build lookup for fast Id -> ProgramEntry resolution (enabled only)
+        Dim byId As New Dictionary(Of String, ProgramEntry)(StringComparer.OrdinalIgnoreCase)
+        If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
+            For Each p In _launcherConfig.Programs
+                If p IsNot Nothing AndAlso p.Enabled AndAlso Not String.IsNullOrWhiteSpace(p.Id) Then
+                    If Not byId.ContainsKey(p.Id) Then byId.Add(p.Id, p)
+                End If
+            Next
+        End If
+
+        flpQuickLaunch.SuspendLayout()
+        Try
+            flpQuickLaunch.Controls.Clear()
+
+            If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then Exit Sub
+
+            For slot = 0 To _options.QuickLaunchIds.Count - 1
+
+                Dim id As String = _options.QuickLaunchIds(slot)
+                If String.IsNullOrWhiteSpace(id) Then Continue For
+
+                Dim entry As ProgramEntry = Nothing
+                If Not byId.TryGetValue(id, entry) Then Continue For
+
+                ' 💡 SNAPSHOT VARIABLES HERE
+                Dim slotLocal As Integer = slot
+                Dim entryLocal As ProgramEntry = entry
+
+                Dim btn As New Button()
+                btn.Name = $"btnQuickSlot{slotLocal + 1}"
+                btn.Width = 120
+                btn.Height = 32
+                btn.AutoSize = False
+                btn.Tag = entryLocal
+                btn.Text = entryLocal.Name
+                btn.TextAlign = ContentAlignment.MiddleCenter
+                btn.Margin = New Padding(3)
+                btn.UseVisualStyleBackColor = True
+
+                ' Tooltip
+                Dim tipText As String = entryLocal.Name
+                If Not String.IsNullOrWhiteSpace(entryLocal.Path) Then
+                    tipText &= Environment.NewLine & entryLocal.Path
+                End If
+                If Not String.IsNullOrWhiteSpace(entryLocal.Arguments) Then
+                    tipText &= Environment.NewLine & entryLocal.Arguments
+                End If
+                ToolTipForQuickButtons.SetToolTip(btn, tipText)
+
+                ' Click handler using snapshot version of entry
+                AddHandler btn.Click,
+                Sub(s, e)
+                    LaunchProgram(entryLocal)
+                End Sub
+
+                ' Right‑click reassign using snapshot version of slot
+                AddHandler btn.MouseUp,
+                Sub(s, e)
+                    If e.Button = MouseButtons.Right Then
+                        AssignSelectedListItemToQuickSlot(slotLocal)
+                    End If
+                End Sub
+
+                flpQuickLaunch.Controls.Add(btn)
+            Next
+
+        Finally
+            flpQuickLaunch.ResumeLayout()
+        End Try
+    End Sub
+
+    Private Sub ReloadLauncherConfigAndRefreshUI(Optional preserveSelection As Boolean = True)
+        ' Preserve currently selected entry (reference + Id safety)
+        Dim selectedRef As ProgramEntry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        Dim selectedId As String = If(selectedRef IsNot Nothing, selectedRef.Id, Nothing)
+
+        ' Reload from disk (handles BOM, whitespace, Id migration + save)
+        Dim fresh As LauncherConfig = OptionsManager.ReloadLauncherConfig()
+        If fresh Is Nothing Then fresh = New LauncherConfig()
+        If fresh.Programs Is Nothing Then fresh.Programs = New List(Of ProgramEntry)()
+
+        ' Replace the in-memory model
+        _launcherConfig = fresh
+
+        ' Rebuild the ListBox from the new model
+        lstPrograms.BeginUpdate()
+        Try
+            lstPrograms.Items.Clear()
+
+            ' Only show enabled apps (matches your previous behavior). Remove `.Where(...)` filter if you want to show all.
+            For Each p As ProgramEntry In _launcherConfig.Programs.Where(Function(x) x.Enabled)
+                lstPrograms.Items.Add(p)
+            Next
+
+            ' Show only the name in the list (still stores full ProgramEntry objects)
+            lstPrograms.DisplayMember = "Name"
+        Finally
+            lstPrograms.EndUpdate()
+        End Try
+
+        ' Rebuild the ComboBox from the ListBox items
+        FillComboFromListBox()
+
+        ' Rebuild the Quick Launch buttons (from _options.QuickLaunchIds and _launcherConfig)
+        RefreshQuickLaunchButtons()
+
+        ' Optionally restore selection
+        If preserveSelection Then
+            Dim restored As Boolean = False
+
+            ' 1) Try to restore by object reference if it survived
+            If selectedRef IsNot Nothing Then
+                For i = 0 To lstPrograms.Items.Count - 1
+                    If Object.ReferenceEquals(lstPrograms.Items(i), selectedRef) Then
+                        lstPrograms.SelectedIndex = i
+                        restored = True
+                        Exit For
+                    End If
+                Next
+            End If
+
+            ' 2) Fallback: restore by Id (safe even if objects re-materialized)
+            If Not restored AndAlso Not String.IsNullOrWhiteSpace(selectedId) Then
+                For i = 0 To lstPrograms.Items.Count - 1
+                    Dim item As ProgramEntry = TryCast(lstPrograms.Items(i), ProgramEntry)
+                    If item IsNot Nothing AndAlso String.Equals(item.Id, selectedId, StringComparison.OrdinalIgnoreCase) Then
+                        lstPrograms.SelectedIndex = i
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
+    End Sub
+
+    ' Assign the currently-selected program in lstPrograms to the specified quick-launch slot (0-based).
+    Private Sub AssignSelectedListItemToQuickSlot(slot As Integer)
+        Dim entry As ProgramEntry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        If entry Is Nothing Then
+            MessageBox.Show("Select a program to assign.", "Quick Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        ' Ensure QuickLaunchIds exists and is large enough
+        If _options.QuickLaunchIds Is Nothing Then
+            _options.QuickLaunchIds = New List(Of String)(New String() {"", "", "", "", ""})
+        End If
+        While _options.QuickLaunchIds.Count <= slot
+            _options.QuickLaunchIds.Add("")
+        End While
+
+        _options.QuickLaunchIds(slot) = entry.Id
+
+        ' Save and refresh quick buttons
+        OptionsManager.Save(_options)
+        RefreshQuickLaunchButtons()
+    End Sub
+
+    Private Sub ClearQuickSlot(slot As Integer)
+        If _options.QuickLaunchIds Is Nothing Then Exit Sub
+        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then Exit Sub
+
+        _options.QuickLaunchIds(slot) = ""
+        OptionsManager.Save(_options)
+        RefreshQuickLaunchButtons()
+    End Sub
+    Private _ctxPrograms As ContextMenuStrip
+
+    Private Sub InitializeProgramsContextMenu()
+        _ctxPrograms = New ContextMenuStrip()
+
+        ' --- Build the “Assign to Quick Slot” submenu ---
+        Dim miAssignRoot = New ToolStripMenuItem("Assign to Quick Slot")
+
+        ' How many slots? Use options count if present; default to 5.
+        Dim slotCount As Integer = If(_options?.QuickLaunchIds?.Count, 5)
+        If slotCount <= 0 Then slotCount = 5
+
+        For slot = 0 To slotCount - 1
+            Dim slotIndex As Integer = slot ' capture for closure
+            Dim mi = New ToolStripMenuItem($"Slot {slotIndex + 1}")
+            AddHandler mi.Click, Sub(sender, e)
+                                     AssignSelectedListItemToQuickSlot(slotIndex)
+                                 End Sub
+            miAssignRoot.DropDownItems.Add(mi)
+        Next
+
+        ' --- Build “Clear Slot” submenu (optional but handy) ---
+        Dim miClearRoot = New ToolStripMenuItem("Clear Quick Slot")
+        For slot = 0 To slotCount - 1
+            Dim slotIndex As Integer = slot
+            Dim mi = New ToolStripMenuItem($"Slot {slotIndex + 1}")
+            AddHandler mi.Click, Sub(sender, e)
+                                     ClearQuickSlot(slotIndex)
+                                 End Sub
+            miClearRoot.DropDownItems.Add(mi)
+        Next
+
+        ' Optional: a separator and a refresh action
+        Dim miRefreshQuick = New ToolStripMenuItem("Refresh Quick Buttons")
+        AddHandler miRefreshQuick.Click, Sub(sender, e) RefreshQuickLaunchButtons()
+
+        _ctxPrograms.Items.Add(miAssignRoot)
+        _ctxPrograms.Items.Add(miClearRoot)
+        _ctxPrograms.Items.Add(New ToolStripSeparator())
+        _ctxPrograms.Items.Add(miRefreshQuick)
+
+        ' Attach to the listbox
+        lstPrograms.ContextMenuStrip = _ctxPrograms
+
+        ' Optional: show the context menu on right-click even if an item wasn’t selected yet
+        AddHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
+    End Sub
+
+    Private Sub lstPrograms_MouseUp_SelectOnRightClick(sender As Object, e As MouseEventArgs)
+        If e.Button <> MouseButtons.Right Then Return
+
+        Dim index As Integer = lstPrograms.IndexFromPoint(e.Location)
+        If index >= 0 AndAlso index < lstPrograms.Items.Count Then
+            lstPrograms.SelectedIndex = index
+        End If
+    End Sub
+
+    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
+        tbTest1.Text = ReliableSql.Query("SELECT TOP 1 Version FROM VersionInfo ORDER BY KeyID DESC;")
+    End Sub
+
+    Private Sub AdvantageDataRefresh(FiredBy As String)
+        tbTest1.Text = FiredBy
+
+
+        Try
+            ' ================================
+            ' 1) APP OPTIONS
+            ' ================================
+            dgvAppOptions.Rows.Clear()
+
+            Dim qApp As Object = ReliableSql.Query("SELECT OptionName, OptionValue FROM AppOptions")
+            Dim dsApp As DataSet = TryCast(qApp, DataSet)
+
+            If dsApp IsNot Nothing AndAlso dsApp.Tables.Count > 0 AndAlso dsApp.Tables(0).Rows.Count > 0 Then
+                dbAppOptions = dsApp
+                For Each row As DataRow In dsApp.Tables(0).Rows
+                    dgvAppOptions.Rows.Add(row.ItemArray)
+                Next
+            Else
+                dbAppOptions = New DataSet() ' keep variable safe
+            End If
+
+
+
+            ' ================================
+            ' 2) WEB OPTIONS
+            ' ================================
+            dgvWebOptions.Rows.Clear()
+
+            Dim qWeb As Object = ReliableSql.Query("SELECT OptionName, OptionValue FROM WebOptions")
+            Dim dsWeb As DataSet = TryCast(qWeb, DataSet)
+
+            If dsWeb IsNot Nothing AndAlso dsWeb.Tables.Count > 0 AndAlso dsWeb.Tables(0).Rows.Count > 0 Then
+                dbWebOptions = dsWeb
+                For Each row As DataRow In dsWeb.Tables(0).Rows
+                    dgvWebOptions.Rows.Add(row.ItemArray)
+                Next
+            Else
+                dbWebOptions = New DataSet()
+            End If
+
+
+
+            ' ================================
+            ' 3) APPLICATION INFO
+            ' ================================
+            dgvApplicationInfo.Rows.Clear()
+
+            Dim qInfo As Object = ReliableSql.Query("SELECT * FROM ApplicationInfo")
+            Dim dsInfo As DataSet = TryCast(qInfo, DataSet)
+
+            If dsInfo IsNot Nothing AndAlso dsInfo.Tables.Count > 0 AndAlso dsInfo.Tables(0).Rows.Count > 0 Then
+                dbApplicationInfo = dsInfo
+                Dim t As DataTable = dsInfo.Tables(0)
+                Dim firstRow As DataRow = t.Rows(0)
+
+                ' Add rows: ColName | Value
+                For i = 0 To t.Columns.Count - 1
+                    dgvApplicationInfo.Rows.Add(t.Columns(i).ColumnName, firstRow(i).ToString())
+                Next
+            Else
+                dbApplicationInfo = New DataSet()
+            End If
+
+
+        Catch oce As OperationCanceledException
+            MessageBox.Show("Database operation canceled by user.", "Info",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+        Catch ex As Exception
+            ErrorHandler.ErrorHandler("Error refreshing option grids: " & ex.Message, ex.StackTrace)
+        End Try
+
+    End Sub
+
+    Private Sub DisableDatabaseSections()
+        tbPcDbSize.Text = "Offline"
+        tbPcSqlVersion.Text = "Offline"
+        dgvAppOptions.DataSource = Nothing
+        ' disable refresh buttons etc.
+        tpAdvData.Enabled = False
+        tpDbLogs.Enabled = False
+        pnlDbData.Enabled = False
+        pnlDbInfoButtons.Enabled = False
+
+    End Sub
+
+
 End Class

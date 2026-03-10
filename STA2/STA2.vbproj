@@ -187,6 +187,7 @@
     </Compile>
     <Compile Include="Network.vb" />
     <Compile Include="OptionsManager.vb" />
+    <Compile Include="ReliableSql.vb" />
     <Compile Include="ServiceIntrospection.vb" />
     <Compile Include="Services.vb" />
     <Compile Include="SplashScreen1.Designer.vb">
