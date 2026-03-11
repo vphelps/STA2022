@@ -734,6 +734,60 @@ Public Class FormMain
         End Try
     End Sub
 
+    ' Launch all programs marked IncludeInBatch = True
+    ' silentMode = True suppresses MessageBox popups (useful for startup batch launch)
+    Public Sub LaunchBatch(Optional silentMode As Boolean = False)
+        ' Safety: ensure config exists
+        If _launcherConfig Is Nothing OrElse _launcherConfig.Programs Is Nothing Then
+            If Not silentMode Then
+                MessageBox.Show("No programs are configured.", "Batch Launch",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+            Return
+        End If
+
+        ' Build list of batch-launch entries
+        Dim batch = _launcherConfig.Programs _
+        .Where(Function(x) x IsNot Nothing AndAlso x.Enabled AndAlso x.IncludeInBatch) _
+        .ToList()
+
+        If batch.Count = 0 Then
+            If Not silentMode Then
+                MessageBox.Show("No enabled programs are marked IncludeInBatch.", "Batch Launch",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+            Return
+        End If
+
+        Dim failures As New List(Of String)
+
+        For Each p As ProgramEntry In batch
+            Try
+                ' Validate before launching
+                If String.IsNullOrWhiteSpace(p.Path) OrElse Not IO.File.Exists(p.Path) Then
+                    failures.Add($"{p.Name} — File not found: {p.Path}")
+                    Continue For
+                End If
+
+                LaunchProgram(p)
+
+            Catch ex As Exception
+                failures.Add($"{p.Name} — {ex.Message}")
+            End Try
+        Next
+
+        ' If not silent mode, provide feedback to user
+        If Not silentMode Then
+            If failures.Count > 0 Then
+                MessageBox.Show("Some applications failed to launch:" & Environment.NewLine &
+                            String.Join(Environment.NewLine, failures),
+                            "Batch Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Else
+                MessageBox.Show($"Launched {batch.Count} applications.",
+                            "Batch Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        End If
+    End Sub
     Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then
@@ -830,9 +884,11 @@ Public Class FormMain
         End If
     End Sub
     Private Sub btnBatchLaunch_Click(sender As Object, e As EventArgs) Handles btnBatchLaunch.Click
-        For Each p In _config.Programs.Where(Function(x) x.Enabled AndAlso x.IncludeInBatch)
-            LaunchProgram(p) ' reuse your existing launcher method
-        Next
+        'For Each p In _config.Programs.Where(Function(x) x.Enabled AndAlso x.IncludeInBatch)
+        '    LaunchProgram(p) ' reuse your existing launcher method
+        'Next
+
+        BatchLauncher.RunBatch(_launcherConfig)
     End Sub
 
     Private Sub cbListSort_CheckedChanged(sender As Object, e As EventArgs) Handles cbListSort.CheckedChanged

@@ -17,6 +17,9 @@ Module Startup
         ' ------------------------------
         ' Global exception handlers (last resort: prevent crash-to-desktop)
         ' ------------------------------
+        Dim options As AppOptions = OptionsManager.LoadOrCreate()
+        Dim launcher = OptionsManager.LoadLauncherConfig()
+
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
         AddHandler Application.ThreadException, AddressOf OnThreadException
         AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf OnUnhandledException
@@ -32,10 +35,17 @@ Module Startup
         Dim args = Environment.GetCommandLineArgs().Skip(1).ToList()
 
         If args.Contains("-BatchLaunch", StringComparer.OrdinalIgnoreCase) Then
-            'RunBatchAndExit()    ' <-- your batch logic here if/when implemented
-            MsgBox("Batch Load Switch Detected")
+            ' Load configs (NO UI)
+            Connections.IniFileHandler(False)
+
+            ' Run batch (no UI, no form constructed)
+            BatchLauncher.RunBatch(launcher)
+
+            ' Exit application immediately
+            Environment.Exit(0)
             Return
         End If
+
 
         ' ============================
         ' Initialize ReliableSql
@@ -54,9 +64,6 @@ Module Startup
         ' Normal UI startup
         ' ============================
         CodeHelper.GetPcInfo()
-
-        Dim options As AppOptions = OptionsManager.LoadOrCreate()
-        Dim launcher = OptionsManager.LoadLauncherConfig()
 
         ' Create the main form and pass options in the constructor.
         MainFormInstance = New FormMain(options, launcher)
