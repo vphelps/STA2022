@@ -185,7 +185,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Network.vb" />
     <Compile Include="OptionsManager.vb" />
     <Compile Include="ReliableSql.vb" />
     <Compile Include="ServiceIntrospection.vb" />

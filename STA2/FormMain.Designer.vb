@@ -152,26 +152,7 @@ Partial Class FormMain
         Me.btnStParse = New System.Windows.Forms.Button()
         Me.btnSTClear = New System.Windows.Forms.Button()
         Me.tbSTParse = New System.Windows.Forms.TextBox()
-        Me.tpNetwork = New System.Windows.Forms.TabPage()
-        Me.gbCustomPortCheck = New System.Windows.Forms.GroupBox()
-        Me.lblCustomPortCheck = New System.Windows.Forms.Label()
-        Me.lblCustomPortCheckWarn = New System.Windows.Forms.Label()
-        Me.tbCustomPortCheck = New System.Windows.Forms.TextBox()
-        Me.btnCustomPortCheck = New System.Windows.Forms.Button()
-        Me.nudCustomPortCheck = New System.Windows.Forms.NumericUpDown()
-        Me.gbStandardPortCheck = New System.Windows.Forms.GroupBox()
-        Me.lblStandardPortCheck = New System.Windows.Forms.Label()
-        Me.dgvPorts = New System.Windows.Forms.DataGridView()
-        Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.PortStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.btnPortCheck = New System.Windows.Forms.Button()
-        Me.gpCloudComm = New System.Windows.Forms.GroupBox()
-        Me.Panel2 = New System.Windows.Forms.Panel()
-        Me.btnRelayRefresh = New System.Windows.Forms.Button()
         Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
-        Me.tbStageRelayConn = New System.Windows.Forms.TextBox()
-        Me.lblStageRelayConn = New System.Windows.Forms.Label()
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.gbAppOptions = New System.Windows.Forms.GroupBox()
         Me.lblWindowTitle = New System.Windows.Forms.Label()
@@ -183,6 +164,11 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
         Me.tpQATools = New System.Windows.Forms.TabPage()
+        Me.tbMLTest1 = New System.Windows.Forms.TextBox()
+        Me.btnTest = New System.Windows.Forms.Button()
+        Me.tbTest1 = New System.Windows.Forms.TextBox()
+        Me.tbTest3 = New System.Windows.Forms.TextBox()
+        Me.tbTest2 = New System.Windows.Forms.TextBox()
         Me.gbAppLaunchSettings = New System.Windows.Forms.GroupBox()
         Me.cbListSort = New System.Windows.Forms.CheckBox()
         Me.btnLaunch = New System.Windows.Forms.Button()
@@ -226,11 +212,6 @@ Partial Class FormMain
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.ToolTipForQuickButtons = New System.Windows.Forms.ToolTip(Me.components)
-        Me.tbMLTest1 = New System.Windows.Forms.TextBox()
-        Me.btnTest = New System.Windows.Forms.Button()
-        Me.tbTest1 = New System.Windows.Forms.TextBox()
-        Me.tbTest3 = New System.Windows.Forms.TextBox()
-        Me.tbTest2 = New System.Windows.Forms.TextBox()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -269,12 +250,6 @@ Partial Class FormMain
         CType(Me.nudMsgLog, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpStParse.SuspendLayout()
         Me.Panel1.SuspendLayout()
-        Me.tpNetwork.SuspendLayout()
-        Me.gbCustomPortCheck.SuspendLayout()
-        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.gbStandardPortCheck.SuspendLayout()
-        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.gpCloudComm.SuspendLayout()
         Me.tpOptions.SuspendLayout()
         Me.gbAppOptions.SuspendLayout()
         Me.gpAdvUpgrade.SuspendLayout()
@@ -289,7 +264,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(996, 107)
+        Me.btnExit.Location = New System.Drawing.Point(990, 115)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(64, 20)
         Me.btnExit.TabIndex = 0
@@ -322,8 +297,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 776)
-        Me.SplitContainer1.SplitterDistance = 622
+        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 737)
+        Me.SplitContainer1.SplitterDistance = 560
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -334,14 +309,13 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpDbInfo)
         Me.tcSTA.Controls.Add(Me.tpDbLogs)
         Me.tcSTA.Controls.Add(Me.tpStParse)
-        Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Controls.Add(Me.tpOptions)
         Me.tcSTA.Controls.Add(Me.tpQATools)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 618)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 556)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -354,7 +328,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 592)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 530)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1148,7 +1122,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 592)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 594)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1303,7 +1277,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 592)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 594)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1318,7 +1292,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 561)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 563)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1410,7 +1384,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 592)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 594)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1497,7 +1471,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 462)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 464)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1652,7 +1626,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 592)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 594)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1715,197 +1689,12 @@ Partial Class FormMain
         Me.tbSTParse.Size = New System.Drawing.Size(836, 435)
         Me.tbSTParse.TabIndex = 2
         '
-        'tpNetwork
-        '
-        Me.tpNetwork.Controls.Add(Me.gbCustomPortCheck)
-        Me.tpNetwork.Controls.Add(Me.gbStandardPortCheck)
-        Me.tpNetwork.Controls.Add(Me.gpCloudComm)
-        Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
-        Me.tpNetwork.Name = "tpNetwork"
-        Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 592)
-        Me.tpNetwork.TabIndex = 6
-        Me.tpNetwork.Text = "Network Info"
-        Me.tpNetwork.UseVisualStyleBackColor = True
-        '
-        'gbCustomPortCheck
-        '
-        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheckWarn)
-        Me.gbCustomPortCheck.Controls.Add(Me.tbCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.btnCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.nudCustomPortCheck)
-        Me.gbCustomPortCheck.Location = New System.Drawing.Point(539, 26)
-        Me.gbCustomPortCheck.Name = "gbCustomPortCheck"
-        Me.gbCustomPortCheck.Size = New System.Drawing.Size(278, 141)
-        Me.gbCustomPortCheck.TabIndex = 8
-        Me.gbCustomPortCheck.TabStop = False
-        Me.gbCustomPortCheck.Text = "Custom Port Check"
-        '
-        'lblCustomPortCheck
-        '
-        Me.lblCustomPortCheck.AutoSize = True
-        Me.lblCustomPortCheck.Location = New System.Drawing.Point(6, 61)
-        Me.lblCustomPortCheck.Name = "lblCustomPortCheck"
-        Me.lblCustomPortCheck.Size = New System.Drawing.Size(40, 13)
-        Me.lblCustomPortCheck.TabIndex = 4
-        Me.lblCustomPortCheck.Text = "Result:"
-        '
-        'lblCustomPortCheckWarn
-        '
-        Me.lblCustomPortCheckWarn.AutoSize = True
-        Me.lblCustomPortCheckWarn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblCustomPortCheckWarn.Location = New System.Drawing.Point(45, 102)
-        Me.lblCustomPortCheckWarn.Name = "lblCustomPortCheckWarn"
-        Me.lblCustomPortCheckWarn.Size = New System.Drawing.Size(204, 26)
-        Me.lblCustomPortCheckWarn.TabIndex = 3
-        Me.lblCustomPortCheckWarn.Text = "Warning:  The Custom Port Check " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
-        '
-        'tbCustomPortCheck
-        '
-        Me.tbCustomPortCheck.Location = New System.Drawing.Point(52, 54)
-        Me.tbCustomPortCheck.Name = "tbCustomPortCheck"
-        Me.tbCustomPortCheck.Size = New System.Drawing.Size(164, 20)
-        Me.tbCustomPortCheck.TabIndex = 2
-        '
-        'btnCustomPortCheck
-        '
-        Me.btnCustomPortCheck.Location = New System.Drawing.Point(111, 20)
-        Me.btnCustomPortCheck.Name = "btnCustomPortCheck"
-        Me.btnCustomPortCheck.Size = New System.Drawing.Size(75, 23)
-        Me.btnCustomPortCheck.TabIndex = 1
-        Me.btnCustomPortCheck.Text = "Check Port"
-        Me.btnCustomPortCheck.UseVisualStyleBackColor = True
-        '
-        'nudCustomPortCheck
-        '
-        Me.nudCustomPortCheck.Location = New System.Drawing.Point(7, 20)
-        Me.nudCustomPortCheck.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
-        Me.nudCustomPortCheck.Name = "nudCustomPortCheck"
-        Me.nudCustomPortCheck.Size = New System.Drawing.Size(85, 20)
-        Me.nudCustomPortCheck.TabIndex = 0
-        '
-        'gbStandardPortCheck
-        '
-        Me.gbStandardPortCheck.Controls.Add(Me.lblStandardPortCheck)
-        Me.gbStandardPortCheck.Controls.Add(Me.dgvPorts)
-        Me.gbStandardPortCheck.Controls.Add(Me.btnPortCheck)
-        Me.gbStandardPortCheck.Location = New System.Drawing.Point(7, 7)
-        Me.gbStandardPortCheck.Name = "gbStandardPortCheck"
-        Me.gbStandardPortCheck.Size = New System.Drawing.Size(511, 323)
-        Me.gbStandardPortCheck.TabIndex = 7
-        Me.gbStandardPortCheck.TabStop = False
-        Me.gbStandardPortCheck.Text = "Standard Port Check"
-        '
-        'lblStandardPortCheck
-        '
-        Me.lblStandardPortCheck.AutoSize = True
-        Me.lblStandardPortCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblStandardPortCheck.Location = New System.Drawing.Point(55, 279)
-        Me.lblStandardPortCheck.Name = "lblStandardPortCheck"
-        Me.lblStandardPortCheck.Size = New System.Drawing.Size(198, 26)
-        Me.lblStandardPortCheck.TabIndex = 5
-        Me.lblStandardPortCheck.Text = "Warning:  The Port Checks" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
-        '
-        'dgvPorts
-        '
-        Me.dgvPorts.AllowUserToAddRows = False
-        Me.dgvPorts.AllowUserToDeleteRows = False
-        Me.dgvPorts.AllowUserToResizeColumns = False
-        Me.dgvPorts.AllowUserToResizeRows = False
-        Me.dgvPorts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.dgvPorts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvPorts.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PortNo, Me.AppName, Me.PortStatus})
-        Me.dgvPorts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvPorts.Location = New System.Drawing.Point(6, 19)
-        Me.dgvPorts.Name = "dgvPorts"
-        Me.dgvPorts.ReadOnly = True
-        Me.dgvPorts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.dgvPorts.Size = New System.Drawing.Size(483, 254)
-        Me.dgvPorts.TabIndex = 3
-        '
-        'PortNo
-        '
-        Me.PortNo.HeaderText = "Port"
-        Me.PortNo.Name = "PortNo"
-        Me.PortNo.ReadOnly = True
-        Me.PortNo.Width = 51
-        '
-        'AppName
-        '
-        Me.AppName.HeaderText = "Application"
-        Me.AppName.Name = "AppName"
-        Me.AppName.ReadOnly = True
-        Me.AppName.Width = 84
-        '
-        'PortStatus
-        '
-        Me.PortStatus.HeaderText = "Status"
-        Me.PortStatus.Name = "PortStatus"
-        Me.PortStatus.ReadOnly = True
-        Me.PortStatus.Width = 62
-        '
-        'btnPortCheck
-        '
-        Me.btnPortCheck.Location = New System.Drawing.Point(414, 279)
-        Me.btnPortCheck.Name = "btnPortCheck"
-        Me.btnPortCheck.Size = New System.Drawing.Size(75, 23)
-        Me.btnPortCheck.TabIndex = 4
-        Me.btnPortCheck.Text = "Check Ports"
-        Me.btnPortCheck.UseVisualStyleBackColor = True
-        '
-        'gpCloudComm
-        '
-        Me.gpCloudComm.Controls.Add(Me.Panel2)
-        Me.gpCloudComm.Controls.Add(Me.btnRelayRefresh)
-        Me.gpCloudComm.Controls.Add(Me.tbStageRelayConn)
-        Me.gpCloudComm.Controls.Add(Me.lblStageRelayConn)
-        Me.gpCloudComm.Location = New System.Drawing.Point(539, 200)
-        Me.gpCloudComm.Name = "gpCloudComm"
-        Me.gpCloudComm.Size = New System.Drawing.Size(456, 80)
-        Me.gpCloudComm.TabIndex = 5
-        Me.gpCloudComm.TabStop = False
-        Me.gpCloudComm.Text = "Cloud Communication"
-        '
-        'Panel2
-        '
-        Me.Panel2.Location = New System.Drawing.Point(177, 206)
-        Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(8, 8)
-        Me.Panel2.TabIndex = 3
-        '
-        'btnRelayRefresh
-        '
-        Me.btnRelayRefresh.ImageIndex = 1
-        Me.btnRelayRefresh.ImageList = Me.ImageList1
-        Me.btnRelayRefresh.Location = New System.Drawing.Point(265, 27)
-        Me.btnRelayRefresh.Name = "btnRelayRefresh"
-        Me.btnRelayRefresh.Size = New System.Drawing.Size(25, 25)
-        Me.btnRelayRefresh.TabIndex = 2
-        Me.btnRelayRefresh.UseVisualStyleBackColor = True
-        '
         'ImageList1
         '
         Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
         Me.ImageList1.Images.SetKeyName(0, "RestartCloud2.bmp")
         Me.ImageList1.Images.SetKeyName(1, "reload-icon-8.jpg")
-        '
-        'tbStageRelayConn
-        '
-        Me.tbStageRelayConn.Location = New System.Drawing.Point(159, 28)
-        Me.tbStageRelayConn.Name = "tbStageRelayConn"
-        Me.tbStageRelayConn.Size = New System.Drawing.Size(100, 20)
-        Me.tbStageRelayConn.TabIndex = 1
-        '
-        'lblStageRelayConn
-        '
-        Me.lblStageRelayConn.AutoSize = True
-        Me.lblStageRelayConn.Location = New System.Drawing.Point(19, 35)
-        Me.lblStageRelayConn.Name = "lblStageRelayConn"
-        Me.lblStageRelayConn.Size = New System.Drawing.Size(122, 13)
-        Me.lblStageRelayConn.TabIndex = 0
-        Me.lblStageRelayConn.Text = "Stage Relay Connection"
         '
         'tpOptions
         '
@@ -1914,7 +1703,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 592)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 594)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2017,10 +1806,51 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1056, 592)
+        Me.tpQATools.Size = New System.Drawing.Size(1056, 594)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
+        '
+        'tbMLTest1
+        '
+        Me.tbMLTest1.Location = New System.Drawing.Point(750, 75)
+        Me.tbMLTest1.Multiline = True
+        Me.tbMLTest1.Name = "tbMLTest1"
+        Me.tbMLTest1.Size = New System.Drawing.Size(236, 90)
+        Me.tbMLTest1.TabIndex = 22
+        '
+        'btnTest
+        '
+        Me.btnTest.Location = New System.Drawing.Point(514, 142)
+        Me.btnTest.Name = "btnTest"
+        Me.btnTest.Size = New System.Drawing.Size(75, 23)
+        Me.btnTest.TabIndex = 18
+        Me.btnTest.Text = "Test Button"
+        Me.btnTest.UseVisualStyleBackColor = True
+        '
+        'tbTest1
+        '
+        Me.tbTest1.Location = New System.Drawing.Point(511, 75)
+        Me.tbTest1.Name = "tbTest1"
+        Me.tbTest1.Size = New System.Drawing.Size(233, 20)
+        Me.tbTest1.TabIndex = 19
+        Me.tbTest1.Text = "tbTest1"
+        '
+        'tbTest3
+        '
+        Me.tbTest3.Location = New System.Drawing.Point(511, 116)
+        Me.tbTest3.Name = "tbTest3"
+        Me.tbTest3.Size = New System.Drawing.Size(233, 20)
+        Me.tbTest3.TabIndex = 21
+        Me.tbTest3.Text = "tbTest3"
+        '
+        'tbTest2
+        '
+        Me.tbTest2.Location = New System.Drawing.Point(511, 95)
+        Me.tbTest2.Name = "tbTest2"
+        Me.tbTest2.Size = New System.Drawing.Size(233, 20)
+        Me.tbTest2.TabIndex = 20
+        Me.tbTest2.Text = "tbTest2"
         '
         'gbAppLaunchSettings
         '
@@ -2162,7 +1992,7 @@ Partial Class FormMain
         'btnRefreshGeneralTab
         '
         Me.btnRefreshGeneralTab.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(980, 6)
+        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(980, 10)
         Me.btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
         Me.btnRefreshGeneralTab.Size = New System.Drawing.Size(80, 44)
         Me.btnRefreshGeneralTab.TabIndex = 17
@@ -2171,7 +2001,7 @@ Partial Class FormMain
         '
         'btnBatchLaunch
         '
-        Me.btnBatchLaunch.Location = New System.Drawing.Point(886, 104)
+        Me.btnBatchLaunch.Location = New System.Drawing.Point(880, 114)
         Me.btnBatchLaunch.Name = "btnBatchLaunch"
         Me.btnBatchLaunch.Size = New System.Drawing.Size(104, 23)
         Me.btnBatchLaunch.TabIndex = 15
@@ -2277,7 +2107,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(807, 54)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(813, 54)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2287,7 +2117,7 @@ Partial Class FormMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 752)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 713)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1068, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2383,53 +2213,12 @@ Partial Class FormMain
         '
         Me.OpenFileDialog.FileName = "OpenFileDialog"
         '
-        'tbMLTest1
-        '
-        Me.tbMLTest1.Location = New System.Drawing.Point(750, 75)
-        Me.tbMLTest1.Multiline = True
-        Me.tbMLTest1.Name = "tbMLTest1"
-        Me.tbMLTest1.Size = New System.Drawing.Size(236, 90)
-        Me.tbMLTest1.TabIndex = 22
-        '
-        'btnTest
-        '
-        Me.btnTest.Location = New System.Drawing.Point(514, 142)
-        Me.btnTest.Name = "btnTest"
-        Me.btnTest.Size = New System.Drawing.Size(75, 23)
-        Me.btnTest.TabIndex = 18
-        Me.btnTest.Text = "Test Button"
-        Me.btnTest.UseVisualStyleBackColor = True
-        '
-        'tbTest1
-        '
-        Me.tbTest1.Location = New System.Drawing.Point(511, 75)
-        Me.tbTest1.Name = "tbTest1"
-        Me.tbTest1.Size = New System.Drawing.Size(233, 20)
-        Me.tbTest1.TabIndex = 19
-        Me.tbTest1.Text = "tbTest1"
-        '
-        'tbTest3
-        '
-        Me.tbTest3.Location = New System.Drawing.Point(511, 116)
-        Me.tbTest3.Name = "tbTest3"
-        Me.tbTest3.Size = New System.Drawing.Size(233, 20)
-        Me.tbTest3.TabIndex = 21
-        Me.tbTest3.Text = "tbTest3"
-        '
-        'tbTest2
-        '
-        Me.tbTest2.Location = New System.Drawing.Point(511, 95)
-        Me.tbTest2.Name = "tbTest2"
-        Me.tbTest2.Size = New System.Drawing.Size(233, 20)
-        Me.tbTest2.TabIndex = 20
-        Me.tbTest2.Text = "tbTest2"
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1068, 776)
+        Me.ClientSize = New System.Drawing.Size(1068, 737)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -2492,15 +2281,6 @@ Partial Class FormMain
         Me.tpStParse.ResumeLayout(False)
         Me.tpStParse.PerformLayout()
         Me.Panel1.ResumeLayout(False)
-        Me.tpNetwork.ResumeLayout(False)
-        Me.gbCustomPortCheck.ResumeLayout(False)
-        Me.gbCustomPortCheck.PerformLayout()
-        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.gbStandardPortCheck.ResumeLayout(False)
-        Me.gbStandardPortCheck.PerformLayout()
-        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.gpCloudComm.ResumeLayout(False)
-        Me.gpCloudComm.PerformLayout()
         Me.tpOptions.ResumeLayout(False)
         Me.gbAppOptions.ResumeLayout(False)
         Me.gbAppOptions.PerformLayout()
@@ -2656,16 +2436,6 @@ Partial Class FormMain
     Friend WithEvents btnAdvGroups As Button
     Friend WithEvents btnPos As Button
     Friend WithEvents tlpLogData As TableLayoutPanel
-    Friend WithEvents tpNetwork As TabPage
-    Friend WithEvents dgvPorts As DataGridView
-    Friend WithEvents PortNo As DataGridViewTextBoxColumn
-    Friend WithEvents AppName As DataGridViewTextBoxColumn
-    Friend WithEvents PortStatus As DataGridViewTextBoxColumn
-    Friend WithEvents btnPortCheck As Button
-    Friend WithEvents gpCloudComm As GroupBox
-    Friend WithEvents tbStageRelayConn As TextBox
-    Friend WithEvents lblStageRelayConn As Label
-    Friend WithEvents btnRelayRefresh As Button
     Friend WithEvents btnAdvReportEditor As Button
     Friend WithEvents btnAdvUpgrade As Button
     Friend WithEvents tpOptions As TabPage
@@ -2680,19 +2450,10 @@ Partial Class FormMain
     Friend WithEvents dgvApplicationInfo As DataGridView
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
-    Friend WithEvents Panel2 As Panel
-    Friend WithEvents gbStandardPortCheck As GroupBox
-    Friend WithEvents gbCustomPortCheck As GroupBox
-    Friend WithEvents lblCustomPortCheckWarn As Label
-    Friend WithEvents tbCustomPortCheck As TextBox
-    Friend WithEvents btnCustomPortCheck As Button
-    Friend WithEvents nudCustomPortCheck As NumericUpDown
-    Friend WithEvents lblCustomPortCheck As Label
     Friend WithEvents btnSaveApplicationInfoCSV As Button
     Friend WithEvents SaveFileDialog As SaveFileDialog
     Friend WithEvents btnSaveWebOptionsCSV As Button
     Friend WithEvents btnSaveAppotionsCSV As Button
-    Friend WithEvents lblStandardPortCheck As Label
     Friend WithEvents tbAdvupgrade As TextBox
     Friend WithEvents lblAdvUpgrade As Label
     Friend WithEvents btnAdvRedeem As Button

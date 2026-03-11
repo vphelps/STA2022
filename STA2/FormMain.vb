@@ -14,7 +14,6 @@ Imports System.Xml
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports STA2.AppData
-Imports STA2.NetworkData
 
 Public Class FormMain
 
@@ -575,7 +574,6 @@ Public Class FormMain
     Private Sub tcSTA_Click(sender As Object, e As EventArgs) Handles tcSTA.Click
         btnDbLogRefresh.PerformClick()
         btnDbInfoRefresh.PerformClick()
-        btnRelayRefresh.PerformClick()
 
     End Sub
 
@@ -592,42 +590,6 @@ Public Class FormMain
         Dim fileExists As Boolean
         fileExists = My.Computer.FileSystem.FileExists(Executable)
         Diagnostics.Process.Start(Executable)
-    End Sub
-
-    Private Async Sub btnPortCheck_Click(sender As Object, e As EventArgs) Handles btnPortCheck.Click
-        Dim host As String = ConfigValues.Server
-        NetworkDataHelper.NetworkPortListGenerate()
-        For Each row As DataGridViewRow In dgvPorts.Rows
-            Dim value As Integer = row.Cells("PortNo").Value
-
-            'tmpBoolean = TCPCheck(host, row.Cells(0).Value)
-            Dim result As Boolean = Await ConnectAsync("L-CE1456", value)
-
-            If result Then
-                row.Cells(2).Value = "Port Open"
-            Else
-                row.Cells(2).Value = "Error"
-            End If
-
-            ' Access cell value by column name
-            ' Do something with the value
-
-        Next
-    End Sub
-
-    Private Async Sub btnRelayRefresh_Click(sender As Object, e As EventArgs) Handles btnRelayRefresh.Click
-        tbStageRelayConn.Text = "Testing Stage Relay Connection..."
-        tbStageRelayConn.BackColor = TextboxColors.White
-        Dim result As Boolean = Await ConnectAsync("relay-us-east-1.centeredgeonline.com", 50511)
-
-        If result Then
-            tbStageRelayConn.Text = "Connection Good"
-            tbStageRelayConn.BackColor = TextboxColors.Green
-        Else
-            tbStageRelayConn.Text = "Error"
-            tbStageRelayConn.BackColor = TextboxColors.Red
-        End If
-
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
@@ -649,22 +611,6 @@ Public Class FormMain
 
         tbMLTest1.Text = startinfo.FileName + " " + startinfo.Arguments
         Process.Start(startinfo)
-
-    End Sub
-
-    Private Async Sub btnCustomPortCheck_Click(sender As Object, e As EventArgs) Handles btnCustomPortCheck.Click
-
-        Dim host As String = ConfigValues.Server
-        tbCustomPortCheck.Text = String.Format("Testing Port...{0}", nudCustomPortCheck.Value)
-
-        Dim result As Boolean = Await ConnectAsync(ConfigValues.Server, nudCustomPortCheck.Value)
-
-        If result Then
-            tbCustomPortCheck.Text = String.Format("{0} Port Open", nudCustomPortCheck.Value)
-        Else
-            tbCustomPortCheck.Text = String.Format("Error on port {0}", nudCustomPortCheck.Value)
-        End If
-
 
     End Sub
 
