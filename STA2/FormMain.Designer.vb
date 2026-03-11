@@ -152,7 +152,6 @@ Partial Class FormMain
         Me.btnStParse = New System.Windows.Forms.Button()
         Me.btnSTClear = New System.Windows.Forms.Button()
         Me.tbSTParse = New System.Windows.Forms.TextBox()
-        Me.tpNetwork = New System.Windows.Forms.TabPage()
         Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.gbAppOptions = New System.Windows.Forms.GroupBox()
@@ -310,7 +309,6 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpDbInfo)
         Me.tcSTA.Controls.Add(Me.tpDbLogs)
         Me.tcSTA.Controls.Add(Me.tpStParse)
-        Me.tcSTA.Controls.Add(Me.tpNetwork)
         Me.tcSTA.Controls.Add(Me.tpOptions)
         Me.tcSTA.Controls.Add(Me.tpQATools)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1691,16 +1689,6 @@ Partial Class FormMain
         Me.tbSTParse.Size = New System.Drawing.Size(836, 435)
         Me.tbSTParse.TabIndex = 2
         '
-        'tpNetwork
-        '
-        Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
-        Me.tpNetwork.Name = "tpNetwork"
-        Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpNetwork.Size = New System.Drawing.Size(1056, 594)
-        Me.tpNetwork.TabIndex = 6
-        Me.tpNetwork.Text = "Network Info"
-        Me.tpNetwork.UseVisualStyleBackColor = True
-        '
         'ImageList1
         '
         Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
@@ -2448,7 +2436,6 @@ Partial Class FormMain
     Friend WithEvents btnAdvGroups As Button
     Friend WithEvents btnPos As Button
     Friend WithEvents tlpLogData As TableLayoutPanel
-    Friend WithEvents tpNetwork As TabPage
     Friend WithEvents btnAdvReportEditor As Button
     Friend WithEvents btnAdvUpgrade As Button
     Friend WithEvents tpOptions As TabPage
