@@ -14,7 +14,6 @@ Imports System.Xml
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports STA2.AppData
-Imports STA2.NetworkData
 
 Public Class FormMain
 

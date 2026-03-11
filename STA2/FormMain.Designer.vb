@@ -264,7 +264,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(996, 107)
+        Me.btnExit.Location = New System.Drawing.Point(990, 115)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(64, 20)
         Me.btnExit.TabIndex = 0
@@ -297,8 +297,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 776)
-        Me.SplitContainer1.SplitterDistance = 624
+        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 737)
+        Me.SplitContainer1.SplitterDistance = 560
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -315,7 +315,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 620)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 556)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -328,7 +328,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 594)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 530)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1992,7 +1992,7 @@ Partial Class FormMain
         'btnRefreshGeneralTab
         '
         Me.btnRefreshGeneralTab.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(980, 6)
+        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(980, 10)
         Me.btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
         Me.btnRefreshGeneralTab.Size = New System.Drawing.Size(80, 44)
         Me.btnRefreshGeneralTab.TabIndex = 17
@@ -2001,7 +2001,7 @@ Partial Class FormMain
         '
         'btnBatchLaunch
         '
-        Me.btnBatchLaunch.Location = New System.Drawing.Point(886, 104)
+        Me.btnBatchLaunch.Location = New System.Drawing.Point(880, 114)
         Me.btnBatchLaunch.Name = "btnBatchLaunch"
         Me.btnBatchLaunch.Size = New System.Drawing.Size(104, 23)
         Me.btnBatchLaunch.TabIndex = 15
@@ -2107,7 +2107,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(807, 54)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(813, 54)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2117,7 +2117,7 @@ Partial Class FormMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 752)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 713)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1068, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2218,7 +2218,7 @@ Partial Class FormMain
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1068, 776)
+        Me.ClientSize = New System.Drawing.Size(1068, 737)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
