@@ -153,22 +153,7 @@ Partial Class FormMain
         Me.btnSTClear = New System.Windows.Forms.Button()
         Me.tbSTParse = New System.Windows.Forms.TextBox()
         Me.tpNetwork = New System.Windows.Forms.TabPage()
-        Me.gbCustomPortCheck = New System.Windows.Forms.GroupBox()
-        Me.lblCustomPortCheck = New System.Windows.Forms.Label()
-        Me.lblCustomPortCheckWarn = New System.Windows.Forms.Label()
-        Me.tbCustomPortCheck = New System.Windows.Forms.TextBox()
-        Me.nudCustomPortCheck = New System.Windows.Forms.NumericUpDown()
-        Me.gbStandardPortCheck = New System.Windows.Forms.GroupBox()
-        Me.lblStandardPortCheck = New System.Windows.Forms.Label()
-        Me.dgvPorts = New System.Windows.Forms.DataGridView()
-        Me.PortNo = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.AppName = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.PortStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.gpCloudComm = New System.Windows.Forms.GroupBox()
-        Me.Panel2 = New System.Windows.Forms.Panel()
         Me.ImageList1 = New System.Windows.Forms.ImageList(Me.components)
-        Me.tbStageRelayConn = New System.Windows.Forms.TextBox()
-        Me.lblStageRelayConn = New System.Windows.Forms.Label()
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.gbAppOptions = New System.Windows.Forms.GroupBox()
         Me.lblWindowTitle = New System.Windows.Forms.Label()
@@ -266,12 +251,6 @@ Partial Class FormMain
         CType(Me.nudMsgLog, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tpStParse.SuspendLayout()
         Me.Panel1.SuspendLayout()
-        Me.tpNetwork.SuspendLayout()
-        Me.gbCustomPortCheck.SuspendLayout()
-        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.gbStandardPortCheck.SuspendLayout()
-        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.gpCloudComm.SuspendLayout()
         Me.tpOptions.SuspendLayout()
         Me.gbAppOptions.SuspendLayout()
         Me.gpAdvUpgrade.SuspendLayout()
@@ -1714,9 +1693,6 @@ Partial Class FormMain
         '
         'tpNetwork
         '
-        Me.tpNetwork.Controls.Add(Me.gbCustomPortCheck)
-        Me.tpNetwork.Controls.Add(Me.gbStandardPortCheck)
-        Me.tpNetwork.Controls.Add(Me.gpCloudComm)
         Me.tpNetwork.Location = New System.Drawing.Point(4, 22)
         Me.tpNetwork.Name = "tpNetwork"
         Me.tpNetwork.Padding = New System.Windows.Forms.Padding(3)
@@ -1725,153 +1701,12 @@ Partial Class FormMain
         Me.tpNetwork.Text = "Network Info"
         Me.tpNetwork.UseVisualStyleBackColor = True
         '
-        'gbCustomPortCheck
-        '
-        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.lblCustomPortCheckWarn)
-        Me.gbCustomPortCheck.Controls.Add(Me.tbCustomPortCheck)
-        Me.gbCustomPortCheck.Controls.Add(Me.nudCustomPortCheck)
-        Me.gbCustomPortCheck.Location = New System.Drawing.Point(539, 26)
-        Me.gbCustomPortCheck.Name = "gbCustomPortCheck"
-        Me.gbCustomPortCheck.Size = New System.Drawing.Size(278, 141)
-        Me.gbCustomPortCheck.TabIndex = 8
-        Me.gbCustomPortCheck.TabStop = False
-        Me.gbCustomPortCheck.Text = "Custom Port Check"
-        '
-        'lblCustomPortCheck
-        '
-        Me.lblCustomPortCheck.AutoSize = True
-        Me.lblCustomPortCheck.Location = New System.Drawing.Point(6, 61)
-        Me.lblCustomPortCheck.Name = "lblCustomPortCheck"
-        Me.lblCustomPortCheck.Size = New System.Drawing.Size(40, 13)
-        Me.lblCustomPortCheck.TabIndex = 4
-        Me.lblCustomPortCheck.Text = "Result:"
-        '
-        'lblCustomPortCheckWarn
-        '
-        Me.lblCustomPortCheckWarn.AutoSize = True
-        Me.lblCustomPortCheckWarn.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblCustomPortCheckWarn.Location = New System.Drawing.Point(45, 102)
-        Me.lblCustomPortCheckWarn.Name = "lblCustomPortCheckWarn"
-        Me.lblCustomPortCheckWarn.Size = New System.Drawing.Size(204, 26)
-        Me.lblCustomPortCheckWarn.TabIndex = 3
-        Me.lblCustomPortCheckWarn.Text = "Warning:  The Custom Port Check " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
-        '
-        'tbCustomPortCheck
-        '
-        Me.tbCustomPortCheck.Location = New System.Drawing.Point(52, 54)
-        Me.tbCustomPortCheck.Name = "tbCustomPortCheck"
-        Me.tbCustomPortCheck.Size = New System.Drawing.Size(164, 20)
-        Me.tbCustomPortCheck.TabIndex = 2
-        '
-        'nudCustomPortCheck
-        '
-        Me.nudCustomPortCheck.Location = New System.Drawing.Point(7, 20)
-        Me.nudCustomPortCheck.Maximum = New Decimal(New Integer() {10000000, 0, 0, 0})
-        Me.nudCustomPortCheck.Name = "nudCustomPortCheck"
-        Me.nudCustomPortCheck.Size = New System.Drawing.Size(85, 20)
-        Me.nudCustomPortCheck.TabIndex = 0
-        '
-        'gbStandardPortCheck
-        '
-        Me.gbStandardPortCheck.Controls.Add(Me.lblStandardPortCheck)
-        Me.gbStandardPortCheck.Controls.Add(Me.dgvPorts)
-        Me.gbStandardPortCheck.Location = New System.Drawing.Point(7, 7)
-        Me.gbStandardPortCheck.Name = "gbStandardPortCheck"
-        Me.gbStandardPortCheck.Size = New System.Drawing.Size(511, 323)
-        Me.gbStandardPortCheck.TabIndex = 7
-        Me.gbStandardPortCheck.TabStop = False
-        Me.gbStandardPortCheck.Text = "Standard Port Check"
-        '
-        'lblStandardPortCheck
-        '
-        Me.lblStandardPortCheck.AutoSize = True
-        Me.lblStandardPortCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblStandardPortCheck.Location = New System.Drawing.Point(55, 279)
-        Me.lblStandardPortCheck.Name = "lblStandardPortCheck"
-        Me.lblStandardPortCheck.Size = New System.Drawing.Size(198, 26)
-        Me.lblStandardPortCheck.TabIndex = 5
-        Me.lblStandardPortCheck.Text = "Warning:  The Port Checks" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "can possibly take several minutes"
-        '
-        'dgvPorts
-        '
-        Me.dgvPorts.AllowUserToAddRows = False
-        Me.dgvPorts.AllowUserToDeleteRows = False
-        Me.dgvPorts.AllowUserToResizeColumns = False
-        Me.dgvPorts.AllowUserToResizeRows = False
-        Me.dgvPorts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
-        Me.dgvPorts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvPorts.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.PortNo, Me.AppName, Me.PortStatus})
-        Me.dgvPorts.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvPorts.Location = New System.Drawing.Point(6, 19)
-        Me.dgvPorts.Name = "dgvPorts"
-        Me.dgvPorts.ReadOnly = True
-        Me.dgvPorts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.dgvPorts.Size = New System.Drawing.Size(483, 254)
-        Me.dgvPorts.TabIndex = 3
-        '
-        'PortNo
-        '
-        Me.PortNo.HeaderText = "Port"
-        Me.PortNo.Name = "PortNo"
-        Me.PortNo.ReadOnly = True
-        Me.PortNo.Width = 51
-        '
-        'AppName
-        '
-        Me.AppName.HeaderText = "Application"
-        Me.AppName.Name = "AppName"
-        Me.AppName.ReadOnly = True
-        Me.AppName.Width = 84
-        '
-        'PortStatus
-        '
-        Me.PortStatus.HeaderText = "Status"
-        Me.PortStatus.Name = "PortStatus"
-        Me.PortStatus.ReadOnly = True
-        Me.PortStatus.Width = 62
-        '
-        'gpCloudComm
-        '
-        Me.gpCloudComm.Controls.Add(Me.Panel2)
-        Me.gpCloudComm.Controls.Add(Me.tbStageRelayConn)
-        Me.gpCloudComm.Controls.Add(Me.lblStageRelayConn)
-        Me.gpCloudComm.Location = New System.Drawing.Point(539, 200)
-        Me.gpCloudComm.Name = "gpCloudComm"
-        Me.gpCloudComm.Size = New System.Drawing.Size(456, 80)
-        Me.gpCloudComm.TabIndex = 5
-        Me.gpCloudComm.TabStop = False
-        Me.gpCloudComm.Text = "Cloud Communication"
-        '
-        'Panel2
-        '
-        Me.Panel2.Location = New System.Drawing.Point(177, 206)
-        Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(8, 8)
-        Me.Panel2.TabIndex = 3
-        '
         'ImageList1
         '
         Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
         Me.ImageList1.Images.SetKeyName(0, "RestartCloud2.bmp")
         Me.ImageList1.Images.SetKeyName(1, "reload-icon-8.jpg")
-        '
-        'tbStageRelayConn
-        '
-        Me.tbStageRelayConn.Location = New System.Drawing.Point(159, 28)
-        Me.tbStageRelayConn.Name = "tbStageRelayConn"
-        Me.tbStageRelayConn.Size = New System.Drawing.Size(100, 20)
-        Me.tbStageRelayConn.TabIndex = 1
-        '
-        'lblStageRelayConn
-        '
-        Me.lblStageRelayConn.AutoSize = True
-        Me.lblStageRelayConn.Location = New System.Drawing.Point(19, 35)
-        Me.lblStageRelayConn.Name = "lblStageRelayConn"
-        Me.lblStageRelayConn.Size = New System.Drawing.Size(122, 13)
-        Me.lblStageRelayConn.TabIndex = 0
-        Me.lblStageRelayConn.Text = "Stage Relay Connection"
         '
         'tpOptions
         '
@@ -2458,15 +2293,6 @@ Partial Class FormMain
         Me.tpStParse.ResumeLayout(False)
         Me.tpStParse.PerformLayout()
         Me.Panel1.ResumeLayout(False)
-        Me.tpNetwork.ResumeLayout(False)
-        Me.gbCustomPortCheck.ResumeLayout(False)
-        Me.gbCustomPortCheck.PerformLayout()
-        CType(Me.nudCustomPortCheck, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.gbStandardPortCheck.ResumeLayout(False)
-        Me.gbStandardPortCheck.PerformLayout()
-        CType(Me.dgvPorts, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.gpCloudComm.ResumeLayout(False)
-        Me.gpCloudComm.PerformLayout()
         Me.tpOptions.ResumeLayout(False)
         Me.gbAppOptions.ResumeLayout(False)
         Me.gbAppOptions.PerformLayout()
@@ -2623,13 +2449,6 @@ Partial Class FormMain
     Friend WithEvents btnPos As Button
     Friend WithEvents tlpLogData As TableLayoutPanel
     Friend WithEvents tpNetwork As TabPage
-    Friend WithEvents dgvPorts As DataGridView
-    Friend WithEvents PortNo As DataGridViewTextBoxColumn
-    Friend WithEvents AppName As DataGridViewTextBoxColumn
-    Friend WithEvents PortStatus As DataGridViewTextBoxColumn
-    Friend WithEvents gpCloudComm As GroupBox
-    Friend WithEvents tbStageRelayConn As TextBox
-    Friend WithEvents lblStageRelayConn As Label
     Friend WithEvents btnAdvReportEditor As Button
     Friend WithEvents btnAdvUpgrade As Button
     Friend WithEvents tpOptions As TabPage
@@ -2644,18 +2463,10 @@ Partial Class FormMain
     Friend WithEvents dgvApplicationInfo As DataGridView
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
-    Friend WithEvents Panel2 As Panel
-    Friend WithEvents gbStandardPortCheck As GroupBox
-    Friend WithEvents gbCustomPortCheck As GroupBox
-    Friend WithEvents lblCustomPortCheckWarn As Label
-    Friend WithEvents tbCustomPortCheck As TextBox
-    Friend WithEvents nudCustomPortCheck As NumericUpDown
-    Friend WithEvents lblCustomPortCheck As Label
     Friend WithEvents btnSaveApplicationInfoCSV As Button
     Friend WithEvents SaveFileDialog As SaveFileDialog
     Friend WithEvents btnSaveWebOptionsCSV As Button
     Friend WithEvents btnSaveAppotionsCSV As Button
-    Friend WithEvents lblStandardPortCheck As Label
     Friend WithEvents tbAdvupgrade As TextBox
     Friend WithEvents lblAdvUpgrade As Label
     Friend WithEvents btnAdvRedeem As Button
