@@ -34,18 +34,21 @@ Module Startup
         ' ============================
         Dim args = Environment.GetCommandLineArgs().Skip(1).ToList()
 
+
+
         If args.Contains("-BatchLaunch", StringComparer.OrdinalIgnoreCase) Then
-            ' Load configs (NO UI)
+            ' Load configs (no UI)
             Connections.IniFileHandler(False)
 
-            ' Run batch (no UI, no form constructed)
-            BatchLauncher.RunBatch(launcher)
+            ' Batch run without loading FormMain
+            Dim result = BatchLauncher.RunBatch(launcher,
+                                        caller:="Startup:-BatchLaunch",
+                                        silent:=True)
 
-            ' Exit application immediately
-            Environment.Exit(0)
+            ' Optional: reflect result in exit code
+            Environment.Exit(If(result.Failed > 0, 1, 0))
             Return
         End If
-
 
         ' ============================
         ' Initialize ReliableSql
