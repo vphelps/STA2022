@@ -17,7 +17,10 @@ Module Startup
         ' ------------------------------
         ' Global exception handlers (last resort: prevent crash-to-desktop)
         ' ------------------------------
-        Dim options As AppOptions = OptionsManager.LoadOrCreate()
+        Dim options = OptionsManager.LoadOrCreate()
+        If OptionsManager.TrimTrailingEmptyQuickSlots(options) Then
+            OptionsManager.Save(options)
+        End If
         Dim launcher = OptionsManager.LoadLauncherConfig()
 
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
@@ -67,6 +70,16 @@ Module Startup
         ' Normal UI startup
         ' ============================
         CodeHelper.GetPcInfo()
+
+
+        ' After building connection string, before creating FormMain:
+        ' THIS IS TEMPORARY
+        Dim changed As Boolean = OptionsManager.TrimTrailingEmptyQuickSlots(options)
+        If changed Then
+            OptionsManager.Save(options)
+        End If
+
+        MainFormInstance = New FormMain(options, launcher)
 
         ' Create the main form and pass options in the constructor.
         MainFormInstance = New FormMain(options, launcher)

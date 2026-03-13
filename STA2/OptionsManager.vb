@@ -1,135 +1,111 @@
-﻿' OptionsManager.vb
-Imports System.IO
-Imports System.Runtime.Serialization.Json
+﻿Imports System.IO
 Imports System.Text
-Imports System.Windows.Forms
 Imports Newtonsoft.Json
 
+' NOTE: This module/class is intentionally UI-free and safe to call at startup.
+' It initializes QuickLaunchIds only if missing and NORMALIZES trailing empties
+' so the list cannot grow across runs.
 
-' Central manager for reading/writing config files in %APPDATA%\STA2\
-Public Module OptionsManager
+Public NotInheritable Class OptionsManager
+
+    ' ---------------------------------------------------------------------
+    ' DEFAULT (first-run) number of quick slots.
+    ' Applied ONLY when QuickLaunchIds is Nothing.
+    ' ---------------------------------------------------------------------
     Private Const QUICKLAUNCH_SLOT_COUNT As Integer = 9
 
-    ' ---- App Folder & File Names -------------------------------------------------------------
-    Private Const AppFolderName As String = "STA2"
-    Private Const OptionsFileName As String = "options.json"
-    Private Const LauncherFileName As String = "launcher.config.json"
-
-    ' UTF-8 **without** BOM to prevent ï»¿ issues in JSON files
-    Private ReadOnly Utf8NoBom As New UTF8Encoding(encoderShouldEmitUTF8Identifier:=False)
-
-    ' Newtonsoft settings for launcher.config.json
-    Private ReadOnly _jsonSettings As New JsonSerializerSettings With {
-        .Formatting = Newtonsoft.Json.Formatting.Indented,
+    ' Shared JSON settings used across options and launcher config
+    Private Shared ReadOnly _jsonSettings As New JsonSerializerSettings With {
+        .Formatting = Formatting.Indented,
         .NullValueHandling = NullValueHandling.Ignore
     }
 
-    ' ---- Public Path Helpers -----------------------------------------------------------------
-    ''' <summary>
-    ''' %APPDATA%\STA2 (ensures directory exists)
-    ''' </summary>
-    Public Function GetAppDataDirectory() As String
-        Dim base As String = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-        Dim dir As String = Path.Combine(base, AppFolderName)
-        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
-        Return dir
-    End Function
+    ' ------------------------
+    ' Public: Options
+    ' ------------------------
 
-    ''' <summary>
-    ''' %APPDATA%\STA2\options.json
-    ''' </summary>
-    Public Function GetOptionsPath() As String
-        Return Path.Combine(GetAppDataDirectory(), OptionsFileName)
-    End Function
-
-    ''' <summary>
-    ''' %APPDATA%\STA2\launcher.config.json
-    ''' </summary>
-    Public Function GetLauncherConfigPath() As String
-        Return Path.Combine(GetAppDataDirectory(), LauncherFileName)
-    End Function
-
-    ' ---- AppOptions (general options) --------------------------------------------------------
-    ' Uses DataContractJsonSerializer, as set up previously.
-
-    Public Function LoadOrCreate() As AppOptions
+    Public Shared Function LoadOrCreate() As AppOptions
         Dim path = GetOptionsPath()
 
         Try
-            Dim opts As AppOptions = Nothing
+            Dim opts As AppOptions
 
             If File.Exists(path) Then
-                Dim json = File.ReadAllText(path)
+                ' Tolerant read (handles BOM/leading whitespace)
+                Dim json = SafeReadAllText(path)
                 opts = JsonConvert.DeserializeObject(Of AppOptions)(json, _jsonSettings)
                 If opts Is Nothing Then opts = New AppOptions()
             Else
                 opts = New AppOptions()
             End If
 
-            ' --------------------------------------------
-            ' ENSURE QuickLaunchIds EXISTS AND HAS N SLOTS
-            ' --------------------------------------------
             Dim changed As Boolean = False
 
+            ' Initialize only if missing
             If opts.QuickLaunchIds Is Nothing Then
                 opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
                 changed = True
-            Else
-                ' Expand existing lists to the new size, if needed
-                While opts.QuickLaunchIds.Count < QUICKLAUNCH_SLOT_COUNT
-                    opts.QuickLaunchIds.Add("")
-                    changed = True
-                End While
-                ' (Optional) If you want to shrink when count is larger than desired:
-                ' While opts.QuickLaunchIds.Count > QUICKLAUNCH_SLOT_COUNT
-                '     opts.QuickLaunchIds.RemoveAt(opts.QuickLaunchIds.Count - 1)
-                '     changed = True
-                ' End While
+                Debug.WriteLine($"[Options] Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
             End If
 
-            ' Persist if we changed slot count or created defaults
+            ' Normalize trailing empties (prevents growth across runs)
+            changed = NormalizeQuickLaunchIds(opts) OrElse changed
+
             If changed Then
                 Save(opts)
+                Debug.WriteLine($"[Options] LoadOrCreate normalized & saved. Count={opts.QuickLaunchIds.Count}")
+            Else
+                Debug.WriteLine($"[Options] LoadOrCreate loaded. Count={opts.QuickLaunchIds.Count}")
             End If
 
             Return opts
 
         Catch ex As Exception
-            ' Fail-soft: return a default object with the right number of slots
-            Dim fallback As New AppOptions()
-            If fallback.QuickLaunchIds Is Nothing Then
-                fallback.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
-            Else
-                While fallback.QuickLaunchIds.Count < QUICKLAUNCH_SLOT_COUNT
-                    fallback.QuickLaunchIds.Add("")
-                End While
-            End If
+            Debug.WriteLine($"[Options] LoadOrCreate ERROR: {ex.Message}")
+            ' Fail-soft: return a default object with a first-run list
+            Dim fallback As New AppOptions() With {
+                .QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+            }
             Return fallback
         End Try
     End Function
 
-    Public Sub Save(options As AppOptions)
+    Public Shared Sub Save(opts As AppOptions)
         Dim path = GetOptionsPath()
-        Dim dir = System.IO.Path.GetDirectoryName(path)
-        If Not Directory.Exists(dir) Then Directory.CreateDirectory(dir)
+        Try
+            EnsureParentDirectory(path)
 
-        Dim json As String
-        Using ms As New MemoryStream()
-            Dim ser As New DataContractJsonSerializer(GetType(AppOptions))
-            ser.WriteObject(ms, options)
-            json = Encoding.UTF8.GetString(ms.ToArray())
-        End Using
+            If opts Is Nothing Then opts = New AppOptions()
+            If opts.QuickLaunchIds Is Nothing Then
+                opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+            End If
 
-        Dim tmp = path & ".tmp"
-        File.WriteAllText(tmp, json, Utf8NoBom)
-        If File.Exists(path) Then
-            File.Replace(tmp, path, Nothing)
-        Else
-            File.Move(tmp, path)
-        End If
+            ' Normalize before persisting (hard stop on trailing growth)
+            TrimTrailingEmptyQuickSlots(opts)
+
+            ' === DIAGNOSTICS: AFTER ===
+            Debug.WriteLine($"[Options] Save AFTER trim: Count={opts.QuickLaunchIds.Count}")
+
+            Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
+            File.WriteAllText(path, json, Encoding.UTF8)
+
+        Catch ex As Exception
+            Debug.WriteLine($"[Options] Save ERROR: {ex.Message}")
+            ' swallow to avoid crashing app
+        End Try
     End Sub
 
-    Public Function LoadLauncherConfig() As LauncherConfig
+    Public Shared Function GetOptionsPath() As String
+        Dim dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "STA2")
+        Directory.CreateDirectory(dir)
+        Return Path.Combine(dir, "options.json")
+    End Function
+
+    ' ------------------------
+    ' Public: Launcher Config
+    ' ------------------------
+
+    Public Shared Function LoadLauncherConfig() As LauncherConfig
         Dim path = GetLauncherConfigPath()
 
         If Not File.Exists(path) Then
@@ -137,111 +113,156 @@ Public Module OptionsManager
         End If
 
         Try
-            Dim bytes = File.ReadAllBytes(path)
-            bytes = StripUtf8Bom(bytes)
-            bytes = TrimLeadingWhitespace(bytes)
-            Dim json = Encoding.UTF8.GetString(bytes)
-
+            Dim json = SafeReadAllText(path)
             Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
             If cfg Is Nothing Then cfg = New LauncherConfig()
             If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
-            ' --- Migration: assign Ids if missing ---
+            ' Migration: ensure each ProgramEntry has a stable Id & persist if any were missing
             Dim changed As Boolean = False
             For Each p In cfg.Programs
-                If p Is Nothing Then Continue For
-                If String.IsNullOrWhiteSpace(p.Id) Then
+                If p IsNot Nothing AndAlso String.IsNullOrWhiteSpace(p.Id) Then
                     p.Id = Guid.NewGuid().ToString("N")
                     changed = True
                 End If
             Next
 
-            ' --- Persist to disk if we added any Ids ---
             If changed Then
                 SaveLauncherConfig(cfg)
-#If DEBUG Then
-                Debug.WriteLine("LoadLauncherConfig: Migrated ProgramEntry Ids and saved launcher.config.json")
-#End If
             End If
 
             Return cfg
 
-        Catch ex As Exception
-            MessageBox.Show("Failed to load launcher config. A blank config will be used." &
-                        Environment.NewLine & ex.Message,
-                        "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch
+            ' Fail-soft: blank config
             Return New LauncherConfig()
         End Try
     End Function
 
-    Public Sub SaveLauncherConfig(cfg As LauncherConfig)
+    Public Shared Sub SaveLauncherConfig(cfg As LauncherConfig)
         Dim path = GetLauncherConfigPath()
-        Dim dir = System.IO.Path.GetDirectoryName(path)
-        If Not System.IO.Directory.Exists(dir) Then System.IO.Directory.CreateDirectory(dir)
-
-        ' Normalize
-        If cfg Is Nothing Then cfg = New LauncherConfig()
-        If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
-
         Try
-            ' Serialize with your existing Newtonsoft settings (_jsonSettings)
-            Dim json As String = JsonConvert.SerializeObject(cfg, _jsonSettings)
+            EnsureParentDirectory(path)
+            If cfg Is Nothing Then cfg = New LauncherConfig()
+            If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
-            ' Write to temp file in same directory
+            Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
+
+            ' Robust save: write temp then replace/move (framework-friendly)
             Dim tmp = path & ".tmp"
+            File.WriteAllText(tmp, json, Encoding.UTF8)
 
-            ' Stronger durability: write with WriteThrough + Flush(True)
-            Dim bytes = Encoding.UTF8.GetBytes(json) ' Utf8NoBom is used on WriteAllText, but here we control bytes directly
-            Using fs As New FileStream(tmp,
-                                   FileMode.Create,
-                                   FileAccess.Write,
-                                   FileShare.None,
-                                   bufferSize:=4096,
-                                   options:=FileOptions.WriteThrough)
-                fs.Write(bytes, 0, bytes.Length)
-                fs.Flush(True) ' flush data + metadata
-            End Using
-
-            ' Try atomic replace with backup; fall back if needed
             If File.Exists(path) Then
                 Try
-                    Dim backup = path & ".bak"
-                    File.Replace(tmp, path, backup, ignoreMetadataErrors:=False)
-                    ' (Optional) clean backup if you don't want to keep it
-                    ' Try : File.Delete(backup) : Catch : End Try
-                Catch exReplace As Exception
-                    ' Fallback: overwrite target
+                    ' Framework-friendly replace:
+                    File.Delete(path)
+                    File.Move(tmp, path)
+                Catch
                     Try
                         File.Copy(tmp, path, overwrite:=True)
                         File.Delete(tmp)
-                    Catch exCopy As Exception
-                        ' Last resort: delete and move
-                        Try
-                            File.Delete(path)
-                            File.Move(tmp, path)
-                        Catch exMove As Exception
-                            ' Clean up temp on failure
-                            Try : File.Delete(tmp) : Catch : End Try
-                            Throw New IOException("Failed to save launcher config (replace/copy/move all failed).", exMove)
-                        End Try
+                    Catch
+                        ' Last resort: leave tmp if copy failed
                     End Try
                 End Try
             Else
-                ' First save—just move temp into place
                 File.Move(tmp, path)
             End If
 
-        Catch ex As Exception
-            MessageBox.Show("Failed to save launcher config:" & Environment.NewLine & ex.Message,
-                        "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Catch
+            ' Swallow/log if you have a logger
         End Try
     End Sub
 
-    ' ---- Utilities --------------------------------------------------------------------------
+    Public Shared Function ReloadLauncherConfig() As LauncherConfig
+        Return LoadLauncherConfig()
+    End Function
+
+    Public Shared Function GetLauncherConfigPath() As String
+        Dim dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "STA2")
+        Directory.CreateDirectory(dir)
+        Return Path.Combine(dir, "launcher.config.json")
+    End Function
+
+    ' ------------------------
+    ' Optional helpers
+    ' ------------------------
+
     ''' <summary>
-    ''' Removes a UTF-8 BOM (EF BB BF) if present.
+    ''' EXPlicit migration helper if you later decide to change the quick slot count.
+    ''' Not called by LoadOrCreate to avoid silent growth across runs.
+    ''' Call it once on purpose (e.g., from a settings action) and then remove the call.
     ''' </summary>
-    Private Function StripUtf8Bom(data As Byte()) As Byte()
+    Public Shared Sub EnsureQuickLaunchSlotCount(opts As AppOptions, target As Integer, Optional shrink As Boolean = False)
+        If opts Is Nothing Then Exit Sub
+        If opts.QuickLaunchIds Is Nothing Then
+            opts.QuickLaunchIds = Enumerable.Repeat("", target).ToList()
+        Else
+            While opts.QuickLaunchIds.Count < target
+                opts.QuickLaunchIds.Add("")
+            End While
+            If shrink Then
+                While opts.QuickLaunchIds.Count > target
+                    opts.QuickLaunchIds.RemoveAt(opts.QuickLaunchIds.Count - 1)
+                End While
+            End If
+        End If
+        Save(opts)
+    End Sub
+
+    ' Normalize QuickLaunchIds by trimming trailing empty entries.
+    ' Keeps max between desired DEFAULT count and the highest actually assigned index + 1.
+    ' This prevents run-to-run growth while preserving any assigned slots.
+    Private Shared Function NormalizeQuickLaunchIds(opts As AppOptions) As Boolean
+        If opts Is Nothing Then Return False
+        If opts.QuickLaunchIds Is Nothing Then Return False
+
+        Dim originalCount = opts.QuickLaunchIds.Count
+
+        ' Find last non-empty index (highest assigned)
+        Dim lastAssigned As Integer = -1
+        For i = 0 To opts.QuickLaunchIds.Count - 1
+            Dim id = opts.QuickLaunchIds(i)
+            If Not String.IsNullOrWhiteSpace(id) Then
+                lastAssigned = i
+            End If
+        Next
+
+        ' We must keep at least DEFAULT and also enough to include the last assigned slot
+        Dim minCount As Integer = Math.Max(QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
+
+        ' If the list is longer than minCount and the tail are empty, trim the tail
+        If opts.QuickLaunchIds.Count > minCount Then
+            Dim canTrim As Boolean = True
+            For i = minCount To opts.QuickLaunchIds.Count - 1
+                If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(i)) Then
+                    canTrim = False : Exit For
+                End If
+            Next
+            If canTrim Then
+                opts.QuickLaunchIds.RemoveRange(minCount, opts.QuickLaunchIds.Count - minCount)
+            End If
+        End If
+
+        Return opts.QuickLaunchIds.Count <> originalCount
+    End Function
+
+    ' Safe tolerant read: strips UTF-8 BOM and leading whitespace if present, then returns text.
+    Private Shared Function SafeReadAllText(path As String) As String
+        Dim bytes = File.ReadAllBytes(path)
+        bytes = StripUtf8Bom(bytes)
+        bytes = TrimLeadingWhitespace(bytes)
+        Return Encoding.UTF8.GetString(bytes)
+    End Function
+
+    Private Shared Sub EnsureParentDirectory(path As String)
+        Dim dir = System.IO.Path.GetDirectoryName(path)
+        If Not String.IsNullOrWhiteSpace(dir) Then
+            Directory.CreateDirectory(dir)
+        End If
+    End Sub
+
+    Private Shared Function StripUtf8Bom(data As Byte()) As Byte()
         If data IsNot Nothing AndAlso data.Length >= 3 AndAlso
            data(0) = &HEF AndAlso data(1) = &HBB AndAlso data(2) = &HBF Then
             Dim withoutBom(data.Length - 4) As Byte
@@ -251,10 +272,7 @@ Public Module OptionsManager
         Return data
     End Function
 
-    ''' <summary>
-    ''' Trims leading whitespace/newlines (space, tab, CR, LF) before JSON starts.
-    ''' </summary>
-    Private Function TrimLeadingWhitespace(data As Byte()) As Byte()
+    Private Shared Function TrimLeadingWhitespace(data As Byte()) As Byte()
         If data Is Nothing OrElse data.Length = 0 Then Return data
         Dim i As Integer = 0
         While i < data.Length
@@ -271,24 +289,35 @@ Public Module OptionsManager
         Return trimmed
     End Function
 
-    ' Convenience: open the STA2 folder in Explorer
-    Public Sub OpenAppDataFolder()
-        Dim folder = GetAppDataDirectory()
-        Try
-            Process.Start(New ProcessStartInfo() With {
-                .FileName = folder,
-                .UseShellExecute = True
-            })
-        Catch ex As Exception
-            MessageBox.Show("Failed to open folder:" & Environment.NewLine & ex.Message,
-                            "Options", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Sub
+    ' Public trimmer: trims trailing empty slots while preserving the last assigned slot.
+    ' Returns True if it changed the list.
+    Public Shared Function TrimTrailingEmptyQuickSlots(opts As AppOptions) As Boolean
+        If opts Is Nothing OrElse opts.QuickLaunchIds Is Nothing Then Return False
 
-    ' OptionsManager.vb
-    Public Function ReloadLauncherConfig() As LauncherConfig
-        ' Re-read from disk using the hardened loader (with ID migration + save)
-        Return LoadLauncherConfig()
+        Dim originalCount = opts.QuickLaunchIds.Count
+
+        ' Find last non-empty index
+        Dim lastAssigned As Integer = -1
+        For i = 0 To opts.QuickLaunchIds.Count - 1
+            If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(i)) Then
+                lastAssigned = i
+            End If
+        Next
+
+        ' Keep at least DEFAULT slots and enough to include last assigned
+        Dim minCount As Integer = Math.Max(QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
+
+        If opts.QuickLaunchIds.Count > minCount Then
+            ' Trim only if the tail beyond minCount is all empty
+            For j = minCount To opts.QuickLaunchIds.Count - 1
+                If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(j)) Then
+                    Return False
+                End If
+            Next
+            opts.QuickLaunchIds.RemoveRange(minCount, opts.QuickLaunchIds.Count - minCount)
+        End If
+
+        Return opts.QuickLaunchIds.Count <> originalCount
     End Function
 
-End Module
+End Class

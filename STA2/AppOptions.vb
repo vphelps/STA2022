@@ -2,11 +2,11 @@
 
 <DataContract>
 Public Class AppOptions
-    ' Keep this minimal for now; easy to extend later.
+    ' Keep this minimal; make OptionsManager the single source of truth.
     <DataMember>
     Public Property WindowTitle As String = "Technician's Assistant"
 
-    ' Store ProgramEntry Ids for each quick slot (empty string = unassigned)
+    ' Do NOT initialize here; let OptionsManager initialize/normalize.
     <DataMember>
-    Public Property QuickLaunchIds As List(Of String) = New List(Of String)(New String() {"", "", "", "", ""}) ' 5 slots by default
+    Public Property QuickLaunchIds As List(Of String)
 End Class
