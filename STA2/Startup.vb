@@ -71,14 +71,6 @@ Module Startup
         ' ============================
         CodeHelper.GetPcInfo()
 
-
-        ' After building connection string, before creating FormMain:
-        ' THIS IS TEMPORARY
-        Dim changed As Boolean = OptionsManager.TrimTrailingEmptyQuickSlots(options)
-        If changed Then
-            OptionsManager.Save(options)
-        End If
-
         MainFormInstance = New FormMain(options, launcher)
 
         ' Create the main form and pass options in the constructor.

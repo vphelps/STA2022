@@ -2,9 +2,9 @@
 Imports System.Text
 Imports Newtonsoft.Json
 
-' NOTE: This module/class is intentionally UI-free and safe to call at startup.
-' It initializes QuickLaunchIds only if missing and NORMALIZES trailing empties
-' so the list cannot grow across runs.
+' NOTE: This class is intentionally UI-free and safe to call at startup.
+' It initializes QuickLaunchIds only if missing and NORMALIZES/DEDUPES
+' so the list cannot grow or drift across runs.
 
 Public NotInheritable Class OptionsManager
 
@@ -48,8 +48,9 @@ Public NotInheritable Class OptionsManager
                 Debug.WriteLine($"[Options] Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
             End If
 
-            ' Normalize trailing empties (prevents growth across runs)
-            changed = NormalizeQuickLaunchIds(opts) OrElse changed
+            ' Enforce uniqueness and trim trailing empties (prevents run-to-run growth)
+            changed = DedupeQuickLaunchIds(opts) OrElse changed
+            changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
 
             If changed Then
                 Save(opts)
@@ -78,20 +79,27 @@ Public NotInheritable Class OptionsManager
             If opts Is Nothing Then opts = New AppOptions()
             If opts.QuickLaunchIds Is Nothing Then
                 opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+                Debug.WriteLine($"[Options] Save: Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
             End If
 
-            ' Normalize before persisting (hard stop on trailing growth)
-            TrimTrailingEmptyQuickSlots(opts)
+            ' === DIAGNOSTICS: BEFORE ===
+            Debug.WriteLine($"[Options] Save BEFORE normalize: Count={opts.QuickLaunchIds.Count}")
+            Debug.WriteLine($"[Options] Save stack: {Environment.NewLine}{New System.Diagnostics.StackTrace(True)}")
+
+            ' Keep stable: dedupe + trim
+            Dim changed As Boolean = False
+            changed = DedupeQuickLaunchIds(opts) OrElse changed
+            changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
 
             ' === DIAGNOSTICS: AFTER ===
-            Debug.WriteLine($"[Options] Save AFTER trim: Count={opts.QuickLaunchIds.Count}")
+            Debug.WriteLine($"[Options] Save AFTER normalize: Count={opts.QuickLaunchIds.Count}")
 
             Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
             File.WriteAllText(path, json, Encoding.UTF8)
 
         Catch ex As Exception
             Debug.WriteLine($"[Options] Save ERROR: {ex.Message}")
-            ' swallow to avoid crashing app
+            ' Swallow/log if you have a logger. Never crash the app on options save.
         End Try
     End Sub
 
@@ -185,11 +193,11 @@ Public NotInheritable Class OptionsManager
     End Function
 
     ' ------------------------
-    ' Optional helpers
+    ' Public helpers (admin / migrations)
     ' ------------------------
 
     ''' <summary>
-    ''' EXPlicit migration helper if you later decide to change the quick slot count.
+    ''' Explicit migration helper if you later decide to change the quick slot count.
     ''' Not called by LoadOrCreate to avoid silent growth across runs.
     ''' Call it once on purpose (e.g., from a settings action) and then remove the call.
     ''' </summary>
@@ -210,42 +218,65 @@ Public NotInheritable Class OptionsManager
         Save(opts)
     End Sub
 
-    ' Normalize QuickLaunchIds by trimming trailing empty entries.
-    ' Keeps max between desired DEFAULT count and the highest actually assigned index + 1.
-    ' This prevents run-to-run growth while preserving any assigned slots.
-    Private Shared Function NormalizeQuickLaunchIds(opts As AppOptions) As Boolean
-        If opts Is Nothing Then Return False
-        If opts.QuickLaunchIds Is Nothing Then Return False
+    ''' <summary>
+    ''' Ensures each program Id appears at most once across QuickLaunchIds.
+    ''' Keeps the first occurrence, clears later duplicates. Returns True if changed.
+    ''' </summary>
+    Public Shared Function DedupeQuickLaunchIds(opts As AppOptions) As Boolean
+        If opts Is Nothing OrElse opts.QuickLaunchIds Is Nothing Then Return False
+
+        Dim seen As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        Dim changed As Boolean = False
+
+        For i = 0 To opts.QuickLaunchIds.Count - 1
+            Dim id = opts.QuickLaunchIds(i)
+            If String.IsNullOrWhiteSpace(id) Then Continue For
+            If Not seen.Add(id) Then
+                ' Duplicate — clear this later occurrence
+                opts.QuickLaunchIds(i) = ""
+                changed = True
+            End If
+        Next
+        Return changed
+    End Function
+
+    ''' <summary>
+    ''' Trims trailing empty slots while preserving the last assigned slot.
+    ''' Keeps at least DEFAULT slots and enough to include last assigned.
+    ''' Returns True if changed.
+    ''' </summary>
+    Public Shared Function TrimTrailingEmptyQuickSlots(opts As AppOptions) As Boolean
+        If opts Is Nothing OrElse opts.QuickLaunchIds Is Nothing Then Return False
 
         Dim originalCount = opts.QuickLaunchIds.Count
 
-        ' Find last non-empty index (highest assigned)
+        ' Find last non-empty index
         Dim lastAssigned As Integer = -1
         For i = 0 To opts.QuickLaunchIds.Count - 1
-            Dim id = opts.QuickLaunchIds(i)
-            If Not String.IsNullOrWhiteSpace(id) Then
+            If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(i)) Then
                 lastAssigned = i
             End If
         Next
 
-        ' We must keep at least DEFAULT and also enough to include the last assigned slot
+        ' Keep at least default and enough to include last assigned slot
         Dim minCount As Integer = Math.Max(QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
 
-        ' If the list is longer than minCount and the tail are empty, trim the tail
         If opts.QuickLaunchIds.Count > minCount Then
-            Dim canTrim As Boolean = True
-            For i = minCount To opts.QuickLaunchIds.Count - 1
-                If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(i)) Then
-                    canTrim = False : Exit For
+            ' Trim only if the tail beyond minCount is all empty
+            For j = minCount To opts.QuickLaunchIds.Count - 1
+                If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(j)) Then
+                    Return False ' can't trim; there is a non-empty tail
                 End If
             Next
-            If canTrim Then
-                opts.QuickLaunchIds.RemoveRange(minCount, opts.QuickLaunchIds.Count - minCount)
-            End If
+            opts.QuickLaunchIds.RemoveRange(minCount, opts.QuickLaunchIds.Count - minCount)
         End If
 
         Return opts.QuickLaunchIds.Count <> originalCount
     End Function
+
+    ' ------------------------
+    ' Private IO helpers
+    ' ------------------------
 
     ' Safe tolerant read: strips UTF-8 BOM and leading whitespace if present, then returns text.
     Private Shared Function SafeReadAllText(path As String) As String
@@ -287,37 +318,6 @@ Public NotInheritable Class OptionsManager
         Dim trimmed(data.Length - i - 1) As Byte
         Buffer.BlockCopy(data, i, trimmed, 0, trimmed.Length)
         Return trimmed
-    End Function
-
-    ' Public trimmer: trims trailing empty slots while preserving the last assigned slot.
-    ' Returns True if it changed the list.
-    Public Shared Function TrimTrailingEmptyQuickSlots(opts As AppOptions) As Boolean
-        If opts Is Nothing OrElse opts.QuickLaunchIds Is Nothing Then Return False
-
-        Dim originalCount = opts.QuickLaunchIds.Count
-
-        ' Find last non-empty index
-        Dim lastAssigned As Integer = -1
-        For i = 0 To opts.QuickLaunchIds.Count - 1
-            If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(i)) Then
-                lastAssigned = i
-            End If
-        Next
-
-        ' Keep at least DEFAULT slots and enough to include last assigned
-        Dim minCount As Integer = Math.Max(QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
-
-        If opts.QuickLaunchIds.Count > minCount Then
-            ' Trim only if the tail beyond minCount is all empty
-            For j = minCount To opts.QuickLaunchIds.Count - 1
-                If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(j)) Then
-                    Return False
-                End If
-            Next
-            opts.QuickLaunchIds.RemoveRange(minCount, opts.QuickLaunchIds.Count - minCount)
-        End If
-
-        Return opts.QuickLaunchIds.Count <> originalCount
     End Function
 
 End Class
