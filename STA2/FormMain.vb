@@ -725,7 +725,7 @@ Public Class FormMain
     End Sub
 
 
-    Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
+    Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click, lstPrograms.DoubleClick
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then
             MessageBox.Show("Select a program to edit.", "Edit", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -841,7 +841,7 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click, lstPrograms.DoubleClick
+    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click
 
         Dim entry As ProgramEntry = Nothing
 
