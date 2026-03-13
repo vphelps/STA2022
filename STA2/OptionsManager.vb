@@ -320,4 +320,5 @@ Public NotInheritable Class OptionsManager
         Return trimmed
     End Function
 
+
 End Class
