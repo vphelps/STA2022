@@ -34,7 +34,9 @@ Public Class FormMain
         RefreshProgramsList()
         FillComboFromListBox()
 
+
         InitializeProgramsContextMenu()
+        RefreshQuickSlotMenuLabels()
         RefreshQuickLaunchButtons()    ' 4) Render buttons AFTER both _options and 
 
         If Not String.IsNullOrWhiteSpace(_options.WindowTitle) Then
@@ -995,7 +997,7 @@ Public Class FormMain
         End Try
     End Sub
 
-    ' Assign the currently-selected program in lstPrograms to the specified quick-launch slot (0-based).
+    ' Assign the currently-selected program in lstPrograms to the slot (0-based)
     Private Sub AssignSelectedListItemToQuickSlot(slot As Integer)
         Dim entry As ProgramEntry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then
@@ -1003,7 +1005,7 @@ Public Class FormMain
             Return
         End If
 
-        ' Ensure QuickLaunchIds exists and is large enough
+        ' Ensure list and size
         If _options.QuickLaunchIds Is Nothing Then
             _options.QuickLaunchIds = New List(Of String)(New String() {"", "", "", "", ""})
         End If
@@ -1013,9 +1015,9 @@ Public Class FormMain
 
         _options.QuickLaunchIds(slot) = entry.Id
 
-        ' Save and refresh quick buttons
         OptionsManager.Save(_options)
         RefreshQuickLaunchButtons()
+        RefreshQuickSlotMenuLabels()     ' <--- update the menu labels
     End Sub
 
     Private Sub ClearQuickSlot(slot As Integer)
@@ -1025,53 +1027,134 @@ Public Class FormMain
         _options.QuickLaunchIds(slot) = ""
         OptionsManager.Save(_options)
         RefreshQuickLaunchButtons()
+        RefreshQuickSlotMenuLabels()     ' <--- update the menu labels
     End Sub
+
+    Private Function GetQuickSlotDisplay(slot As Integer) As String
+        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then
+            Return $"Slot {slot + 1} — (empty)"
+        End If
+        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then
+            Return $"Slot {slot + 1} — (empty)"
+        End If
+
+        Dim id As String = _options.QuickLaunchIds(slot)
+        If String.IsNullOrWhiteSpace(id) Then Return $"Slot {slot + 1} — (empty)"
+
+        Dim entry As ProgramEntry =
+        _launcherConfig?.
+        Programs?.
+        FirstOrDefault(Function(p) p IsNot Nothing AndAlso String.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase))
+
+        If entry Is Nothing Then Return $"Slot {slot + 1} — ⚠ missing"
+        If Not entry.Enabled Then Return $"Slot {slot + 1} — ⚠ disabled"
+        Return $"Slot {slot + 1} — {entry.Name}"
+    End Function
+
+    Private Function GetQuickSlotTooltip(slot As Integer) As String
+        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then Return ""
+        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then Return ""
+        Dim id As String = _options.QuickLaunchIds(slot)
+        If String.IsNullOrWhiteSpace(id) Then Return "(empty)"
+
+        Dim entry As ProgramEntry =
+        _launcherConfig?.
+        Programs?.
+        FirstOrDefault(Function(p) p IsNot Nothing AndAlso String.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase))
+
+        If entry Is Nothing Then Return "(missing)"
+        Dim sb As New System.Text.StringBuilder()
+        sb.AppendLine(entry.Name)
+        If Not String.IsNullOrWhiteSpace(entry.Path) Then sb.AppendLine(entry.Path)
+        If Not String.IsNullOrWhiteSpace(entry.Arguments) Then sb.AppendLine(entry.Arguments)
+        Return sb.ToString().TrimEnd()
+    End Function
     Private _ctxPrograms As ContextMenuStrip
+    Private _miAssignRoot As ToolStripMenuItem
+    Private _miClearRoot As ToolStripMenuItem
 
     Private Sub InitializeProgramsContextMenu()
+        ' 🔒 Prevent duplicate menus—clean up any previous instance
+        If _ctxPrograms IsNot Nothing Then
+            ' Detach from the control first
+            If lstPrograms IsNot Nothing AndAlso lstPrograms.ContextMenuStrip Is _ctxPrograms Then
+                lstPrograms.ContextMenuStrip = Nothing
+            End If
+            ' Dispose old menu to release items/handlers
+            _ctxPrograms.Dispose()
+            _ctxPrograms = Nothing
+            _miAssignRoot = Nothing
+            _miClearRoot = Nothing
+        End If
+
         _ctxPrograms = New ContextMenuStrip()
+        _miAssignRoot = New ToolStripMenuItem("Assign to Quick Slot")
+        _miClearRoot = New ToolStripMenuItem("Clear Quick Slot")
 
-        ' --- Build the “Assign to Quick Slot” submenu ---
-        Dim miAssignRoot = New ToolStripMenuItem("Assign to Quick Slot")
-
-        ' How many slots? Use options count if present; default to 5.
+        ' Slot count comes from options; fall back to 5 if missing
         Dim slotCount As Integer = If(_options?.QuickLaunchIds?.Count, 5)
         If slotCount <= 0 Then slotCount = 5
 
         For slot = 0 To slotCount - 1
-            Dim slotIndex As Integer = slot ' capture for closure
-            Dim mi = New ToolStripMenuItem($"Slot {slotIndex + 1}")
-            AddHandler mi.Click, Sub(sender, e)
-                                     AssignSelectedListItemToQuickSlot(slotIndex)
-                                 End Sub
-            miAssignRoot.DropDownItems.Add(mi)
+            Dim slotIndex As Integer = slot ' capture
+
+            ' Build “Assign” item with current label and tooltip
+            Dim miAssign = New ToolStripMenuItem(GetQuickSlotDisplay(slotIndex))
+            miAssign.ToolTipText = GetQuickSlotTooltip(slotIndex)
+            AddHandler miAssign.Click, Sub(sender, e) AssignSelectedListItemToQuickSlot(slotIndex)
+            _miAssignRoot.DropDownItems.Add(miAssign)
+
+            ' Build “Clear” item
+            Dim miClear = New ToolStripMenuItem($"Slot {slotIndex + 1} — clear")
+            AddHandler miClear.Click, Sub(sender, e) ClearQuickSlot(slotIndex)
+            _miClearRoot.DropDownItems.Add(miClear)
         Next
 
-        ' --- Build “Clear Slot” submenu (optional but handy) ---
-        Dim miClearRoot = New ToolStripMenuItem("Clear Quick Slot")
-        For slot = 0 To slotCount - 1
-            Dim slotIndex As Integer = slot
-            Dim mi = New ToolStripMenuItem($"Slot {slotIndex + 1}")
-            AddHandler mi.Click, Sub(sender, e)
-                                     ClearQuickSlot(slotIndex)
-                                 End Sub
-            miClearRoot.DropDownItems.Add(mi)
-        Next
+        ' Optional: manual refresh menu item
+        Dim miRefresh = New ToolStripMenuItem("Refresh Quick Slot Labels")
+        AddHandler miRefresh.Click, Sub(sender, e) RefreshQuickSlotMenuLabels()
 
-        ' Optional: a separator and a refresh action
-        Dim miRefreshQuick = New ToolStripMenuItem("Refresh Quick Buttons")
-        AddHandler miRefreshQuick.Click, Sub(sender, e) RefreshQuickLaunchButtons()
-
-        _ctxPrograms.Items.Add(miAssignRoot)
-        _ctxPrograms.Items.Add(miClearRoot)
+        _ctxPrograms.Items.Add(_miAssignRoot)
+        _ctxPrograms.Items.Add(_miClearRoot)
         _ctxPrograms.Items.Add(New ToolStripSeparator())
-        _ctxPrograms.Items.Add(miRefreshQuick)
+        _ctxPrograms.Items.Add(miRefresh)
 
-        ' Attach to the listbox
         lstPrograms.ContextMenuStrip = _ctxPrograms
 
-        ' Optional: show the context menu on right-click even if an item wasn’t selected yet
+        ' Ensure right-click selects the item under cursor only once
+        RemoveHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
         AddHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
+    End Sub
+
+
+
+    Private Sub RefreshQuickSlotMenuLabels()
+        If _miAssignRoot Is Nothing Then Return
+
+        Dim slotCount As Integer = If(_options?.QuickLaunchIds?.Count, 5)
+        If slotCount <= 0 Then slotCount = 5
+
+        ' If slot count changed, rebuild the entire menu to stay consistent
+        If _miAssignRoot.DropDownItems.Count <> slotCount OrElse _miClearRoot.DropDownItems.Count <> slotCount Then
+            InitializeProgramsContextMenu()
+            Return
+        End If
+
+        ' Update labels/tooltips in place
+        For slot = 0 To slotCount - 1
+            Dim label As String = GetQuickSlotDisplay(slot)
+            Dim tooltip As String = GetQuickSlotTooltip(slot)
+
+            Dim assignItem = TryCast(_miAssignRoot.DropDownItems(slot), ToolStripMenuItem)
+            If assignItem IsNot Nothing Then
+                assignItem.Text = label
+                assignItem.ToolTipText = tooltip
+            End If
+
+            ' (Clear items usually don’t need tooltips; update text if you want)
+            'Dim clearItem = TryCast(_miClearRoot.DropDownItems(slot), ToolStripMenuItem)
+            'If clearItem IsNot Nothing Then clearItem.Text = $"Slot {slot + 1} — clear"
+        Next
     End Sub
 
     Private Sub lstPrograms_MouseUp_SelectOnRightClick(sender As Object, e As MouseEventArgs)

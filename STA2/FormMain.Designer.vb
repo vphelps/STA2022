@@ -298,7 +298,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
         Me.SplitContainer1.Size = New System.Drawing.Size(1068, 737)
-        Me.SplitContainer1.SplitterDistance = 563
+        Me.SplitContainer1.SplitterDistance = 564
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -315,7 +315,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 559)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 560)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -328,7 +328,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 533)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 534)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1122,7 +1122,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 533)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 534)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1277,7 +1277,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 533)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 534)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1292,7 +1292,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 502)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 503)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1384,7 +1384,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 533)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 534)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1471,7 +1471,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 403)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 404)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1626,7 +1626,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 533)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 534)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1696,7 +1696,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 533)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 534)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -1799,7 +1799,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1056, 533)
+        Me.tpQATools.Size = New System.Drawing.Size(1056, 534)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -1949,10 +1949,11 @@ Partial Class FormMain
         '
         'flpQuickLaunch
         '
+        Me.flpQuickLaunch.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.flpQuickLaunch.ForeColor = System.Drawing.SystemColors.ControlText
         Me.flpQuickLaunch.Location = New System.Drawing.Point(276, 6)
         Me.flpQuickLaunch.Name = "flpQuickLaunch"
-        Me.flpQuickLaunch.Size = New System.Drawing.Size(315, 121)
+        Me.flpQuickLaunch.Size = New System.Drawing.Size(431, 121)
         Me.flpQuickLaunch.TabIndex = 21
         '
         'btnAdminRestart
@@ -1968,9 +1969,9 @@ Partial Class FormMain
         '
         Me.cmbboxAppLaunch.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbboxAppLaunch.FormattingEnabled = True
-        Me.cmbboxAppLaunch.Location = New System.Drawing.Point(597, 10)
+        Me.cmbboxAppLaunch.Location = New System.Drawing.Point(713, 10)
         Me.cmbboxAppLaunch.Name = "cmbboxAppLaunch"
-        Me.cmbboxAppLaunch.Size = New System.Drawing.Size(296, 21)
+        Me.cmbboxAppLaunch.Size = New System.Drawing.Size(180, 21)
         Me.cmbboxAppLaunch.TabIndex = 18
         '
         'btnComboAppLaunch

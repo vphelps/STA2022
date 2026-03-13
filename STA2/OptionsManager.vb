@@ -5,8 +5,10 @@ Imports System.Text
 Imports System.Windows.Forms
 Imports Newtonsoft.Json
 
+
 ' Central manager for reading/writing config files in %APPDATA%\STA2\
 Public Module OptionsManager
+    Private Const QUICKLAUNCH_SLOT_COUNT As Integer = 9
 
     ' ---- App Folder & File Names -------------------------------------------------------------
     Private Const AppFolderName As String = "STA2"
@@ -53,38 +55,56 @@ Public Module OptionsManager
     Public Function LoadOrCreate() As AppOptions
         Dim path = GetOptionsPath()
 
-        If Not File.Exists(path) Then
-            Dim defaults As New AppOptions()
-            Save(defaults)
-            Return defaults
-        End If
-
-        ' Primary read from stream
         Try
-            Using fs As New FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)
-                Dim ser As New DataContractJsonSerializer(GetType(AppOptions))
-                Dim opts = TryCast(ser.ReadObject(fs), AppOptions)
-                If opts Is Nothing Then Return New AppOptions()
-                Return opts
-            End Using
-        Catch
-            ' Fallback: strip BOM + leading whitespace and retry
-            Try
-                Dim bytes = File.ReadAllBytes(path)
-                bytes = StripUtf8Bom(bytes)
-                bytes = TrimLeadingWhitespace(bytes)
-                Using ms As New MemoryStream(bytes)
-                    Dim ser As New DataContractJsonSerializer(GetType(AppOptions))
-                    Dim opts = TryCast(ser.ReadObject(ms), AppOptions)
-                    If opts Is Nothing Then Return New AppOptions()
-                    Return opts
-                End Using
-            Catch ex2 As Exception
-                MessageBox.Show("Options file could not be read. Defaults will be used." &
-                                Environment.NewLine & ex2.Message,
-                                "Options", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return New AppOptions()
-            End Try
+            Dim opts As AppOptions = Nothing
+
+            If File.Exists(path) Then
+                Dim json = File.ReadAllText(path)
+                opts = JsonConvert.DeserializeObject(Of AppOptions)(json, _jsonSettings)
+                If opts Is Nothing Then opts = New AppOptions()
+            Else
+                opts = New AppOptions()
+            End If
+
+            ' --------------------------------------------
+            ' ENSURE QuickLaunchIds EXISTS AND HAS N SLOTS
+            ' --------------------------------------------
+            Dim changed As Boolean = False
+
+            If opts.QuickLaunchIds Is Nothing Then
+                opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+                changed = True
+            Else
+                ' Expand existing lists to the new size, if needed
+                While opts.QuickLaunchIds.Count < QUICKLAUNCH_SLOT_COUNT
+                    opts.QuickLaunchIds.Add("")
+                    changed = True
+                End While
+                ' (Optional) If you want to shrink when count is larger than desired:
+                ' While opts.QuickLaunchIds.Count > QUICKLAUNCH_SLOT_COUNT
+                '     opts.QuickLaunchIds.RemoveAt(opts.QuickLaunchIds.Count - 1)
+                '     changed = True
+                ' End While
+            End If
+
+            ' Persist if we changed slot count or created defaults
+            If changed Then
+                Save(opts)
+            End If
+
+            Return opts
+
+        Catch ex As Exception
+            ' Fail-soft: return a default object with the right number of slots
+            Dim fallback As New AppOptions()
+            If fallback.QuickLaunchIds Is Nothing Then
+                fallback.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+            Else
+                While fallback.QuickLaunchIds.Count < QUICKLAUNCH_SLOT_COUNT
+                    fallback.QuickLaunchIds.Add("")
+                End While
+            End If
+            Return fallback
         End Try
     End Function
 
@@ -109,63 +129,6 @@ Public Module OptionsManager
         End If
     End Sub
 
-    ' ---- LauncherConfig (programs list) ------------------------------------------------------
-    ' Uses Newtonsoft.Json to match your existing JSON formatting & behavior.
-
-
-    '    Public Function LoadLauncherConfig() As LauncherConfig
-    '        Dim path = GetLauncherConfigPath()
-
-    '        If Not File.Exists(path) Then
-    '            ' First run: empty config (no programs yet)
-    '            Return New LauncherConfig()
-    '        End If
-
-    '        Try
-    '            ' Robust read: bytes -> strip BOM -> trim leading whitespace -> decode UTF8 -> deserialize
-    '            Dim bytes = File.ReadAllBytes(path)
-    '            bytes = StripUtf8Bom(bytes)
-    '            bytes = TrimLeadingWhitespace(bytes)
-    '            Dim json = Encoding.UTF8.GetString(bytes)
-
-    '            Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
-    '            If cfg Is Nothing Then cfg = New LauncherConfig()
-    '            If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
-
-    '            ' --- Migration: ensure every entry has a stable Id ---
-    '            Dim changed As Boolean = False
-    '            For Each p In cfg.Programs
-    '                If p Is Nothing Then Continue For
-
-    '                ' Assign Id if missing
-    '                If String.IsNullOrWhiteSpace(p.Id) Then
-    '                    p.Id = Guid.NewGuid().ToString("N")
-    '                    changed = True
-    '                End If
-
-    '                ' (Optional) Normalize other defaults if you want to be defensive:
-    '                ' If p.Enabled Is Nothing Then p.Enabled = True  ' (Enabled already defaults to True in your class)
-    '                ' If p.IncludeInBatch Is Nothing Then p.IncludeInBatch = False
-    '                ' If p.RunAsAdmin Is Nothing Then p.RunAsAdmin = False
-    '            Next
-
-    '            ' If we generated any new Ids (or normalized values), persist them so future runs can resolve QuickLaunchIds
-    '            If changed Then
-    '#If DEBUG Then
-    '                Debug.WriteLine("Launcher migration: added/normalized one or more ProgramEntry properties (Ids). Saving launcher.config.json …")
-    '#End If
-    '                SaveLauncherConfig(cfg)
-    '            End If
-
-    '            Return cfg
-
-    '        Catch ex As Exception
-    '            MessageBox.Show("Failed to load launcher config. A blank config will be used." &
-    '                        Environment.NewLine & ex.Message,
-    '                        "Launcher Config", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-    '            Return New LauncherConfig()
-    '        End Try
-    '    End Function
     Public Function LoadLauncherConfig() As LauncherConfig
         Dim path = GetLauncherConfigPath()
 
