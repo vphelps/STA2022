@@ -24,9 +24,6 @@ Public Class FormMain
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
 
-        '_options = options
-        '_launcherConfig = If(launcher, New LauncherConfig())
-
         ' Apply the window title from options.
         ' Falls back to the existing Form.Text if WindowTitle is empty.
 
@@ -141,13 +138,6 @@ Public Class FormMain
         btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
 
-        '_launcherConfig = OptionsManager.LoadLauncherConfig()
-
-        'lstPrograms.DisplayMember = "Name"  ' shows ProgramEntry.Name
-        'RefreshProgramsList()
-        'FillComboFromListBox()
-
-
         _options = OptionsManager.LoadOrCreate()
         _launcherConfig = OptionsManager.LoadLauncherConfig()
         RefreshProgramsList()
@@ -207,7 +197,7 @@ Public Class FormMain
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpQATools
+        'tcSTA.SelectedTab = tpQATools
 
 #End If
 
@@ -734,7 +724,8 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
+
+    Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click, lstPrograms.DoubleClick
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
         If entry Is Nothing Then
             MessageBox.Show("Select a program to edit.", "Edit", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -830,9 +821,19 @@ Public Class FormMain
         End If
     End Sub
     Private Sub btnBatchLaunch_Click(sender As Object, e As EventArgs) Handles btnBatchLaunch.Click
-        For Each p In _config.Programs.Where(Function(x) x.Enabled AndAlso x.IncludeInBatch)
-            LaunchProgram(p) ' reuse your existing launcher method
-        Next
+
+        btnBatchLaunch.Enabled = False
+        Cursor.Current = Cursors.WaitCursor
+        Try
+            Dim result = BatchLauncher.RunBatch(_launcherConfig,
+                                            caller:="UI:FormMain.btnBatchLaunch",
+                                            silent:=False)
+            ' You can inspect result here if needed
+        Finally
+            Cursor.Current = Cursors.Default
+            btnBatchLaunch.Enabled = True
+        End Try
+
     End Sub
 
     Private Sub cbListSort_CheckedChanged(sender As Object, e As EventArgs) Handles cbListSort.CheckedChanged
@@ -840,7 +841,7 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click, lstPrograms.DoubleClick
+    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click
 
         Dim entry As ProgramEntry = Nothing
 
@@ -992,69 +993,6 @@ Public Class FormMain
         Finally
             flpQuickLaunch.ResumeLayout()
         End Try
-    End Sub
-
-    Private Sub ReloadLauncherConfigAndRefreshUI(Optional preserveSelection As Boolean = True)
-        ' Preserve currently selected entry (reference + Id safety)
-        Dim selectedRef As ProgramEntry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
-        Dim selectedId As String = If(selectedRef IsNot Nothing, selectedRef.Id, Nothing)
-
-        ' Reload from disk (handles BOM, whitespace, Id migration + save)
-        Dim fresh As LauncherConfig = OptionsManager.ReloadLauncherConfig()
-        If fresh Is Nothing Then fresh = New LauncherConfig()
-        If fresh.Programs Is Nothing Then fresh.Programs = New List(Of ProgramEntry)()
-
-        ' Replace the in-memory model
-        _launcherConfig = fresh
-
-        ' Rebuild the ListBox from the new model
-        lstPrograms.BeginUpdate()
-        Try
-            lstPrograms.Items.Clear()
-
-            ' Only show enabled apps (matches your previous behavior). Remove `.Where(...)` filter if you want to show all.
-            For Each p As ProgramEntry In _launcherConfig.Programs.Where(Function(x) x.Enabled)
-                lstPrograms.Items.Add(p)
-            Next
-
-            ' Show only the name in the list (still stores full ProgramEntry objects)
-            lstPrograms.DisplayMember = "Name"
-        Finally
-            lstPrograms.EndUpdate()
-        End Try
-
-        ' Rebuild the ComboBox from the ListBox items
-        FillComboFromListBox()
-
-        ' Rebuild the Quick Launch buttons (from _options.QuickLaunchIds and _launcherConfig)
-        RefreshQuickLaunchButtons()
-
-        ' Optionally restore selection
-        If preserveSelection Then
-            Dim restored As Boolean = False
-
-            ' 1) Try to restore by object reference if it survived
-            If selectedRef IsNot Nothing Then
-                For i = 0 To lstPrograms.Items.Count - 1
-                    If Object.ReferenceEquals(lstPrograms.Items(i), selectedRef) Then
-                        lstPrograms.SelectedIndex = i
-                        restored = True
-                        Exit For
-                    End If
-                Next
-            End If
-
-            ' 2) Fallback: restore by Id (safe even if objects re-materialized)
-            If Not restored AndAlso Not String.IsNullOrWhiteSpace(selectedId) Then
-                For i = 0 To lstPrograms.Items.Count - 1
-                    Dim item As ProgramEntry = TryCast(lstPrograms.Items(i), ProgramEntry)
-                    If item IsNot Nothing AndAlso String.Equals(item.Id, selectedId, StringComparison.OrdinalIgnoreCase) Then
-                        lstPrograms.SelectedIndex = i
-                        Exit For
-                    End If
-                Next
-            End If
-        End If
     End Sub
 
     ' Assign the currently-selected program in lstPrograms to the specified quick-launch slot (0-based).

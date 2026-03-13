@@ -17,6 +17,9 @@ Module Startup
         ' ------------------------------
         ' Global exception handlers (last resort: prevent crash-to-desktop)
         ' ------------------------------
+        Dim options As AppOptions = OptionsManager.LoadOrCreate()
+        Dim launcher = OptionsManager.LoadLauncherConfig()
+
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
         AddHandler Application.ThreadException, AddressOf OnThreadException
         AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf OnUnhandledException
@@ -31,9 +34,19 @@ Module Startup
         ' ============================
         Dim args = Environment.GetCommandLineArgs().Skip(1).ToList()
 
+
+
         If args.Contains("-BatchLaunch", StringComparer.OrdinalIgnoreCase) Then
-            'RunBatchAndExit()    ' <-- your batch logic here if/when implemented
-            MsgBox("Batch Load Switch Detected")
+            ' Load configs (no UI)
+            Connections.IniFileHandler(False)
+
+            ' Batch run without loading FormMain
+            Dim result = BatchLauncher.RunBatch(launcher,
+                                        caller:="Startup:-BatchLaunch",
+                                        silent:=True)
+
+            ' Optional: reflect result in exit code
+            Environment.Exit(If(result.Failed > 0, 1, 0))
             Return
         End If
 
@@ -54,9 +67,6 @@ Module Startup
         ' Normal UI startup
         ' ============================
         CodeHelper.GetPcInfo()
-
-        Dim options As AppOptions = OptionsManager.LoadOrCreate()
-        Dim launcher = OptionsManager.LoadLauncherConfig()
 
         ' Create the main form and pass options in the constructor.
         MainFormInstance = New FormMain(options, launcher)
