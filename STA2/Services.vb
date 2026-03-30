@@ -463,6 +463,15 @@ Public Class Services
             .GroupBox = frm.gpAdvantageUpgradeService
         })
 
+        ' --- Relay Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbRelayService,
+            .SSButton = frm.btnRelayServiceSS,
+            .RSButton = frm.btnRelayServiceRS,
+            .Service = "AdvRelayClient",
+            .GroupBox = frm.gpRelayService
+        })
+
         Return mylist
     End Function
 

@@ -179,6 +179,7 @@ Partial Class FormMain
         Me.btnEdit = New System.Windows.Forms.Button()
         Me.btnDelete = New System.Windows.Forms.Button()
         Me.btnAdd = New System.Windows.Forms.Button()
+        Me.btnReconnect = New System.Windows.Forms.Button()
         Me.flpQuickLaunch = New System.Windows.Forms.FlowLayoutPanel()
         Me.btnAdminRestart = New System.Windows.Forms.Button()
         Me.cmbboxAppLaunch = New System.Windows.Forms.ComboBox()
@@ -200,6 +201,7 @@ Partial Class FormMain
         Me.tslblCeVersion = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tslblTime = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tslblNetVersion = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.tslblDbState = New System.Windows.Forms.ToolStripStatusLabel()
         Me.tmr10Seconds = New System.Windows.Forms.Timer(Me.components)
         Me.BottomToolStripPanel = New System.Windows.Forms.ToolStripPanel()
         Me.TopToolStripPanel = New System.Windows.Forms.ToolStripPanel()
@@ -212,6 +214,10 @@ Partial Class FormMain
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.ToolTipForQuickButtons = New System.Windows.Forms.ToolTip(Me.components)
+        Me.gpRelayService = New System.Windows.Forms.GroupBox()
+        Me.btnRelayServiceRS = New System.Windows.Forms.Button()
+        Me.tbRelayService = New System.Windows.Forms.TextBox()
+        Me.btnRelayServiceSS = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -258,6 +264,7 @@ Partial Class FormMain
         Me.cmsQuickLaunch.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        Me.gpRelayService.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -287,6 +294,7 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.btnReconnect)
         Me.SplitContainer1.Panel2.Controls.Add(Me.flpQuickLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdminRestart)
         Me.SplitContainer1.Panel2.Controls.Add(Me.cmbboxAppLaunch)
@@ -297,8 +305,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 737)
-        Me.SplitContainer1.SplitterDistance = 564
+        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 808)
+        Me.SplitContainer1.SplitterDistance = 638
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -315,7 +323,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 560)
+        Me.tcSTA.Size = New System.Drawing.Size(1064, 634)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -328,7 +336,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 534)
+        Me.tpGeneral.Size = New System.Drawing.Size(1056, 608)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -566,10 +574,11 @@ Partial Class FormMain
         Me.flpServices.Controls.Add(Me.gpAdvNotifyService)
         Me.flpServices.Controls.Add(Me.gpAdvTurnstileEngine)
         Me.flpServices.Controls.Add(Me.gpAdvantageUpgradeService)
+        Me.flpServices.Controls.Add(Me.gpRelayService)
         Me.flpServices.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.flpServices.Location = New System.Drawing.Point(415, 6)
         Me.flpServices.Name = "flpServices"
-        Me.flpServices.Size = New System.Drawing.Size(468, 508)
+        Me.flpServices.Size = New System.Drawing.Size(468, 567)
         Me.flpServices.TabIndex = 12
         '
         'gpApiService
@@ -1122,7 +1131,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 534)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 537)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1277,7 +1286,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 534)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 537)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1292,7 +1301,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 503)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 506)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1384,7 +1393,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 534)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 537)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1471,7 +1480,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 404)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 407)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1626,7 +1635,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 534)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 537)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1696,7 +1705,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 534)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 537)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -1799,7 +1808,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1056, 534)
+        Me.tpQATools.Size = New System.Drawing.Size(1056, 537)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -1946,6 +1955,15 @@ Partial Class FormMain
         Me.btnAdd.TabIndex = 13
         Me.btnAdd.Text = "Add"
         Me.btnAdd.UseVisualStyleBackColor = True
+        '
+        'btnReconnect
+        '
+        Me.btnReconnect.Location = New System.Drawing.Point(737, 104)
+        Me.btnReconnect.Name = "btnReconnect"
+        Me.btnReconnect.Size = New System.Drawing.Size(75, 23)
+        Me.btnReconnect.TabIndex = 22
+        Me.btnReconnect.Text = "Reconnect"
+        Me.btnReconnect.UseVisualStyleBackColor = True
         '
         'flpQuickLaunch
         '
@@ -2117,8 +2135,8 @@ Partial Class FormMain
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 713)
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion, Me.tslblDbState})
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 784)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1068, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2153,6 +2171,15 @@ Partial Class FormMain
         Me.tslblNetVersion.Name = "tslblNetVersion"
         Me.tslblNetVersion.Size = New System.Drawing.Size(124, 19)
         Me.tslblNetVersion.Text = "ToolStripStatusLabel1"
+        '
+        'tslblDbState
+        '
+        Me.tslblDbState.BackColor = System.Drawing.Color.DarkGreen
+        Me.tslblDbState.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.tslblDbState.ForeColor = System.Drawing.Color.WhiteSmoke
+        Me.tslblDbState.Name = "tslblDbState"
+        Me.tslblDbState.Size = New System.Drawing.Size(50, 19)
+        Me.tslblDbState.Text = "ONLINE"
         '
         'tmr10Seconds
         '
@@ -2214,12 +2241,57 @@ Partial Class FormMain
         '
         Me.OpenFileDialog.FileName = "OpenFileDialog"
         '
+        'gpRelayService
+        '
+        Me.gpRelayService.BackColor = System.Drawing.Color.LightGray
+        Me.gpRelayService.Controls.Add(Me.btnRelayServiceRS)
+        Me.gpRelayService.Controls.Add(Me.tbRelayService)
+        Me.gpRelayService.Controls.Add(Me.btnRelayServiceSS)
+        Me.gpRelayService.Location = New System.Drawing.Point(3, 498)
+        Me.gpRelayService.Name = "gpRelayService"
+        Me.gpRelayService.Size = New System.Drawing.Size(362, 49)
+        Me.gpRelayService.TabIndex = 22
+        Me.gpRelayService.TabStop = False
+        Me.gpRelayService.Tag = ""
+        Me.gpRelayService.Text = "Relay Service"
+        '
+        'btnRelayServiceRS
+        '
+        Me.btnRelayServiceRS.Location = New System.Drawing.Point(278, 16)
+        Me.btnRelayServiceRS.Name = "btnRelayServiceRS"
+        Me.btnRelayServiceRS.Size = New System.Drawing.Size(75, 23)
+        Me.btnRelayServiceRS.TabIndex = 15
+        Me.btnRelayServiceRS.Tag = "Core Service"
+        Me.btnRelayServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnRelayServiceRS, "Restart the Advantage Core Service")
+        Me.btnRelayServiceRS.UseVisualStyleBackColor = True
+        '
+        'tbRelayService
+        '
+        Me.tbRelayService.Location = New System.Drawing.Point(6, 19)
+        Me.tbRelayService.Name = "tbRelayService"
+        Me.tbRelayService.ReadOnly = True
+        Me.tbRelayService.Size = New System.Drawing.Size(185, 20)
+        Me.tbRelayService.TabIndex = 13
+        Me.tbRelayService.Tag = "Core Service"
+        '
+        'btnRelayServiceSS
+        '
+        Me.btnRelayServiceSS.Location = New System.Drawing.Point(197, 16)
+        Me.btnRelayServiceSS.Name = "btnRelayServiceSS"
+        Me.btnRelayServiceSS.Size = New System.Drawing.Size(75, 23)
+        Me.btnRelayServiceSS.TabIndex = 14
+        Me.btnRelayServiceSS.Tag = "Core Service"
+        Me.btnRelayServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnRelayServiceSS, "Start/Stop the Advantage Core Service")
+        Me.btnRelayServiceSS.UseVisualStyleBackColor = True
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1068, 737)
+        Me.ClientSize = New System.Drawing.Size(1068, 808)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -2296,6 +2368,8 @@ Partial Class FormMain
         Me.gbAdvApps.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.gpRelayService.ResumeLayout(False)
+        Me.gpRelayService.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2488,4 +2562,10 @@ Partial Class FormMain
     Friend WithEvents tbTest1 As TextBox
     Friend WithEvents tbTest3 As TextBox
     Friend WithEvents tbTest2 As TextBox
+    Friend WithEvents btnReconnect As Button
+    Friend WithEvents tslblDbState As ToolStripStatusLabel
+    Friend WithEvents gpRelayService As GroupBox
+    Friend WithEvents btnRelayServiceRS As Button
+    Friend WithEvents tbRelayService As TextBox
+    Friend WithEvents btnRelayServiceSS As Button
 End Class

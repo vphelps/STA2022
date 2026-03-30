@@ -148,19 +148,6 @@
     <Compile Include="EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ErrorHandler.vb" />
-    <Compile Include="FormError.Designer.vb">
-      <DependentUpon>FormError.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormError.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormWarn.Designer.vb">
-      <DependentUpon>FormWarn.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormWarn.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="IniFile.vb" />
     <Compile Include="FormMain.vb">
       <SubType>Form</SubType>
@@ -188,6 +175,7 @@
     </Compile>
     <Compile Include="OptionsManager.vb" />
     <Compile Include="ReliableSql.vb" />
+    <Compile Include="SafeDb.vb" />
     <Compile Include="ServiceIntrospection.vb" />
     <Compile Include="Services.vb" />
     <Compile Include="SplashScreen1.Designer.vb">
@@ -203,14 +191,8 @@
     <EmbeddedResource Include="EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormError.resx">
-      <DependentUpon>FormError.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormWarn.resx">
-      <DependentUpon>FormWarn.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

@@ -77,6 +77,7 @@ Public Class FormMain
 
         Connections.IniFileHandler(False)
         CodeHelper.FirstLoad()
+        CodeHelper.Refresher()
 
         ServiceControlList = Services.ServicesExistCheck()
 
@@ -184,7 +185,7 @@ Public Class FormMain
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpQATools
+        'tcSTA.SelectedTab = tpQATools
 #End If
     End Sub
 
@@ -202,10 +203,17 @@ Public Class FormMain
             tpDbInfo.Enabled = False
             tpGeneral.Enabled = False
             tpDbLogs.Enabled = False
+        Else
+            tpAdvData.Enabled = True
+            tpDbInfo.Enabled = True
+            tpGeneral.Enabled = True
+            tpDbLogs.Enabled = True
         End If
     End Sub
 
     Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
+        tbTest1.Text = PCInfo.AdvantageVersion
+
         If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
             tbDbVer.BackColor = TextboxColors.White
             tbDbVer.ForeColor = TextboxColors.Black
@@ -260,8 +268,8 @@ Public Class FormMain
                 query = DbInfo.DbDeadlocks
             End If
 
-            Dim q As Object = ReliableSql.Query(query)
-            Dim ds As DataSet = TryCast(q, DataSet)
+            ' ---- SafeDb wrapper ----
+            Dim ds As DataSet = SafeDb.TryQuery(query)
 
             If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
                 dgvDbTableSize.DataSource = ds.Tables(0)
@@ -271,22 +279,17 @@ Public Class FormMain
 
             dgvDbTableSize.Refresh()
 
-        Catch oce As OperationCanceledException
-            MessageBox.Show(
-                "Operation canceled by user due to lost database connection.",
-                "Database",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            )
+        Catch ex As SafeDb.DatabaseOfflineException
+            GoOffline("Lost DB connection during DbInfoRefresh")
             dgvDbTableSize.DataSource = Nothing
 
         Catch ex As Exception
             MessageBox.Show(
-                $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
-                "Database Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error
-            )
+            $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
+            "Database Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error
+        )
             dgvDbTableSize.DataSource = Nothing
 
         Finally
@@ -294,7 +297,6 @@ Public Class FormMain
             btnDbInfoRefresh.Enabled = True
         End Try
     End Sub
-
     Private Sub rbDbTableSize_CheckedChanged(sender As Object, e As EventArgs) Handles rbDbTableSize.CheckedChanged, rbDbFragmentation.CheckedChanged, rbDbSizeByDay.CheckedChanged, rbDbDeadlocks.CheckedChanged
         btnDbInfoRefresh.PerformClick()
     End Sub
@@ -312,24 +314,17 @@ Public Class FormMain
     Private Sub btnDbLogRefresh_Click(sender As Object, e As EventArgs) Handles btnDbLogRefresh.Click, rbWebCloudUpdates.Click, rbMessageLog.Click
         If Variables.OfflineMode Then Return
 
-        Dim dbResultCount As DataSet = Nothing
-        Dim dbResultData As DataSet = Nothing
-
-        Dim queryData As String = ""
-        Dim queryCount As String = ""
-
         Try
             If rbWebCloudUpdates.Checked Then
 
                 gpDbLogCount.Text = "Count per table"
                 gpDbLogData.Text = "All WebCloudUpdates Entries"
 
-                queryCount = LogQueries.WebCloudTotalCount
-                Dim qCount As Object = ReliableSql.Query(queryCount)
-                dbResultCount = TryCast(qCount, DataSet)
+                ' ---- SafeDb ----
+                Dim dsCount As DataSet = SafeDb.TryQuery(LogQueries.WebCloudTotalCount)
 
-                If dbResultCount IsNot Nothing AndAlso dbResultCount.Tables.Count > 0 Then
-                    dgvDbLogCount.DataSource = dbResultCount.Tables(0)
+                If dsCount IsNot Nothing AndAlso dsCount.Tables.Count > 0 Then
+                    dgvDbLogCount.DataSource = dsCount.Tables(0)
                     dgvDbLogCount.Columns(0).Visible = False
                     dgvDbLogCount.Columns(1).HeaderText = "Table"
                     dgvDbLogCount.Columns(2).HeaderText = "Count"
@@ -337,12 +332,10 @@ Public Class FormMain
                     dgvDbLogCount.DataSource = Nothing
                 End If
 
-                queryData = LogQueries.WebCloudUpdates
-                Dim qData As Object = ReliableSql.Query(queryData)
-                dbResultData = TryCast(qData, DataSet)
+                Dim dsData As DataSet = SafeDb.TryQuery(LogQueries.WebCloudUpdates)
 
-                If dbResultData IsNot Nothing AndAlso dbResultData.Tables.Count > 0 Then
-                    dgvDbLogData.DataSource = dbResultData.Tables(0)
+                If dsData IsNot Nothing AndAlso dsData.Tables.Count > 0 Then
+                    dgvDbLogData.DataSource = dsData.Tables(0)
                 Else
                     dgvDbLogData.DataSource = Nothing
                 End If
@@ -353,12 +346,11 @@ Public Class FormMain
                 gpDbLogCount.Text = "Errors per day"
                 gpDbLogData.Text = "MessageLog"
 
-                queryCount = LogQueries.MessageLogErrorCount
-                Dim qCount As Object = ReliableSql.Query(queryCount)
-                dbResultCount = TryCast(qCount, DataSet)
+                ' ---- SafeDb ----
+                Dim dsErrCount As DataSet = SafeDb.TryQuery(LogQueries.MessageLogErrorCount)
 
-                If dbResultCount IsNot Nothing AndAlso dbResultCount.Tables.Count > 0 Then
-                    dgvDbLogCount.DataSource = dbResultCount.Tables(0)
+                If dsErrCount IsNot Nothing AndAlso dsErrCount.Tables.Count > 0 Then
+                    dgvDbLogCount.DataSource = dsErrCount.Tables(0)
                     dgvDbLogCount.Columns(0).Visible = True
                     dgvDbLogCount.Columns(0).HeaderText = "Date"
                     dgvDbLogCount.Columns(1).HeaderText = "Program"
@@ -367,13 +359,11 @@ Public Class FormMain
                     dgvDbLogCount.DataSource = Nothing
                 End If
 
-                queryData = LogQueries.MessageLog
-                Dim qData As Object = ReliableSql.Query(queryData)
-                dbResultData = TryCast(qData, DataSet)
+                Dim dsLog As DataSet = SafeDb.TryQuery(LogQueries.MessageLog)
 
-                If dbResultData IsNot Nothing AndAlso dbResultData.Tables.Count > 0 Then
-                    dgvDbLogData.DataSource = dbResultData.Tables(0)
-                    dgvDbLogData.Sort(dgvDbLogData.Columns(0), ComponentModel.ListSortDirection.Descending)
+                If dsLog IsNot Nothing AndAlso dsLog.Tables.Count > 0 Then
+                    dgvDbLogData.DataSource = dsLog.Tables(0)
+                    dgvDbLogData.Sort(dgvDbLogData.Columns(0), ListSortDirection.Descending)
                 Else
                     dgvDbLogData.DataSource = Nothing
                 End If
@@ -381,26 +371,21 @@ Public Class FormMain
             Else
                 gpDbLogData.Text = ""
                 gpDbLogCount.Text = ""
-                Exit Sub
+                Return
             End If
 
             dgvDbLogData.Refresh()
 
-        Catch oce As OperationCanceledException
-            MessageBox.Show(
-                "Operation canceled by user due to lost database connection.",
-                "Database Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning
-            )
+        Catch ex As SafeDb.DatabaseOfflineException
+            GoOffline("Lost DB connection during DbLogRefresh")
+            dgvDbLogCount.DataSource = Nothing
+            dgvDbLogData.DataSource = Nothing
 
         Catch ex As Exception
-            MessageBox.Show(
-                $"Database log refresh failed:{Environment.NewLine}{ex.Message}",
-                "Database Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error
-            )
+            MessageBox.Show($"Database log refresh failed:{Environment.NewLine}{ex.Message}",
+                        "Database Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -445,7 +430,7 @@ Public Class FormMain
         dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
     End Sub
 
-    Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click
+    Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click, btnRelayServiceSS.Click
         Dim caller As Button = DirectCast(sender, Button)
 
         Dim temp As Integer
@@ -467,7 +452,7 @@ Public Class FormMain
         End If
     End Sub
 
-    Private Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click
+    Private Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click, btnRelayServiceRS.Click
         Dim temp As Integer
         Dim caller As Button = DirectCast(sender, Button)
         caller.Enabled = False
@@ -482,7 +467,7 @@ Public Class FormMain
         Services.RestartService(LastServiceEntry)
     End Sub
 
-    Private Sub tbCoreService_GotFocus(sender As Object, e As EventArgs) Handles tbCoreService.GotFocus, tbCoreService.GotFocus, tbCloudService.GotFocus, tbAdvCreditService.GotFocus, tbAdvSignageService.GotFocus, tbAdvLicService.GotFocus, tbAdvNotifyService.GotFocus, tbAdvTurnstileEngine.GotFocus, tbAdvantageUpgradeService.GotFocus
+    Private Sub tbCoreService_GotFocus(sender As Object, e As EventArgs) Handles tbCoreService.GotFocus, tbCoreService.GotFocus, tbCloudService.GotFocus, tbAdvCreditService.GotFocus, tbAdvSignageService.GotFocus, tbAdvLicService.GotFocus, tbAdvNotifyService.GotFocus, tbAdvTurnstileEngine.GotFocus, tbAdvantageUpgradeService.GotFocus, tbRelayService.GotFocus
         Dim caller As TextBox = DirectCast(sender, TextBox)
         caller.SelectionStart = 0
         caller.SelectionLength = 0
@@ -785,7 +770,6 @@ Public Class FormMain
         Try
             OptionsManager.SaveLauncherConfig(_launcherConfig)
         Catch ex As Exception
-            Debug.WriteLine("Error saving launcher config on exit: " & ex.Message)
         End Try
 
         Try
@@ -1065,7 +1049,6 @@ Public Class FormMain
         AddHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
 
         _ctxBuilt = True
-        Debug.WriteLine($"[CTX] Build: {_miAssignRoot?.DropDownItems.Count} assign items, time={DateTime.Now:HH:mm:ss.fff}")
     End Sub
 
     Private Sub CtxPrograms_Opening_UpdateLabels(sender As Object, e As System.ComponentModel.CancelEventArgs)
@@ -1128,19 +1111,130 @@ Public Class FormMain
     ' ---------------- Misc remaining UI ----------------
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-        tbTest1.Text = ReliableSql.Query("SELECT TOP 1 Version FROM VersionInfo ORDER BY KeyID DESC;")
+
+        Try
+            Dim ds As DataSet = SafeDb.TryQuery("SELECT TOP 1 Version FROM VersionInfo ORDER BY KeyID DESC;")
+            If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
+                tbTest1.Text = ds.Tables(0).Rows(0)(0).ToString()
+            End If
+
+        Catch ex As SafeDb.DatabaseOfflineException
+            GoOffline("Lost DB connection during Test query")
+            tbTest1.Text = "Offline"
+        End Try
+
     End Sub
+
+
+    Private Sub DisableDatabaseSections()
+        tbPcDbSize.Text = "Offline"
+        tbPcSqlVersion.Text = "Offline"
+        dgvAppOptions.DataSource = Nothing
+        tpAdvData.Enabled = False
+        tpDbLogs.Enabled = False
+        pnlDbData.Enabled = False
+        pnlDbInfoButtons.Enabled = False
+    End Sub
+    Public Sub GoOffline(reason As String)
+        Variables.OfflineMode = True
+        PCInfo.ValidDatabase = False
+
+        DisableDatabaseSections()
+
+        ' --- Status indicator ---
+        If tslblDbState IsNot Nothing Then
+            tslblDbState.Text = "OFFLINE"
+            tslblDbState.ForeColor = Color.White
+            tslblDbState.BackColor = Color.Firebrick   ' for OFFLINE
+        End If
+
+        Debug.WriteLine("[OFFLINE] " & reason)
+    End Sub
+    Public Sub GoOnline()
+        Variables.OfflineMode = False
+        PCInfo.ValidDatabase = True
+
+        EnableDatabaseSections()
+
+        ' Refresh UI
+        CodeHelper.GetPcInfo()
+        CodeHelper.FirstLoad()
+        CodeHelper.Refresher()
+
+        ' --- Status indicator ---
+        If tslblDbState IsNot Nothing Then
+            tslblDbState.Text = "ONLINE"
+            tslblDbState.ForeColor = Color.WhiteSmoke
+            tslblDbState.BackColor = Color.DarkGreen   ' for ONLINE
+        End If
+
+        Debug.WriteLine("[ONLINE] Database connection restored")
+    End Sub
+    Private Sub EnableDatabaseSections()
+        tpAdvData.Enabled = True
+        tpDbLogs.Enabled = True
+        pnlDbData.Enabled = True
+        pnlDbInfoButtons.Enabled = True
+
+        ' Clear the offline placeholders
+        tbPcDbSize.Text = ""
+        tbPcSqlVersion.Text = ""
+
+
+    End Sub
+    Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+        Cursor.Current = Cursors.WaitCursor
+        btnReconnect.Enabled = False
+
+        Try
+            ' Test database connection using your existing helper
+            If TestConnection(ConfigValues.ConnectionString) Then
+                ' Successful reconnect
+                GoOnline()
+                MessageBox.Show("Reconnected to the database.",
+                            "Database",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information)
+            Else
+                ' Still offline
+                MessageBox.Show("Still cannot connect to the database.",
+                            "Database",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning)
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show($"Reconnect failed: {ex.Message}",
+                        "Database",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+        Finally
+            btnReconnect.Enabled = True
+            Cursor.Current = Cursors.Default
+        End Try
+    End Sub
+    Private Function TestConnection(cs As String) As Boolean
+        Try
+            Using cn As New SqlClient.SqlConnection(cs)
+                cn.Open()
+                Return (cn.State = ConnectionState.Open)
+            End Using
+        Catch
+            Return False
+        End Try
+    End Function
 
     Private Sub AdvantageDataRefresh(FiredBy As String)
         tbTest1.Text = FiredBy
 
         Try
+            ' --------------------------
+            ' AppOptions
+            ' --------------------------
             dgvAppOptions.Rows.Clear()
 
-            Dim qApp As Object = ReliableSql.Query("SELECT OptionName, OptionValue FROM AppOptions")
-            Dim dsApp As DataSet = TryCast(qApp, DataSet)
-
-            If dsApp IsNot Nothing AndAlso dsApp.Tables.Count > 0 AndAlso dsApp.Tables(0).Rows.Count > 0 Then
+            Dim dsApp As DataSet = SafeDb.TryQuery("SELECT OptionName, OptionValue FROM AppOptions")
+            If dsApp IsNot Nothing AndAlso dsApp.Tables.Count > 0 Then
                 dbAppOptions = dsApp
                 For Each row As DataRow In dsApp.Tables(0).Rows
                     dgvAppOptions.Rows.Add(row.ItemArray)
@@ -1149,12 +1243,13 @@ Public Class FormMain
                 dbAppOptions = New DataSet()
             End If
 
+            ' --------------------------
+            ' WebOptions
+            ' --------------------------
             dgvWebOptions.Rows.Clear()
 
-            Dim qWeb As Object = ReliableSql.Query("SELECT OptionName, OptionValue FROM WebOptions")
-            Dim dsWeb As DataSet = TryCast(qWeb, DataSet)
-
-            If dsWeb IsNot Nothing AndAlso dsWeb.Tables.Count > 0 AndAlso dsWeb.Tables(0).Rows.Count > 0 Then
+            Dim dsWeb As DataSet = SafeDb.TryQuery("SELECT OptionName, OptionValue FROM WebOptions")
+            If dsWeb IsNot Nothing AndAlso dsWeb.Tables.Count > 0 Then
                 dbWebOptions = dsWeb
                 For Each row As DataRow In dsWeb.Tables(0).Rows
                     dgvWebOptions.Rows.Add(row.ItemArray)
@@ -1163,12 +1258,13 @@ Public Class FormMain
                 dbWebOptions = New DataSet()
             End If
 
+            ' --------------------------
+            ' ApplicationInfo
+            ' --------------------------
             dgvApplicationInfo.Rows.Clear()
 
-            Dim qInfo As Object = ReliableSql.Query("SELECT * FROM ApplicationInfo")
-            Dim dsInfo As DataSet = TryCast(qInfo, DataSet)
-
-            If dsInfo IsNot Nothing AndAlso dsInfo.Tables.Count > 0 AndAlso dsInfo.Tables(0).Rows.Count > 0 Then
+            Dim dsInfo As DataSet = SafeDb.TryQuery("SELECT * FROM ApplicationInfo")
+            If dsInfo IsNot Nothing AndAlso dsInfo.Tables.Count > 0 Then
                 dbApplicationInfo = dsInfo
                 Dim t As DataTable = dsInfo.Tables(0)
                 Dim firstRow As DataRow = t.Rows(0)
@@ -1180,23 +1276,16 @@ Public Class FormMain
                 dbApplicationInfo = New DataSet()
             End If
 
-        Catch oce As OperationCanceledException
-            MessageBox.Show("Database operation canceled by user.", "Info",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As SafeDb.DatabaseOfflineException
+            ' ---- SWITCH TO OFFLINE MODE ----
+            GoOffline("Lost DB connection during AdvantageDataRefresh")
+            Exit Sub
 
         Catch ex As Exception
-            ErrorHandler.ErrorHandler("Error refreshing option grids: " & ex.Message, ex.StackTrace)
+            ' ---- No more ErrorHandler ----
+            ' Instead we gracefully fall to offline mode.
+            GoOffline("Database failure in AdvantageDataRefresh: " & ex.Message)
+            Exit Sub
         End Try
     End Sub
-
-    Private Sub DisableDatabaseSections()
-        tbPcDbSize.Text = "Offline"
-        tbPcSqlVersion.Text = "Offline"
-        dgvAppOptions.DataSource = Nothing
-        tpAdvData.Enabled = False
-        tpDbLogs.Enabled = False
-        pnlDbData.Enabled = False
-        pnlDbInfoButtons.Enabled = False
-    End Sub
-
 End Class
