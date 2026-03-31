@@ -17,13 +17,11 @@ Public Module SafeDb
     ''' Offline Mode safely.
     ''' </summary>
     Public Function TryQuery(sql As String) As DataSet
-        Debug.WriteLine("[SafeDb] Query called: " & sql)
         Try
             Dim result As Object = DBConnector.dbQuery(sql)
             Return TryCast(result, DataSet)
 
         Catch ex As Exception
-            Debug.WriteLine("[SafeDb] Exception caught: " & ex.Message)
             Throw New DatabaseOfflineException("Database connection lost.", ex)
         End Try
     End Function

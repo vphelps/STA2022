@@ -313,14 +313,13 @@ Public Class CodeHelper
     Public Shared Function CeInfo() As String
 
         Dim Path As String = ""
-        AdvExeCheck("AdvManager")
+        AppData.InstalledVersion = AdvExeCheck("AdvManager")
 
         If AppData.InstalledVersion = AppInstallState.InstalledX86 Then
             Path = "C:\Program Files (x86)\CenterEdge Software\AdvCommon.dll"
         ElseIf AppData.InstalledVersion = AppInstallState.InstalledX64 Then
             Path = "C:\Program Files\CenterEdge Software\AdvCommon.dll"
         End If
-
         Try
             Dim vi = FileVersionInfo.GetVersionInfo(Path)
             Return $"{vi.FileMajorPart}.{vi.FileMinorPart}.{vi.FileBuildPart}"
