@@ -11,6 +11,8 @@ Public Class ServiceControlEntry
     Public Property Service As String
     Public Property GroupBox As System.Windows.Forms.GroupBox
     Public Property Status As System.ServiceProcess.ServiceControllerStatus
+    Public Property Installed As Boolean = True
+
 End Class
 
 Public Class Services
@@ -77,6 +79,7 @@ Public Class Services
         Try
             localServiceList = BuildServiceControlList()
         Catch
+            Debug.WriteLine("catch")
             Return New List(Of ServiceControlEntry)()
         End Try
 
@@ -91,6 +94,7 @@ Public Class Services
                              Select(Function(s) s.ServiceName).
                              ToHashSet(StringComparer.OrdinalIgnoreCase)
         Catch
+            Debug.WriteLine("catch2")
             installedNames = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         End Try
 
@@ -124,11 +128,13 @@ Public Class Services
                             entry.GroupBox.Text = $"{entry.GroupBox.Text} ({startType})"
                         End If
                     Catch
+                        Debug.WriteLine("catch3")
                         ' ignore StartType failures
                     End Try
                 End Using
             Catch
                 ' Access denied/missing/etc. → "Not Installed" behavior (but visible!)
+                Debug.WriteLine("catch4")
                 MarkNotInstalled(entry)
             End Try
         Next
@@ -138,6 +144,7 @@ Public Class Services
             Try
                 GetServiceStatus(entry)
             Catch
+                Debug.WriteLine("catch5")
                 ' keep UI resilient
             End Try
         Next
@@ -163,6 +170,7 @@ Public Class Services
     ' CHANGE: Now uses default TextBox colors for Not Installed.
     Private Shared Sub MarkNotInstalled(entry As ServiceControlEntry)
         If entry Is Nothing Then Return
+        entry.Installed = False
 
         ' TextBox -> "Not Installed", disabled, DEFAULT system colors
         If entry.TextBox IsNot Nothing Then
@@ -329,6 +337,7 @@ Public Class Services
 
     Public Shared Function GetServiceStatus(ByVal caller As ServiceControlEntry) As Boolean
         If caller Is Nothing Then Return True
+        If Not caller.Installed Then Return False
 
         ' Missing name -> treat as not installed (visible but disabled, default colors)
         If String.IsNullOrWhiteSpace(caller.Service) Then
@@ -361,6 +370,7 @@ Public Class Services
 
             End Using
         Catch
+            Debug.WriteLine("GetServiceStatus")
             ' Not installed or inaccessible → keep visible but disabled, default colors
             MarkNotInstalled(caller)
             Return False
@@ -461,6 +471,15 @@ Public Class Services
             .RSButton = frm.btnAdvantageUpgradeServiceRS,
             .Service = "AdvantageUpgradeService",
             .GroupBox = frm.gpAdvantageUpgradeService
+        })
+
+        ' --- Relay Service ---
+        mylist.Add(New ServiceControlEntry With {
+            .TextBox = frm.tbRelayService,
+            .SSButton = frm.btnRelayServiceSS,
+            .RSButton = frm.btnRelayServiceRS,
+            .Service = "AdvRelayClient",
+            .GroupBox = frm.gpRelayService
         })
 
         Return mylist

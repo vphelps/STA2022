@@ -79,12 +79,12 @@ Public NotInheritable Class OptionsManager
             If opts Is Nothing Then opts = New AppOptions()
             If opts.QuickLaunchIds Is Nothing Then
                 opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
-                Debug.WriteLine($"[Options] Save: Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
+                'Debug.WriteLine($"[Options] Save: Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
             End If
 
             ' === DIAGNOSTICS: BEFORE ===
-            Debug.WriteLine($"[Options] Save BEFORE normalize: Count={opts.QuickLaunchIds.Count}")
-            Debug.WriteLine($"[Options] Save stack: {Environment.NewLine}{New System.Diagnostics.StackTrace(True)}")
+            'Debug.WriteLine($"[Options] Save BEFORE normalize: Count={opts.QuickLaunchIds.Count}")
+            'Debug.WriteLine($"[Options] Save stack: {Environment.NewLine}{New System.Diagnostics.StackTrace(True)}")
 
             ' Keep stable: dedupe + trim
             Dim changed As Boolean = False
@@ -92,7 +92,7 @@ Public NotInheritable Class OptionsManager
             changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
 
             ' === DIAGNOSTICS: AFTER ===
-            Debug.WriteLine($"[Options] Save AFTER normalize: Count={opts.QuickLaunchIds.Count}")
+            'Debug.WriteLine($"[Options] Save AFTER normalize: Count={opts.QuickLaunchIds.Count}")
 
             Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
             File.WriteAllText(path, json, Encoding.UTF8)
