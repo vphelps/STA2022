@@ -811,8 +811,8 @@ Public Class FormMain
 
                 Dim btn As New Button()
                 btn.Name = $"btnQuickSlot{slotLocal + 1}"
-                btn.Width = 120
-                btn.Height = 32
+                btn.Width = 140
+                btn.Height = 70
                 btn.AutoSize = False
                 btn.Tag = entryLocal
                 btn.Text = entryLocal.Name

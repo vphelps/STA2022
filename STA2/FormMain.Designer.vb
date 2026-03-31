@@ -78,6 +78,10 @@ Partial Class FormMain
         Me.btnAdvNotifyServiceRS = New System.Windows.Forms.Button()
         Me.tbAdvNotifyService = New System.Windows.Forms.TextBox()
         Me.btnAdvNotifyServiceSS = New System.Windows.Forms.Button()
+        Me.gpRelayService = New System.Windows.Forms.GroupBox()
+        Me.btnRelayServiceRS = New System.Windows.Forms.Button()
+        Me.tbRelayService = New System.Windows.Forms.TextBox()
+        Me.btnRelayServiceSS = New System.Windows.Forms.Button()
         Me.gpAdvTurnstileEngine = New System.Windows.Forms.GroupBox()
         Me.btnAdvTurnstileEngineRS = New System.Windows.Forms.Button()
         Me.tbAdvTurnstileEngine = New System.Windows.Forms.TextBox()
@@ -86,10 +90,6 @@ Partial Class FormMain
         Me.btnAdvantageUpgradeServiceRS = New System.Windows.Forms.Button()
         Me.tbAdvantageUpgradeService = New System.Windows.Forms.TextBox()
         Me.btnAdvantageUpgradeServiceSS = New System.Windows.Forms.Button()
-        Me.gpRelayService = New System.Windows.Forms.GroupBox()
-        Me.btnRelayServiceRS = New System.Windows.Forms.Button()
-        Me.tbRelayService = New System.Windows.Forms.TextBox()
-        Me.btnRelayServiceSS = New System.Windows.Forms.Button()
         Me.gpLicInfo = New System.Windows.Forms.GroupBox()
         Me.tbShiftDate = New System.Windows.Forms.TextBox()
         Me.tbLocName = New System.Windows.Forms.TextBox()
@@ -218,6 +218,7 @@ Partial Class FormMain
         Me.SaveFileDialog = New System.Windows.Forms.SaveFileDialog()
         Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.ToolTipForQuickButtons = New System.Windows.Forms.ToolTip(Me.components)
+        Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -234,9 +235,9 @@ Partial Class FormMain
         Me.gpAdvSignageService.SuspendLayout()
         Me.gpAdvLicService.SuspendLayout()
         Me.gpAdvNotifyService.SuspendLayout()
+        Me.gpRelayService.SuspendLayout()
         Me.gpAdvTurnstileEngine.SuspendLayout()
         Me.gpAdvantageUpgradeService.SuspendLayout()
-        Me.gpRelayService.SuspendLayout()
         Me.gpLicInfo.SuspendLayout()
         Me.tpAdvData.SuspendLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -265,13 +266,17 @@ Partial Class FormMain
         Me.cmsQuickLaunch.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
+        CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer2.Panel1.SuspendLayout()
+        Me.SplitContainer2.Panel2.SuspendLayout()
+        Me.SplitContainer2.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(990, 115)
+        Me.btnExit.Location = New System.Drawing.Point(222, 92)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(64, 20)
         Me.btnExit.TabIndex = 0
@@ -280,9 +285,10 @@ Partial Class FormMain
         '
         'SplitContainer1
         '
+        Me.SplitContainer1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.SplitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.SplitContainer1.Cursor = System.Windows.Forms.Cursors.Default
-        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
         Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer1.Name = "SplitContainer1"
@@ -295,18 +301,15 @@ Partial Class FormMain
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnReconnect)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.flpQuickLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdminRestart)
         Me.SplitContainer1.Panel2.Controls.Add(Me.cmbboxAppLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnComboAppLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnRefreshGeneralTab)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnBatchLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnExit)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1068, 808)
-        Me.SplitContainer1.SplitterDistance = 639
+        Me.SplitContainer1.Size = New System.Drawing.Size(1060, 808)
+        Me.SplitContainer1.SplitterDistance = 640
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -323,7 +326,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1064, 635)
+        Me.tcSTA.Size = New System.Drawing.Size(1056, 636)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -336,7 +339,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1056, 609)
+        Me.tpGeneral.Size = New System.Drawing.Size(1048, 610)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -897,6 +900,51 @@ Partial Class FormMain
         Me.ttSTA2.SetToolTip(Me.btnAdvNotifyServiceSS, "Start/Stop the Advantage Notification Service")
         Me.btnAdvNotifyServiceSS.UseVisualStyleBackColor = True
         '
+        'gpRelayService
+        '
+        Me.gpRelayService.BackColor = System.Drawing.Color.LightGray
+        Me.gpRelayService.Controls.Add(Me.btnRelayServiceRS)
+        Me.gpRelayService.Controls.Add(Me.tbRelayService)
+        Me.gpRelayService.Controls.Add(Me.btnRelayServiceSS)
+        Me.gpRelayService.Location = New System.Drawing.Point(3, 388)
+        Me.gpRelayService.Name = "gpRelayService"
+        Me.gpRelayService.Size = New System.Drawing.Size(362, 49)
+        Me.gpRelayService.TabIndex = 22
+        Me.gpRelayService.TabStop = False
+        Me.gpRelayService.Tag = ""
+        Me.gpRelayService.Text = "Relay Service"
+        '
+        'btnRelayServiceRS
+        '
+        Me.btnRelayServiceRS.Location = New System.Drawing.Point(278, 16)
+        Me.btnRelayServiceRS.Name = "btnRelayServiceRS"
+        Me.btnRelayServiceRS.Size = New System.Drawing.Size(75, 23)
+        Me.btnRelayServiceRS.TabIndex = 15
+        Me.btnRelayServiceRS.Tag = "Core Service"
+        Me.btnRelayServiceRS.Text = "Restart"
+        Me.ttSTA2.SetToolTip(Me.btnRelayServiceRS, "Restart the Advantage Core Service")
+        Me.btnRelayServiceRS.UseVisualStyleBackColor = True
+        '
+        'tbRelayService
+        '
+        Me.tbRelayService.Location = New System.Drawing.Point(6, 19)
+        Me.tbRelayService.Name = "tbRelayService"
+        Me.tbRelayService.ReadOnly = True
+        Me.tbRelayService.Size = New System.Drawing.Size(185, 20)
+        Me.tbRelayService.TabIndex = 13
+        Me.tbRelayService.Tag = "Core Service"
+        '
+        'btnRelayServiceSS
+        '
+        Me.btnRelayServiceSS.Location = New System.Drawing.Point(197, 16)
+        Me.btnRelayServiceSS.Name = "btnRelayServiceSS"
+        Me.btnRelayServiceSS.Size = New System.Drawing.Size(75, 23)
+        Me.btnRelayServiceSS.TabIndex = 14
+        Me.btnRelayServiceSS.Tag = "Core Service"
+        Me.btnRelayServiceSS.Text = "Start"
+        Me.ttSTA2.SetToolTip(Me.btnRelayServiceSS, "Start/Stop the Advantage Core Service")
+        Me.btnRelayServiceSS.UseVisualStyleBackColor = True
+        '
         'gpAdvTurnstileEngine
         '
         Me.gpAdvTurnstileEngine.BackColor = System.Drawing.Color.LightGray
@@ -986,51 +1034,6 @@ Partial Class FormMain
         Me.btnAdvantageUpgradeServiceSS.Text = "Start"
         Me.ttSTA2.SetToolTip(Me.btnAdvantageUpgradeServiceSS, "Start/Stop the Advantage Upgrade Service")
         Me.btnAdvantageUpgradeServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpRelayService
-        '
-        Me.gpRelayService.BackColor = System.Drawing.Color.LightGray
-        Me.gpRelayService.Controls.Add(Me.btnRelayServiceRS)
-        Me.gpRelayService.Controls.Add(Me.tbRelayService)
-        Me.gpRelayService.Controls.Add(Me.btnRelayServiceSS)
-        Me.gpRelayService.Location = New System.Drawing.Point(3, 388)
-        Me.gpRelayService.Name = "gpRelayService"
-        Me.gpRelayService.Size = New System.Drawing.Size(362, 49)
-        Me.gpRelayService.TabIndex = 22
-        Me.gpRelayService.TabStop = False
-        Me.gpRelayService.Tag = ""
-        Me.gpRelayService.Text = "Relay Service"
-        '
-        'btnRelayServiceRS
-        '
-        Me.btnRelayServiceRS.Location = New System.Drawing.Point(278, 16)
-        Me.btnRelayServiceRS.Name = "btnRelayServiceRS"
-        Me.btnRelayServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnRelayServiceRS.TabIndex = 15
-        Me.btnRelayServiceRS.Tag = "Core Service"
-        Me.btnRelayServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnRelayServiceRS, "Restart the Advantage Core Service")
-        Me.btnRelayServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbRelayService
-        '
-        Me.tbRelayService.Location = New System.Drawing.Point(6, 19)
-        Me.tbRelayService.Name = "tbRelayService"
-        Me.tbRelayService.ReadOnly = True
-        Me.tbRelayService.Size = New System.Drawing.Size(185, 20)
-        Me.tbRelayService.TabIndex = 13
-        Me.tbRelayService.Tag = "Core Service"
-        '
-        'btnRelayServiceSS
-        '
-        Me.btnRelayServiceSS.Location = New System.Drawing.Point(197, 16)
-        Me.btnRelayServiceSS.Name = "btnRelayServiceSS"
-        Me.btnRelayServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnRelayServiceSS.TabIndex = 14
-        Me.btnRelayServiceSS.Tag = "Core Service"
-        Me.btnRelayServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnRelayServiceSS, "Start/Stop the Advantage Core Service")
-        Me.btnRelayServiceSS.UseVisualStyleBackColor = True
         '
         'gpLicInfo
         '
@@ -1176,7 +1179,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1056, 609)
+        Me.tpAdvData.Size = New System.Drawing.Size(1056, 610)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1331,7 +1334,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 609)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1056, 610)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1346,7 +1349,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 578)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 579)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1050, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1438,7 +1441,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 609)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1056, 610)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1525,7 +1528,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 479)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 480)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1050, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1680,7 +1683,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1056, 609)
+        Me.tpStParse.Size = New System.Drawing.Size(1056, 610)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1750,7 +1753,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1056, 609)
+        Me.tpOptions.Size = New System.Drawing.Size(1056, 610)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -1853,7 +1856,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.gbAppLaunchSettings)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1056, 609)
+        Me.tpQATools.Size = New System.Drawing.Size(1056, 610)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -2003,7 +2006,7 @@ Partial Class FormMain
         '
         'btnReconnect
         '
-        Me.btnReconnect.Location = New System.Drawing.Point(737, 104)
+        Me.btnReconnect.Location = New System.Drawing.Point(878, 23)
         Me.btnReconnect.Name = "btnReconnect"
         Me.btnReconnect.Size = New System.Drawing.Size(75, 23)
         Me.btnReconnect.TabIndex = 22
@@ -2014,14 +2017,14 @@ Partial Class FormMain
         '
         Me.flpQuickLaunch.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.flpQuickLaunch.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.flpQuickLaunch.Location = New System.Drawing.Point(276, 6)
+        Me.flpQuickLaunch.Location = New System.Drawing.Point(3, 6)
         Me.flpQuickLaunch.Name = "flpQuickLaunch"
-        Me.flpQuickLaunch.Size = New System.Drawing.Size(431, 121)
+        Me.flpQuickLaunch.Size = New System.Drawing.Size(287, 594)
         Me.flpQuickLaunch.TabIndex = 21
         '
         'btnAdminRestart
         '
-        Me.btnAdminRestart.Location = New System.Drawing.Point(979, 54)
+        Me.btnAdminRestart.Location = New System.Drawing.Point(964, 54)
         Me.btnAdminRestart.Name = "btnAdminRestart"
         Me.btnAdminRestart.Size = New System.Drawing.Size(77, 45)
         Me.btnAdminRestart.TabIndex = 20
@@ -2032,14 +2035,14 @@ Partial Class FormMain
         '
         Me.cmbboxAppLaunch.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbboxAppLaunch.FormattingEnabled = True
-        Me.cmbboxAppLaunch.Location = New System.Drawing.Point(713, 10)
+        Me.cmbboxAppLaunch.Location = New System.Drawing.Point(525, 5)
         Me.cmbboxAppLaunch.Name = "cmbboxAppLaunch"
         Me.cmbboxAppLaunch.Size = New System.Drawing.Size(180, 21)
         Me.cmbboxAppLaunch.TabIndex = 18
         '
         'btnComboAppLaunch
         '
-        Me.btnComboAppLaunch.Location = New System.Drawing.Point(899, 8)
+        Me.btnComboAppLaunch.Location = New System.Drawing.Point(711, 3)
         Me.btnComboAppLaunch.Name = "btnComboAppLaunch"
         Me.btnComboAppLaunch.Size = New System.Drawing.Size(75, 23)
         Me.btnComboAppLaunch.TabIndex = 19
@@ -2049,7 +2052,7 @@ Partial Class FormMain
         'btnRefreshGeneralTab
         '
         Me.btnRefreshGeneralTab.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(980, 10)
+        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(878, 55)
         Me.btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
         Me.btnRefreshGeneralTab.Size = New System.Drawing.Size(80, 44)
         Me.btnRefreshGeneralTab.TabIndex = 17
@@ -2058,7 +2061,7 @@ Partial Class FormMain
         '
         'btnBatchLaunch
         '
-        Me.btnBatchLaunch.Location = New System.Drawing.Point(880, 114)
+        Me.btnBatchLaunch.Location = New System.Drawing.Point(112, 91)
         Me.btnBatchLaunch.Name = "btnBatchLaunch"
         Me.btnBatchLaunch.Size = New System.Drawing.Size(104, 23)
         Me.btnBatchLaunch.TabIndex = 15
@@ -2154,7 +2157,7 @@ Partial Class FormMain
         'btnAdvUpgrade
         '
         Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAdvUpgrade.Location = New System.Drawing.Point(893, 54)
+        Me.btnAdvUpgrade.Location = New System.Drawing.Point(276, 71)
         Me.btnAdvUpgrade.Name = "btnAdvUpgrade"
         Me.btnAdvUpgrade.Size = New System.Drawing.Size(80, 44)
         Me.btnAdvUpgrade.TabIndex = 18
@@ -2164,7 +2167,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(813, 54)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(276, 25)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2183,7 +2186,7 @@ Partial Class FormMain
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion, Me.tslblDbState})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 784)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(1068, 24)
+        Me.StatusStrip1.Size = New System.Drawing.Size(1371, 24)
         Me.StatusStrip1.TabIndex = 12
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -2286,12 +2289,32 @@ Partial Class FormMain
         '
         Me.OpenFileDialog.FileName = "OpenFileDialog"
         '
+        'SplitContainer2
+        '
+        Me.SplitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.SplitContainer2.Location = New System.Drawing.Point(1066, 6)
+        Me.SplitContainer2.Name = "SplitContainer2"
+        Me.SplitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal
+        '
+        'SplitContainer2.Panel1
+        '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.flpQuickLaunch)
+        '
+        'SplitContainer2.Panel2
+        '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.btnExit)
+        Me.SplitContainer2.Panel2.Controls.Add(Me.btnBatchLaunch)
+        Me.SplitContainer2.Size = New System.Drawing.Size(293, 738)
+        Me.SplitContainer2.SplitterDistance = 607
+        Me.SplitContainer2.TabIndex = 22
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1068, 808)
+        Me.ClientSize = New System.Drawing.Size(1371, 808)
+        Me.Controls.Add(Me.SplitContainer2)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -2324,12 +2347,12 @@ Partial Class FormMain
         Me.gpAdvLicService.PerformLayout()
         Me.gpAdvNotifyService.ResumeLayout(False)
         Me.gpAdvNotifyService.PerformLayout()
+        Me.gpRelayService.ResumeLayout(False)
+        Me.gpRelayService.PerformLayout()
         Me.gpAdvTurnstileEngine.ResumeLayout(False)
         Me.gpAdvTurnstileEngine.PerformLayout()
         Me.gpAdvantageUpgradeService.ResumeLayout(False)
         Me.gpAdvantageUpgradeService.PerformLayout()
-        Me.gpRelayService.ResumeLayout(False)
-        Me.gpRelayService.PerformLayout()
         Me.gpLicInfo.ResumeLayout(False)
         Me.gpLicInfo.PerformLayout()
         Me.tpAdvData.ResumeLayout(False)
@@ -2370,6 +2393,10 @@ Partial Class FormMain
         Me.gbAdvApps.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
+        Me.SplitContainer2.Panel1.ResumeLayout(False)
+        Me.SplitContainer2.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2568,4 +2595,5 @@ Partial Class FormMain
     Friend WithEvents btnRelayServiceRS As Button
     Friend WithEvents tbRelayService As TextBox
     Friend WithEvents btnRelayServiceSS As Button
+    Friend WithEvents SplitContainer2 As SplitContainer
 End Class
