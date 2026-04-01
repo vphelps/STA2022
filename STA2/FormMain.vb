@@ -230,7 +230,7 @@ Public Class FormMain
         Try
             If PCInfo.AreServicesInstalled Then
                 If IsNothing(LastServiceEntry) Then Exit Sub
-                Services.GetServiceStatus(LastServiceEntry)
+                Services.ServicesExistCheck()
 
                 If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
                     Services.RestartService(LastServiceEntry)
@@ -588,6 +588,8 @@ Public Class FormMain
             End If
         ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
             CodeHelper.Refresher()
+            Services.ServicesExistCheck()
+
         Else
             TabName = tcSTA.SelectedTab.Name
         End If
@@ -812,7 +814,7 @@ Public Class FormMain
                 Dim btn As New Button()
                 btn.Name = $"btnQuickSlot{slotLocal + 1}"
                 btn.Width = 140
-                btn.Height = 70
+                btn.Height = 50
                 btn.AutoSize = False
                 btn.Tag = entryLocal
                 btn.Text = entryLocal.Name
@@ -860,7 +862,7 @@ Public Class FormMain
 
         ' Ensure list exists at default size (9)
         If _options.QuickLaunchIds Is Nothing Then
-            _options.QuickLaunchIds = Enumerable.Repeat("", 9).ToList()
+            _options.QuickLaunchIds = Enumerable.Repeat("", 20).ToList()
         End If
 
         ' OPTIONAL HARD CAP: Uncomment to enforce 9 slots (0..8)
@@ -1148,7 +1150,6 @@ Public Class FormMain
             tslblDbState.BackColor = Color.Firebrick   ' for OFFLINE
         End If
 
-        Debug.WriteLine("[OFFLINE] " & reason)
     End Sub
     Public Sub GoOnline()
         Variables.OfflineMode = False
@@ -1168,7 +1169,6 @@ Public Class FormMain
             tslblDbState.BackColor = Color.DarkGreen   ' for ONLINE
         End If
 
-        Debug.WriteLine("[ONLINE] Database connection restored")
     End Sub
     Private Sub EnableDatabaseSections()
         tpAdvData.Enabled = True

@@ -17,3 +17,7 @@ Public Class AdvUpgradeConstants
 
 End Class
 
+Public Class GenericConstants
+    Public Const QUICKLAUNCH_SLOT_COUNT As Integer = 20
+
+End Class

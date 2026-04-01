@@ -276,9 +276,9 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(222, 92)
+        Me.btnExit.Location = New System.Drawing.Point(237, 137)
         Me.btnExit.Name = "btnExit"
-        Me.btnExit.Size = New System.Drawing.Size(64, 20)
+        Me.btnExit.Size = New System.Drawing.Size(77, 20)
         Me.btnExit.TabIndex = 0
         Me.btnExit.Text = "Exit"
         Me.btnExit.UseVisualStyleBackColor = True
@@ -300,15 +300,12 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnReconnect)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdminRestart)
         Me.SplitContainer1.Panel2.Controls.Add(Me.cmbboxAppLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnComboAppLaunch)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.btnRefreshGeneralTab)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnAdvUpgrade)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnCenterEdgeConfig)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1060, 808)
+        Me.SplitContainer1.Size = New System.Drawing.Size(1037, 808)
         Me.SplitContainer1.SplitterDistance = 640
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
@@ -326,7 +323,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1056, 636)
+        Me.tcSTA.Size = New System.Drawing.Size(1033, 636)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -339,7 +336,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1048, 610)
+        Me.tpGeneral.Size = New System.Drawing.Size(1025, 610)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -2006,7 +2003,7 @@ Partial Class FormMain
         '
         'btnReconnect
         '
-        Me.btnReconnect.Location = New System.Drawing.Point(878, 23)
+        Me.btnReconnect.Location = New System.Drawing.Point(237, 3)
         Me.btnReconnect.Name = "btnReconnect"
         Me.btnReconnect.Size = New System.Drawing.Size(75, 23)
         Me.btnReconnect.TabIndex = 22
@@ -2015,16 +2012,17 @@ Partial Class FormMain
         '
         'flpQuickLaunch
         '
+        Me.flpQuickLaunch.Dock = System.Windows.Forms.DockStyle.Fill
         Me.flpQuickLaunch.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.flpQuickLaunch.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.flpQuickLaunch.Location = New System.Drawing.Point(3, 6)
+        Me.flpQuickLaunch.Location = New System.Drawing.Point(0, 0)
         Me.flpQuickLaunch.Name = "flpQuickLaunch"
-        Me.flpQuickLaunch.Size = New System.Drawing.Size(287, 594)
+        Me.flpQuickLaunch.Size = New System.Drawing.Size(317, 603)
         Me.flpQuickLaunch.TabIndex = 21
         '
         'btnAdminRestart
         '
-        Me.btnAdminRestart.Location = New System.Drawing.Point(964, 54)
+        Me.btnAdminRestart.Location = New System.Drawing.Point(3, 54)
         Me.btnAdminRestart.Name = "btnAdminRestart"
         Me.btnAdminRestart.Size = New System.Drawing.Size(77, 45)
         Me.btnAdminRestart.TabIndex = 20
@@ -2052,7 +2050,7 @@ Partial Class FormMain
         'btnRefreshGeneralTab
         '
         Me.btnRefreshGeneralTab.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(878, 55)
+        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(86, 3)
         Me.btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
         Me.btnRefreshGeneralTab.Size = New System.Drawing.Size(80, 44)
         Me.btnRefreshGeneralTab.TabIndex = 17
@@ -2061,9 +2059,9 @@ Partial Class FormMain
         '
         'btnBatchLaunch
         '
-        Me.btnBatchLaunch.Location = New System.Drawing.Point(112, 91)
+        Me.btnBatchLaunch.Location = New System.Drawing.Point(3, 3)
         Me.btnBatchLaunch.Name = "btnBatchLaunch"
-        Me.btnBatchLaunch.Size = New System.Drawing.Size(104, 23)
+        Me.btnBatchLaunch.Size = New System.Drawing.Size(77, 44)
         Me.btnBatchLaunch.TabIndex = 15
         Me.btnBatchLaunch.Text = "Batch Launch"
         Me.btnBatchLaunch.UseVisualStyleBackColor = True
@@ -2079,7 +2077,7 @@ Partial Class FormMain
         Me.gbAdvApps.Controls.Add(Me.btnAdvGroups)
         Me.gbAdvApps.Location = New System.Drawing.Point(3, 3)
         Me.gbAdvApps.Name = "gbAdvApps"
-        Me.gbAdvApps.Size = New System.Drawing.Size(267, 127)
+        Me.gbAdvApps.Size = New System.Drawing.Size(255, 127)
         Me.gbAdvApps.TabIndex = 19
         Me.gbAdvApps.TabStop = False
         Me.gbAdvApps.Text = "Advantage Applications"
@@ -2157,7 +2155,7 @@ Partial Class FormMain
         'btnAdvUpgrade
         '
         Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAdvUpgrade.Location = New System.Drawing.Point(276, 71)
+        Me.btnAdvUpgrade.Location = New System.Drawing.Point(276, 69)
         Me.btnAdvUpgrade.Name = "btnAdvUpgrade"
         Me.btnAdvUpgrade.Size = New System.Drawing.Size(80, 44)
         Me.btnAdvUpgrade.TabIndex = 18
@@ -2167,7 +2165,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(276, 25)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(276, 23)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 44)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2292,7 +2290,7 @@ Partial Class FormMain
         'SplitContainer2
         '
         Me.SplitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.SplitContainer2.Location = New System.Drawing.Point(1066, 6)
+        Me.SplitContainer2.Location = New System.Drawing.Point(1038, 6)
         Me.SplitContainer2.Name = "SplitContainer2"
         Me.SplitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
@@ -2302,9 +2300,12 @@ Partial Class FormMain
         '
         'SplitContainer2.Panel2
         '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.btnReconnect)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnExit)
+        Me.SplitContainer2.Panel2.Controls.Add(Me.btnAdminRestart)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnBatchLaunch)
-        Me.SplitContainer2.Size = New System.Drawing.Size(293, 738)
+        Me.SplitContainer2.Panel2.Controls.Add(Me.btnRefreshGeneralTab)
+        Me.SplitContainer2.Size = New System.Drawing.Size(321, 775)
         Me.SplitContainer2.SplitterDistance = 607
         Me.SplitContainer2.TabIndex = 22
         '
