@@ -225,24 +225,24 @@ Public Class FormMain
             tbPcAdvVersion.BackColor = TextboxColors.Red
             tbPcAdvVersion.ForeColor = TextboxColors.White
         End If
+        Services.ServicesExistCheck()
 
-        PCInfo.AreServicesInstalled = False
-        Try
-            If PCInfo.AreServicesInstalled Then
-                If IsNothing(LastServiceEntry) Then Exit Sub
-                Services.ServicesExistCheck()
+        'PCInfo.AreServicesInstalled = False
+        'Try
+        '    If PCInfo.AreServicesInstalled Then
+        '        If IsNothing(LastServiceEntry) Then Exit Sub
 
-                If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
-                    Services.RestartService(LastServiceEntry)
-                Else
-                    LastServiceEntry.RSButton.Tag = ""
-                End If
-            Else
-                ' no-op
-            End If
-        Catch ex As Exception
-            ' swallow
-        End Try
+        '        If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
+        '            Services.RestartService(LastServiceEntry)
+        '        Else
+        '            LastServiceEntry.RSButton.Tag = ""
+        '        End If
+        '    Else
+        '        ' no-op
+        '    End If
+        'Catch ex As Exception
+        '    ' swallow
+        'End Try
     End Sub
 
     Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
