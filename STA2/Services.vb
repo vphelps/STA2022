@@ -12,6 +12,7 @@ Public Class ServiceControlEntry
     Public Property GroupBox As System.Windows.Forms.GroupBox
     Public Property Status As System.ServiceProcess.ServiceControllerStatus
     Public Property Installed As Boolean = True
+    Public Property DisplayName As String
 
 End Class
 
@@ -79,7 +80,6 @@ Public Class Services
         Try
             localServiceList = BuildServiceControlList()
         Catch
-            Debug.WriteLine("catch")
             Return New List(Of ServiceControlEntry)()
         End Try
 
@@ -94,7 +94,6 @@ Public Class Services
                              Select(Function(s) s.ServiceName).
                              ToHashSet(StringComparer.OrdinalIgnoreCase)
         Catch
-            Debug.WriteLine("catch2")
             installedNames = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         End Try
 
@@ -121,20 +120,21 @@ Public Class Services
                     entry.Status = status
                     SafeSetText(entry.TextBox, status.ToString())
 
+                    entry.DisplayName = controller.DisplayName
                     ' Reflect StartType to GroupBox text (optional, guarded)
                     Try
                         Dim startType As ServiceStartMode = controller.StartType
                         If entry.GroupBox IsNot Nothing AndAlso startType <> ServiceStartMode.Automatic Then
+                            entry.GroupBox.Text = entry.DisplayName
+
                             entry.GroupBox.Text = $"{entry.GroupBox.Text} ({startType})"
                         End If
                     Catch
-                        Debug.WriteLine("catch3")
                         ' ignore StartType failures
                     End Try
                 End Using
             Catch
                 ' Access denied/missing/etc. → "Not Installed" behavior (but visible!)
-                Debug.WriteLine("catch4")
                 MarkNotInstalled(entry)
             End Try
         Next
@@ -144,7 +144,6 @@ Public Class Services
             Try
                 GetServiceStatus(entry)
             Catch
-                Debug.WriteLine("catch5")
                 ' keep UI resilient
             End Try
         Next
@@ -370,7 +369,6 @@ Public Class Services
 
             End Using
         Catch
-            Debug.WriteLine("GetServiceStatus")
             ' Not installed or inaccessible → keep visible but disabled, default colors
             MarkNotInstalled(caller)
             Return False

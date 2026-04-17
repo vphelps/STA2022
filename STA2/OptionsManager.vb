@@ -12,7 +12,6 @@ Public NotInheritable Class OptionsManager
     ' DEFAULT (first-run) number of quick slots.
     ' Applied ONLY when QuickLaunchIds is Nothing.
     ' ---------------------------------------------------------------------
-    Private Const QUICKLAUNCH_SLOT_COUNT As Integer = 9
 
     ' Shared JSON settings used across options and launcher config
     Private Shared ReadOnly _jsonSettings As New JsonSerializerSettings With {
@@ -43,9 +42,8 @@ Public NotInheritable Class OptionsManager
 
             ' Initialize only if missing
             If opts.QuickLaunchIds Is Nothing Then
-                opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+                opts.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
                 changed = True
-                Debug.WriteLine($"[Options] Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
             End If
 
             ' Enforce uniqueness and trim trailing empties (prevents run-to-run growth)
@@ -54,52 +52,83 @@ Public NotInheritable Class OptionsManager
 
             If changed Then
                 Save(opts)
-                Debug.WriteLine($"[Options] LoadOrCreate normalized & saved. Count={opts.QuickLaunchIds.Count}")
             Else
-                Debug.WriteLine($"[Options] LoadOrCreate loaded. Count={opts.QuickLaunchIds.Count}")
+
             End If
 
             Return opts
 
         Catch ex As Exception
-            Debug.WriteLine($"[Options] LoadOrCreate ERROR: {ex.Message}")
             ' Fail-soft: return a default object with a first-run list
             Dim fallback As New AppOptions() With {
-                .QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
+                .QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
             }
             Return fallback
         End Try
     End Function
 
+    'Public Shared Sub Save(opts As AppOptions)
+    '    Dim path = GetOptionsPath()
+    '    Try
+    '        EnsureParentDirectory(path)
+
+    '        If opts Is Nothing Then opts = New AppOptions()
+    '        If opts.QuickLaunchIds Is Nothing Then
+    '            opts.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+    '        End If
+
+
+    '        ' Keep stable: dedupe + trim
+    '        Dim changed As Boolean = False
+    '        changed = DedupeQuickLaunchIds(opts) OrElse changed
+    '        changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
+
+
+    '        Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
+    '        File.WriteAllText(path, json, Encoding.UTF8)
+
+    '    Catch ex As Exception
+    '        ' Swallow/log if you have a logger. Never crash the app on options save.
+    '    End Try
+    'End Sub
+
     Public Shared Sub Save(opts As AppOptions)
         Dim path = GetOptionsPath()
+
         Try
             EnsureParentDirectory(path)
 
-            If opts Is Nothing Then opts = New AppOptions()
-            If opts.QuickLaunchIds Is Nothing Then
-                opts.QuickLaunchIds = Enumerable.Repeat("", QUICKLAUNCH_SLOT_COUNT).ToList()
-                'Debug.WriteLine($"[Options] Save: Init QuickLaunchIds -> {QUICKLAUNCH_SLOT_COUNT}")
+            ' Never replace opts unless it is actually Nothing
+            If opts Is Nothing Then
+                opts = New AppOptions()
             End If
 
-            ' === DIAGNOSTICS: BEFORE ===
-            'Debug.WriteLine($"[Options] Save BEFORE normalize: Count={opts.QuickLaunchIds.Count}")
-            'Debug.WriteLine($"[Options] Save stack: {Environment.NewLine}{New System.Diagnostics.StackTrace(True)}")
+            ' Ensure QuickLaunchIds exists, but do NOT touch other properties
+            If opts.QuickLaunchIds Is Nothing Then
+                opts.QuickLaunchIds =
+                Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            End If
 
-            ' Keep stable: dedupe + trim
-            Dim changed As Boolean = False
-            changed = DedupeQuickLaunchIds(opts) OrElse changed
-            changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
+            ' -------------------------------------------------
+            ' Preserve non-QuickLaunch properties explicitly
+            ' -------------------------------------------------
+            Dim repoFolderSnapshot As String = opts.RepoFolderPath
 
-            ' === DIAGNOSTICS: AFTER ===
-            'Debug.WriteLine($"[Options] Save AFTER normalize: Count={opts.QuickLaunchIds.Count}")
+            ' Keep stable: dedupe + trim (QuickLaunch only)
+            DedupeQuickLaunchIds(opts)
+            TrimTrailingEmptyQuickSlots(opts)
 
+            ' Restore RepoFolderPath in case helpers modified opts
+            opts.RepoFolderPath = repoFolderSnapshot
+
+            ' Serialize final options object
             Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
             File.WriteAllText(path, json, Encoding.UTF8)
 
+
         Catch ex As Exception
-            Debug.WriteLine($"[Options] Save ERROR: {ex.Message}")
             ' Swallow/log if you have a logger. Never crash the app on options save.
+            Debug.WriteLine("Options save failed: " & ex.Message)
         End Try
     End Sub
 
@@ -259,7 +288,7 @@ Public NotInheritable Class OptionsManager
         Next
 
         ' Keep at least default and enough to include last assigned slot
-        Dim minCount As Integer = Math.Max(QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
+        Dim minCount As Integer = Math.Max(GenericConstants.QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
 
         If opts.QuickLaunchIds.Count > minCount Then
             ' Trim only if the tail beyond minCount is all empty

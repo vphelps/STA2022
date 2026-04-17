@@ -10,6 +10,7 @@ Module Startup
 
     <STAThread()>
     Sub Main()
+
         ' Always required for WinForms:
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
@@ -21,6 +22,18 @@ Module Startup
         If OptionsManager.TrimTrailingEmptyQuickSlots(options) Then
             OptionsManager.Save(options)
         End If
+
+        If options.QuickLaunchIds Is Nothing Then
+            options.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+        ElseIf options.QuickLaunchIds.Count < GenericConstants.QUICKLAUNCH_SLOT_COUNT Then
+            While options.QuickLaunchIds.Count < GenericConstants.QUICKLAUNCH_SLOT_COUNT
+                options.QuickLaunchIds.Add("")
+            End While
+        End If
+
+        ' Persist upgraded layout once
+        OptionsManager.Save(options)
+
         Dim launcher = OptionsManager.LoadLauncherConfig()
 
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)

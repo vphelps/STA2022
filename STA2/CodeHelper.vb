@@ -21,7 +21,8 @@ Public Class CodeHelper
 
         ' Populate PC info
         GetPcInfo()
-        PCInfo.FrameworkVersion = DotNetInfo.Get45PlusFromRegistry
+        'PCInfo.FrameworkVersion = DotNetInfo.Get45PlusFromRegistry
+        PCInfo.FrameworkVersion = DotNetInfo.GetInstalledDotNetVersion()
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
 
 
@@ -306,7 +307,7 @@ Public Class CodeHelper
         Dim totalSpace = drive.TotalSize \ (1024 * 1024 * 1024)
         Dim pct = (freeSpace / totalSpace) * 100
 
-        PCInfo.FreeSpace = $"{freeSpace} GB free of {totalSpace} GB ({pct}% free)"
+        PCInfo.FreeSpace = $"{freeSpace} GB free of {totalSpace} GB ({pct:F2}% free)"
         PCInfo.Architecture = If(Environment.Is64BitOperatingSystem, "x64", "x86")
     End Sub
 
