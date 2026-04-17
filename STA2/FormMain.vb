@@ -37,6 +37,7 @@ Public Class FormMain
 
         ' Render Quick Launch buttons after options/config are available
         RefreshQuickLaunchButtons()
+        FillComboFromListBox()
 
         ' Window title from options (if any)
         If Not String.IsNullOrWhiteSpace(_options.WindowTitle) Then
@@ -123,6 +124,8 @@ Public Class FormMain
         btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
         btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
+        btnAdvKioskSetup.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKioskSetup"))
+        btnAdvKiosk.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKiosk"))
 
         ' >>> OPTIONAL IMPROVEMENT APPLIED <<<
         ' We already set _options and _launcherConfig in the constructor.
@@ -135,6 +138,16 @@ Public Class FormMain
         ' RefreshQuickLaunchButtons()
 
         tbWindowTitle.Text = _options.WindowTitle
+
+        If _options IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+            tbRepoFolder.Text = _options.RepoFolderPath
+        End If
+
+        If _options IsNot Nothing Then
+            tbSetupSwitches.Text = _options.SetupSwitches
+        End If
+
+
         If IsRunningAsAdmin() Then
             btnAdminRestart.Enabled = False
             btnAdminRestart.Text = "Running as Admin"
@@ -175,17 +188,42 @@ Public Class FormMain
     End Sub
 
     Private Sub FillComboFromListBox()
+
         cmbboxAppLaunch.Items.Clear()
 
+        ' Safety checks
+        If lstPrograms Is Nothing OrElse _options Is Nothing Then Return
+
+        ' Build a lookup of assigned QuickLaunch Ids
+        Dim assignedIds As HashSet(Of String)
+
+        If _options.QuickLaunchIds IsNot Nothing Then
+            assignedIds = New HashSet(Of String)(
+            _options.QuickLaunchIds.
+                Where(Function(id) Not String.IsNullOrWhiteSpace(id)),
+            StringComparer.OrdinalIgnoreCase
+        )
+        Else
+            assignedIds = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        End If
+
+        ' Add only unassigned programs to ComboBox
         For Each entry As ProgramEntry In lstPrograms.Items
+            If entry Is Nothing Then Continue For
+            If String.IsNullOrWhiteSpace(entry.Id) Then Continue For
+
+            ' Exclude programs already assigned to Quick Launch
+            If assignedIds.Contains(entry.Id) Then Continue For
+
             cmbboxAppLaunch.Items.Add(entry)
         Next
-        cmbboxAppLaunch.DisplayMember = "Name"
-    End Sub
 
+        cmbboxAppLaunch.DisplayMember = "Name"
+
+    End Sub
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        'tcSTA.SelectedTab = tpQATools
+        tcSTA.SelectedTab = tpOptions
 #End If
     End Sub
 
@@ -212,7 +250,12 @@ Public Class FormMain
     End Sub
 
     Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
-        tbTest1.Text = PCInfo.AdvantageVersion
+
+        Dim baseInstallerPath As String = AppData.UpgradePath
+        Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+        Dim installerPath = FindInstallerFile(latestFolder)
+        tbMLTest1.Text = installerPath.ToString
+
 
         If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
             tbDbVer.BackColor = TextboxColors.White
@@ -227,22 +270,9 @@ Public Class FormMain
         End If
         Services.ServicesExistCheck()
 
-        'PCInfo.AreServicesInstalled = False
-        'Try
-        '    If PCInfo.AreServicesInstalled Then
-        '        If IsNothing(LastServiceEntry) Then Exit Sub
+        If _options IsNot Nothing Then tbSetupSwitches.Text = _options.SetupSwitches
 
-        '        If LastServiceEntry.RSButton.Tag.ToString.Length > 0 Then
-        '            Services.RestartService(LastServiceEntry)
-        '        Else
-        '            LastServiceEntry.RSButton.Tag = ""
-        '        End If
-        '    Else
-        '        ' no-op
-        '    End If
-        'Catch ex As Exception
-        '    ' swallow
-        'End Try
+
     End Sub
 
     Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
@@ -478,7 +508,7 @@ Public Class FormMain
         btnDbInfoRefresh.PerformClick()
     End Sub
 
-    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click
         Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
         Dim Executable As String = caller.Name.Replace("btn", "")
         Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
@@ -713,10 +743,6 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Sub cbListSort_CheckedChanged(sender As Object, e As EventArgs) Handles cbListSort.CheckedChanged
-        lstPrograms.Sorted = cbListSort.Checked
-    End Sub
-
     Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click
         Dim entry As ProgramEntry = Nothing
 
@@ -775,7 +801,11 @@ Public Class FormMain
         End Try
 
         Try
-            If _options IsNot Nothing Then OptionsManager.Save(_options)
+            If _options IsNot Nothing Then
+
+                _options.SetupSwitches = tbSetupSwitches.Text
+                OptionsManager.Save(_options)
+            End If
         Catch
         End Try
     End Sub
@@ -890,6 +920,7 @@ Public Class FormMain
         OptionsManager.Save(_options)
         RefreshQuickLaunchButtons()
         RefreshQuickSlotMenuLabels()
+        FillComboFromListBox()
     End Sub
 
     Private Sub ClearQuickSlot(slot As Integer)
@@ -907,6 +938,7 @@ Public Class FormMain
         OptionsManager.Save(_options)
         RefreshQuickLaunchButtons()
         RefreshQuickSlotMenuLabels()
+        FillComboFromListBox()
     End Sub
 
     Private Function GetQuickSlotDisplay(slot As Integer) As String
@@ -1113,17 +1145,10 @@ Public Class FormMain
     ' ---------------- Misc remaining UI ----------------
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-
-        Try
-            Dim ds As DataSet = SafeDb.TryQuery("SELECT TOP 1 Version FROM VersionInfo ORDER BY KeyID DESC;")
-            If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
-                tbTest1.Text = ds.Tables(0).Rows(0)(0).ToString()
-            End If
-
-        Catch ex As SafeDb.DatabaseOfflineException
-            GoOffline("Lost DB connection during Test query")
-            tbTest1.Text = "Offline"
-        End Try
+        Dim folderPath = _options.RepoFolderPath & "\tests\flavors"
+        For Each file In IO.Directory.GetFiles(folderPath, "*.sql")
+            clbSqlFiles.Items.Add(file, False)
+        Next
 
     End Sub
 
@@ -1225,7 +1250,6 @@ Public Class FormMain
     End Function
 
     Private Sub AdvantageDataRefresh(FiredBy As String)
-        tbTest1.Text = FiredBy
 
         Try
             ' --------------------------
@@ -1236,13 +1260,21 @@ Public Class FormMain
             Dim dsApp As DataSet = SafeDb.TryQuery("SELECT OptionName, OptionValue FROM AppOptions")
             If dsApp IsNot Nothing AndAlso dsApp.Tables.Count > 0 Then
                 dbAppOptions = dsApp
+
                 For Each row As DataRow In dsApp.Tables(0).Rows
                     dgvAppOptions.Rows.Add(row.ItemArray)
+
+                    ' ✅ NEW: Capture UpgradePath
+                    If String.Equals(row("OptionName").ToString(),
+                         "UpgradePath",
+                         StringComparison.OrdinalIgnoreCase) Then
+
+                        AppData.UpgradePath = row("OptionValue").ToString()
+                    End If
                 Next
             Else
                 dbAppOptions = New DataSet()
             End If
-
             ' --------------------------
             ' WebOptions
             ' --------------------------
@@ -1287,5 +1319,185 @@ Public Class FormMain
             GoOffline("Database failure in AdvantageDataRefresh: " & ex.Message)
             Exit Sub
         End Try
+    End Sub
+
+    Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
+
+        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
+        Dim Executable As String = caller.Name.Replace("btn", "")
+        If Executable = "AppWiz" Then
+            Process.Start("control.exe", "appwiz.cpl")
+        ElseIf Executable = "Services" Then
+            Dim psi As New ProcessStartInfo("services.msc")
+            psi.UseShellExecute = True
+            psi.Verb = "runas"
+            Process.Start(psi)
+        ElseIf Executable = "Devices" Then
+            Process.Start("control.exe", "/name Microsoft.DevicesAndPrinters")
+        ElseIf Executable = "EventViewer" Then
+            Process.Start("eventvwr.msc")
+        Else
+            Diagnostics.Process.Start(Executable)
+        End If
+
+
+
+
+
+    End Sub
+
+    Private Sub btnRepoFolder_Click(sender As Object, e As EventArgs) Handles btnRepoFolder.Click
+
+
+        Using dlg As New FolderBrowserDialog()
+
+            dlg.Description = "Select the repository folder"
+            dlg.ShowNewFolderButton = False
+
+            ' Optional: start at the previously saved folder
+            If _options IsNot Nothing AndAlso
+           Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) AndAlso
+           IO.Directory.Exists(_options.RepoFolderPath) Then
+
+                dlg.SelectedPath = _options.RepoFolderPath
+            End If
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                Dim RepoFolderPath As String = dlg.SelectedPath
+
+                ' Update options object
+                _options.RepoFolderPath = RepoFolderPath
+
+                ' Persist to options.json
+                OptionsManager.Save(_options)
+
+                ' Optional: show in UI
+                tbRepoFolder.Text = RepoFolderPath
+            End If
+        End Using
+    End Sub
+    Private Sub LoadSqlFilesFromFolder(folderPath As String)
+
+        clbSqlFiles.Items.Clear()
+
+        If Not IO.Directory.Exists(folderPath) Then Return
+
+        For Each filePath In IO.Directory.GetFiles(folderPath, "*.sql")
+            clbSqlFiles.Items.Add(New SqlFileItem With {
+            .FilePath = filePath
+        }, False)
+        Next
+
+    End Sub
+    Public Class SqlFileItem
+        Public Property FilePath As String
+        Public ReadOnly Property FileName As String
+            Get
+                Return IO.Path.GetFileName(FilePath)
+            End Get
+        End Property
+
+        Public Overrides Function ToString() As String
+            Return FileName
+        End Function
+    End Class
+    Private Function GetSelectedSqlFiles() As List(Of String)
+
+        Dim selected As New List(Of String)
+
+        For Each item In clbSqlFiles.CheckedItems
+            Dim sqlItem = TryCast(item, SqlFileItem)
+            If sqlItem IsNot Nothing Then
+                selected.Add(sqlItem.FilePath)
+            End If
+        Next
+
+        Return selected
+    End Function
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        Dim filesToRun = GetSelectedSqlFiles()
+
+        For Each sqlFile In filesToRun
+            Debug.WriteLine("Selected: " & sqlFile)
+            ' Execute SQL file here
+        Next
+
+    End Sub
+
+    Private Function GetLatestVersionFolder(basePath As String) As DirectoryInfo
+
+        If Not IO.Directory.Exists(basePath) Then
+            Return Nothing
+        End If
+
+        Dim versionFolders =
+            From dir In New IO.DirectoryInfo(basePath).GetDirectories()
+            Let versionText = dir.Name.Replace("Version", "").Trim()
+            Let parsedVersion = ParseVersionSafe(versionText)
+            Where parsedVersion IsNot Nothing
+            Order By parsedVersion Descending
+            Select dir
+
+        Return versionFolders.FirstOrDefault()
+
+    End Function
+    Private Function ParseVersionSafe(versionText As String) As Version
+        Try
+            Return New Version(versionText)
+        Catch
+            Return Nothing
+        End Try
+    End Function
+    Private Function FindInstallerFile(versionFolder As IO.DirectoryInfo) As String
+
+        If versionFolder Is Nothing Then Return Nothing
+
+        Dim installers =
+            versionFolder.GetFiles("AdvantageSetup-x64.exe").
+            Union(versionFolder.GetFiles("*.msi"))
+
+        Return installers.FirstOrDefault()?.FullName
+
+    End Function
+
+    Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
+
+        Dim baseInstallerPath As String = AppData.UpgradePath
+
+        Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+        If latestFolder Is Nothing Then
+            MessageBox.Show("No valid installer folders found.")
+            Return
+        End If
+
+        Dim installerPath = FindInstallerFile(latestFolder)
+        If String.IsNullOrWhiteSpace(installerPath) OrElse
+       Not IO.File.Exists(installerPath) Then
+
+            MessageBox.Show("Installer not found in: " & latestFolder.FullName)
+            Return
+        End If
+
+        ' Optional: run as admin
+        Dim psi As New ProcessStartInfo(installerPath) With {
+        .UseShellExecute = True,
+        .Arguments = tbSetupSwitches.Text,
+        .Verb = "runas"
+    }
+        Process.Start(psi)
+
+
+    End Sub
+
+    Private Sub tbSetupSwitches_TextChanged(sender As Object, e As EventArgs) Handles tbSetupSwitches.TextChanged
+
+        If _options Is Nothing Then Return
+
+        _options.SetupSwitches = tbSetupSwitches.Text
+        OptionsManager.Save(_options)
+
+
     End Sub
 End Class

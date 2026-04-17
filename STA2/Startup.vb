@@ -10,6 +10,7 @@ Module Startup
 
     <STAThread()>
     Sub Main()
+
         ' Always required for WinForms:
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)

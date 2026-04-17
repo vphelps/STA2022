@@ -67,28 +67,68 @@ Public NotInheritable Class OptionsManager
         End Try
     End Function
 
+    'Public Shared Sub Save(opts As AppOptions)
+    '    Dim path = GetOptionsPath()
+    '    Try
+    '        EnsureParentDirectory(path)
+
+    '        If opts Is Nothing Then opts = New AppOptions()
+    '        If opts.QuickLaunchIds Is Nothing Then
+    '            opts.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+    '        End If
+
+
+    '        ' Keep stable: dedupe + trim
+    '        Dim changed As Boolean = False
+    '        changed = DedupeQuickLaunchIds(opts) OrElse changed
+    '        changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
+
+
+    '        Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
+    '        File.WriteAllText(path, json, Encoding.UTF8)
+
+    '    Catch ex As Exception
+    '        ' Swallow/log if you have a logger. Never crash the app on options save.
+    '    End Try
+    'End Sub
+
     Public Shared Sub Save(opts As AppOptions)
         Dim path = GetOptionsPath()
+
         Try
             EnsureParentDirectory(path)
 
-            If opts Is Nothing Then opts = New AppOptions()
-            If opts.QuickLaunchIds Is Nothing Then
-                opts.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            ' Never replace opts unless it is actually Nothing
+            If opts Is Nothing Then
+                opts = New AppOptions()
             End If
 
+            ' Ensure QuickLaunchIds exists, but do NOT touch other properties
+            If opts.QuickLaunchIds Is Nothing Then
+                opts.QuickLaunchIds =
+                Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            End If
 
-            ' Keep stable: dedupe + trim
-            Dim changed As Boolean = False
-            changed = DedupeQuickLaunchIds(opts) OrElse changed
-            changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
+            ' -------------------------------------------------
+            ' Preserve non-QuickLaunch properties explicitly
+            ' -------------------------------------------------
+            Dim repoFolderSnapshot As String = opts.RepoFolderPath
 
+            ' Keep stable: dedupe + trim (QuickLaunch only)
+            DedupeQuickLaunchIds(opts)
+            TrimTrailingEmptyQuickSlots(opts)
 
+            ' Restore RepoFolderPath in case helpers modified opts
+            opts.RepoFolderPath = repoFolderSnapshot
+
+            ' Serialize final options object
             Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
             File.WriteAllText(path, json, Encoding.UTF8)
 
+
         Catch ex As Exception
             ' Swallow/log if you have a logger. Never crash the app on options save.
+            Debug.WriteLine("Options save failed: " & ex.Message)
         End Try
     End Sub
 
