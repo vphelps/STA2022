@@ -5,7 +5,6 @@ Public Class DotNetInfo
 
     ' Returns the highest installed .NET version as a simple string
     Public Shared Function GetInstalledDotNetVersion() As String
-        Debug.WriteLine(GetHighestModernDotNetRuntime())
 
         Dim modernVersion As String = GetHighestModernDotNetRuntime()
         If modernVersion <> "" Then

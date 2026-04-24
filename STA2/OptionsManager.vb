@@ -46,6 +46,12 @@ Public NotInheritable Class OptionsManager
                 changed = True
             End If
 
+            If opts.DefaultFlavorNames Is Nothing Then
+                opts.DefaultFlavorNames = New List(Of String)
+                changed = True
+            End If
+
+
             ' Enforce uniqueness and trim trailing empties (prevents run-to-run growth)
             changed = DedupeQuickLaunchIds(opts) OrElse changed
             changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
