@@ -11,6 +11,7 @@ Imports System.ServiceProcess
 Imports System.Web
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Xml
+Imports Microsoft.Office.Core
 Imports Microsoft.SqlServer.Server
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
@@ -167,6 +168,11 @@ Public Class FormMain
 
         If _options IsNot Nothing Then
             tbSetupSwitches.Text = _options.SetupSwitches
+
+            If _options IsNot Nothing Then
+                tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
+                tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
+            End If
         End If
 
 
@@ -829,6 +835,8 @@ Public Class FormMain
             If _options IsNot Nothing Then
 
                 _options.SetupSwitches = tbSetupSwitches.Text
+                _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
+                _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
                 OptionsManager.Save(_options)
             End If
         Catch
@@ -1649,12 +1657,6 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-
-        'LoadSqlFilesFromFolder(_options.FlavorFolderPath)
-        MsgBox(_options.FlavorFolderPath)
-    End Sub
-
     Private Sub clbSqlFiles_SelectedIndexChanged(sender As Object, e As EventArgs) Handles clbSqlFiles.SelectedIndexChanged
         FlavorSelections = String.Join(", ", GetSelectedSqlFiles())
 
@@ -1667,19 +1669,20 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub UpdateFlavorCommands()
 
-        Dim commandApplyFlavor As String = ".\apply-flavors.ps1 -Flavors "
-        Dim commandStartDatabase As String = ".\start-database.ps1 -Force -Flavors "
+        Dim commandApplyFlavor As String = tbApplyFlavorDefault.Text
+        Dim commandStartDatabase As String = tbDatabaseStartDefault.Text
 
-        ' Build flavor string at click time
+        ' Build flavor list from checked SQL files
         Dim flavorList As List(Of String) = GetSelectedFlavorNames()
         Dim flavorString As String = String.Join(", ", flavorList)
 
-        tbFlavorApplyCommand.Text = commandApplyFlavor & flavorString
-        tbDatabaseStartCommand.Text = commandStartDatabase & flavorString
+        tbFlavorApplyCommand.Text = commandApplyFlavor & " " & flavorString
+        tbDatabaseStartCommand.Text = commandStartDatabase & " " & flavorString
 
     End Sub
+
     Private Function GetSelectedFlavorNames() As List(Of String)
         Dim result As New List(Of String)
 
@@ -1692,37 +1695,6 @@ Public Class FormMain
 
         Return result
     End Function
-    'Private Sub RefreshSqlFilesPreserveSelection()
-    '    If _options Is Nothing OrElse
-    '       String.IsNullOrWhiteSpace(_options.FlavorFolderPath) OrElse
-    '       Not Directory.Exists(_options.FlavorFolderPath) Then
-    '        Return
-    '    End If
-
-    '    ' ✅ Capture currently-checked file paths
-    '    Dim checkedPaths As New HashSet(Of String)(
-    '        clbSqlFiles.CheckedItems.
-    '            OfType(Of SqlFileItem)().
-    '            Select(Function(i) i.FilePath),
-    '        StringComparer.OrdinalIgnoreCase
-    '    )
-
-    '    clbSqlFiles.BeginUpdate()
-    '    clbSqlFiles.Items.Clear()
-
-    '    For Each filePath In Directory.GetFiles(_options.FlavorFolderPath, "*.sql")
-    '        Dim item As New SqlFileItem With {.FilePath = filePath}
-    '        Dim index = clbSqlFiles.Items.Add(item)
-
-    '        ' ✅ Restore checked state
-    '        If checkedPaths.Contains(filePath) Then
-    '            clbSqlFiles.SetItemChecked(index, True)
-    '        End If
-    '    Next
-
-    '    clbSqlFiles.EndUpdate()
-    'End Sub
-
 
     Private Sub RefreshSqlFilesPreserveSelectionAndDefaults()
 
@@ -1840,6 +1812,28 @@ Public Class FormMain
         clbSqlFiles.EndUpdate()
 
     End Sub
+
+
+    Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
+
+        If _options Is Nothing Then Return
+        _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
+        OptionsManager.Save(_options)
+        UpdateFlavorCommands()
+
+    End Sub
+
+
+    Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
+
+        If _options Is Nothing Then Return
+        _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
+
+        OptionsManager.Save(_options)
+        UpdateFlavorCommands()
+
+    End Sub
+
     Private Function GetProgramIcon(entry As ProgramEntry) As Image
 
         If entry Is Nothing Then Return Nothing
@@ -1915,4 +1909,137 @@ Public Class FormMain
         Return result
 
     End Function
+
+    Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles clbSqlFiles.ItemCheck
+
+        ' Delay update until WinForms applies the check
+        Me.BeginInvoke(
+        Sub()
+            UpdateFlavorCommands()
+        End Sub
+    )
+
+    End Sub
+
+    Private Sub RunPowerShellFile(
+    scriptPath As String,
+    argumentsText As String,
+    Optional runAsAdmin As Boolean = False,
+    Optional keepWindowOpen As Boolean = True)
+
+        If Not IO.File.Exists(scriptPath) Then
+            MessageBox.Show(
+            $"Script not found:{Environment.NewLine}{scriptPath}",
+            "PowerShell",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+            Return
+        End If
+
+
+        Dim psArguments As String =
+    If(keepWindowOpen,
+       $"-NoExit -ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}",
+       $"-ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}")
+
+
+        ' ✅ Log EXACT command line
+        tbMLTest1.Text = $"pwsh.exe {psArguments}"
+
+        Dim psi As New ProcessStartInfo With {
+        .FileName = "pwsh.exe",
+        .Arguments = psArguments,
+        .UseShellExecute = True,
+        .WorkingDirectory = IO.Path.GetDirectoryName(scriptPath)
+    }
+
+        If runAsAdmin Then
+            psi.Verb = "runas"
+        End If
+
+        Try
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show(
+            $"Failed to run PowerShell 7 command:{Environment.NewLine}{ex.Message}",
+            "PowerShell Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+        End Try
+
+    End Sub
+
+    Private Function Quote(text As String) As String
+        Return """" & text.Replace("""", "\""") & """"
+    End Function
+    Private Sub btnRunApplyFlavor_Click(sender As Object, e As EventArgs) _
+    Handles btnRunApplyFlavor.Click
+
+        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+            MessageBox.Show("Repo folder path is not set.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim scriptPath As String =
+        IO.Path.Combine(_options.RepoFolderPath, "tests", "apply-flavors.ps1")
+
+        Dim flavorNames = GetSelectedFlavorNames()
+
+        If flavorNames.Count = 0 Then
+            MessageBox.Show("No flavors selected.",
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' ✅ MUST be a single quoted string
+        Dim flavorList As String = String.Join(",", flavorNames)
+
+        Dim scriptArgs As String =
+        $"-Flavors {Quote(flavorList)}"
+
+        RunPowerShellFile(
+        scriptPath,
+        scriptArgs,
+        runAsAdmin:=True,
+        keepWindowOpen:=True)
+
+    End Sub
+
+    Private Sub btnRunDatabaseStart_Click(sender As Object, e As EventArgs) _
+    Handles btnRunDatabaseStart.Click
+
+        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+            MessageBox.Show(
+            "Repo folder path is not set.",
+            "Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' ✅ Full script path
+        Dim scriptPath As String =
+        IO.Path.Combine(_options.RepoFolderPath, "tests", "Start-Database.ps1")
+
+        ' ✅ IMPORTANT:
+        ' - Comma-separated values
+        ' - NO spaces
+        ' - NO quotes
+        ' - Parsed by PowerShell because RunPowerShellFile uses -Command
+        Dim scriptArgs As String =
+        "-Force -Flavors classes,netepay-hosted,phoenix"
+
+        RunPowerShellFile(
+        scriptPath,
+        scriptArgs,
+        runAsAdmin:=True,
+        keepWindowOpen:=True)
+
+    End Sub
+
 End Class

@@ -19,6 +19,12 @@ Public Class AppOptions
     <DataMember>
     Public Property DefaultFlavorNames As List(Of String)
 
+    <DataMember>
+    Public Property StartDatabaseDefault As String
+
+    <DataMember>
+    Public Property ApplyFlavorDefault As String
+
     <IgnoreDataMember>
     Public ReadOnly Property FlavorFolderPath As String
         Get

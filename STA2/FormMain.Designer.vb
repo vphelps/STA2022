@@ -168,6 +168,10 @@ Partial Class FormMain
         Me.btnDelete = New System.Windows.Forms.Button()
         Me.btnAdd = New System.Windows.Forms.Button()
         Me.gbAppOptions = New System.Windows.Forms.GroupBox()
+        Me.tbApplyFlavorDefault = New System.Windows.Forms.TextBox()
+        Me.tbDatabaseStartDefault = New System.Windows.Forms.TextBox()
+        Me.lblApplyFlavorDefault = New System.Windows.Forms.Label()
+        Me.lblDatabaseStartDefault = New System.Windows.Forms.Label()
         Me.lblSetupSwitches = New System.Windows.Forms.Label()
         Me.tbSetupSwitches = New System.Windows.Forms.TextBox()
         Me.btnRepoFolder = New System.Windows.Forms.Button()
@@ -189,8 +193,6 @@ Partial Class FormMain
         Me.lblDatabaseStartCommand = New System.Windows.Forms.Label()
         Me.lblFlavorApplyCommand = New System.Windows.Forms.Label()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.Button1 = New System.Windows.Forms.Button()
         Me.clbSqlFiles = New System.Windows.Forms.CheckedListBox()
         Me.gpCommonApps = New System.Windows.Forms.GroupBox()
         Me.btnServices = New System.Windows.Forms.Button()
@@ -243,6 +245,8 @@ Partial Class FormMain
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         Me.btnLaunchLatestInstaller = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.btnRunApplyFlavor = New System.Windows.Forms.Button()
+        Me.btnRunDatabaseStart = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -302,7 +306,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(242, 159)
+        Me.btnExit.Location = New System.Drawing.Point(242, 161)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(80, 50)
         Me.btnExit.TabIndex = 0
@@ -335,7 +339,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 808)
-        Me.SplitContainer1.SplitterDistance = 617
+        Me.SplitContainer1.SplitterDistance = 619
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -352,7 +356,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 613)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 615)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -365,7 +369,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1025, 587)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 589)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1205,7 +1209,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 587)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 589)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1360,7 +1364,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1025, 587)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 589)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1375,9 +1379,9 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 556)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 558)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
-        Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1019, 28)
+        Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
         '
         'rbDbDeadlocks
@@ -1405,7 +1409,7 @@ Partial Class FormMain
         'btnDbInfoRefresh
         '
         Me.btnDbInfoRefresh.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnDbInfoRefresh.Location = New System.Drawing.Point(938, 2)
+        Me.btnDbInfoRefresh.Location = New System.Drawing.Point(924, 2)
         Me.btnDbInfoRefresh.Name = "btnDbInfoRefresh"
         Me.btnDbInfoRefresh.Size = New System.Drawing.Size(64, 20)
         Me.btnDbInfoRefresh.TabIndex = 2
@@ -1442,7 +1446,7 @@ Partial Class FormMain
         Me.pnlDbData.Controls.Add(Me.dgvDbTableSize)
         Me.pnlDbData.Location = New System.Drawing.Point(3, 3)
         Me.pnlDbData.Name = "pnlDbData"
-        Me.pnlDbData.Size = New System.Drawing.Size(1022, 482)
+        Me.pnlDbData.Size = New System.Drawing.Size(1008, 482)
         Me.pnlDbData.TabIndex = 1
         '
         'dgvDbTableSize
@@ -1456,7 +1460,7 @@ Partial Class FormMain
         Me.dgvDbTableSize.Location = New System.Drawing.Point(0, 0)
         Me.dgvDbTableSize.Name = "dgvDbTableSize"
         Me.dgvDbTableSize.ReadOnly = True
-        Me.dgvDbTableSize.Size = New System.Drawing.Size(1022, 482)
+        Me.dgvDbTableSize.Size = New System.Drawing.Size(1008, 482)
         Me.dgvDbTableSize.TabIndex = 0
         '
         'tpDbLogs
@@ -1467,7 +1471,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1025, 587)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 589)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1487,7 +1491,7 @@ Partial Class FormMain
         Me.tlpLogData.RowCount = 1
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tlpLogData.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 443.0!))
-        Me.tlpLogData.Size = New System.Drawing.Size(1008, 385)
+        Me.tlpLogData.Size = New System.Drawing.Size(994, 385)
         Me.tlpLogData.TabIndex = 5
         '
         'gpDbLogCount
@@ -1497,7 +1501,7 @@ Partial Class FormMain
         Me.gpDbLogCount.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gpDbLogCount.Location = New System.Drawing.Point(3, 3)
         Me.gpDbLogCount.Name = "gpDbLogCount"
-        Me.gpDbLogCount.Size = New System.Drawing.Size(238, 437)
+        Me.gpDbLogCount.Size = New System.Drawing.Size(235, 437)
         Me.gpDbLogCount.TabIndex = 3
         Me.gpDbLogCount.TabStop = False
         Me.gpDbLogCount.Text = "Log Count"
@@ -1514,7 +1518,7 @@ Partial Class FormMain
         Me.dgvDbLogCount.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
         Me.dgvDbLogCount.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogCount.Name = "dgvDbLogCount"
-        Me.dgvDbLogCount.Size = New System.Drawing.Size(232, 418)
+        Me.dgvDbLogCount.Size = New System.Drawing.Size(229, 418)
         Me.dgvDbLogCount.TabIndex = 1
         '
         'gpDbLogData
@@ -1522,9 +1526,9 @@ Partial Class FormMain
         Me.gpDbLogData.BackColor = System.Drawing.Color.LightGray
         Me.gpDbLogData.Controls.Add(Me.dgvDbLogData)
         Me.gpDbLogData.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.gpDbLogData.Location = New System.Drawing.Point(247, 3)
+        Me.gpDbLogData.Location = New System.Drawing.Point(244, 3)
         Me.gpDbLogData.Name = "gpDbLogData"
-        Me.gpDbLogData.Size = New System.Drawing.Size(758, 437)
+        Me.gpDbLogData.Size = New System.Drawing.Size(747, 437)
         Me.gpDbLogData.TabIndex = 4
         Me.gpDbLogData.TabStop = False
         Me.gpDbLogData.Text = "Log Data"
@@ -1542,7 +1546,7 @@ Partial Class FormMain
         Me.dgvDbLogData.Location = New System.Drawing.Point(3, 16)
         Me.dgvDbLogData.Name = "dgvDbLogData"
         Me.dgvDbLogData.ReadOnly = True
-        Me.dgvDbLogData.Size = New System.Drawing.Size(752, 418)
+        Me.dgvDbLogData.Size = New System.Drawing.Size(741, 418)
         Me.dgvDbLogData.TabIndex = 2
         '
         'pnlDbLogs
@@ -1554,9 +1558,9 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 457)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 459)
         Me.pnlDbLogs.Name = "pnlDbLogs"
-        Me.pnlDbLogs.Size = New System.Drawing.Size(1019, 127)
+        Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
         '
         'gpMessageLogFilters
@@ -1709,7 +1713,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1025, 587)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 589)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1780,7 +1784,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1025, 587)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 589)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -1879,6 +1883,10 @@ Partial Class FormMain
         '
         'gbAppOptions
         '
+        Me.gbAppOptions.Controls.Add(Me.tbApplyFlavorDefault)
+        Me.gbAppOptions.Controls.Add(Me.tbDatabaseStartDefault)
+        Me.gbAppOptions.Controls.Add(Me.lblApplyFlavorDefault)
+        Me.gbAppOptions.Controls.Add(Me.lblDatabaseStartDefault)
         Me.gbAppOptions.Controls.Add(Me.lblSetupSwitches)
         Me.gbAppOptions.Controls.Add(Me.tbSetupSwitches)
         Me.gbAppOptions.Controls.Add(Me.btnRepoFolder)
@@ -1892,6 +1900,38 @@ Partial Class FormMain
         Me.gbAppOptions.TabIndex = 17
         Me.gbAppOptions.TabStop = False
         Me.gbAppOptions.Text = "Application Options"
+        '
+        'tbApplyFlavorDefault
+        '
+        Me.tbApplyFlavorDefault.Location = New System.Drawing.Point(127, 176)
+        Me.tbApplyFlavorDefault.Name = "tbApplyFlavorDefault"
+        Me.tbApplyFlavorDefault.Size = New System.Drawing.Size(365, 20)
+        Me.tbApplyFlavorDefault.TabIndex = 29
+        '
+        'tbDatabaseStartDefault
+        '
+        Me.tbDatabaseStartDefault.Location = New System.Drawing.Point(149, 146)
+        Me.tbDatabaseStartDefault.Name = "tbDatabaseStartDefault"
+        Me.tbDatabaseStartDefault.Size = New System.Drawing.Size(343, 20)
+        Me.tbDatabaseStartDefault.TabIndex = 28
+        '
+        'lblApplyFlavorDefault
+        '
+        Me.lblApplyFlavorDefault.AutoSize = True
+        Me.lblApplyFlavorDefault.Location = New System.Drawing.Point(19, 179)
+        Me.lblApplyFlavorDefault.Name = "lblApplyFlavorDefault"
+        Me.lblApplyFlavorDefault.Size = New System.Drawing.Size(111, 13)
+        Me.lblApplyFlavorDefault.TabIndex = 27
+        Me.lblApplyFlavorDefault.Text = "Apply Flavor Default:  "
+        '
+        'lblDatabaseStartDefault
+        '
+        Me.lblDatabaseStartDefault.AutoSize = True
+        Me.lblDatabaseStartDefault.Location = New System.Drawing.Point(19, 149)
+        Me.lblDatabaseStartDefault.Name = "lblDatabaseStartDefault"
+        Me.lblDatabaseStartDefault.Size = New System.Drawing.Size(124, 13)
+        Me.lblDatabaseStartDefault.TabIndex = 26
+        Me.lblDatabaseStartDefault.Text = "Start Database Default:  "
         '
         'lblSetupSwitches
         '
@@ -2013,6 +2053,8 @@ Partial Class FormMain
         '
         'tpQATools
         '
+        Me.tpQATools.Controls.Add(Me.btnRunDatabaseStart)
+        Me.tpQATools.Controls.Add(Me.btnRunApplyFlavor)
         Me.tpQATools.Controls.Add(Me.btnResetFlavorDefaults)
         Me.tpQATools.Controls.Add(Me.btnSaveFlavorDefaults)
         Me.tpQATools.Controls.Add(Me.tbDatabaseStartCommand)
@@ -2020,12 +2062,10 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.lblDatabaseStartCommand)
         Me.tpQATools.Controls.Add(Me.lblFlavorApplyCommand)
         Me.tpQATools.Controls.Add(Me.tbMLTest1)
-        Me.tpQATools.Controls.Add(Me.Button2)
-        Me.tpQATools.Controls.Add(Me.Button1)
         Me.tpQATools.Controls.Add(Me.clbSqlFiles)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1011, 587)
+        Me.tpQATools.Size = New System.Drawing.Size(1011, 589)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -2052,14 +2092,14 @@ Partial Class FormMain
         '
         Me.tbDatabaseStartCommand.Location = New System.Drawing.Point(216, 530)
         Me.tbDatabaseStartCommand.Name = "tbDatabaseStartCommand"
-        Me.tbDatabaseStartCommand.Size = New System.Drawing.Size(776, 20)
+        Me.tbDatabaseStartCommand.Size = New System.Drawing.Size(677, 20)
         Me.tbDatabaseStartCommand.TabIndex = 26
         '
         'tbFlavorApplyCommand
         '
         Me.tbFlavorApplyCommand.Location = New System.Drawing.Point(190, 500)
         Me.tbFlavorApplyCommand.Name = "tbFlavorApplyCommand"
-        Me.tbFlavorApplyCommand.Size = New System.Drawing.Size(776, 20)
+        Me.tbFlavorApplyCommand.Size = New System.Drawing.Size(703, 20)
         Me.tbFlavorApplyCommand.TabIndex = 26
         '
         'lblDatabaseStartCommand
@@ -2087,24 +2127,6 @@ Partial Class FormMain
         Me.tbMLTest1.Name = "tbMLTest1"
         Me.tbMLTest1.Size = New System.Drawing.Size(400, 90)
         Me.tbMLTest1.TabIndex = 23
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(935, 32)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(75, 23)
-        Me.Button2.TabIndex = 2
-        Me.Button2.Text = "Load"
-        Me.Button2.UseVisualStyleBackColor = True
-        '
-        'Button1
-        '
-        Me.Button1.Location = New System.Drawing.Point(935, 3)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(75, 23)
-        Me.Button1.TabIndex = 1
-        Me.Button1.Text = "Button1"
-        Me.Button1.UseVisualStyleBackColor = True
         '
         'clbSqlFiles
         '
@@ -2576,6 +2598,24 @@ Partial Class FormMain
         Me.Panel2.Size = New System.Drawing.Size(336, 781)
         Me.Panel2.TabIndex = 13
         '
+        'btnRunApplyFlavor
+        '
+        Me.btnRunApplyFlavor.Location = New System.Drawing.Point(912, 500)
+        Me.btnRunApplyFlavor.Name = "btnRunApplyFlavor"
+        Me.btnRunApplyFlavor.Size = New System.Drawing.Size(75, 23)
+        Me.btnRunApplyFlavor.TabIndex = 29
+        Me.btnRunApplyFlavor.Text = "Run"
+        Me.btnRunApplyFlavor.UseVisualStyleBackColor = True
+        '
+        'btnRunDatabaseStart
+        '
+        Me.btnRunDatabaseStart.Location = New System.Drawing.Point(912, 533)
+        Me.btnRunDatabaseStart.Name = "btnRunDatabaseStart"
+        Me.btnRunDatabaseStart.Size = New System.Drawing.Size(75, 23)
+        Me.btnRunDatabaseStart.TabIndex = 30
+        Me.btnRunDatabaseStart.Text = "Run"
+        Me.btnRunDatabaseStart.UseVisualStyleBackColor = True
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2878,11 +2918,9 @@ Partial Class FormMain
     Friend WithEvents tbRepoFolder As TextBox
     Friend WithEvents lblRepoFolder As Label
     Friend WithEvents clbSqlFiles As CheckedListBox
-    Friend WithEvents Button1 As Button
     Friend WithEvents btnLaunchLatestInstaller As Button
     Friend WithEvents tbSetupSwitches As TextBox
     Friend WithEvents lblSetupSwitches As Label
-    Friend WithEvents Button2 As Button
     Friend WithEvents tbMLTest1 As TextBox
     Friend WithEvents tbFlavorApplyCommand As TextBox
     Friend WithEvents lblDatabaseStartCommand As Label
@@ -2891,4 +2929,10 @@ Partial Class FormMain
     Friend WithEvents btnSaveFlavorDefaults As Button
     Friend WithEvents btnResetFlavorDefaults As Button
     Friend WithEvents Panel2 As Panel
+    Friend WithEvents lblApplyFlavorDefault As Label
+    Friend WithEvents lblDatabaseStartDefault As Label
+    Friend WithEvents tbDatabaseStartDefault As TextBox
+    Friend WithEvents tbApplyFlavorDefault As TextBox
+    Friend WithEvents btnRunDatabaseStart As Button
+    Friend WithEvents btnRunApplyFlavor As Button
 End Class
