@@ -182,6 +182,8 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
         Me.tpQATools = New System.Windows.Forms.TabPage()
+        Me.btnResetFlavorDefaults = New System.Windows.Forms.Button()
+        Me.btnSaveFlavorDefaults = New System.Windows.Forms.Button()
         Me.tbDatabaseStartCommand = New System.Windows.Forms.TextBox()
         Me.tbFlavorApplyCommand = New System.Windows.Forms.TextBox()
         Me.lblDatabaseStartCommand = New System.Windows.Forms.Label()
@@ -240,8 +242,7 @@ Partial Class FormMain
         Me.ToolTipForQuickButtons = New System.Windows.Forms.ToolTip(Me.components)
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         Me.btnLaunchLatestInstaller = New System.Windows.Forms.Button()
-        Me.btnSaveFlavorDefaults = New System.Windows.Forms.Button()
-        Me.btnResetFlavorDefaults = New System.Windows.Forms.Button()
+        Me.Panel2 = New System.Windows.Forms.Panel()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -294,13 +295,14 @@ Partial Class FormMain
         Me.SplitContainer2.Panel1.SuspendLayout()
         Me.SplitContainer2.Panel2.SuspendLayout()
         Me.SplitContainer2.SuspendLayout()
+        Me.Panel2.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(237, 119)
+        Me.btnExit.Location = New System.Drawing.Point(242, 159)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(80, 50)
         Me.btnExit.TabIndex = 0
@@ -314,7 +316,6 @@ Partial Class FormMain
         Me.SplitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.SplitContainer1.Cursor = System.Windows.Forms.Cursors.Default
         Me.SplitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2
-        Me.SplitContainer1.IsSplitterFixed = True
         Me.SplitContainer1.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer1.Name = "SplitContainer1"
         Me.SplitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal
@@ -333,8 +334,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnComboAppLaunch)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1037, 808)
-        Me.SplitContainer1.SplitterDistance = 615
+        Me.SplitContainer1.Size = New System.Drawing.Size(1023, 808)
+        Me.SplitContainer1.SplitterDistance = 617
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -351,7 +352,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1033, 611)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 613)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -364,7 +365,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1025, 585)
+        Me.tpGeneral.Size = New System.Drawing.Size(1025, 587)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1204,7 +1205,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1025, 585)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 587)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1212,7 +1213,7 @@ Partial Class FormMain
         '
         'btnSaveWebOptionsCSV
         '
-        Me.btnSaveWebOptionsCSV.Location = New System.Drawing.Point(972, 473)
+        Me.btnSaveWebOptionsCSV.Location = New System.Drawing.Point(923, 473)
         Me.btnSaveWebOptionsCSV.Name = "btnSaveWebOptionsCSV"
         Me.btnSaveWebOptionsCSV.Size = New System.Drawing.Size(75, 23)
         Me.btnSaveWebOptionsCSV.TabIndex = 6
@@ -1221,7 +1222,7 @@ Partial Class FormMain
         '
         'btnSaveAppotionsCSV
         '
-        Me.btnSaveAppotionsCSV.Location = New System.Drawing.Point(675, 473)
+        Me.btnSaveAppotionsCSV.Location = New System.Drawing.Point(626, 473)
         Me.btnSaveAppotionsCSV.Name = "btnSaveAppotionsCSV"
         Me.btnSaveAppotionsCSV.Size = New System.Drawing.Size(75, 23)
         Me.btnSaveAppotionsCSV.TabIndex = 6
@@ -1230,7 +1231,7 @@ Partial Class FormMain
         '
         'btnSaveApplicationInfoCSV
         '
-        Me.btnSaveApplicationInfoCSV.Location = New System.Drawing.Point(188, 474)
+        Me.btnSaveApplicationInfoCSV.Location = New System.Drawing.Point(196, 473)
         Me.btnSaveApplicationInfoCSV.Name = "btnSaveApplicationInfoCSV"
         Me.btnSaveApplicationInfoCSV.Size = New System.Drawing.Size(75, 23)
         Me.btnSaveApplicationInfoCSV.TabIndex = 6
@@ -1260,7 +1261,7 @@ Partial Class FormMain
         Me.dgvApplicationInfo.Name = "dgvApplicationInfo"
         Me.dgvApplicationInfo.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvApplicationInfo.ShowEditingIcon = False
-        Me.dgvApplicationInfo.Size = New System.Drawing.Size(291, 434)
+        Me.dgvApplicationInfo.Size = New System.Drawing.Size(267, 434)
         Me.dgvApplicationInfo.TabIndex = 4
         '
         'DataGridViewTextBoxColumn3
@@ -1304,7 +1305,7 @@ Partial Class FormMain
         Me.dgvWebOptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvWebOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvWebOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.DataGridViewTextBoxColumn1, Me.DataGridViewTextBoxColumn2})
-        Me.dgvWebOptions.Location = New System.Drawing.Point(756, 33)
+        Me.dgvWebOptions.Location = New System.Drawing.Point(707, 33)
         Me.dgvWebOptions.Name = "dgvWebOptions"
         Me.dgvWebOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvWebOptions.ShowEditingIcon = False
@@ -1332,11 +1333,11 @@ Partial Class FormMain
         Me.dgvAppOptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvAppOptions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvAppOptions.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.OptionName, Me.OptionValue})
-        Me.dgvAppOptions.Location = New System.Drawing.Point(301, 33)
+        Me.dgvAppOptions.Location = New System.Drawing.Point(277, 33)
         Me.dgvAppOptions.Name = "dgvAppOptions"
         Me.dgvAppOptions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvAppOptions.ShowEditingIcon = False
-        Me.dgvAppOptions.Size = New System.Drawing.Size(449, 434)
+        Me.dgvAppOptions.Size = New System.Drawing.Size(424, 434)
         Me.dgvAppOptions.TabIndex = 0
         '
         'OptionName
@@ -1359,7 +1360,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1025, 585)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1025, 587)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1374,7 +1375,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 554)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 556)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1019, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1466,7 +1467,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1025, 585)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1025, 587)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1553,7 +1554,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 455)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 457)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1019, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1708,7 +1709,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1025, 585)
+        Me.tpStParse.Size = New System.Drawing.Size(1025, 587)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1779,7 +1780,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1025, 585)
+        Me.tpOptions.Size = New System.Drawing.Size(1025, 587)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2024,10 +2025,28 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.clbSqlFiles)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1025, 585)
+        Me.tpQATools.Size = New System.Drawing.Size(1011, 587)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
+        '
+        'btnResetFlavorDefaults
+        '
+        Me.btnResetFlavorDefaults.Location = New System.Drawing.Point(420, 383)
+        Me.btnResetFlavorDefaults.Name = "btnResetFlavorDefaults"
+        Me.btnResetFlavorDefaults.Size = New System.Drawing.Size(80, 50)
+        Me.btnResetFlavorDefaults.TabIndex = 28
+        Me.btnResetFlavorDefaults.Text = "Reset Flavor Defaults"
+        Me.btnResetFlavorDefaults.UseVisualStyleBackColor = True
+        '
+        'btnSaveFlavorDefaults
+        '
+        Me.btnSaveFlavorDefaults.Location = New System.Drawing.Point(420, 439)
+        Me.btnSaveFlavorDefaults.Name = "btnSaveFlavorDefaults"
+        Me.btnSaveFlavorDefaults.Size = New System.Drawing.Size(80, 50)
+        Me.btnSaveFlavorDefaults.TabIndex = 27
+        Me.btnSaveFlavorDefaults.Text = "Save Flavor Defaults"
+        Me.btnSaveFlavorDefaults.UseVisualStyleBackColor = True
         '
         'tbDatabaseStartCommand
         '
@@ -2107,7 +2126,7 @@ Partial Class FormMain
         Me.gpCommonApps.Controls.Add(Me.btnCalc)
         Me.gpCommonApps.Location = New System.Drawing.Point(725, 16)
         Me.gpCommonApps.Name = "gpCommonApps"
-        Me.gpCommonApps.Size = New System.Drawing.Size(304, 155)
+        Me.gpCommonApps.Size = New System.Drawing.Size(271, 138)
         Me.gpCommonApps.TabIndex = 22
         Me.gpCommonApps.TabStop = False
         Me.gpCommonApps.Text = "Common Apps"
@@ -2231,7 +2250,7 @@ Partial Class FormMain
         Me.gbAdvApps.Controls.Add(Me.btnPos)
         Me.gbAdvApps.Controls.Add(Me.btnAdvReportEditor)
         Me.gbAdvApps.Controls.Add(Me.btnAdvGroups)
-        Me.gbAdvApps.Location = New System.Drawing.Point(4, 16)
+        Me.gbAdvApps.Location = New System.Drawing.Point(4, 4)
         Me.gbAdvApps.Name = "gbAdvApps"
         Me.gbAdvApps.Size = New System.Drawing.Size(434, 155)
         Me.gbAdvApps.TabIndex = 19
@@ -2360,12 +2379,13 @@ Partial Class FormMain
         '
         'flpQuickLaunch
         '
-        Me.flpQuickLaunch.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.flpQuickLaunch.AllowDrop = True
+        Me.flpQuickLaunch.Dock = System.Windows.Forms.DockStyle.Top
         Me.flpQuickLaunch.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
         Me.flpQuickLaunch.ForeColor = System.Drawing.SystemColors.ControlText
         Me.flpQuickLaunch.Location = New System.Drawing.Point(0, 0)
         Me.flpQuickLaunch.Name = "flpQuickLaunch"
-        Me.flpQuickLaunch.Size = New System.Drawing.Size(317, 597)
+        Me.flpQuickLaunch.Size = New System.Drawing.Size(332, 555)
         Me.flpQuickLaunch.TabIndex = 21
         '
         'btnAdminRestart
@@ -2512,11 +2532,10 @@ Partial Class FormMain
         '
         'SplitContainer2
         '
-        Me.SplitContainer2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.SplitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.SplitContainer2.IsSplitterFixed = True
-        Me.SplitContainer2.Location = New System.Drawing.Point(1038, 0)
+        Me.SplitContainer2.Location = New System.Drawing.Point(0, 0)
         Me.SplitContainer2.Name = "SplitContainer2"
         Me.SplitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
@@ -2532,8 +2551,8 @@ Partial Class FormMain
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnAdminRestart)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnBatchLaunch)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnRefreshGeneralTab)
-        Me.SplitContainer2.Size = New System.Drawing.Size(321, 781)
-        Me.SplitContainer2.SplitterDistance = 601
+        Me.SplitContainer2.Size = New System.Drawing.Size(336, 781)
+        Me.SplitContainer2.SplitterDistance = 562
         Me.SplitContainer2.SplitterWidth = 3
         Me.SplitContainer2.TabIndex = 22
         '
@@ -2546,23 +2565,16 @@ Partial Class FormMain
         Me.btnLaunchLatestInstaller.Text = "Latest Installer"
         Me.btnLaunchLatestInstaller.UseVisualStyleBackColor = True
         '
-        'btnSaveFlavorDefaults
+        'Panel2
         '
-        Me.btnSaveFlavorDefaults.Location = New System.Drawing.Point(420, 439)
-        Me.btnSaveFlavorDefaults.Name = "btnSaveFlavorDefaults"
-        Me.btnSaveFlavorDefaults.Size = New System.Drawing.Size(80, 50)
-        Me.btnSaveFlavorDefaults.TabIndex = 27
-        Me.btnSaveFlavorDefaults.Text = "Save Flavor Defaults"
-        Me.btnSaveFlavorDefaults.UseVisualStyleBackColor = True
-        '
-        'btnResetFlavorDefaults
-        '
-        Me.btnResetFlavorDefaults.Location = New System.Drawing.Point(420, 383)
-        Me.btnResetFlavorDefaults.Name = "btnResetFlavorDefaults"
-        Me.btnResetFlavorDefaults.Size = New System.Drawing.Size(80, 50)
-        Me.btnResetFlavorDefaults.TabIndex = 28
-        Me.btnResetFlavorDefaults.Text = "Reset Flavor Defaults"
-        Me.btnResetFlavorDefaults.UseVisualStyleBackColor = True
+        Me.Panel2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.Panel2.Controls.Add(Me.SplitContainer2)
+        Me.Panel2.Location = New System.Drawing.Point(1023, 0)
+        Me.Panel2.Name = "Panel2"
+        Me.Panel2.Size = New System.Drawing.Size(336, 781)
+        Me.Panel2.TabIndex = 13
         '
         'FormMain
         '
@@ -2570,7 +2582,7 @@ Partial Class FormMain
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
         Me.ClientSize = New System.Drawing.Size(1371, 808)
-        Me.Controls.Add(Me.SplitContainer2)
+        Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -2655,6 +2667,7 @@ Partial Class FormMain
         Me.SplitContainer2.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer2.ResumeLayout(False)
+        Me.Panel2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2877,4 +2890,5 @@ Partial Class FormMain
     Friend WithEvents tbDatabaseStartCommand As TextBox
     Friend WithEvents btnSaveFlavorDefaults As Button
     Friend WithEvents btnResetFlavorDefaults As Button
+    Friend WithEvents Panel2 As Panel
 End Class
