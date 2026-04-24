@@ -11,14 +11,24 @@ Imports System.ServiceProcess
 Imports System.Web
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Xml
+Imports Microsoft.SqlServer.Server
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
 Imports STA2.AppData
 
 Public Class FormMain
-
+    Private _sqlFilesDirty As Boolean = True
     Private _options As AppOptions
     Private _launcherConfig As LauncherConfig
+    Private _defaultsApplied As Boolean = False
+
+    Dim FlavorSelections As String = ""
+
+    Dim defaultFlavors As HashSet(Of String) =
+    New HashSet(Of String)(
+        If(_options?.DefaultFlavorNames, Enumerable.Empty(Of String)()),
+        StringComparer.OrdinalIgnoreCase)
+
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -114,7 +124,7 @@ Public Class FormMain
         tbTest2.Visible = False
         tbTest3.Visible = False
         tbMLTest1.Visible = False
-        btnTest.Visible = False
+        'btnTest.Visible = False
 #End If
 
         btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
@@ -139,8 +149,12 @@ Public Class FormMain
 
         tbWindowTitle.Text = _options.WindowTitle
 
-        If _options IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+        If _options IsNot Nothing AndAlso
+   Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+
             tbRepoFolder.Text = _options.RepoFolderPath
+            LoadSqlFilesFromFolderWithDefaults(_options.FlavorFolderPath)
+
         End If
 
         If _options IsNot Nothing Then
@@ -155,6 +169,9 @@ Public Class FormMain
             btnAdminRestart.Enabled = True
             btnAdminRestart.Text = "Restart as Administrator"
         End If
+
+
+
     End Sub
 
     Private Sub RefreshProgramsList(Optional preserveSelection As Boolean = False)
@@ -223,7 +240,7 @@ Public Class FormMain
     End Sub
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpOptions
+        tcSTA.SelectedTab = tpQATools
 #End If
     End Sub
 
@@ -254,7 +271,7 @@ Public Class FormMain
         Dim baseInstallerPath As String = AppData.UpgradePath
         Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
         Dim installerPath = FindInstallerFile(latestFolder)
-        tbMLTest1.Text = installerPath.ToString
+
 
 
         If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
@@ -538,7 +555,7 @@ Public Class FormMain
         If cbAdvUpgradeNoSetup.Checked Then temp += AdvUpgradeConstants.NoSetup
         startinfo.Arguments = temp
 
-        tbMLTest1.Text = startinfo.FileName + " " + startinfo.Arguments
+
         Process.Start(startinfo)
     End Sub
 
@@ -1145,10 +1162,8 @@ Public Class FormMain
     ' ---------------- Misc remaining UI ----------------
 
     Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-        Dim folderPath = _options.RepoFolderPath & "\tests\flavors"
-        For Each file In IO.Directory.GetFiles(folderPath, "*.sql")
-            clbSqlFiles.Items.Add(file, False)
-        Next
+
+        Throw New Exception("Test exception")
 
     End Sub
 
@@ -1367,28 +1382,54 @@ Public Class FormMain
 
                 ' Update options object
                 _options.RepoFolderPath = RepoFolderPath
-
+                _sqlFilesDirty = True
                 ' Persist to options.json
                 OptionsManager.Save(_options)
 
                 ' Optional: show in UI
                 tbRepoFolder.Text = RepoFolderPath
+
+                LoadSqlFilesFromFolderWithDefaults(_options.FlavorFolderPath)
+
             End If
         End Using
     End Sub
-    Private Sub LoadSqlFilesFromFolder(folderPath As String)
+    Private Sub LoadSqlFilesFromFolderWithDefaults(folderPath As String)
 
+        clbSqlFiles.BeginUpdate()
         clbSqlFiles.Items.Clear()
 
-        If Not IO.Directory.Exists(folderPath) Then Return
+        If String.IsNullOrWhiteSpace(folderPath) OrElse
+       Not Directory.Exists(folderPath) Then
+            clbSqlFiles.EndUpdate()
+            Return
+        End If
 
-        For Each filePath In IO.Directory.GetFiles(folderPath, "*.sql")
-            clbSqlFiles.Items.Add(New SqlFileItem With {
-            .FilePath = filePath
-        }, False)
+        ' Build fast lookup for defaults (case-insensitive)
+        Dim defaultSet As New HashSet(Of String)(
+        If(_options?.DefaultFlavorNames, Enumerable.Empty(Of String)()),
+        StringComparer.OrdinalIgnoreCase)
+
+        For Each filePath In Directory.GetFiles(folderPath, "*.sql")
+
+            Dim item As New SqlFileItem With {.FilePath = filePath}
+            Dim index = clbSqlFiles.Items.Add(item)
+
+            ' Compare by filename WITHOUT extension
+            Dim flavorName As String =
+            Path.GetFileNameWithoutExtension(filePath)
+
+            ' ✅ Automatically check if it's a default
+            If defaultSet.Contains(flavorName) Then
+                clbSqlFiles.SetItemChecked(index, True)
+            End If
+
         Next
 
+        clbSqlFiles.EndUpdate()
+
     End Sub
+
     Public Class SqlFileItem
         Public Property FilePath As String
         Public ReadOnly Property FileName As String
@@ -1414,17 +1455,6 @@ Public Class FormMain
 
         Return selected
     End Function
-
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-
-        Dim filesToRun = GetSelectedSqlFiles()
-
-        For Each sqlFile In filesToRun
-            Debug.WriteLine("Selected: " & sqlFile)
-            ' Execute SQL file here
-        Next
-
-    End Sub
 
     Private Function GetLatestVersionFolder(basePath As String) As DirectoryInfo
 
@@ -1498,6 +1528,198 @@ Public Class FormMain
         _options.SetupSwitches = tbSetupSwitches.Text
         OptionsManager.Save(_options)
 
+
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+
+        'LoadSqlFilesFromFolder(_options.FlavorFolderPath)
+        MsgBox(_options.FlavorFolderPath)
+    End Sub
+
+    Private Sub clbSqlFiles_SelectedIndexChanged(sender As Object, e As EventArgs) Handles clbSqlFiles.SelectedIndexChanged
+        FlavorSelections = String.Join(", ", GetSelectedSqlFiles())
+
+    End Sub
+
+    Private Sub clbSqlFiles_Enter(sender As Object, e As EventArgs) _
+    Handles clbSqlFiles.Enter
+
+        RefreshSqlFilesPreserveSelectionAndDefaults()
+
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        Dim commandApplyFlavor As String = ".\apply-flavors.ps1 -Flavors "
+        Dim commandStartDatabase As String = ".\start-database.ps1 -Force -Flavors "
+
+        ' Build flavor string at click time
+        Dim flavorList As List(Of String) = GetSelectedFlavorNames()
+        Dim flavorString As String = String.Join(", ", flavorList)
+
+        tbFlavorApplyCommand.Text = commandApplyFlavor & flavorString
+        tbDatabaseStartCommand.Text = commandStartDatabase & flavorString
+
+    End Sub
+    Private Function GetSelectedFlavorNames() As List(Of String)
+        Dim result As New List(Of String)
+
+        For Each item In clbSqlFiles.CheckedItems
+            Dim sqlItem = TryCast(item, SqlFileItem)
+            If sqlItem IsNot Nothing Then
+                result.Add(IO.Path.GetFileNameWithoutExtension(sqlItem.FilePath))
+            End If
+        Next
+
+        Return result
+    End Function
+    'Private Sub RefreshSqlFilesPreserveSelection()
+    '    If _options Is Nothing OrElse
+    '       String.IsNullOrWhiteSpace(_options.FlavorFolderPath) OrElse
+    '       Not Directory.Exists(_options.FlavorFolderPath) Then
+    '        Return
+    '    End If
+
+    '    ' ✅ Capture currently-checked file paths
+    '    Dim checkedPaths As New HashSet(Of String)(
+    '        clbSqlFiles.CheckedItems.
+    '            OfType(Of SqlFileItem)().
+    '            Select(Function(i) i.FilePath),
+    '        StringComparer.OrdinalIgnoreCase
+    '    )
+
+    '    clbSqlFiles.BeginUpdate()
+    '    clbSqlFiles.Items.Clear()
+
+    '    For Each filePath In Directory.GetFiles(_options.FlavorFolderPath, "*.sql")
+    '        Dim item As New SqlFileItem With {.FilePath = filePath}
+    '        Dim index = clbSqlFiles.Items.Add(item)
+
+    '        ' ✅ Restore checked state
+    '        If checkedPaths.Contains(filePath) Then
+    '            clbSqlFiles.SetItemChecked(index, True)
+    '        End If
+    '    Next
+
+    '    clbSqlFiles.EndUpdate()
+    'End Sub
+
+
+    Private Sub RefreshSqlFilesPreserveSelectionAndDefaults()
+
+        If _options Is Nothing OrElse
+       String.IsNullOrWhiteSpace(_options.FlavorFolderPath) OrElse
+       Not Directory.Exists(_options.FlavorFolderPath) Then
+            Return
+        End If
+
+        ' ✅ Current checked items (user selections win)
+        Dim checkedPaths As New HashSet(Of String)(
+        clbSqlFiles.CheckedItems.
+            OfType(Of SqlFileItem)().
+            Select(Function(i) i.FilePath),
+        StringComparer.OrdinalIgnoreCase
+    )
+
+        clbSqlFiles.BeginUpdate()
+        clbSqlFiles.Items.Clear()
+
+        For Each filePath In Directory.GetFiles(_options.FlavorFolderPath, "*.sql")
+
+            Dim item As New SqlFileItem With {.FilePath = filePath}
+            Dim index = clbSqlFiles.Items.Add(item)
+
+            Dim flavorName As String =
+            IO.Path.GetFileNameWithoutExtension(filePath)
+
+            ' ✅ Priority:
+            ' 1. Preserve existing user selection
+            ' 2. Otherwise apply default selection
+            If checkedPaths.Contains(filePath) Then
+                clbSqlFiles.SetItemChecked(index, True)
+            ElseIf Not _defaultsApplied AndAlso defaultFlavors.Contains(flavorName) Then
+                clbSqlFiles.SetItemChecked(index, True)
+            End If
+
+
+        Next
+        _defaultsApplied = True
+        clbSqlFiles.EndUpdate()
+
+    End Sub
+
+    Private Sub btnSaveFlavorDefaults_Click(sender As Object, e As EventArgs) _
+        Handles btnSaveFlavorDefaults.Click
+
+        If _options Is Nothing Then
+            MessageBox.Show(
+                "Options are not loaded.",
+                "Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+            Return
+        End If
+
+        Dim defaults As List(Of String) =
+            clbSqlFiles.CheckedItems _
+                .OfType(Of SqlFileItem)() _
+                .Select(Function(item)
+                            Return IO.Path.GetFileNameWithoutExtension(item.FilePath)
+                        End Function) _
+                .Distinct(StringComparer.OrdinalIgnoreCase) _
+                .ToList()
+
+        _options.DefaultFlavorNames = defaults
+        OptionsManager.Save(_options)
+
+        MessageBox.Show(
+            "Selected flavors have been saved as defaults.",
+            "Defaults Saved",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
+
+    End Sub
+
+    Private Sub btnResetFlavorDefaults_Click(sender As Object, e As EventArgs) _
+    Handles btnResetFlavorDefaults.Click
+
+        If MessageBox.Show(
+    "This will clear your current selections and reapply default flavors." &
+    Environment.NewLine & "Continue?",
+    "Reset to Defaults",
+    MessageBoxButtons.YesNo,
+    MessageBoxIcon.Question) <> DialogResult.Yes Then
+            Return
+        End If
+
+
+        If _options Is Nothing OrElse
+       _options.DefaultFlavorNames Is Nothing OrElse
+       clbSqlFiles.Items.Count = 0 Then
+            Return
+        End If
+
+        Dim defaultSet As New HashSet(Of String)(
+        _options.DefaultFlavorNames,
+        StringComparer.OrdinalIgnoreCase)
+
+        clbSqlFiles.BeginUpdate()
+
+        For i As Integer = 0 To clbSqlFiles.Items.Count - 1
+
+            Dim item = TryCast(clbSqlFiles.Items(i), SqlFileItem)
+            If item Is Nothing Then Continue For
+
+            Dim flavorName As String =
+            IO.Path.GetFileNameWithoutExtension(item.FilePath)
+
+            ' ✅ Check only if it's a default, otherwise uncheck
+            clbSqlFiles.SetItemChecked(i, defaultSet.Contains(flavorName))
+
+        Next
+
+        clbSqlFiles.EndUpdate()
 
     End Sub
 End Class

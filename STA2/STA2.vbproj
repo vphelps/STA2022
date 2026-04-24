@@ -148,6 +148,7 @@
     <Compile Include="EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GlobalErrorHandler.vb" />
     <Compile Include="IniFile.vb" />
     <Compile Include="FormMain.vb">
       <SubType>Form</SubType>
