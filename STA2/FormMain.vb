@@ -21,6 +21,7 @@ Public Class FormMain
     Private _options As AppOptions
     Private _launcherConfig As LauncherConfig
     Private _defaultsApplied As Boolean = False
+    Private _adminShieldIcon As Image = Nothing
 
     Dim FlavorSelections As String = ""
 
@@ -28,7 +29,13 @@ Public Class FormMain
     New HashSet(Of String)(
         If(_options?.DefaultFlavorNames, Enumerable.Empty(Of String)()),
         StringComparer.OrdinalIgnoreCase)
-
+    Private ReadOnly _iconCache As New Dictionary(Of String, Image)(
+    StringComparer.OrdinalIgnoreCase)
+    Private _dragButton As Button = Nothing
+    Private _dragStartPoint As Point
+    Private Const DragThreshold As Integer = 6
+    Private _isReorderingQuickLaunch As Boolean = False
+    Private _ctxRebuilding As Boolean = False
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -71,6 +78,7 @@ Public Class FormMain
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        flpQuickLaunch.AllowDrop = True
 
         If Variables.OfflineMode Then
             DisableDatabaseSections()
@@ -860,15 +868,33 @@ Public Class FormMain
 
                 Dim btn As New Button()
                 btn.Name = $"btnQuickSlot{slotLocal + 1}"
-                btn.Width = 140
-                btn.Height = 50
+                btn.Width = 160
+                btn.Height = 48
                 btn.AutoSize = False
                 btn.Tag = entryLocal
                 btn.Text = entryLocal.Name
                 btn.TextAlign = ContentAlignment.MiddleCenter
+                btn.TextImageRelation = TextImageRelation.ImageBeforeText
                 btn.Margin = New Padding(3)
                 btn.UseVisualStyleBackColor = True
 
+                Dim iconImage As Image = GetProgramIcon(entryLocal)
+
+                If iconImage IsNot Nothing Then
+                    Dim finalIcon As Image = ScaleIcon(iconImage, 24)
+
+                    ' ✅ Overlay admin shield if required
+                    If entryLocal.RunAsAdmin Then
+                        Dim shield = GetAdminShieldIcon(16)
+                        finalIcon = OverlayShieldIcon(finalIcon, shield)
+                    End If
+
+                    btn.Image = finalIcon
+                    btn.ImageAlign = ContentAlignment.MiddleLeft
+                    btn.TextImageRelation = TextImageRelation.ImageBeforeText
+                End If
+
+                ' Tooltip (unchanged)
                 Dim tipText As String = entryLocal.Name
                 If Not String.IsNullOrWhiteSpace(entryLocal.Path) Then
                     tipText &= Environment.NewLine & entryLocal.Path
@@ -877,19 +903,39 @@ Public Class FormMain
                     tipText &= Environment.NewLine & entryLocal.Arguments
                 End If
                 ToolTipForQuickButtons.SetToolTip(btn, tipText)
+                If entryLocal.RunAsAdmin Then
+                    tipText &= Environment.NewLine & "Runs as Administrator"
+                End If
 
-                AddHandler btn.Click,
+                AddHandler btn.MouseDown,
+    Sub(s, e)
+        If e.Button = MouseButtons.Left Then
+            _dragButton = DirectCast(s, Button)
+            _dragStartPoint = e.Location
+        End If
+    End Sub
+
+                AddHandler btn.MouseMove,
                     Sub(s, e)
-                        LaunchProgram(entryLocal)
+                        If _dragButton Is Nothing Then Return
+                        If e.Button <> MouseButtons.Left Then Return
+
+                        ' Prevent accidental drags
+                        If Math.Abs(e.X - _dragStartPoint.X) > DragThreshold OrElse
+                           Math.Abs(e.Y - _dragStartPoint.Y) > DragThreshold Then
+
+                            flpQuickLaunch.DoDragDrop(_dragButton, DragDropEffects.Move)
+                        End If
                     End Sub
 
                 AddHandler btn.MouseUp,
                     Sub(s, e)
+                        _dragButton = Nothing
+
                         If e.Button = MouseButtons.Right Then
                             AssignSelectedListItemToQuickSlot(slotLocal)
                         End If
                     End Sub
-
                 flpQuickLaunch.Controls.Add(btn)
             Next
 
@@ -897,6 +943,74 @@ Public Class FormMain
             flpQuickLaunch.ResumeLayout()
         End Try
     End Sub
+
+    Private Sub flpQuickLaunch_DragOver(sender As Object, e As DragEventArgs) _
+    Handles flpQuickLaunch.DragOver
+
+        If _isReorderingQuickLaunch Then Return
+        If Not e.Data.GetDataPresent(GetType(Button)) Then Return
+
+        e.Effect = DragDropEffects.Move
+
+        Dim panel = flpQuickLaunch
+        Dim draggedBtn = TryCast(e.Data.GetData(GetType(Button)), Button)
+        If draggedBtn Is Nothing Then Return
+
+        Dim clientPoint = panel.PointToClient(New Point(e.X, e.Y))
+        Dim target = TryCast(panel.GetChildAtPoint(clientPoint), Button)
+
+        If target Is Nothing OrElse target Is draggedBtn Then Return
+
+        Dim draggedIndex = panel.Controls.GetChildIndex(draggedBtn)
+        Dim targetIndex = panel.Controls.GetChildIndex(target)
+        If draggedIndex = targetIndex Then Return
+
+        Try
+            _isReorderingQuickLaunch = True
+            panel.SuspendLayout()
+            panel.Controls.SetChildIndex(draggedBtn, targetIndex)
+        Finally
+            panel.ResumeLayout()
+            _isReorderingQuickLaunch = False
+        End Try
+    End Sub
+
+    Private Sub flpQuickLaunch_DragDrop(sender As Object, e As DragEventArgs) _
+    Handles flpQuickLaunch.DragDrop
+
+        Dim panel = flpQuickLaunch
+
+
+        ' Rebuild QuickLaunchIds from visual order
+        Dim newIds As New List(Of String)
+
+        For Each ctrl As Control In panel.Controls
+            Dim btn = TryCast(ctrl, Button)
+            If btn Is Nothing Then Continue For
+
+            Dim entry = TryCast(btn.Tag, ProgramEntry)
+            If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Id) Then Continue For
+
+            newIds.Add(entry.Id)
+        Next
+
+        ' Ensure list size remains consistent
+        If _options.QuickLaunchIds Is Nothing Then
+            _options.QuickLaunchIds = newIds
+        Else
+            _options.QuickLaunchIds.Clear()
+            _options.QuickLaunchIds.AddRange(newIds)
+        End If
+
+        OptionsManager.Save(_options)
+
+        ' Optional: refresh menu labels & combos
+        RefreshQuickSlotMenuLabels()
+        FillComboFromListBox()
+
+        _dragButton = Nothing
+    End Sub
+
 
     ' Assign the currently-selected program in lstPrograms to the slot (0-based)
     ' Enforce uniqueness: the same Id can appear in at most one slot.
@@ -1035,116 +1149,120 @@ Public Class FormMain
     Private _ctxBuilt As Boolean = False  ' prevents double-build
 
     Private Sub EnsureProgramsContextMenu()
-        ' Avoid duplicate builds in the same run
-        If _ctxBuilt AndAlso _ctxPrograms IsNot Nothing Then
-            RefreshQuickSlotMenuLabels()
-            Return
-        End If
 
-        ' Dispose previous (if any)
-        If _ctxPrograms IsNot Nothing Then
-            If lstPrograms IsNot Nothing AndAlso lstPrograms.ContextMenuStrip Is _ctxPrograms Then
-                lstPrograms.ContextMenuStrip = Nothing
+        ' Prevent re-entrancy / recursion
+        If _ctxRebuilding Then Return
+        _ctxRebuilding = True
+
+        Try
+            ' If already built and valid, do NOT rebuild
+            If _ctxBuilt AndAlso _ctxPrograms IsNot Nothing Then
+                Return
             End If
-            _ctxPrograms.Dispose()
-        End If
 
-        _ctxPrograms = New ContextMenuStrip()
-        _miAssignRoot = New ToolStripMenuItem("Assign to Quick Slot")
-        _miClearRoot = New ToolStripMenuItem("Clear Quick Slot")
+            ' Dispose previous context menu safely
+            If _ctxPrograms IsNot Nothing Then
+                If lstPrograms IsNot Nothing AndAlso lstPrograms.ContextMenuStrip Is _ctxPrograms Then
+                    lstPrograms.ContextMenuStrip = Nothing
+                End If
+                _ctxPrograms.Dispose()
+                _ctxPrograms = Nothing
+            End If
 
-        ' Compute slotCount safely
-        Dim slotCount As Integer = 5
-        If _options IsNot Nothing AndAlso _options.QuickLaunchIds IsNot Nothing Then
-            slotCount = _options.QuickLaunchIds.Count
-            If slotCount <= 0 Then slotCount = 5
-        End If
+            ' Create new context menu + roots
+            _ctxPrograms = New ContextMenuStrip()
+            _miAssignRoot = New ToolStripMenuItem("Assign to Quick Slot")
+            _miClearRoot = New ToolStripMenuItem("Clear Quick Slot")
 
-        ' Build items exactly once
-        For slot = 0 To slotCount - 1
-            Dim slotIndex As Integer = slot
+            ' Determine slot count
+            Dim slotCount As Integer = 5
+            If _options IsNot Nothing AndAlso _options.QuickLaunchIds IsNot Nothing Then
+                slotCount = _options.QuickLaunchIds.Count
+                If slotCount <= 0 Then slotCount = 5
+            End If
 
-            ' --- Assign item (label + tooltip) ---
-            Dim miAssign = New ToolStripMenuItem(GetQuickSlotDisplay(slotIndex))
-            miAssign.ToolTipText = GetQuickSlotTooltip(slotIndex)
-            AddHandler miAssign.Click, Sub(sender, e) AssignSelectedListItemToQuickSlot(slotIndex)
-            _miAssignRoot.DropDownItems.Add(miAssign)
+            ' Build menu items ONCE
+            For slot As Integer = 0 To slotCount - 1
+                Dim slotIndex As Integer = slot
 
-            ' --- Clear item (with assigned program name) ---
-            Dim miClear = New ToolStripMenuItem(GetQuickSlotClearLabel(slotIndex))
-            ' Optional: reuse the same detailed tooltip (path/args)
-            miClear.ToolTipText = GetQuickSlotTooltip(slotIndex)
-            AddHandler miClear.Click, Sub(sender, e) ClearQuickSlot(slotIndex)
-            _miClearRoot.DropDownItems.Add(miClear)
-        Next
+                ' --- Assign item ---
+                Dim miAssign As New ToolStripMenuItem(GetQuickSlotDisplay(slotIndex))
+                miAssign.ToolTipText = GetQuickSlotTooltip(slotIndex)
+                AddHandler miAssign.Click,
+                Sub(sender, e)
+                    AssignSelectedListItemToQuickSlot(slotIndex)
+                End Sub
+                _miAssignRoot.DropDownItems.Add(miAssign)
 
-        ' Optional: manual refresh entry
-        Dim miRefresh = New ToolStripMenuItem("Refresh Quick Slot Labels")
-        AddHandler miRefresh.Click, Sub(sender, e) RefreshQuickSlotMenuLabels()
+                ' --- Clear item ---
+                Dim miClear As New ToolStripMenuItem(GetQuickSlotClearLabel(slotIndex))
+                miClear.ToolTipText = GetQuickSlotTooltip(slotIndex)
+                AddHandler miClear.Click,
+                Sub(sender, e)
+                    ClearQuickSlot(slotIndex)
+                End Sub
+                _miClearRoot.DropDownItems.Add(miClear)
+            Next
 
-        _ctxPrograms.Items.AddRange(New ToolStripItem() {
-        _miAssignRoot,
-        _miClearRoot,
-        New ToolStripSeparator(),
-        miRefresh
-    })
+            ' Optional manual refresh entry (SAFE: only updates labels)
+            Dim miRefresh As New ToolStripMenuItem("Refresh Quick Slot Labels")
+            AddHandler miRefresh.Click,
+            Sub(sender, e)
+                RefreshQuickSlotMenuLabels()
+            End Sub
 
-        lstPrograms.ContextMenuStrip = _ctxPrograms
+            ' Build final menu
+            _ctxPrograms.Items.AddRange(New ToolStripItem() {
+            _miAssignRoot,
+            _miClearRoot,
+            New ToolStripSeparator(),
+            miRefresh
+        })
 
-        ' Ensure right-click selects the item under cursor exactly once
-        RemoveHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
-        AddHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
+            ' Assign menu to list
+            lstPrograms.ContextMenuStrip = _ctxPrograms
 
-        ' Refresh labels on open (no rebuild)
-        RemoveHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
-        AddHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
+            ' Ensure right-click selects item ONCE
+            RemoveHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
+            AddHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
 
-        _ctxBuilt = True
+            ' Refresh labels on open (NO rebuilds)
+            RemoveHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
+            AddHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
+
+            _ctxBuilt = True
+
+        Finally
+            _ctxRebuilding = False
+        End Try
+
     End Sub
-
     Private Sub CtxPrograms_Opening_UpdateLabels(sender As Object, e As System.ComponentModel.CancelEventArgs)
         RefreshQuickSlotMenuLabels()
     End Sub
 
     Private Sub RefreshQuickSlotMenuLabels()
         If _miAssignRoot Is Nothing OrElse _miClearRoot Is Nothing Then Return
+        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then Return
 
-        ' Compute slotCount safely
-        Dim slotCount As Integer = 5
-        If _options IsNot Nothing AndAlso _options.QuickLaunchIds IsNot Nothing Then
-            slotCount = _options.QuickLaunchIds.Count
-            If slotCount <= 0 Then slotCount = 5
-        End If
+        Dim slotCount As Integer = _options.QuickLaunchIds.Count
+        If slotCount <= 0 Then Return
 
-        ' If slot count changed (e.g., resized QuickLaunchIds), rebuild the whole menu
-        If _miAssignRoot.DropDownItems.Count <> slotCount OrElse _miClearRoot.DropDownItems.Count <> slotCount Then
-            EnsureProgramsContextMenu()
-            Return
-        End If
-
-        ' Update labels/tooltips in place (no re-adding)
+        ' Update labels & tooltips ONLY
         For slot As Integer = 0 To slotCount - 1
-            Dim assignText As String = GetQuickSlotDisplay(slot)
-            Dim tooltip As String = GetQuickSlotTooltip(slot)
-            Dim clearText As String = GetQuickSlotClearLabel(slot)
-
-            ' Assign item
             Dim assignItem = TryCast(_miAssignRoot.DropDownItems(slot), ToolStripMenuItem)
+            Dim clearItem = TryCast(_miClearRoot.DropDownItems(slot), ToolStripMenuItem)
+
             If assignItem IsNot Nothing Then
-                assignItem.Text = assignText
-                assignItem.ToolTipText = tooltip
+                assignItem.Text = GetQuickSlotDisplay(slot)
+                assignItem.ToolTipText = GetQuickSlotTooltip(slot)
             End If
 
-            ' Clear item (show assigned program name)
-            Dim clearItem = TryCast(_miClearRoot.DropDownItems(slot), ToolStripMenuItem)
             If clearItem IsNot Nothing Then
-                clearItem.Text = clearText
-                clearItem.ToolTipText = tooltip
+                clearItem.Text = GetQuickSlotClearLabel(slot)
+                clearItem.ToolTipText = GetQuickSlotTooltip(slot)
 
-                ' Optional: disable Clear for empty slots to improve UX
-                Dim id As String = If((_options?.QuickLaunchIds IsNot Nothing AndAlso slot < _options.QuickLaunchIds.Count),
-                                  _options.QuickLaunchIds(slot),
-                                  "")
+                Dim id = _options.QuickLaunchIds(slot)
                 clearItem.Enabled = Not String.IsNullOrWhiteSpace(id)
             End If
         Next
@@ -1722,4 +1840,79 @@ Public Class FormMain
         clbSqlFiles.EndUpdate()
 
     End Sub
+    Private Function GetProgramIcon(entry As ProgramEntry) As Image
+
+        If entry Is Nothing Then Return Nothing
+
+        ' Use entry-specific icon if supplied
+        If Not String.IsNullOrWhiteSpace(entry.IconPath) AndAlso
+           IO.File.Exists(entry.IconPath) Then
+
+            If Not _iconCache.ContainsKey(entry.IconPath) Then
+                Using ico = Icon.ExtractAssociatedIcon(entry.IconPath)
+                    _iconCache(entry.IconPath) = ico.ToBitmap()
+                End Using
+            End If
+
+            Return _iconCache(entry.IconPath)
+        End If
+
+        ' Use executable icon
+        If IO.File.Exists(entry.Path) Then
+            If Not _iconCache.ContainsKey(entry.Path) Then
+                Using ico = Icon.ExtractAssociatedIcon(entry.Path)
+                    _iconCache(entry.Path) = ico.ToBitmap()
+                End Using
+            End If
+
+            Return _iconCache(entry.Path)
+        End If
+
+        ' Fallback icon
+        Return SystemIcons.Application.ToBitmap()
+
+    End Function
+
+    Private Function ScaleIcon(img As Image, size As Integer) As Image
+        Dim bmp As New Bitmap(size, size)
+        Using g = Graphics.FromImage(bmp)
+            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            g.DrawImage(img, 0, 0, size, size)
+        End Using
+        Return bmp
+    End Function
+
+    Private Function GetAdminShieldIcon(size As Integer) As Image
+        If _adminShieldIcon IsNot Nothing Then Return _adminShieldIcon
+
+        ' Use Windows system UAC shield
+        Dim shieldIcon As Icon = SystemIcons.Shield
+
+        _adminShieldIcon = ScaleIcon(shieldIcon.ToBitmap(), size)
+        Return _adminShieldIcon
+    End Function
+
+    Private Function OverlayShieldIcon(
+    baseIcon As Image,
+    shieldIcon As Image,
+    Optional padding As Integer = 2) As Image
+
+        Dim size = baseIcon.Width
+        Dim result As New Bitmap(size, size)
+
+        Using g = Graphics.FromImage(result)
+            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            g.DrawImage(baseIcon, 0, 0, size, size)
+
+            ' Draw shield bottom-right
+            Dim shieldSize = size \ 2
+            Dim x = size - shieldSize - padding
+            Dim y = size - shieldSize - padding
+
+            g.DrawImage(shieldIcon, x, y, shieldSize, shieldSize)
+        End Using
+
+        Return result
+
+    End Function
 End Class
