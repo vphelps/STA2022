@@ -66,12 +66,13 @@ Public Class FormMain
 
         ' Quick Launch manager
         _quickLaunchManager = New QuickLaunchManager(
-        panel:=flpQuickLaunch,
-        options:=_options,
-        launcherConfig:=_launcherConfig,
-        toolTip:=ToolTipForQuickButtons,
-        launchCallback:=AddressOf LaunchProgram
-    )
+    panel:=flpQuickLaunch,
+    options:=_options,
+    launcherConfig:=_launcherConfig,
+    toolTip:=ToolTipForQuickButtons,
+    launchCallback:=AddressOf ProgramLauncher.Launch
+)
+
 
         ' Render Quick Launch buttons
         _quickLaunchManager.Refresh()
@@ -649,32 +650,6 @@ Public Class FormMain
         End If
     End Sub
 
-    Private Sub LaunchProgram(entry As ProgramEntry)
-        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Path) Then
-            MessageBox.Show("Invalid program entry.", "Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
-        If Not IO.File.Exists(entry.Path) Then
-            MessageBox.Show("File not found: " & entry.Path, "Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
-
-        Try
-            Dim psi As New ProcessStartInfo() With {
-                .FileName = entry.Path,
-                .Arguments = If(entry.Arguments, ""),
-                .WorkingDirectory = If(String.IsNullOrWhiteSpace(entry.WorkingDirectory),
-                                       IO.Path.GetDirectoryName(entry.Path),
-                                       entry.WorkingDirectory),
-                .UseShellExecute = True
-            }
-            If entry.RunAsAdmin Then psi.Verb = "runas"
-            Process.Start(psi)
-        Catch ex As Exception
-            MessageBox.Show("Failed to launch:" & Environment.NewLine & ex.Message,
-                            "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Sub
 
     Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click, lstPrograms.DoubleClick
         Dim entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
@@ -776,7 +751,7 @@ Public Class FormMain
             entry = TryCast(cmbboxAppLaunch.SelectedItem, ProgramEntry)
         End If
 
-        LaunchProgram(entry)
+        ProgramLauncher.Launch(entry)
     End Sub
 
     Private Sub tbWindowTitle_TextChanged(sender As Object, e As EventArgs) Handles tbWindowTitle.TextChanged

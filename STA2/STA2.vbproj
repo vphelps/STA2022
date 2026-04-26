@@ -178,6 +178,7 @@
     </Compile>
     <Compile Include="OptionsManager.vb" />
     <Compile Include="PowerShellRunner.vb" />
+    <Compile Include="ProgramLauncher.vb" />
     <Compile Include="QuickLaunchManager.vb" />
     <Compile Include="ReliableSql.vb" />
     <Compile Include="SafeDb.vb" />
