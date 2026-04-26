@@ -1247,11 +1247,4 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Function BuildOptionalFlags(ParamArray flags As String()) As String
-        If flags Is Nothing OrElse flags.Length = 0 Then Return ""
-
-        Return String.Join(" ",
-                           flags.Where(Function(f) Not String.IsNullOrWhiteSpace(f)))
-    End Function
-
 End Class
