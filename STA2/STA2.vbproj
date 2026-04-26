@@ -137,11 +137,11 @@
     <Compile Include="Core\BatchLauncher.vb" />
     <Compile Include="Core\CodeHelper.vb" />
     <Compile Include="Core\CommonVariables.vb" />
-    <Compile Include="Connections.vb" />
+    <Compile Include="Tools\Connections.vb" />
     <Compile Include="Core\Constants.vb" />
     <Compile Include="Data\DatabaseCoordinator.vb" />
     <Compile Include="Data\DBConnector.vb" />
-    <Compile Include="DotNetInfo.vb" />
+    <Compile Include="Tools\DotNetInfo.vb" />
     <Compile Include="Forms\EditProgramForm .Designer.vb">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </Compile>
@@ -160,7 +160,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\LauncherConfig.vb" />
-    <Compile Include="LiveOutputManager.vb" />
+    <Compile Include="Tools\LiveOutputManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -178,8 +178,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Config\OptionsManager.vb" />
-    <Compile Include="PowerShellRunner.vb" />
-    <Compile Include="ProgramLauncher.vb" />
+    <Compile Include="Tools\PowerShellRunner.vb" />
+    <Compile Include="Tools\ProgramLauncher.vb" />
     <Compile Include="Controls\QuickLaunchManager.vb" />
     <Compile Include="Data\ReliableSql.vb" />
     <Compile Include="Data\SafeDb.vb" />
@@ -274,5 +274,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
