@@ -134,11 +134,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\AppOptions.vb" />
-    <Compile Include="BatchLauncher.vb" />
-    <Compile Include="CodeHelper.vb" />
-    <Compile Include="CommonVariables.vb" />
+    <Compile Include="Core\BatchLauncher.vb" />
+    <Compile Include="Core\CodeHelper.vb" />
+    <Compile Include="Core\CommonVariables.vb" />
     <Compile Include="Connections.vb" />
-    <Compile Include="Constants.vb" />
+    <Compile Include="Core\Constants.vb" />
     <Compile Include="Data\DatabaseCoordinator.vb" />
     <Compile Include="Data\DBConnector.vb" />
     <Compile Include="DotNetInfo.vb" />
@@ -149,9 +149,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Controls\FlavorSelectionManager.vb" />
-    <Compile Include="GlobalErrorHandler.vb" />
-    <Compile Include="IconHelpers.vb" />
-    <Compile Include="IniFile.vb" />
+    <Compile Include="Core\GlobalErrorHandler.vb" />
+    <Compile Include="Core\IconHelpers.vb" />
+    <Compile Include="Core\IniFile.vb" />
     <Compile Include="Forms\FormMain.vb">
       <SubType>Form</SubType>
     </Compile>
