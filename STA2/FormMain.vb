@@ -8,7 +8,6 @@ Imports STA2.AppData
 Public Class FormMain
     Private _options As AppOptions
     Private _launcherConfig As LauncherConfig
-    Private _defaultsApplied As Boolean = False
     Private _liveOutputManager As LiveOutputManager
     Private _quickLaunchManager As QuickLaunchManager
     Private _flavorManager As FlavorSelectionManager
@@ -22,9 +21,6 @@ Public Class FormMain
 
         ' Setup UI using the loaded config
         RefreshProgramsList()
-        FillComboFromListBox()
-
-        ' Render Quick Launch buttons after options/config are available
         FillComboFromListBox()
 
         ' Window title from options (if any)
@@ -151,16 +147,11 @@ Public Class FormMain
             tbRepoFolder.Text = _options.RepoFolderPath
             _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
         End If
-
         If _options IsNot Nothing Then
             tbSetupSwitches.Text = _options.SetupSwitches
-
-            If _options IsNot Nothing Then
-                tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
-                tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
-            End If
+            tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
+            tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
         End If
-
 
         If IsRunningAsAdmin() Then
             btnAdminRestart.Enabled = False
@@ -471,8 +462,6 @@ Public Class FormMain
         If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
         If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
 
-        Dim fileExists As Boolean
-        fileExists = My.Computer.FileSystem.FileExists(Executable)
         Diagnostics.Process.Start(Executable)
     End Sub
 
@@ -560,7 +549,6 @@ Public Class FormMain
     End Sub
 
     Private Sub btnRefreshServices_Click(sender As Object, e As EventArgs) Handles btnRefreshGeneralTab.Click
-        Dim TabName As String
 
         If Variables.OfflineMode Then
             MessageBox.Show("Database is offline.")
@@ -576,6 +564,7 @@ Public Class FormMain
             Services.ServicesExistCheck()
 
         Else
+            Dim TabName As String
             TabName = tcSTA.SelectedTab.Name
         End If
     End Sub
