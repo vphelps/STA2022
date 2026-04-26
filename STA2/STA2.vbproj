@@ -148,6 +148,7 @@
     <Compile Include="EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FlavorSelectionManager.vb" />
     <Compile Include="GlobalErrorHandler.vb" />
     <Compile Include="IconHelpers.vb" />
     <Compile Include="IniFile.vb" />

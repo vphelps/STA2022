@@ -62,6 +62,83 @@ Public Module PowerShellRunner
 
     End Function
 
+
+    ' --------------------------------------------
+    ' High-level helper used by FormMain
+    ' --------------------------------------------
+    Public Async Function RunLiveScriptAsync(
+        options As AppOptions,
+        liveOutputManager As LiveOutputManager,
+        setStatus As Action(Of String),
+        triggerButton As Button,
+        scriptRelativePath As String,
+        scriptArgs As String,
+        runningStatusText As String
+    ) As Task
+
+        triggerButton.Enabled = False
+
+        Try
+            If options Is Nothing OrElse
+               String.IsNullOrWhiteSpace(options.RepoFolderPath) Then
+
+                setStatus.Invoke("Repo folder path not set")
+                Return
+            End If
+
+            Dim scriptPath As String =
+                Path.Combine(options.RepoFolderPath, scriptRelativePath)
+
+            setStatus.Invoke(runningStatusText)
+
+            Await RunPowerShellFileWithLiveOutputAsync(
+                scriptPath,
+                scriptArgs,
+                liveOutputManager)
+
+            setStatus.Invoke(String.Empty)
+
+        Catch ex As Exception
+            setStatus.Invoke(String.Empty)
+
+        Finally
+            triggerButton.Enabled = True
+        End Try
+
+    End Function
+
+    ' --------------------------------------------
+    ' Core execution + live output plumbing
+    ' --------------------------------------------
+    Public Async Function RunPowerShellFileWithLiveOutputAsync(
+        scriptPath As String,
+        argumentsText As String,
+        liveOutputManager As LiveOutputManager
+    ) As Task(Of Integer)
+
+        liveOutputManager.StartExecution(scriptPath)
+
+        Dim workingDir As String =
+            Path.GetDirectoryName(scriptPath)
+
+        Dim exitCode As Integer =
+            Await RunWithLiveOutputAsync(
+                scriptPath:=scriptPath,
+                argumentsText:=argumentsText,
+                workingDirectory:=workingDir,
+                onOutput:=Sub(line)
+                              liveOutputManager.AppendLine(line)
+                          End Sub,
+                onError:=Sub(line)
+                             liveOutputManager.AppendLine(line)
+                         End Sub)
+
+        liveOutputManager.CompleteExecution(exitCode)
+
+        Return exitCode
+
+    End Function
+
     Private Function Quote(text As String) As String
         Return $"""{text.Replace("""", "\""")}"""
     End Function

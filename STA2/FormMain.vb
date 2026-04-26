@@ -2,25 +2,16 @@
 Imports System.Data.SqlClient
 Imports System.IO
 Imports System.ServiceProcess
-Imports Newtonsoft.Json         ' because OptionsManager / configs likely use it
 Imports STA2.AppData
 
 
 Public Class FormMain
-    Private _sqlFilesDirty As Boolean = True
     Private _options As AppOptions
     Private _launcherConfig As LauncherConfig
     Private _defaultsApplied As Boolean = False
     Private _liveOutputManager As LiveOutputManager
     Private _quickLaunchManager As QuickLaunchManager
-
-    Dim FlavorSelections As String = ""
-
-    Dim defaultFlavors As HashSet(Of String) =
-    New HashSet(Of String)(
-        If(_options?.DefaultFlavorNames, Enumerable.Empty(Of String)()),
-        StringComparer.OrdinalIgnoreCase)
-    Private _ctxRebuilding As Boolean = False
+    Private _flavorManager As FlavorSelectionManager
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -41,8 +32,6 @@ Public Class FormMain
             Me.Text = _options.WindowTitle
         End If
     End Sub
-
-    Const xmlFileNamePattern As String = "\eodbtempxml-({0})-{1}.xml"
 
     Public Shared ServiceControlList As New List(Of ServiceControlEntry)
     Public Shared LastServiceEntry As ServiceControlEntry
@@ -72,7 +61,14 @@ Public Class FormMain
     toolTip:=ToolTipForQuickButtons,
     launchCallback:=AddressOf ProgramLauncher.Launch
 )
+        _flavorManager = New FlavorSelectionManager(
+    options:=_options,
+    sqlFilesList:=clbSqlFiles,
+    applyCommandTextBox:=tbFlavorApplyCommand,
+    startCommandTextBox:=tbDatabaseStartCommand
+)
 
+        _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
 
         ' Render Quick Launch buttons
         _quickLaunchManager.Refresh()
@@ -155,8 +151,7 @@ Public Class FormMain
    Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
 
             tbRepoFolder.Text = _options.RepoFolderPath
-            LoadSqlFilesFromFolderWithDefaults(_options.FlavorFolderPath)
-
+            _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
         End If
 
         If _options IsNot Nothing Then
@@ -182,70 +177,7 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub RefreshProgramsList(Optional preserveSelection As Boolean = False)
-        Dim selected As ProgramEntry = Nothing
 
-        If preserveSelection AndAlso lstPrograms.SelectedItem IsNot Nothing Then
-            selected = DirectCast(lstPrograms.SelectedItem, ProgramEntry)
-        End If
-
-        lstPrograms.BeginUpdate()
-        lstPrograms.Items.Clear()
-
-        If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
-            For Each p As ProgramEntry In _launcherConfig.Programs.Where(Function(x) x.Enabled)
-                lstPrograms.Items.Add(p)
-            Next
-        End If
-
-        lstPrograms.EndUpdate()
-
-        lstPrograms.DisplayMember = "Name"
-
-        If preserveSelection AndAlso selected IsNot Nothing Then
-            For i = 0 To lstPrograms.Items.Count - 1
-                If Object.ReferenceEquals(lstPrograms.Items(i), selected) Then
-                    lstPrograms.SelectedIndex = i
-                    Exit For
-                End If
-            Next
-        End If
-    End Sub
-
-    Private Sub FillComboFromListBox()
-
-        cmbboxAppLaunch.Items.Clear()
-
-        ' Safety checks
-        If lstPrograms Is Nothing OrElse _options Is Nothing Then Return
-
-        ' Build a lookup of assigned QuickLaunch Ids
-        Dim assignedIds As HashSet(Of String)
-
-        If _options.QuickLaunchIds IsNot Nothing Then
-            assignedIds = New HashSet(Of String)(
-            _options.QuickLaunchIds.
-                Where(Function(id) Not String.IsNullOrWhiteSpace(id)),
-            StringComparer.OrdinalIgnoreCase
-        )
-        Else
-            assignedIds = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-        End If
-
-        ' Add only unassigned programs to ComboBox
-        For Each entry As ProgramEntry In lstPrograms.Items
-            If entry Is Nothing Then Continue For
-            If String.IsNullOrWhiteSpace(entry.Id) Then Continue For
-
-            ' Exclude programs already assigned to Quick Launch
-            If assignedIds.Contains(entry.Id) Then Continue For
-
-            cmbboxAppLaunch.Items.Add(entry)
-        Next
-
-        cmbboxAppLaunch.DisplayMember = "Name"
-
-    End Sub
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
         tcSTA.SelectedTab = tpQATools
@@ -742,28 +674,10 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click
-        Dim entry As ProgramEntry = Nothing
-
-        If sender Is btnLaunch OrElse sender Is lstPrograms Then
-            entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
-        ElseIf sender Is btnComboAppLaunch Then
-            entry = TryCast(cmbboxAppLaunch.SelectedItem, ProgramEntry)
-        End If
-
-        ProgramLauncher.Launch(entry)
-    End Sub
-
     Private Sub tbWindowTitle_TextChanged(sender As Object, e As EventArgs) Handles tbWindowTitle.TextChanged
         _options.WindowTitle = tbWindowTitle.Text
     End Sub
 
-    Private Sub SaveLauncher(Optional syncFromList As Boolean = False)
-        If syncFromList Then
-            _launcherConfig.Programs = lstPrograms.Items.Cast(Of ProgramEntry)().ToList()
-        End If
-        OptionsManager.SaveLauncherConfig(_launcherConfig)
-    End Sub
 
     Private Sub btnAdminRestart_Click(sender As Object, e As EventArgs) Handles btnAdminRestart.Click
         If IsRunningAsAdmin() Then
@@ -809,6 +723,374 @@ Public Class FormMain
             End If
         Catch
         End Try
+    End Sub
+
+    Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+        Cursor.Current = Cursors.WaitCursor
+        btnReconnect.Enabled = False
+
+        Try
+            ' Test database connection using your existing helper
+            If TestConnection(ConfigValues.ConnectionString) Then
+                ' Successful reconnect
+                GoOnline()
+                MessageBox.Show("Reconnected to the database.",
+                            "Database",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information)
+            Else
+                ' Still offline
+                MessageBox.Show("Still cannot connect to the database.",
+                            "Database",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning)
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show($"Reconnect failed: {ex.Message}",
+                        "Database",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+        Finally
+            btnReconnect.Enabled = True
+            Cursor.Current = Cursors.Default
+        End Try
+    End Sub
+
+    Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
+
+        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
+        Dim Executable As String = caller.Name.Replace("btn", "")
+        If Executable = "AppWiz" Then
+            Process.Start("control.exe", "appwiz.cpl")
+        ElseIf Executable = "Services" Then
+            Dim psi As New ProcessStartInfo("services.msc")
+            psi.UseShellExecute = True
+            psi.Verb = "runas"
+            Process.Start(psi)
+        ElseIf Executable = "Devices" Then
+            Process.Start("control.exe", "/name Microsoft.DevicesAndPrinters")
+        ElseIf Executable = "EventViewer" Then
+            Process.Start("eventvwr.msc")
+        Else
+            Diagnostics.Process.Start(Executable)
+        End If
+
+
+
+
+
+    End Sub
+
+    Private Sub btnRepoFolder_Click(sender As Object, e As EventArgs) Handles btnRepoFolder.Click
+
+
+        Using dlg As New FolderBrowserDialog()
+
+            dlg.Description = "Select the repository folder"
+            dlg.ShowNewFolderButton = False
+
+            ' Optional: start at the previously saved folder
+            If _options IsNot Nothing AndAlso
+           Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) AndAlso
+           IO.Directory.Exists(_options.RepoFolderPath) Then
+
+                dlg.SelectedPath = _options.RepoFolderPath
+            End If
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                Dim RepoFolderPath As String = dlg.SelectedPath
+
+                ' Update options object
+                _options.RepoFolderPath = RepoFolderPath
+                ' Persist to options.json
+                OptionsManager.Save(_options)
+
+                ' Optional: show in UI
+                tbRepoFolder.Text = RepoFolderPath
+
+                _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
+            End If
+        End Using
+    End Sub
+
+    Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
+
+        Dim baseInstallerPath As String = AppData.UpgradePath
+
+        Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+        If latestFolder Is Nothing Then
+            MessageBox.Show("No valid installer folders found.")
+            Return
+        End If
+
+        Dim installerPath = FindInstallerFile(latestFolder)
+        If String.IsNullOrWhiteSpace(installerPath) OrElse
+       Not IO.File.Exists(installerPath) Then
+
+            MessageBox.Show("Installer not found in: " & latestFolder.FullName)
+            Return
+        End If
+
+        ' Optional: run as admin
+        Dim psi As New ProcessStartInfo(installerPath) With {
+        .UseShellExecute = True,
+        .Arguments = tbSetupSwitches.Text,
+        .Verb = "runas"
+    }
+        Process.Start(psi)
+
+
+    End Sub
+
+    Private Sub tbSetupSwitches_TextChanged(sender As Object, e As EventArgs) Handles tbSetupSwitches.TextChanged
+
+        If _options Is Nothing Then Return
+
+        _options.SetupSwitches = tbSetupSwitches.Text
+        OptionsManager.Save(_options)
+
+
+    End Sub
+
+    Private Sub clbSqlFiles_Enter(sender As Object, e As EventArgs) _
+    Handles clbSqlFiles.Enter
+
+        _flavorManager.RefreshPreservingSelection()
+    End Sub
+
+
+    Private Sub btnSaveFlavorDefaults_Click(sender As Object, e As EventArgs) _
+    Handles btnSaveFlavorDefaults.Click
+
+        _flavorManager.SaveDefaults()
+
+        MessageBox.Show(
+        "Selected flavors have been saved as defaults.",
+        "Defaults Saved",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information)
+    End Sub
+
+    Private Sub btnResetFlavorDefaults_Click(sender As Object, e As EventArgs) _
+    Handles btnResetFlavorDefaults.Click
+
+        If MessageBox.Show(
+        "This will clear your current selections and reapply default flavors." &
+        Environment.NewLine & "Continue?",
+        "Reset to Defaults",
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Question) <> DialogResult.Yes Then
+            Return
+        End If
+
+        _flavorManager.ResetToDefaults()
+    End Sub
+
+    Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
+
+        If _options Is Nothing Then Return
+        _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
+        OptionsManager.Save(_options)
+        _flavorManager.UpdateFlavorCommands(
+            tbApplyFlavorDefault.Text,
+            tbDatabaseStartDefault.Text
+        )
+    End Sub
+
+
+    Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
+
+        If _options Is Nothing Then Return
+        _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
+
+        OptionsManager.Save(_options)
+        _flavorManager.UpdateFlavorCommands(
+            tbApplyFlavorDefault.Text,
+            tbDatabaseStartDefault.Text
+        )
+    End Sub
+
+    Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) _
+    Handles clbSqlFiles.ItemCheck
+
+        BeginInvoke(Sub()
+                        _flavorManager.UpdateFlavorCommands(
+            tbApplyFlavorDefault.Text,
+            tbDatabaseStartDefault.Text)
+                    End Sub)
+    End Sub
+
+    Private Async Sub btnRunApplyFlavorLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunApplyFlavorLive.Click
+
+        Dim flavorArgs As String = BuildFlavorsArgument(_flavorManager.GetSelectedFlavorNames())
+        Await PowerShellRunner.RunLiveScriptAsync(
+            options:=_options,
+            liveOutputManager:=_liveOutputManager,
+            setStatus:=AddressOf SetExecutionStatus,
+            triggerButton:=btnRunApplyFlavorLive,
+            scriptRelativePath:="tests\apply-flavors.ps1",
+            scriptArgs:=flavorArgs,
+            runningStatusText:="Applying flavors (live output)…"
+        )
+    End Sub
+
+    Private Async Sub btnRunDatabaseStartLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunDatabaseStartLive.Click
+
+        Dim flags As String = "-Force"
+        Dim flavorArgs As String = BuildFlavorsArgument(_flavorManager.GetSelectedFlavorNames())
+        Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
+
+        Await PowerShellRunner.RunLiveScriptAsync(
+            options:=_options,
+            liveOutputManager:=_liveOutputManager,
+            setStatus:=AddressOf SetExecutionStatus,
+            triggerButton:=btnRunDatabaseStartLive,
+            scriptRelativePath:="tests\Start-Database.ps1",
+            scriptArgs:=scriptArgs,
+            runningStatusText:="Starting database (live output)…"
+        )
+    End Sub
+
+    Private Sub AppendColoredOutput(text As String, color As Color)
+        If rtbLiveOutput.InvokeRequired Then
+            rtbLiveOutput.Invoke(Sub() AppendColoredOutput(text, color))
+            Return
+        End If
+
+        Dim start = rtbLiveOutput.TextLength
+        rtbLiveOutput.AppendText(text & Environment.NewLine)
+        Dim length = rtbLiveOutput.TextLength - start
+
+        rtbLiveOutput.Select(start, length)
+        rtbLiveOutput.SelectionColor = color
+        rtbLiveOutput.SelectionLength = 0
+        rtbLiveOutput.ScrollToCaret()
+    End Sub
+
+    Private Function GetLatestVersionFolder(basePath As String) As DirectoryInfo
+
+        If Not IO.Directory.Exists(basePath) Then
+            Return Nothing
+        End If
+
+        Dim versionFolders =
+            From dir In New IO.DirectoryInfo(basePath).GetDirectories()
+            Let versionText = dir.Name.Replace("Version", "").Trim()
+            Let parsedVersion = ParseVersionSafe(versionText)
+            Where parsedVersion IsNot Nothing
+            Order By parsedVersion Descending
+            Select dir
+
+        Return versionFolders.FirstOrDefault()
+
+    End Function
+    Private Function ParseVersionSafe(versionText As String) As Version
+        Try
+            Return New Version(versionText)
+        Catch
+            Return Nothing
+        End Try
+    End Function
+    Private Function FindInstallerFile(versionFolder As IO.DirectoryInfo) As String
+
+        If versionFolder Is Nothing Then Return Nothing
+
+        Dim installers =
+            versionFolder.GetFiles("AdvantageSetup-x64.exe").
+            Union(versionFolder.GetFiles("*.msi"))
+
+        Return installers.FirstOrDefault()?.FullName
+
+    End Function
+
+    Private Sub RefreshProgramsList(Optional preserveSelection As Boolean = False)
+        Dim selected As ProgramEntry = Nothing
+
+        If preserveSelection AndAlso lstPrograms.SelectedItem IsNot Nothing Then
+            selected = DirectCast(lstPrograms.SelectedItem, ProgramEntry)
+        End If
+
+        lstPrograms.BeginUpdate()
+        lstPrograms.Items.Clear()
+
+        If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
+            For Each p As ProgramEntry In _launcherConfig.Programs.Where(Function(x) x.Enabled)
+                lstPrograms.Items.Add(p)
+            Next
+        End If
+
+        lstPrograms.EndUpdate()
+
+        lstPrograms.DisplayMember = "Name"
+
+        If preserveSelection AndAlso selected IsNot Nothing Then
+            For i = 0 To lstPrograms.Items.Count - 1
+                If Object.ReferenceEquals(lstPrograms.Items(i), selected) Then
+                    lstPrograms.SelectedIndex = i
+                    Exit For
+                End If
+            Next
+        End If
+    End Sub
+
+    Private Sub FillComboFromListBox()
+
+        cmbboxAppLaunch.Items.Clear()
+
+        ' Safety checks
+        If lstPrograms Is Nothing OrElse _options Is Nothing Then Return
+
+        ' Build a lookup of assigned QuickLaunch Ids
+        Dim assignedIds As HashSet(Of String)
+
+        If _options.QuickLaunchIds IsNot Nothing Then
+            assignedIds = New HashSet(Of String)(
+            _options.QuickLaunchIds.
+                Where(Function(id) Not String.IsNullOrWhiteSpace(id)),
+            StringComparer.OrdinalIgnoreCase
+        )
+        Else
+            assignedIds = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        End If
+
+        ' Add only unassigned programs to ComboBox
+        For Each entry As ProgramEntry In lstPrograms.Items
+            If entry Is Nothing Then Continue For
+            If String.IsNullOrWhiteSpace(entry.Id) Then Continue For
+
+            ' Exclude programs already assigned to Quick Launch
+            If assignedIds.Contains(entry.Id) Then Continue For
+
+            cmbboxAppLaunch.Items.Add(entry)
+        Next
+
+        cmbboxAppLaunch.DisplayMember = "Name"
+
+    End Sub
+    Private Sub LaunchFromUI(sender As Object, e As EventArgs) Handles btnLaunch.Click, btnComboAppLaunch.Click
+        Dim entry As ProgramEntry = Nothing
+
+        If sender Is btnLaunch OrElse sender Is lstPrograms Then
+            entry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
+        ElseIf sender Is btnComboAppLaunch Then
+            entry = TryCast(cmbboxAppLaunch.SelectedItem, ProgramEntry)
+        End If
+
+        ProgramLauncher.Launch(entry)
+    End Sub
+
+    Private Sub SaveLauncher(Optional syncFromList As Boolean = False)
+        If syncFromList Then
+            _launcherConfig.Programs = lstPrograms.Items.Cast(Of ProgramEntry)().ToList()
+        End If
+        OptionsManager.SaveLauncherConfig(_launcherConfig)
     End Sub
 
     Private Sub DisableDatabaseSections()
@@ -865,37 +1147,7 @@ Public Class FormMain
 
 
     End Sub
-    Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
-        Cursor.Current = Cursors.WaitCursor
-        btnReconnect.Enabled = False
 
-        Try
-            ' Test database connection using your existing helper
-            If TestConnection(ConfigValues.ConnectionString) Then
-                ' Successful reconnect
-                GoOnline()
-                MessageBox.Show("Reconnected to the database.",
-                            "Database",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information)
-            Else
-                ' Still offline
-                MessageBox.Show("Still cannot connect to the database.",
-                            "Database",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning)
-            End If
-
-        Catch ex As Exception
-            MessageBox.Show($"Reconnect failed: {ex.Message}",
-                        "Database",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error)
-        Finally
-            btnReconnect.Enabled = True
-            Cursor.Current = Cursors.Default
-        End Try
-    End Sub
     Private Function TestConnection(cs As String) As Boolean
         Try
             Using cn As New SqlClient.SqlConnection(cs)
@@ -979,426 +1231,6 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
-
-        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
-        Dim Executable As String = caller.Name.Replace("btn", "")
-        If Executable = "AppWiz" Then
-            Process.Start("control.exe", "appwiz.cpl")
-        ElseIf Executable = "Services" Then
-            Dim psi As New ProcessStartInfo("services.msc")
-            psi.UseShellExecute = True
-            psi.Verb = "runas"
-            Process.Start(psi)
-        ElseIf Executable = "Devices" Then
-            Process.Start("control.exe", "/name Microsoft.DevicesAndPrinters")
-        ElseIf Executable = "EventViewer" Then
-            Process.Start("eventvwr.msc")
-        Else
-            Diagnostics.Process.Start(Executable)
-        End If
-
-
-
-
-
-    End Sub
-
-    Private Sub btnRepoFolder_Click(sender As Object, e As EventArgs) Handles btnRepoFolder.Click
-
-
-        Using dlg As New FolderBrowserDialog()
-
-            dlg.Description = "Select the repository folder"
-            dlg.ShowNewFolderButton = False
-
-            ' Optional: start at the previously saved folder
-            If _options IsNot Nothing AndAlso
-           Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) AndAlso
-           IO.Directory.Exists(_options.RepoFolderPath) Then
-
-                dlg.SelectedPath = _options.RepoFolderPath
-            End If
-
-            If dlg.ShowDialog(Me) = DialogResult.OK Then
-                Dim RepoFolderPath As String = dlg.SelectedPath
-
-                ' Update options object
-                _options.RepoFolderPath = RepoFolderPath
-                _sqlFilesDirty = True
-                ' Persist to options.json
-                OptionsManager.Save(_options)
-
-                ' Optional: show in UI
-                tbRepoFolder.Text = RepoFolderPath
-
-                LoadSqlFilesFromFolderWithDefaults(_options.FlavorFolderPath)
-
-            End If
-        End Using
-    End Sub
-    Private Sub LoadSqlFilesFromFolderWithDefaults(folderPath As String)
-
-        clbSqlFiles.BeginUpdate()
-        clbSqlFiles.Items.Clear()
-
-        If String.IsNullOrWhiteSpace(folderPath) OrElse
-       Not Directory.Exists(folderPath) Then
-            clbSqlFiles.EndUpdate()
-            Return
-        End If
-
-        ' Build fast lookup for defaults (case-insensitive)
-        Dim defaultSet As New HashSet(Of String)(
-        If(_options?.DefaultFlavorNames, Enumerable.Empty(Of String)()),
-        StringComparer.OrdinalIgnoreCase)
-
-        For Each filePath In Directory.GetFiles(folderPath, "*.sql")
-
-            Dim item As New SqlFileItem With {.FilePath = filePath}
-            Dim index = clbSqlFiles.Items.Add(item)
-
-            ' Compare by filename WITHOUT extension
-            Dim flavorName As String =
-            Path.GetFileNameWithoutExtension(filePath)
-
-            ' ✅ Automatically check if it's a default
-            If defaultSet.Contains(flavorName) Then
-                clbSqlFiles.SetItemChecked(index, True)
-            End If
-
-        Next
-
-        clbSqlFiles.EndUpdate()
-
-    End Sub
-
-    Public Class SqlFileItem
-        Public Property FilePath As String
-        Public ReadOnly Property FileName As String
-            Get
-                Return IO.Path.GetFileName(FilePath)
-            End Get
-        End Property
-
-        Public Overrides Function ToString() As String
-            Return FileName
-        End Function
-    End Class
-    Private Function GetSelectedSqlFiles() As List(Of String)
-
-        Dim selected As New List(Of String)
-
-        For Each item In clbSqlFiles.CheckedItems
-            Dim sqlItem = TryCast(item, SqlFileItem)
-            If sqlItem IsNot Nothing Then
-                selected.Add(sqlItem.FilePath)
-            End If
-        Next
-
-        Return selected
-    End Function
-
-    Private Function GetLatestVersionFolder(basePath As String) As DirectoryInfo
-
-        If Not IO.Directory.Exists(basePath) Then
-            Return Nothing
-        End If
-
-        Dim versionFolders =
-            From dir In New IO.DirectoryInfo(basePath).GetDirectories()
-            Let versionText = dir.Name.Replace("Version", "").Trim()
-            Let parsedVersion = ParseVersionSafe(versionText)
-            Where parsedVersion IsNot Nothing
-            Order By parsedVersion Descending
-            Select dir
-
-        Return versionFolders.FirstOrDefault()
-
-    End Function
-    Private Function ParseVersionSafe(versionText As String) As Version
-        Try
-            Return New Version(versionText)
-        Catch
-            Return Nothing
-        End Try
-    End Function
-    Private Function FindInstallerFile(versionFolder As IO.DirectoryInfo) As String
-
-        If versionFolder Is Nothing Then Return Nothing
-
-        Dim installers =
-            versionFolder.GetFiles("AdvantageSetup-x64.exe").
-            Union(versionFolder.GetFiles("*.msi"))
-
-        Return installers.FirstOrDefault()?.FullName
-
-    End Function
-
-    Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
-
-        Dim baseInstallerPath As String = AppData.UpgradePath
-
-        Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
-        If latestFolder Is Nothing Then
-            MessageBox.Show("No valid installer folders found.")
-            Return
-        End If
-
-        Dim installerPath = FindInstallerFile(latestFolder)
-        If String.IsNullOrWhiteSpace(installerPath) OrElse
-       Not IO.File.Exists(installerPath) Then
-
-            MessageBox.Show("Installer not found in: " & latestFolder.FullName)
-            Return
-        End If
-
-        ' Optional: run as admin
-        Dim psi As New ProcessStartInfo(installerPath) With {
-        .UseShellExecute = True,
-        .Arguments = tbSetupSwitches.Text,
-        .Verb = "runas"
-    }
-        Process.Start(psi)
-
-
-    End Sub
-
-    Private Sub tbSetupSwitches_TextChanged(sender As Object, e As EventArgs) Handles tbSetupSwitches.TextChanged
-
-        If _options Is Nothing Then Return
-
-        _options.SetupSwitches = tbSetupSwitches.Text
-        OptionsManager.Save(_options)
-
-
-    End Sub
-
-    Private Sub clbSqlFiles_SelectedIndexChanged(sender As Object, e As EventArgs) Handles clbSqlFiles.SelectedIndexChanged
-        FlavorSelections = String.Join(", ", GetSelectedSqlFiles())
-
-    End Sub
-
-    Private Sub clbSqlFiles_Enter(sender As Object, e As EventArgs) _
-    Handles clbSqlFiles.Enter
-
-        RefreshSqlFilesPreserveSelectionAndDefaults()
-
-    End Sub
-
-    Private Sub UpdateFlavorCommands()
-
-        Dim commandApplyFlavor As String = tbApplyFlavorDefault.Text
-        Dim commandStartDatabase As String = tbDatabaseStartDefault.Text
-
-        ' Build flavor list from checked SQL files
-        Dim flavorList As List(Of String) = GetSelectedFlavorNames()
-        Dim flavorString As String = String.Join(", ", flavorList)
-
-        tbFlavorApplyCommand.Text = commandApplyFlavor & " " & flavorString
-        tbDatabaseStartCommand.Text = commandStartDatabase & " " & flavorString
-
-    End Sub
-
-    Private Function GetSelectedFlavorNames() As List(Of String)
-        Dim result As New List(Of String)
-
-        For Each item In clbSqlFiles.CheckedItems
-            Dim sqlItem = TryCast(item, SqlFileItem)
-            If sqlItem IsNot Nothing Then
-                result.Add(IO.Path.GetFileNameWithoutExtension(sqlItem.FilePath))
-            End If
-        Next
-
-        Return result
-    End Function
-
-    Private Sub RefreshSqlFilesPreserveSelectionAndDefaults()
-
-        If _options Is Nothing OrElse
-       String.IsNullOrWhiteSpace(_options.FlavorFolderPath) OrElse
-       Not Directory.Exists(_options.FlavorFolderPath) Then
-            Return
-        End If
-
-        ' ✅ Current checked items (user selections win)
-        Dim checkedPaths As New HashSet(Of String)(
-        clbSqlFiles.CheckedItems.
-            OfType(Of SqlFileItem)().
-            Select(Function(i) i.FilePath),
-        StringComparer.OrdinalIgnoreCase
-    )
-
-        clbSqlFiles.BeginUpdate()
-        clbSqlFiles.Items.Clear()
-
-        For Each filePath In Directory.GetFiles(_options.FlavorFolderPath, "*.sql")
-
-            Dim item As New SqlFileItem With {.FilePath = filePath}
-            Dim index = clbSqlFiles.Items.Add(item)
-
-            Dim flavorName As String =
-            IO.Path.GetFileNameWithoutExtension(filePath)
-
-            ' ✅ Priority:
-            ' 1. Preserve existing user selection
-            ' 2. Otherwise apply default selection
-            If checkedPaths.Contains(filePath) Then
-                clbSqlFiles.SetItemChecked(index, True)
-            ElseIf Not _defaultsApplied AndAlso defaultFlavors.Contains(flavorName) Then
-                clbSqlFiles.SetItemChecked(index, True)
-            End If
-
-
-        Next
-        _defaultsApplied = True
-        clbSqlFiles.EndUpdate()
-
-    End Sub
-
-    Private Sub btnSaveFlavorDefaults_Click(sender As Object, e As EventArgs) _
-        Handles btnSaveFlavorDefaults.Click
-
-        If _options Is Nothing Then
-            MessageBox.Show(
-                "Options are not loaded.",
-                "Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-            Return
-        End If
-
-        Dim defaults As List(Of String) =
-            clbSqlFiles.CheckedItems _
-                .OfType(Of SqlFileItem)() _
-                .Select(Function(item)
-                            Return IO.Path.GetFileNameWithoutExtension(item.FilePath)
-                        End Function) _
-                .Distinct(StringComparer.OrdinalIgnoreCase) _
-                .ToList()
-
-        _options.DefaultFlavorNames = defaults
-        OptionsManager.Save(_options)
-
-        MessageBox.Show(
-            "Selected flavors have been saved as defaults.",
-            "Defaults Saved",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Information)
-
-    End Sub
-
-    Private Sub btnResetFlavorDefaults_Click(sender As Object, e As EventArgs) _
-    Handles btnResetFlavorDefaults.Click
-
-        If MessageBox.Show(
-    "This will clear your current selections and reapply default flavors." &
-    Environment.NewLine & "Continue?",
-    "Reset to Defaults",
-    MessageBoxButtons.YesNo,
-    MessageBoxIcon.Question) <> DialogResult.Yes Then
-            Return
-        End If
-
-
-        If _options Is Nothing OrElse
-       _options.DefaultFlavorNames Is Nothing OrElse
-       clbSqlFiles.Items.Count = 0 Then
-            Return
-        End If
-
-        Dim defaultSet As New HashSet(Of String)(
-        _options.DefaultFlavorNames,
-        StringComparer.OrdinalIgnoreCase)
-
-        clbSqlFiles.BeginUpdate()
-
-        For i As Integer = 0 To clbSqlFiles.Items.Count - 1
-
-            Dim item = TryCast(clbSqlFiles.Items(i), SqlFileItem)
-            If item Is Nothing Then Continue For
-
-            Dim flavorName As String =
-            IO.Path.GetFileNameWithoutExtension(item.FilePath)
-
-            ' ✅ Check only if it's a default, otherwise uncheck
-            clbSqlFiles.SetItemChecked(i, defaultSet.Contains(flavorName))
-
-        Next
-
-        clbSqlFiles.EndUpdate()
-
-    End Sub
-
-
-    Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
-
-        If _options Is Nothing Then Return
-        _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
-        OptionsManager.Save(_options)
-        UpdateFlavorCommands()
-
-    End Sub
-
-
-    Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
-
-        If _options Is Nothing Then Return
-        _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
-
-        OptionsManager.Save(_options)
-        UpdateFlavorCommands()
-
-    End Sub
-
-    Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles clbSqlFiles.ItemCheck
-
-        ' Delay update until WinForms applies the check
-        Me.BeginInvoke(
-        Sub()
-            UpdateFlavorCommands()
-        End Sub
-    )
-
-    End Sub
-
-    Private Async Function RunLiveScriptAsync(
-    triggerButton As Button,
-    scriptRelativePath As String,
-    scriptArgs As String,
-    runningStatusText As String
-) As Task
-
-        triggerButton.Enabled = False
-
-        Try
-            If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
-                SetExecutionStatus("Repo folder path not set")
-                Return
-            End If
-
-            Dim scriptPath As String =
-            IO.Path.Combine(_options.RepoFolderPath, scriptRelativePath)
-
-            ' ✅ Show status ONLY while running
-            SetExecutionStatus(runningStatusText)
-
-            Await RunPowerShellFileWithLiveOutputAsync(
-            scriptPath,
-            scriptArgs)
-
-            ' ✅ Hide status when finished
-            SetExecutionStatus(String.Empty)
-
-        Catch ex As Exception
-            ' ✅ No direct output here; LiveOutputManager already owns output
-            SetExecutionStatus(String.Empty)
-
-        Finally
-            triggerButton.Enabled = True
-        End Try
-
-    End Function
     Private Function BuildFlavorsArgument(flavorNames As IEnumerable(Of String)) As String
         If flavorNames Is Nothing Then Return ""
 
@@ -1443,79 +1275,6 @@ Public Class FormMain
             tslblExecutionStatus.Visible = True
         End If
 
-    End Sub
-
-    Private Async Function RunPowerShellFileWithLiveOutputAsync(
-    scriptPath As String,
-    argumentsText As String
-) As Task(Of Integer)
-
-        _liveOutputManager.StartExecution(scriptPath)
-
-        Dim workingDir As String =
-        IO.Path.GetDirectoryName(scriptPath)
-
-        Dim exitCode As Integer =
-        Await PowerShellRunner.RunWithLiveOutputAsync(
-            scriptPath:=scriptPath,
-            argumentsText:=argumentsText,
-            workingDirectory:=workingDir,
-            onOutput:=Sub(line)
-                          _liveOutputManager.AppendLine(line)
-                      End Sub,
-            onError:=Sub(line)
-                         _liveOutputManager.AppendLine(line)
-                     End Sub)
-
-        _liveOutputManager.CompleteExecution(exitCode)
-
-        Return exitCode
-    End Function
-
-    Private Async Sub btnRunApplyFlavorLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunApplyFlavorLive.Click
-
-        Dim flavorArgs As String = BuildFlavorsArgument(GetSelectedFlavorNames())
-
-        Await RunLiveScriptAsync(
-        triggerButton:=btnRunApplyFlavorLive,
-        scriptRelativePath:="tests\apply-flavors.ps1",
-        scriptArgs:=flavorArgs,
-        runningStatusText:="Applying flavors (live output)…")
-    End Sub
-
-    Private Async Sub btnRunDatabaseStartLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunDatabaseStartLive.Click
-
-        Dim flags As String = "-Force"
-        Dim flavorArgs As String = BuildFlavorsArgument(GetSelectedFlavorNames())
-        Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
-
-        Await RunLiveScriptAsync(
-        triggerButton:=btnRunDatabaseStartLive,
-        scriptRelativePath:="tests\Start-Database.ps1",
-        scriptArgs:=scriptArgs,
-        runningStatusText:="Starting database (live output)…")
-    End Sub
-
-    Private Sub AppendColoredOutput(text As String, color As Color)
-        If rtbLiveOutput.InvokeRequired Then
-            rtbLiveOutput.Invoke(Sub() AppendColoredOutput(text, color))
-            Return
-        End If
-
-        Dim start = rtbLiveOutput.TextLength
-        rtbLiveOutput.AppendText(text & Environment.NewLine)
-        Dim length = rtbLiveOutput.TextLength - start
-
-        rtbLiveOutput.Select(start, length)
-        rtbLiveOutput.SelectionColor = color
-        rtbLiveOutput.SelectionLength = 0
-        rtbLiveOutput.ScrollToCaret()
     End Sub
 
 
