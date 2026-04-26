@@ -926,16 +926,24 @@ Public Class FormMain
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
 
-        Dim flavorArgs As String = BuildFlavorsArgument(_flavorManager.GetSelectedFlavorNames())
+        Dim flavorArgs As String =
+        CodeHelper.BuildFlavorsArgument(
+            _flavorManager.GetSelectedFlavorNames())
+
         Await PowerShellRunner.RunLiveScriptAsync(
-            options:=_options,
-            liveOutputManager:=_liveOutputManager,
-            setStatus:=AddressOf SetExecutionStatus,
-            triggerButton:=btnRunApplyFlavorLive,
-            scriptRelativePath:="tests\apply-flavors.ps1",
-            scriptArgs:=flavorArgs,
-            runningStatusText:="Applying flavors (live output)…"
-        )
+        options:=_options,
+        liveOutputManager:=_liveOutputManager,
+        setStatus:=Sub(text)
+                       CodeHelper.SetExecutionStatus(
+                           owner:=Me,
+                           statusLabel:=tslblExecutionStatus,
+                           text:=text)
+                   End Sub,
+        triggerButton:=btnRunApplyFlavorLive,
+        scriptRelativePath:="tests\apply-flavors.ps1",
+        scriptArgs:=flavorArgs,
+        runningStatusText:="Applying flavors (live output)…"
+    )
     End Sub
 
     Private Async Sub btnRunDatabaseStartLive_Click(
@@ -944,13 +952,21 @@ Public Class FormMain
 ) Handles btnRunDatabaseStartLive.Click
 
         Dim flags As String = "-Force"
-        Dim flavorArgs As String = BuildFlavorsArgument(_flavorManager.GetSelectedFlavorNames())
+        Dim flavorArgs As String =
+    CodeHelper.BuildFlavorsArgument(
+        _flavorManager.GetSelectedFlavorNames())
+
         Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
 
         Await PowerShellRunner.RunLiveScriptAsync(
             options:=_options,
             liveOutputManager:=_liveOutputManager,
-            setStatus:=AddressOf SetExecutionStatus,
+        setStatus:=Sub(text)
+                       CodeHelper.SetExecutionStatus(
+                           owner:=Me,
+                           statusLabel:=tslblExecutionStatus,
+                           text:=text)
+                   End Sub,
             triggerButton:=btnRunDatabaseStartLive,
             scriptRelativePath:="tests\Start-Database.ps1",
             scriptArgs:=scriptArgs,
@@ -1231,51 +1247,11 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Function BuildFlavorsArgument(flavorNames As IEnumerable(Of String)) As String
-        If flavorNames Is Nothing Then Return ""
-
-        Dim list = flavorNames.
-                   Where(Function(f) Not String.IsNullOrWhiteSpace(f)).
-                   ToList()
-
-        If list.Count = 0 Then
-            Throw New InvalidOperationException("No flavors provided.")
-        End If
-
-        ' IMPORTANT:
-        ' - Comma-separated
-        ' - NO spaces
-        ' - Parsed by PowerShell because we use -Command
-        Dim flavorCsv As String = String.Join(",", list)
-
-        Return $"-Flavors {flavorCsv}"
-    End Function
     Private Function BuildOptionalFlags(ParamArray flags As String()) As String
         If flags Is Nothing OrElse flags.Length = 0 Then Return ""
 
         Return String.Join(" ",
                            flags.Where(Function(f) Not String.IsNullOrWhiteSpace(f)))
     End Function
-    Private Sub SetExecutionStatus(text As String, Optional isError As Boolean = False)
-
-        ' ToolStripLabel is not a Control, so marshal via the form
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub() SetExecutionStatus(text, isError))
-            Return
-        End If
-
-
-        If String.IsNullOrWhiteSpace(text) Then
-            ' ✅ No script running
-            tslblExecutionStatus.Text = String.Empty
-            tslblExecutionStatus.Visible = False
-        Else
-            ' ✅ Script running or reporting status
-            tslblExecutionStatus.Text = text
-            tslblExecutionStatus.Visible = True
-        End If
-
-    End Sub
-
 
 End Class

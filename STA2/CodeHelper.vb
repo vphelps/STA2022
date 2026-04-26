@@ -355,4 +355,62 @@ Public Class CodeHelper
         Return AppInstallState.NotInstalled
     End Function
 
+
+    ' ===========================================
+    ' Flavor argument builder
+    ' ===========================================
+    Public Shared Function BuildFlavorsArgument(
+        flavorNames As IEnumerable(Of String)
+    ) As String
+
+        If flavorNames Is Nothing Then Return ""
+
+        Dim list =
+            flavorNames.
+                Where(Function(f) Not String.IsNullOrWhiteSpace(f)).
+                ToList()
+
+        If list.Count = 0 Then
+            Throw New InvalidOperationException("No flavors provided.")
+        End If
+
+        ' IMPORTANT:
+        ' - Comma-separated
+        ' - NO spaces
+        ' - Parsed by PowerShell
+        Dim flavorCsv As String = String.Join(",", list)
+
+        Return $"-Flavors {flavorCsv}"
+    End Function
+
+
+    ' ===========================================
+    ' Execution status helper (UI-safe)
+    ' ===========================================
+    Public Shared Sub SetExecutionStatus(
+        owner As Control,
+        statusLabel As ToolStripLabel,
+        text As String
+    )
+
+        If statusLabel Is Nothing Then Return
+
+        ' Marshal to UI thread safely
+        If owner IsNot Nothing AndAlso owner.InvokeRequired Then
+            owner.Invoke(Sub()
+                             SetExecutionStatus(owner, statusLabel, text)
+                         End Sub)
+            Return
+        End If
+
+        If String.IsNullOrWhiteSpace(text) Then
+            statusLabel.Text = String.Empty
+            statusLabel.Visible = False
+        Else
+            statusLabel.Text = text
+            statusLabel.Visible = True
+        End If
+
+    End Sub
+
 End Class
