@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel
-Imports System.Data.SqlClient
 Imports System.IO
 Imports System.ServiceProcess
 Imports STA2.AppData

@@ -1,5 +1,4 @@
 ﻿Imports System.Data.SqlClient
-Imports System.Threading
 
 Public Class DBConnector
 

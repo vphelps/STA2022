@@ -135,7 +135,6 @@
   <ItemGroup>
     <Compile Include="AppOptions.vb" />
     <Compile Include="BatchLauncher.vb" />
-    <Compile Include="ConfigFileFunctions.vb" />
     <Compile Include="CodeHelper.vb" />
     <Compile Include="CommonVariables.vb" />
     <Compile Include="Connections.vb" />
