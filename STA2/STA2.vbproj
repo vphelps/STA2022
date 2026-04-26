@@ -176,6 +176,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="OptionsManager.vb" />
+    <Compile Include="PowerShellRunner.vb" />
     <Compile Include="ReliableSql.vb" />
     <Compile Include="SafeDb.vb" />
     <Compile Include="ServiceIntrospection.vb" />

@@ -27,9 +27,6 @@ Public Class FormMain
     Private Const DragThreshold As Integer = 6
     Private _isReorderingQuickLaunch As Boolean = False
     Private _ctxRebuilding As Boolean = False
-    Private _executionStopwatch As Stopwatch
-    Private _executionTimer As Timer
-    Private _currentRunningScriptPath As String
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -1963,66 +1960,6 @@ Public Class FormMain
         End Try
 
     End Function
-    Private Async Function RunPowerShellFileAsync(
-    scriptPath As String,
-    argumentsText As String,
-    Optional runAsAdmin As Boolean = False,
-    Optional keepWindowOpen As Boolean = True) As Task(Of Integer)
-
-        If Not IO.File.Exists(scriptPath) Then
-            SetExecutionStatus("Script not found", isError:=True)
-            Throw New FileNotFoundException("Script not found", scriptPath)
-        End If
-
-        Dim psArguments As String =
-        If(keepWindowOpen,
-           $"-NoExit -ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}",
-           $"-ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}")
-
-
-        Dim psi As New ProcessStartInfo With {
-        .FileName = "pwsh.exe",
-        .Arguments = psArguments,
-        .UseShellExecute = True,
-        .WorkingDirectory = IO.Path.GetDirectoryName(scriptPath)
-    }
-
-        If runAsAdmin Then
-            psi.Verb = "runas"
-        End If
-
-        SetExecutionStatus("Starting PowerShell…")
-
-        Dim tcs As New TaskCompletionSource(Of Integer)
-        Dim proc As New Process() With {
-        .StartInfo = psi,
-        .EnableRaisingEvents = True
-    }
-
-        AddHandler proc.Exited,
-        Sub(sender, e)
-            tcs.TrySetResult(proc.ExitCode)
-            proc.Dispose()
-        End Sub
-
-        Try
-            proc.Start()
-            SetExecutionStatus("PowerShell running…")
-        Catch ex As Exception
-            SetExecutionStatus("Failed to start PowerShell", isError:=True)
-            Throw
-        End Try
-
-        Dim exitCode As Integer = Await tcs.Task
-
-        Return exitCode
-    End Function
-
-
-    Private Function Quote(text As String) As String
-        Return """" & text.Replace("""", "\""") & """"
-    End Function
-
     Private Function BuildFlavorsArgument(flavorNames As IEnumerable(Of String)) As String
         If flavorNames Is Nothing Then Return ""
 
@@ -2074,55 +2011,22 @@ Public Class FormMain
     argumentsText As String
 ) As Task(Of Integer)
 
-        If Not IO.File.Exists(scriptPath) Then
-            Throw New FileNotFoundException("Script not found", scriptPath)
-        End If
-
         _liveOutputManager.StartExecution(scriptPath)
 
-        Dim psArguments As String =
-        $"-ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}"
+        Dim workingDir As String =
+        IO.Path.GetDirectoryName(scriptPath)
 
-        tbMLTest1.Text = $"pwsh.exe {psArguments}"
-
-        Dim psi As New ProcessStartInfo With {
-        .FileName = "pwsh.exe",
-        .Arguments = psArguments,
-        .UseShellExecute = False,
-        .RedirectStandardOutput = True,
-        .RedirectStandardError = True,
-        .CreateNoWindow = True,
-        .WorkingDirectory = IO.Path.GetDirectoryName(scriptPath)
-    }
-
-        Dim proc As New Process With {
-        .StartInfo = psi,
-        .EnableRaisingEvents = True
-    }
-
-        AddHandler proc.OutputDataReceived,
-        Sub(sender, e)
-            If e.Data IsNot Nothing Then
-                _liveOutputManager.AppendLine(e.Data)
-            End If
-        End Sub
-
-        AddHandler proc.ErrorDataReceived,
-        Sub(sender, e)
-            If e.Data IsNot Nothing Then
-                _liveOutputManager.AppendLine(e.Data)
-            End If
-        End Sub
-
-        proc.Start()
-        proc.BeginOutputReadLine()
-        proc.BeginErrorReadLine()
-
-        Await Task.Run(Sub() proc.WaitForExit())
-        proc.WaitForExit()
-
-        Dim exitCode As Integer = proc.ExitCode
-        proc.Dispose()
+        Dim exitCode As Integer =
+        Await PowerShellRunner.RunWithLiveOutputAsync(
+            scriptPath:=scriptPath,
+            argumentsText:=argumentsText,
+            workingDirectory:=workingDir,
+            onOutput:=Sub(line)
+                          _liveOutputManager.AppendLine(line)
+                      End Sub,
+            onError:=Sub(line)
+                         _liveOutputManager.AppendLine(line)
+                     End Sub)
 
         _liveOutputManager.CompleteExecution(exitCode)
 
