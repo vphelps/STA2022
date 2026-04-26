@@ -11,6 +11,7 @@ Imports System.ServiceProcess
 Imports System.Web
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
 Imports System.Xml
+Imports Microsoft.Office.Core
 Imports Microsoft.SqlServer.Server
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
@@ -36,6 +37,9 @@ Public Class FormMain
     Private Const DragThreshold As Integer = 6
     Private _isReorderingQuickLaunch As Boolean = False
     Private _ctxRebuilding As Boolean = False
+    Private _executionStopwatch As Stopwatch
+    Private _executionTimer As Timer
+    Private _currentRunningScriptPath As String
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -167,6 +171,11 @@ Public Class FormMain
 
         If _options IsNot Nothing Then
             tbSetupSwitches.Text = _options.SetupSwitches
+
+            If _options IsNot Nothing Then
+                tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
+                tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
+            End If
         End If
 
 
@@ -178,7 +187,8 @@ Public Class FormMain
             btnAdminRestart.Text = "Restart as Administrator"
         End If
 
-
+        tslblExecutionStatus.Text = ""
+        tslblExecutionStatus.Visible = False
 
     End Sub
 
@@ -829,6 +839,8 @@ Public Class FormMain
             If _options IsNot Nothing Then
 
                 _options.SetupSwitches = tbSetupSwitches.Text
+                _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
+                _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
                 OptionsManager.Save(_options)
             End If
         Catch
@@ -878,12 +890,12 @@ Public Class FormMain
                 btn.Margin = New Padding(3)
                 btn.UseVisualStyleBackColor = True
 
+                ' ----- ICON -----
                 Dim iconImage As Image = GetProgramIcon(entryLocal)
-
                 If iconImage IsNot Nothing Then
                     Dim finalIcon As Image = ScaleIcon(iconImage, 24)
 
-                    ' ✅ Overlay admin shield if required
+                    ' Admin shield overlay
                     If entryLocal.RunAsAdmin Then
                         Dim shield = GetAdminShieldIcon(16)
                         finalIcon = OverlayShieldIcon(finalIcon, shield)
@@ -891,10 +903,9 @@ Public Class FormMain
 
                     btn.Image = finalIcon
                     btn.ImageAlign = ContentAlignment.MiddleLeft
-                    btn.TextImageRelation = TextImageRelation.ImageBeforeText
                 End If
 
-                ' Tooltip (unchanged)
+                ' ----- TOOLTIP -----
                 Dim tipText As String = entryLocal.Name
                 If Not String.IsNullOrWhiteSpace(entryLocal.Path) Then
                     tipText &= Environment.NewLine & entryLocal.Path
@@ -902,40 +913,50 @@ Public Class FormMain
                 If Not String.IsNullOrWhiteSpace(entryLocal.Arguments) Then
                     tipText &= Environment.NewLine & entryLocal.Arguments
                 End If
-                ToolTipForQuickButtons.SetToolTip(btn, tipText)
                 If entryLocal.RunAsAdmin Then
                     tipText &= Environment.NewLine & "Runs as Administrator"
                 End If
 
+                ToolTipForQuickButtons.SetToolTip(btn, tipText)
+
+                ' ============================================================
+                ' ✅ REQUIRED: CLICK HANDLER (THIS FIXES YOUR ISSUE)
+                ' ============================================================
+                AddHandler btn.Click,
+                Sub(sender, e)
+                    Dim pe = TryCast(DirectCast(sender, Button).Tag, ProgramEntry)
+                    If pe IsNot Nothing Then
+                        LaunchProgram(pe)
+                    End If
+                End Sub
+
+                ' ----- DRAG SUPPORT -----
                 AddHandler btn.MouseDown,
-    Sub(s, e)
-        If e.Button = MouseButtons.Left Then
-            _dragButton = DirectCast(s, Button)
-            _dragStartPoint = e.Location
-        End If
-    End Sub
+                Sub(s, e)
+                    If e.Button = MouseButtons.Left Then
+                        _dragButton = DirectCast(s, Button)
+                        _dragStartPoint = e.Location
+                    End If
+                End Sub
 
                 AddHandler btn.MouseMove,
-                    Sub(s, e)
-                        If _dragButton Is Nothing Then Return
-                        If e.Button <> MouseButtons.Left Then Return
+                Sub(s, e)
+                    If _dragButton Is Nothing Then Return
+                    If e.Button <> MouseButtons.Left Then Return
 
-                        ' Prevent accidental drags
-                        If Math.Abs(e.X - _dragStartPoint.X) > DragThreshold OrElse
-                           Math.Abs(e.Y - _dragStartPoint.Y) > DragThreshold Then
+                    ' Only begin drag after threshold exceeded
+                    If Math.Abs(e.X - _dragStartPoint.X) >= DragThreshold _
+                       OrElse Math.Abs(e.Y - _dragStartPoint.Y) >= DragThreshold Then
 
-                            flpQuickLaunch.DoDragDrop(_dragButton, DragDropEffects.Move)
-                        End If
-                    End Sub
+                        flpQuickLaunch.DoDragDrop(_dragButton, DragDropEffects.Move)
+                    End If
+                End Sub
 
                 AddHandler btn.MouseUp,
-                    Sub(s, e)
-                        _dragButton = Nothing
+                Sub(s, e)
+                    _dragButton = Nothing
+                End Sub
 
-                        If e.Button = MouseButtons.Right Then
-                            AssignSelectedListItemToQuickSlot(slotLocal)
-                        End If
-                    End Sub
                 flpQuickLaunch.Controls.Add(btn)
             Next
 
@@ -943,6 +964,7 @@ Public Class FormMain
             flpQuickLaunch.ResumeLayout()
         End Try
     End Sub
+
 
     Private Sub flpQuickLaunch_DragOver(sender As Object, e As DragEventArgs) _
     Handles flpQuickLaunch.DragOver
@@ -1649,12 +1671,6 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
-
-        'LoadSqlFilesFromFolder(_options.FlavorFolderPath)
-        MsgBox(_options.FlavorFolderPath)
-    End Sub
-
     Private Sub clbSqlFiles_SelectedIndexChanged(sender As Object, e As EventArgs) Handles clbSqlFiles.SelectedIndexChanged
         FlavorSelections = String.Join(", ", GetSelectedSqlFiles())
 
@@ -1667,19 +1683,20 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub UpdateFlavorCommands()
 
-        Dim commandApplyFlavor As String = ".\apply-flavors.ps1 -Flavors "
-        Dim commandStartDatabase As String = ".\start-database.ps1 -Force -Flavors "
+        Dim commandApplyFlavor As String = tbApplyFlavorDefault.Text
+        Dim commandStartDatabase As String = tbDatabaseStartDefault.Text
 
-        ' Build flavor string at click time
+        ' Build flavor list from checked SQL files
         Dim flavorList As List(Of String) = GetSelectedFlavorNames()
         Dim flavorString As String = String.Join(", ", flavorList)
 
-        tbFlavorApplyCommand.Text = commandApplyFlavor & flavorString
-        tbDatabaseStartCommand.Text = commandStartDatabase & flavorString
+        tbFlavorApplyCommand.Text = commandApplyFlavor & " " & flavorString
+        tbDatabaseStartCommand.Text = commandStartDatabase & " " & flavorString
 
     End Sub
+
     Private Function GetSelectedFlavorNames() As List(Of String)
         Dim result As New List(Of String)
 
@@ -1692,37 +1709,6 @@ Public Class FormMain
 
         Return result
     End Function
-    'Private Sub RefreshSqlFilesPreserveSelection()
-    '    If _options Is Nothing OrElse
-    '       String.IsNullOrWhiteSpace(_options.FlavorFolderPath) OrElse
-    '       Not Directory.Exists(_options.FlavorFolderPath) Then
-    '        Return
-    '    End If
-
-    '    ' ✅ Capture currently-checked file paths
-    '    Dim checkedPaths As New HashSet(Of String)(
-    '        clbSqlFiles.CheckedItems.
-    '            OfType(Of SqlFileItem)().
-    '            Select(Function(i) i.FilePath),
-    '        StringComparer.OrdinalIgnoreCase
-    '    )
-
-    '    clbSqlFiles.BeginUpdate()
-    '    clbSqlFiles.Items.Clear()
-
-    '    For Each filePath In Directory.GetFiles(_options.FlavorFolderPath, "*.sql")
-    '        Dim item As New SqlFileItem With {.FilePath = filePath}
-    '        Dim index = clbSqlFiles.Items.Add(item)
-
-    '        ' ✅ Restore checked state
-    '        If checkedPaths.Contains(filePath) Then
-    '            clbSqlFiles.SetItemChecked(index, True)
-    '        End If
-    '    Next
-
-    '    clbSqlFiles.EndUpdate()
-    'End Sub
-
 
     Private Sub RefreshSqlFilesPreserveSelectionAndDefaults()
 
@@ -1840,6 +1826,28 @@ Public Class FormMain
         clbSqlFiles.EndUpdate()
 
     End Sub
+
+
+    Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
+
+        If _options Is Nothing Then Return
+        _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
+        OptionsManager.Save(_options)
+        UpdateFlavorCommands()
+
+    End Sub
+
+
+    Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
+
+        If _options Is Nothing Then Return
+        _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
+
+        OptionsManager.Save(_options)
+        UpdateFlavorCommands()
+
+    End Sub
+
     Private Function GetProgramIcon(entry As ProgramEntry) As Image
 
         If entry Is Nothing Then Return Nothing
@@ -1915,4 +1923,407 @@ Public Class FormMain
         Return result
 
     End Function
+
+    Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles clbSqlFiles.ItemCheck
+
+        ' Delay update until WinForms applies the check
+        Me.BeginInvoke(
+        Sub()
+            UpdateFlavorCommands()
+        End Sub
+    )
+
+    End Sub
+
+    Private Async Function RunLiveScriptAsync(
+    triggerButton As Button,
+    scriptRelativePath As String,
+    scriptArgs As String,
+    runningStatusText As String
+) As Task
+
+        triggerButton.Enabled = False
+
+        Try
+            If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+                SetExecutionStatus("Repo folder path not set")
+                Return
+            End If
+
+            Dim scriptPath As String =
+            IO.Path.Combine(_options.RepoFolderPath, scriptRelativePath)
+
+            ' ✅ Show status ONLY while running
+            SetExecutionStatus(runningStatusText)
+
+            Await RunPowerShellFileWithLiveOutputAsync(
+            scriptPath,
+            scriptArgs)
+
+            ' ✅ Hide status when finished
+            SetExecutionStatus(String.Empty)
+
+        Catch ex As Exception
+            SetExecutionStatus(String.Empty)
+            AppendLiveOutput(ex.Message)
+
+        Finally
+            triggerButton.Enabled = True
+        End Try
+
+    End Function
+
+    Private Async Function RunPowerShellFileAsync(
+    scriptPath As String,
+    argumentsText As String,
+    Optional runAsAdmin As Boolean = False,
+    Optional keepWindowOpen As Boolean = True) As Task(Of Integer)
+
+        If Not IO.File.Exists(scriptPath) Then
+            SetExecutionStatus("Script not found", isError:=True)
+            Throw New FileNotFoundException("Script not found", scriptPath)
+        End If
+
+        Dim psArguments As String =
+        If(keepWindowOpen,
+           $"-NoExit -ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}",
+           $"-ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}")
+
+
+        Dim psi As New ProcessStartInfo With {
+        .FileName = "pwsh.exe",
+        .Arguments = psArguments,
+        .UseShellExecute = True,
+        .WorkingDirectory = IO.Path.GetDirectoryName(scriptPath)
+    }
+
+        If runAsAdmin Then
+            psi.Verb = "runas"
+        End If
+
+        SetExecutionStatus("Starting PowerShell…")
+
+        Dim tcs As New TaskCompletionSource(Of Integer)
+        Dim proc As New Process() With {
+        .StartInfo = psi,
+        .EnableRaisingEvents = True
+    }
+
+        AddHandler proc.Exited,
+        Sub(sender, e)
+            tcs.TrySetResult(proc.ExitCode)
+            proc.Dispose()
+        End Sub
+
+        Try
+            proc.Start()
+            SetExecutionStatus("PowerShell running…")
+        Catch ex As Exception
+            SetExecutionStatus("Failed to start PowerShell", isError:=True)
+            Throw
+        End Try
+
+        Dim exitCode As Integer = Await tcs.Task
+
+        Return exitCode
+    End Function
+
+
+    Private Function Quote(text As String) As String
+        Return """" & text.Replace("""", "\""") & """"
+    End Function
+
+    Private Function BuildFlavorsArgument(flavorNames As IEnumerable(Of String)) As String
+        If flavorNames Is Nothing Then Return ""
+
+        Dim list = flavorNames.
+                   Where(Function(f) Not String.IsNullOrWhiteSpace(f)).
+                   ToList()
+
+        If list.Count = 0 Then
+            Throw New InvalidOperationException("No flavors provided.")
+        End If
+
+        ' IMPORTANT:
+        ' - Comma-separated
+        ' - NO spaces
+        ' - Parsed by PowerShell because we use -Command
+        Dim flavorCsv As String = String.Join(",", list)
+
+        Return $"-Flavors {flavorCsv}"
+    End Function
+    Private Function BuildOptionalFlags(ParamArray flags As String()) As String
+        If flags Is Nothing OrElse flags.Length = 0 Then Return ""
+
+        Return String.Join(" ",
+                           flags.Where(Function(f) Not String.IsNullOrWhiteSpace(f)))
+    End Function
+    Private Sub SetExecutionStatus(text As String, Optional isError As Boolean = False)
+
+        ' ToolStripLabel is not a Control, so marshal via the form
+        If Me.InvokeRequired Then
+            Me.Invoke(Sub() SetExecutionStatus(text, isError))
+            Return
+        End If
+
+
+        If String.IsNullOrWhiteSpace(text) Then
+            ' ✅ No script running
+            tslblExecutionStatus.Text = String.Empty
+            tslblExecutionStatus.Visible = False
+        Else
+            ' ✅ Script running or reporting status
+            tslblExecutionStatus.Text = text
+            tslblExecutionStatus.Visible = True
+        End If
+
+    End Sub
+
+    Private Sub AppendLiveOutput(text As String)
+        If rtbLiveOutput.InvokeRequired Then
+            rtbLiveOutput.Invoke(Sub() AppendLiveOutput(text))
+            Return
+        End If
+
+        rtbLiveOutput.AppendText(text & Environment.NewLine)
+        rtbLiveOutput.SelectionStart = rtbLiveOutput.TextLength
+        rtbLiveOutput.SelectionLength = 0
+        rtbLiveOutput.ScrollToCaret()
+    End Sub
+
+    Private Async Function RunPowerShellFileWithLiveOutputAsync(
+    scriptPath As String,
+    argumentsText As String
+) As Task(Of Integer)
+
+        If Not IO.File.Exists(scriptPath) Then
+            SetExecutionStatus("Script not found", isError:=True)
+            Throw New FileNotFoundException("Script not found", scriptPath)
+        End If
+
+        ' Clear previous output
+        rtbLiveOutput.Clear()
+
+        ' Start execution timer
+        Dim sw As Stopwatch = Stopwatch.StartNew()
+
+        ' Update live output header
+        SetLiveOutputHeaderRunning(scriptPath)
+
+        ' Build PowerShell arguments (must use -Command)
+        Dim psArguments As String =
+        $"-ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}"
+
+
+
+        Dim psi As New ProcessStartInfo With {
+        .FileName = "pwsh.exe",
+        .Arguments = psArguments,
+        .UseShellExecute = False,
+        .RedirectStandardOutput = True,
+        .RedirectStandardError = True,
+        .CreateNoWindow = True,
+        .WorkingDirectory = IO.Path.GetDirectoryName(scriptPath)
+    }
+
+        Dim proc As New Process With {
+        .StartInfo = psi,
+        .EnableRaisingEvents = True
+    }
+
+        SetExecutionStatus("PowerShell running (capturing output)…")
+
+        ' Capture stdout
+        AddHandler proc.OutputDataReceived,
+        Sub(sender, e)
+            If e.Data IsNot Nothing Then
+                AppendLiveOutput(e.Data)
+            End If
+        End Sub
+
+        ' Capture stderr (no error prefix)
+        AddHandler proc.ErrorDataReceived,
+        Sub(sender, e)
+            If e.Data IsNot Nothing Then
+                AppendLiveOutput(e.Data)
+            End If
+        End Sub
+
+        ' Start process
+        proc.Start()
+        proc.BeginOutputReadLine()
+        proc.BeginErrorReadLine()
+
+        ' Wait for process exit (off UI thread)
+        Await Task.Run(Sub() proc.WaitForExit())
+
+        ' VERY IMPORTANT: ensure async streams have flushed
+        proc.WaitForExit()
+
+        sw.Stop()
+
+        Dim exitCode As Integer = proc.ExitCode
+        proc.Dispose()
+
+        Dim scriptName As String = IO.Path.GetFileName(scriptPath)
+        Dim duration As TimeSpan = sw.Elapsed
+
+        If exitCode = 0 Then
+            AppendLiveOutput(
+            $"--- Script {scriptName} completed successfully in {FormatDuration(duration)} (Exit 0) ---")
+            SetExecutionStatus($"Completed in {FormatDuration(duration)}", isError:=False)
+        Else
+            AppendLiveOutput(
+            $"--- Script {scriptName} completed with errors in {FormatDuration(duration)} (Exit {exitCode}) ---")
+            SetExecutionStatus($"Failed (Exit {exitCode})", isError:=True)
+        End If
+
+        ' Restore group box header
+        ResetLiveOutputHeader()
+
+        Return exitCode
+    End Function
+
+    Private Async Sub btnRunApplyFlavorLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunApplyFlavorLive.Click
+
+        Dim flavorArgs As String = BuildFlavorsArgument(GetSelectedFlavorNames())
+
+        Await RunLiveScriptAsync(
+        triggerButton:=btnRunApplyFlavorLive,
+        scriptRelativePath:="tests\apply-flavors.ps1",
+        scriptArgs:=flavorArgs,
+        runningStatusText:="Applying flavors (live output)…")
+    End Sub
+
+    Private Async Sub btnRunDatabaseStartLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunDatabaseStartLive.Click
+
+        Dim flags As String = "-Force"
+        Dim flavorArgs As String = BuildFlavorsArgument(GetSelectedFlavorNames())
+        Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
+
+        Await RunLiveScriptAsync(
+        triggerButton:=btnRunDatabaseStartLive,
+        scriptRelativePath:="tests\Start-Database.ps1",
+        scriptArgs:=scriptArgs,
+        runningStatusText:="Starting database (live output)…")
+    End Sub
+
+    Private Sub AppendColoredOutput(text As String, color As Color)
+        If rtbLiveOutput.InvokeRequired Then
+            rtbLiveOutput.Invoke(Sub() AppendColoredOutput(text, color))
+            Return
+        End If
+
+        Dim start = rtbLiveOutput.TextLength
+        rtbLiveOutput.AppendText(text & Environment.NewLine)
+        Dim length = rtbLiveOutput.TextLength - start
+
+        rtbLiveOutput.Select(start, length)
+        rtbLiveOutput.SelectionColor = color
+        rtbLiveOutput.SelectionLength = 0
+        rtbLiveOutput.ScrollToCaret()
+    End Sub
+
+    Private Function ClassifyLine(line As String) As Color
+        If String.IsNullOrWhiteSpace(line) Then
+            Return Color.LightGray
+        End If
+
+        Dim l = line.ToUpperInvariant()
+
+        If l.Contains("ERROR") OrElse l.Contains("FAILED") OrElse l.Contains("EXCEPTION") Then
+            Return Color.Firebrick
+        End If
+
+        If l.StartsWith("WARNING") OrElse l.Contains("WARN") Then
+            Return Color.Goldenrod
+        End If
+
+        If l.Contains("SUCCESS") OrElse l.Contains("COMPLETED") Then
+            Return Color.ForestGreen
+        End If
+
+        If l.StartsWith("VERBOSE") Then
+            Return Color.DarkKhaki
+        End If
+
+        Return Color.Gainsboro
+    End Function
+
+    Private Function ClassifyStartDatabaseLine(line As String) As Color
+        If String.IsNullOrWhiteSpace(line) Then
+            Return Color.Gainsboro
+        End If
+
+        Dim l = line.ToLowerInvariant()
+
+        If l.Contains("setting up database") Then
+            Return Color.Cyan
+        End If
+
+        If l.Contains("updating licenseserver") Then
+            Return Color.DarkCyan
+        End If
+
+        If l.StartsWith("stopping ") Then
+            Return Color.Goldenrod
+        End If
+
+        If l.Contains("observing sql startup") OrElse l.Contains("observing upgrade") Then
+            Return Color.DeepSkyBlue
+        End If
+
+        If l.Contains("project not found") Then
+            Return Color.OrangeRed
+        End If
+
+        If l.Contains("error") OrElse l.Contains("failed") OrElse l.Contains("exception") Then
+            Return Color.Firebrick
+        End If
+
+        Return Color.Gainsboro
+    End Function
+    Private Function FormatDuration(ts As TimeSpan) As String
+        If ts.TotalHours >= 1 Then
+            Return $"{CInt(ts.TotalHours)}h {ts.Minutes}m {ts.Seconds}s"
+        ElseIf ts.TotalMinutes >= 1 Then
+            Return $"{ts.Minutes}m {ts.Seconds}s"
+        Else
+            Return $"{ts.Seconds}.{ts.Milliseconds \ 100}s"
+        End If
+    End Function
+    Private Sub SetLiveOutputHeaderRunning(scriptPath As String)
+        _currentRunningScriptPath = scriptPath
+
+        Dim scriptName As String = IO.Path.GetFileName(scriptPath)
+        gbLiveOutput.Text = $"Script Output Window — {scriptName} (Running 0.0s)"
+    End Sub
+
+    Private Sub UpdateLiveOutputHeaderElapsed()
+        If _executionStopwatch Is Nothing OrElse Not _executionStopwatch.IsRunning Then Return
+        If String.IsNullOrEmpty(_currentRunningScriptPath) Then Return
+
+        Dim scriptName As String = IO.Path.GetFileName(_currentRunningScriptPath)
+        gbLiveOutput.Text =
+            $"Script Output Window — {scriptName} (Running {FormatDuration(_executionStopwatch.Elapsed)})"
+    End Sub
+
+    Private Sub SetLiveOutputHeaderCompleted(scriptPath As String, duration As TimeSpan)
+        Dim scriptName As String = IO.Path.GetFileName(scriptPath)
+        gbLiveOutput.Text =
+            $"Script Output Window — {scriptName} (Completed in {FormatDuration(duration)})"
+    End Sub
+
+    Private Sub ResetLiveOutputHeader()
+        gbLiveOutput.Text = "Script Output Window"
+        _currentRunningScriptPath = Nothing
+    End Sub
+
+
 End Class
