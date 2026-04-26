@@ -148,7 +148,7 @@
     <Compile Include="Forms\EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FlavorSelectionManager.vb" />
+    <Compile Include="Controls\FlavorSelectionManager.vb" />
     <Compile Include="GlobalErrorHandler.vb" />
     <Compile Include="IconHelpers.vb" />
     <Compile Include="IniFile.vb" />
@@ -180,7 +180,7 @@
     <Compile Include="OptionsManager.vb" />
     <Compile Include="PowerShellRunner.vb" />
     <Compile Include="ProgramLauncher.vb" />
-    <Compile Include="QuickLaunchManager.vb" />
+    <Compile Include="Controls\QuickLaunchManager.vb" />
     <Compile Include="ReliableSql.vb" />
     <Compile Include="SafeDb.vb" />
     <Compile Include="ServiceIntrospection.vb" />
