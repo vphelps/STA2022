@@ -140,6 +140,7 @@
     <Compile Include="CommonVariables.vb" />
     <Compile Include="Connections.vb" />
     <Compile Include="Constants.vb" />
+    <Compile Include="DatabaseCoordinator.vb" />
     <Compile Include="DBConnector.vb" />
     <Compile Include="DotNetInfo.vb" />
     <Compile Include="EditProgramForm .Designer.vb">

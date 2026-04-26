@@ -79,10 +79,8 @@ Public Class FormMain
         refreshComboCallback:=AddressOf FillComboFromListBox
     )
 
-        ' ---- existing code continues below ----
         If Variables.OfflineMode Then
-            DisableDatabaseSections()
-            Return
+            DatabaseCoordinator.DisableDatabaseSections(Me)
         End If
 
         CodeHelper.GetPcInfo()
@@ -267,7 +265,7 @@ Public Class FormMain
             dgvDbTableSize.Refresh()
 
         Catch ex As SafeDb.DatabaseOfflineException
-            GoOffline("Lost DB connection during DbInfoRefresh")
+            DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbInfoRefresh")
             dgvDbTableSize.DataSource = Nothing
 
         Catch ex As Exception
@@ -364,7 +362,7 @@ Public Class FormMain
             dgvDbLogData.Refresh()
 
         Catch ex As SafeDb.DatabaseOfflineException
-            GoOffline("Lost DB connection during DbLogRefresh")
+            DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbLogRefresh")
             dgvDbLogCount.DataSource = Nothing
             dgvDbLogData.DataSource = Nothing
 
@@ -731,9 +729,8 @@ Public Class FormMain
 
         Try
             ' Test database connection using your existing helper
-            If TestConnection(ConfigValues.ConnectionString) Then
-                ' Successful reconnect
-                GoOnline()
+            If DatabaseCoordinator.TestConnection(ConfigValues.ConnectionString) Then
+                DatabaseCoordinator.GoOnline(Me)
                 MessageBox.Show("Reconnected to the database.",
                             "Database",
                             MessageBoxButtons.OK,
@@ -745,6 +742,7 @@ Public Class FormMain
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning)
             End If
+
 
         Catch ex As Exception
             MessageBox.Show($"Reconnect failed: {ex.Message}",
@@ -1109,72 +1107,6 @@ Public Class FormMain
         OptionsManager.SaveLauncherConfig(_launcherConfig)
     End Sub
 
-    Private Sub DisableDatabaseSections()
-        tbPcDbSize.Text = "Offline"
-        tbPcSqlVersion.Text = "Offline"
-        dgvAppOptions.DataSource = Nothing
-        tpAdvData.Enabled = False
-        tpDbLogs.Enabled = False
-        pnlDbData.Enabled = False
-        pnlDbInfoButtons.Enabled = False
-    End Sub
-    Public Sub GoOffline(reason As String)
-        Variables.OfflineMode = True
-        PCInfo.ValidDatabase = False
-
-        DisableDatabaseSections()
-
-        ' --- Status indicator ---
-        If tslblDbState IsNot Nothing Then
-            tslblDbState.Text = "OFFLINE"
-            tslblDbState.ForeColor = Color.White
-            tslblDbState.BackColor = Color.Firebrick   ' for OFFLINE
-        End If
-
-    End Sub
-    Public Sub GoOnline()
-        Variables.OfflineMode = False
-        PCInfo.ValidDatabase = True
-
-        EnableDatabaseSections()
-
-        ' Refresh UI
-        CodeHelper.GetPcInfo()
-        CodeHelper.FirstLoad()
-        CodeHelper.Refresher()
-
-        ' --- Status indicator ---
-        If tslblDbState IsNot Nothing Then
-            tslblDbState.Text = "ONLINE"
-            tslblDbState.ForeColor = Color.WhiteSmoke
-            tslblDbState.BackColor = Color.DarkGreen   ' for ONLINE
-        End If
-
-    End Sub
-    Private Sub EnableDatabaseSections()
-        tpAdvData.Enabled = True
-        tpDbLogs.Enabled = True
-        pnlDbData.Enabled = True
-        pnlDbInfoButtons.Enabled = True
-
-        ' Clear the offline placeholders
-        tbPcDbSize.Text = ""
-        tbPcSqlVersion.Text = ""
-
-
-    End Sub
-
-    Private Function TestConnection(cs As String) As Boolean
-        Try
-            Using cn As New SqlClient.SqlConnection(cs)
-                cn.Open()
-                Return (cn.State = ConnectionState.Open)
-            End Using
-        Catch
-            Return False
-        End Try
-    End Function
-
     Private Sub AdvantageDataRefresh(FiredBy As String)
 
         Try
@@ -1236,13 +1168,13 @@ Public Class FormMain
 
         Catch ex As SafeDb.DatabaseOfflineException
             ' ---- SWITCH TO OFFLINE MODE ----
-            GoOffline("Lost DB connection during AdvantageDataRefresh")
+            DatabaseCoordinator.GoOffline(Me, "Lost DB connection during AdvantageDataRefresh")
             Exit Sub
 
         Catch ex As Exception
             ' ---- No more ErrorHandler ----
             ' Instead we gracefully fall to offline mode.
-            GoOffline("Database failure in AdvantageDataRefresh: " & ex.Message)
+            DatabaseCoordinator.GoOffline(Me, "Database failure in AdvantageDataRefresh: " & ex.Message)
             Exit Sub
         End Try
     End Sub
