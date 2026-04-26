@@ -133,34 +133,34 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppOptions.vb" />
-    <Compile Include="BatchLauncher.vb" />
-    <Compile Include="CodeHelper.vb" />
-    <Compile Include="CommonVariables.vb" />
-    <Compile Include="Connections.vb" />
-    <Compile Include="Constants.vb" />
-    <Compile Include="DatabaseCoordinator.vb" />
-    <Compile Include="DBConnector.vb" />
-    <Compile Include="DotNetInfo.vb" />
-    <Compile Include="EditProgramForm .Designer.vb">
+    <Compile Include="Config\AppOptions.vb" />
+    <Compile Include="Core\BatchLauncher.vb" />
+    <Compile Include="Core\CodeHelper.vb" />
+    <Compile Include="Core\CommonVariables.vb" />
+    <Compile Include="Tools\Connections.vb" />
+    <Compile Include="Core\Constants.vb" />
+    <Compile Include="Data\DatabaseCoordinator.vb" />
+    <Compile Include="Data\DBConnector.vb" />
+    <Compile Include="Tools\DotNetInfo.vb" />
+    <Compile Include="Forms\EditProgramForm .Designer.vb">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </Compile>
-    <Compile Include="EditProgramForm .vb">
+    <Compile Include="Forms\EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FlavorSelectionManager.vb" />
-    <Compile Include="GlobalErrorHandler.vb" />
-    <Compile Include="IconHelpers.vb" />
-    <Compile Include="IniFile.vb" />
-    <Compile Include="FormMain.vb">
+    <Compile Include="Controls\FlavorSelectionManager.vb" />
+    <Compile Include="Core\GlobalErrorHandler.vb" />
+    <Compile Include="Core\IconHelpers.vb" />
+    <Compile Include="Core\IniFile.vb" />
+    <Compile Include="Forms\FormMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormMain.Designer.vb">
+    <Compile Include="Forms\FormMain.Designer.vb">
       <DependentUpon>FormMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LauncherConfig.vb" />
-    <Compile Include="LiveOutputManager.vb" />
+    <Compile Include="Config\LauncherConfig.vb" />
+    <Compile Include="Tools\LiveOutputManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -177,28 +177,28 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="OptionsManager.vb" />
-    <Compile Include="PowerShellRunner.vb" />
-    <Compile Include="ProgramLauncher.vb" />
-    <Compile Include="QuickLaunchManager.vb" />
-    <Compile Include="ReliableSql.vb" />
-    <Compile Include="SafeDb.vb" />
-    <Compile Include="ServiceIntrospection.vb" />
-    <Compile Include="Services.vb" />
+    <Compile Include="Config\OptionsManager.vb" />
+    <Compile Include="Tools\PowerShellRunner.vb" />
+    <Compile Include="Tools\ProgramLauncher.vb" />
+    <Compile Include="Controls\QuickLaunchManager.vb" />
+    <Compile Include="Data\ReliableSql.vb" />
+    <Compile Include="Data\SafeDb.vb" />
+    <Compile Include="Services\ServiceIntrospection.vb" />
+    <Compile Include="Services\Services.vb" />
     <Compile Include="SplashScreen1.Designer.vb">
       <DependentUpon>SplashScreen1.vb</DependentUpon>
     </Compile>
     <Compile Include="SplashScreen1.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SQLQueries.vb" />
+    <Compile Include="Data\SQLQueries.vb" />
     <Compile Include="Startup.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EditProgramForm .resx">
+    <EmbeddedResource Include="Forms\EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormMain.resx">
+    <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -274,5 +274,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
