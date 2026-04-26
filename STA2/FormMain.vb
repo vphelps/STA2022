@@ -1,21 +1,10 @@
-﻿Imports System.CodeDom
-Imports System.ComponentModel
+﻿Imports System.ComponentModel
 Imports System.Data.SqlClient
 Imports System.IO
-Imports System.Net
-Imports System.Net.NetworkInformation
-Imports System.Net.Sockets
-Imports System.Runtime.CompilerServices
-Imports System.Security.Policy
 Imports System.ServiceProcess
-Imports System.Web
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock
-Imports System.Xml
-Imports Microsoft.Office.Core
-Imports Microsoft.SqlServer.Server
-Imports Newtonsoft.Json
-Imports Newtonsoft.Json.Linq
+Imports Newtonsoft.Json         ' because OptionsManager / configs likely use it
 Imports STA2.AppData
+
 
 Public Class FormMain
     Private _sqlFilesDirty As Boolean = True
@@ -23,6 +12,7 @@ Public Class FormMain
     Private _launcherConfig As LauncherConfig
     Private _defaultsApplied As Boolean = False
     Private _adminShieldIcon As Image = Nothing
+    Private _liveOutputManager As LiveOutputManager
 
     Dim FlavorSelections As String = ""
 
@@ -83,6 +73,7 @@ Public Class FormMain
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         flpQuickLaunch.AllowDrop = True
+        _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput)
 
         If Variables.OfflineMode Then
             DisableDatabaseSections()
@@ -1964,15 +1955,14 @@ Public Class FormMain
             SetExecutionStatus(String.Empty)
 
         Catch ex As Exception
+            ' ✅ No direct output here; LiveOutputManager already owns output
             SetExecutionStatus(String.Empty)
-            AppendLiveOutput(ex.Message)
 
         Finally
             triggerButton.Enabled = True
         End Try
 
     End Function
-
     Private Async Function RunPowerShellFileAsync(
     scriptPath As String,
     argumentsText As String,
@@ -2079,42 +2069,21 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub AppendLiveOutput(text As String)
-        If rtbLiveOutput.InvokeRequired Then
-            rtbLiveOutput.Invoke(Sub() AppendLiveOutput(text))
-            Return
-        End If
-
-        rtbLiveOutput.AppendText(text & Environment.NewLine)
-        rtbLiveOutput.SelectionStart = rtbLiveOutput.TextLength
-        rtbLiveOutput.SelectionLength = 0
-        rtbLiveOutput.ScrollToCaret()
-    End Sub
-
     Private Async Function RunPowerShellFileWithLiveOutputAsync(
     scriptPath As String,
     argumentsText As String
 ) As Task(Of Integer)
 
         If Not IO.File.Exists(scriptPath) Then
-            SetExecutionStatus("Script not found", isError:=True)
             Throw New FileNotFoundException("Script not found", scriptPath)
         End If
 
-        ' Clear previous output
-        rtbLiveOutput.Clear()
+        _liveOutputManager.StartExecution(scriptPath)
 
-        ' Start execution timer
-        Dim sw As Stopwatch = Stopwatch.StartNew()
-
-        ' Update live output header
-        SetLiveOutputHeaderRunning(scriptPath)
-
-        ' Build PowerShell arguments (must use -Command)
         Dim psArguments As String =
         $"-ExecutionPolicy Bypass -Command & {Quote(scriptPath)} {argumentsText}"
 
-
+        tbMLTest1.Text = $"pwsh.exe {psArguments}"
 
         Dim psi As New ProcessStartInfo With {
         .FileName = "pwsh.exe",
@@ -2131,55 +2100,31 @@ Public Class FormMain
         .EnableRaisingEvents = True
     }
 
-        SetExecutionStatus("PowerShell running (capturing output)…")
-
-        ' Capture stdout
         AddHandler proc.OutputDataReceived,
         Sub(sender, e)
             If e.Data IsNot Nothing Then
-                AppendLiveOutput(e.Data)
+                _liveOutputManager.AppendLine(e.Data)
             End If
         End Sub
 
-        ' Capture stderr (no error prefix)
         AddHandler proc.ErrorDataReceived,
         Sub(sender, e)
             If e.Data IsNot Nothing Then
-                AppendLiveOutput(e.Data)
+                _liveOutputManager.AppendLine(e.Data)
             End If
         End Sub
 
-        ' Start process
         proc.Start()
         proc.BeginOutputReadLine()
         proc.BeginErrorReadLine()
 
-        ' Wait for process exit (off UI thread)
         Await Task.Run(Sub() proc.WaitForExit())
-
-        ' VERY IMPORTANT: ensure async streams have flushed
         proc.WaitForExit()
-
-        sw.Stop()
 
         Dim exitCode As Integer = proc.ExitCode
         proc.Dispose()
 
-        Dim scriptName As String = IO.Path.GetFileName(scriptPath)
-        Dim duration As TimeSpan = sw.Elapsed
-
-        If exitCode = 0 Then
-            AppendLiveOutput(
-            $"--- Script {scriptName} completed successfully in {FormatDuration(duration)} (Exit 0) ---")
-            SetExecutionStatus($"Completed in {FormatDuration(duration)}", isError:=False)
-        Else
-            AppendLiveOutput(
-            $"--- Script {scriptName} completed with errors in {FormatDuration(duration)} (Exit {exitCode}) ---")
-            SetExecutionStatus($"Failed (Exit {exitCode})", isError:=True)
-        End If
-
-        ' Restore group box header
-        ResetLiveOutputHeader()
+        _liveOutputManager.CompleteExecution(exitCode)
 
         Return exitCode
     End Function
@@ -2289,41 +2234,6 @@ Public Class FormMain
 
         Return Color.Gainsboro
     End Function
-    Private Function FormatDuration(ts As TimeSpan) As String
-        If ts.TotalHours >= 1 Then
-            Return $"{CInt(ts.TotalHours)}h {ts.Minutes}m {ts.Seconds}s"
-        ElseIf ts.TotalMinutes >= 1 Then
-            Return $"{ts.Minutes}m {ts.Seconds}s"
-        Else
-            Return $"{ts.Seconds}.{ts.Milliseconds \ 100}s"
-        End If
-    End Function
-    Private Sub SetLiveOutputHeaderRunning(scriptPath As String)
-        _currentRunningScriptPath = scriptPath
-
-        Dim scriptName As String = IO.Path.GetFileName(scriptPath)
-        gbLiveOutput.Text = $"Script Output Window — {scriptName} (Running 0.0s)"
-    End Sub
-
-    Private Sub UpdateLiveOutputHeaderElapsed()
-        If _executionStopwatch Is Nothing OrElse Not _executionStopwatch.IsRunning Then Return
-        If String.IsNullOrEmpty(_currentRunningScriptPath) Then Return
-
-        Dim scriptName As String = IO.Path.GetFileName(_currentRunningScriptPath)
-        gbLiveOutput.Text =
-            $"Script Output Window — {scriptName} (Running {FormatDuration(_executionStopwatch.Elapsed)})"
-    End Sub
-
-    Private Sub SetLiveOutputHeaderCompleted(scriptPath As String, duration As TimeSpan)
-        Dim scriptName As String = IO.Path.GetFileName(scriptPath)
-        gbLiveOutput.Text =
-            $"Script Output Window — {scriptName} (Completed in {FormatDuration(duration)})"
-    End Sub
-
-    Private Sub ResetLiveOutputHeader()
-        gbLiveOutput.Text = "Script Output Window"
-        _currentRunningScriptPath = Nothing
-    End Sub
 
 
 End Class
