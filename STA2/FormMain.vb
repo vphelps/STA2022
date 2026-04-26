@@ -114,7 +114,7 @@ Public Class FormMain
         btnDbLogRefresh.PerformClick()
 
         If PCInfo.ValidDatabase Then
-            AdvantageDataRefresh("Form Load")
+            DatabaseCoordinator.RefreshAdvantageData(Me, "Form Load")
         End If
 
         Try
@@ -569,7 +569,7 @@ Public Class FormMain
 
         If tcSTA.SelectedTab.Equals(tpAdvData) Then
             If PCInfo.ValidDatabase Then
-                AdvantageDataRefresh("Refresh Button")
+                DatabaseCoordinator.RefreshAdvantageData(Me, "Refresh Button")
             End If
         ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
             CodeHelper.Refresher()
@@ -1107,76 +1107,5 @@ Public Class FormMain
         OptionsManager.SaveLauncherConfig(_launcherConfig)
     End Sub
 
-    Private Sub AdvantageDataRefresh(FiredBy As String)
-
-        Try
-            ' --------------------------
-            ' AppOptions
-            ' --------------------------
-            dgvAppOptions.Rows.Clear()
-
-            Dim dsApp As DataSet = SafeDb.TryQuery("SELECT OptionName, OptionValue FROM AppOptions")
-            If dsApp IsNot Nothing AndAlso dsApp.Tables.Count > 0 Then
-                dbAppOptions = dsApp
-
-                For Each row As DataRow In dsApp.Tables(0).Rows
-                    dgvAppOptions.Rows.Add(row.ItemArray)
-
-                    ' ✅ NEW: Capture UpgradePath
-                    If String.Equals(row("OptionName").ToString(),
-                         "UpgradePath",
-                         StringComparison.OrdinalIgnoreCase) Then
-
-                        AppData.UpgradePath = row("OptionValue").ToString()
-                    End If
-                Next
-            Else
-                dbAppOptions = New DataSet()
-            End If
-            ' --------------------------
-            ' WebOptions
-            ' --------------------------
-            dgvWebOptions.Rows.Clear()
-
-            Dim dsWeb As DataSet = SafeDb.TryQuery("SELECT OptionName, OptionValue FROM WebOptions")
-            If dsWeb IsNot Nothing AndAlso dsWeb.Tables.Count > 0 Then
-                dbWebOptions = dsWeb
-                For Each row As DataRow In dsWeb.Tables(0).Rows
-                    dgvWebOptions.Rows.Add(row.ItemArray)
-                Next
-            Else
-                dbWebOptions = New DataSet()
-            End If
-
-            ' --------------------------
-            ' ApplicationInfo
-            ' --------------------------
-            dgvApplicationInfo.Rows.Clear()
-
-            Dim dsInfo As DataSet = SafeDb.TryQuery("SELECT * FROM ApplicationInfo")
-            If dsInfo IsNot Nothing AndAlso dsInfo.Tables.Count > 0 Then
-                dbApplicationInfo = dsInfo
-                Dim t As DataTable = dsInfo.Tables(0)
-                Dim firstRow As DataRow = t.Rows(0)
-
-                For i = 0 To t.Columns.Count - 1
-                    dgvApplicationInfo.Rows.Add(t.Columns(i).ColumnName, firstRow(i).ToString())
-                Next
-            Else
-                dbApplicationInfo = New DataSet()
-            End If
-
-        Catch ex As SafeDb.DatabaseOfflineException
-            ' ---- SWITCH TO OFFLINE MODE ----
-            DatabaseCoordinator.GoOffline(Me, "Lost DB connection during AdvantageDataRefresh")
-            Exit Sub
-
-        Catch ex As Exception
-            ' ---- No more ErrorHandler ----
-            ' Instead we gracefully fall to offline mode.
-            DatabaseCoordinator.GoOffline(Me, "Database failure in AdvantageDataRefresh: " & ex.Message)
-            Exit Sub
-        End Try
-    End Sub
 
 End Class
