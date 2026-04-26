@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Forms
 
-Public Class CodeHelper
+Public Module CodeHelper
 
     Public Enum AppInstallState
         NotInstalled = 0
@@ -8,7 +8,7 @@ Public Class CodeHelper
         InstalledX64 = 2
     End Enum
 
-    Public Shared Sub FirstLoad()
+    Public Sub FirstLoad()
         Dim form = Startup.MainFormInstance
         Dim strTemp As String = ""
 
@@ -102,7 +102,7 @@ Public Class CodeHelper
     ' =======================================================================
     '  Refresher() updated to use SafeDb (prevents runtime crashes)
     ' =======================================================================
-    Public Shared Sub Refresher()
+    Public Sub Refresher()
 
         ' Always update the Advantage version
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
@@ -152,7 +152,7 @@ Public Class CodeHelper
 
             Catch ex As SafeDb.DatabaseOfflineException
                 ' ---- HARD OFFLINE TRIGGER ----
-                frm.GoOffline("Lost DB connection during LicenseData refresh")
+                DatabaseCoordinator.GoOffline(frm, "Lost DB connection during LicenseData refresh")
                 Exit Sub
 
             Catch ex As Exception
@@ -216,7 +216,7 @@ Public Class CodeHelper
 
         Catch ex As SafeDb.DatabaseOfflineException
             ' ---- HARD OFFLINE TRIGGER ----
-            frm.GoOffline("Lost DB connection during DbStats refresh")
+            DatabaseCoordinator.GoOffline(frm, "Lost DB connection during DbStats refresh")
             Exit Sub
 
         Catch ex As Exception
@@ -268,7 +268,7 @@ Public Class CodeHelper
     ' Unchanged helper functions
     ' =======================================================================
 
-    Private Shared Sub ApplyPcInfoToForm(form As FormMain)
+    Private Sub ApplyPcInfoToForm(form As FormMain)
         form.tbPcName.Text = PCInfo.Name
         form.tbPcOsInfo.Text = PCInfo.OpSys
         form.tbPcRam.Text = PCInfo.Ram
@@ -278,14 +278,14 @@ Public Class CodeHelper
         form.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
     End Sub
 
-    Private Shared Function IsNumericLike(value As String) As Boolean
+    Private Function IsNumericLike(value As String) As Boolean
         If String.IsNullOrWhiteSpace(value) Then Return False
         Dim dummy As Double
         Return Double.TryParse(value, Globalization.NumberStyles.Any,
                                Globalization.CultureInfo.InvariantCulture, dummy)
     End Function
 
-    Private Shared Function ExtractYearFromVersion(versionText As String) As String
+    Private Function ExtractYearFromVersion(versionText As String) As String
         If String.IsNullOrWhiteSpace(versionText) Then Return ""
         Dim idx As Integer = versionText.IndexOf("20", StringComparison.Ordinal)
         If idx >= 0 AndAlso versionText.Length >= idx + 4 Then
@@ -295,7 +295,7 @@ Public Class CodeHelper
         Return versionText
     End Function
 
-    Public Shared Sub GetPcInfo()
+    Public Sub GetPcInfo()
         PCInfo.Name = My.Computer.Name
         PCInfo.OpSys = My.Computer.Info.OSFullName
 
@@ -311,7 +311,7 @@ Public Class CodeHelper
         PCInfo.Architecture = If(Environment.Is64BitOperatingSystem, "x64", "x86")
     End Sub
 
-    Public Shared Function CeInfo() As String
+    Public Function CeInfo() As String
 
         Dim Path As String = ""
         AppData.InstalledVersion = AdvExeCheck("AdvManager")
@@ -333,7 +333,7 @@ Public Class CodeHelper
 
     End Function
 
-    Public Shared Sub MsgLogBuilder(Optional errValue As String = "0",
+    Public Sub MsgLogBuilder(Optional errValue As String = "0",
                                     Optional limit As String = "100",
                                     Optional daterange As String = "")
         LogQueries.MessageLog =
@@ -343,7 +343,7 @@ Public Class CodeHelper
             String.Format(MessageLogFilters.MessageLogErrorCount, limit, daterange)
     End Sub
 
-    Public Shared Function AdvExeCheck(Executable As String)
+    Public Function AdvExeCheck(Executable As String)
         Dim fileExistsx86 As Boolean =
             My.Computer.FileSystem.FileExists($"{AppData.CEPath86}{Executable}.exe")
 
@@ -355,4 +355,62 @@ Public Class CodeHelper
         Return AppInstallState.NotInstalled
     End Function
 
-End Class
+
+    ' ===========================================
+    ' Flavor argument builder
+    ' ===========================================
+    Public Function BuildFlavorsArgument(
+        flavorNames As IEnumerable(Of String)
+    ) As String
+
+        If flavorNames Is Nothing Then Return ""
+
+        Dim list =
+            flavorNames.
+                Where(Function(f) Not String.IsNullOrWhiteSpace(f)).
+                ToList()
+
+        If list.Count = 0 Then
+            Throw New InvalidOperationException("No flavors provided.")
+        End If
+
+        ' IMPORTANT:
+        ' - Comma-separated
+        ' - NO spaces
+        ' - Parsed by PowerShell
+        Dim flavorCsv As String = String.Join(",", list)
+
+        Return $"-Flavors {flavorCsv}"
+    End Function
+
+
+    ' ===========================================
+    ' Execution status helper (UI-safe)
+    ' ===========================================
+    Public Sub SetExecutionStatus(
+        owner As Control,
+        statusLabel As ToolStripLabel,
+        text As String
+    )
+
+        If statusLabel Is Nothing Then Return
+
+        ' Marshal to UI thread safely
+        If owner IsNot Nothing AndAlso owner.InvokeRequired Then
+            owner.Invoke(Sub()
+                             SetExecutionStatus(owner, statusLabel, text)
+                         End Sub)
+            Return
+        End If
+
+        If String.IsNullOrWhiteSpace(text) Then
+            statusLabel.Text = String.Empty
+            statusLabel.Visible = False
+        Else
+            statusLabel.Text = text
+            statusLabel.Visible = True
+        End If
+
+    End Sub
+
+End Module
