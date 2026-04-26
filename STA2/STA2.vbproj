@@ -142,20 +142,20 @@
     <Compile Include="DatabaseCoordinator.vb" />
     <Compile Include="DBConnector.vb" />
     <Compile Include="DotNetInfo.vb" />
-    <Compile Include="EditProgramForm .Designer.vb">
+    <Compile Include="Forms\EditProgramForm .Designer.vb">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </Compile>
-    <Compile Include="EditProgramForm .vb">
+    <Compile Include="Forms\EditProgramForm .vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FlavorSelectionManager.vb" />
     <Compile Include="GlobalErrorHandler.vb" />
     <Compile Include="IconHelpers.vb" />
     <Compile Include="IniFile.vb" />
-    <Compile Include="FormMain.vb">
+    <Compile Include="Forms\FormMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormMain.Designer.vb">
+    <Compile Include="Forms\FormMain.Designer.vb">
       <DependentUpon>FormMain.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
@@ -195,10 +195,10 @@
     <Compile Include="Startup.vb" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EditProgramForm .resx">
+    <EmbeddedResource Include="Forms\EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormMain.resx">
+    <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
