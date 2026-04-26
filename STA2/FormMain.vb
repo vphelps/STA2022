@@ -11,8 +11,8 @@ Public Class FormMain
     Private _options As AppOptions
     Private _launcherConfig As LauncherConfig
     Private _defaultsApplied As Boolean = False
-    Private _adminShieldIcon As Image = Nothing
     Private _liveOutputManager As LiveOutputManager
+    Private _quickLaunchManager As QuickLaunchManager
 
     Dim FlavorSelections As String = ""
 
@@ -20,12 +20,6 @@ Public Class FormMain
     New HashSet(Of String)(
         If(_options?.DefaultFlavorNames, Enumerable.Empty(Of String)()),
         StringComparer.OrdinalIgnoreCase)
-    Private ReadOnly _iconCache As New Dictionary(Of String, Image)(
-    StringComparer.OrdinalIgnoreCase)
-    Private _dragButton As Button = Nothing
-    Private _dragStartPoint As Point
-    Private Const DragThreshold As Integer = 6
-    Private _isReorderingQuickLaunch As Boolean = False
     Private _ctxRebuilding As Boolean = False
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
@@ -39,12 +33,7 @@ Public Class FormMain
         RefreshProgramsList()
         FillComboFromListBox()
 
-        ' Build context menu once and refresh labels
-        EnsureProgramsContextMenu()
-        RefreshQuickSlotMenuLabels()
-
         ' Render Quick Launch buttons after options/config are available
-        RefreshQuickLaunchButtons()
         FillComboFromListBox()
 
         ' Window title from options (if any)
@@ -69,9 +58,31 @@ Public Class FormMain
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
         flpQuickLaunch.AllowDrop = True
+
+        ' Live output manager
         _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput)
 
+        ' Quick Launch manager
+        _quickLaunchManager = New QuickLaunchManager(
+        panel:=flpQuickLaunch,
+        options:=_options,
+        launcherConfig:=_launcherConfig,
+        toolTip:=ToolTipForQuickButtons,
+        launchCallback:=AddressOf LaunchProgram
+    )
+
+        ' Render Quick Launch buttons
+        _quickLaunchManager.Refresh()
+
+        ' ✅ STEP 3: attach Quick Launch context menu (assign / clear slots)
+        _quickLaunchManager.EnsureContextMenu(
+        lstPrograms:=lstPrograms,
+        refreshComboCallback:=AddressOf FillComboFromListBox
+    )
+
+        ' ---- existing code continues below ----
         If Variables.OfflineMode Then
             DisableDatabaseSections()
             Return
@@ -136,16 +147,6 @@ Public Class FormMain
         btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
         btnAdvKioskSetup.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKioskSetup"))
         btnAdvKiosk.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKiosk"))
-
-        ' >>> OPTIONAL IMPROVEMENT APPLIED <<<
-        ' We already set _options and _launcherConfig in the constructor.
-        ' Avoid reloading here to prevent extra churn and side effects.
-        ' If you ever WANT to reload from disk in Load, uncomment these:
-        ' _options = OptionsManager.LoadOrCreate()
-        ' _launcherConfig = OptionsManager.LoadLauncherConfig()
-        ' RefreshProgramsList()
-        ' FillComboFromListBox()
-        ' RefreshQuickLaunchButtons()
 
         tbWindowTitle.Text = _options.WindowTitle
 
@@ -835,467 +836,6 @@ Public Class FormMain
         End Try
     End Sub
 
-    ' ---------------- Quick Launch (buttons + assign/clear) ----------------
-
-    Private Sub RefreshQuickLaunchButtons()
-        If flpQuickLaunch Is Nothing Then Return
-
-        ' Build lookup for fast Id -> ProgramEntry resolution (enabled only)
-        Dim byId As New Dictionary(Of String, ProgramEntry)(StringComparer.OrdinalIgnoreCase)
-        If _launcherConfig IsNot Nothing AndAlso _launcherConfig.Programs IsNot Nothing Then
-            For Each p In _launcherConfig.Programs
-                If p IsNot Nothing AndAlso p.Enabled AndAlso Not String.IsNullOrWhiteSpace(p.Id) Then
-                    If Not byId.ContainsKey(p.Id) Then byId.Add(p.Id, p)
-                End If
-            Next
-        End If
-
-        flpQuickLaunch.SuspendLayout()
-        Try
-            flpQuickLaunch.Controls.Clear()
-
-            If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then Exit Sub
-
-            For slot = 0 To _options.QuickLaunchIds.Count - 1
-                Dim id As String = _options.QuickLaunchIds(slot)
-                If String.IsNullOrWhiteSpace(id) Then Continue For
-
-                Dim entry As ProgramEntry = Nothing
-                If Not byId.TryGetValue(id, entry) Then Continue For
-
-                Dim slotLocal As Integer = slot
-                Dim entryLocal As ProgramEntry = entry
-
-                Dim btn As New Button()
-                btn.Name = $"btnQuickSlot{slotLocal + 1}"
-                btn.Width = 160
-                btn.Height = 48
-                btn.AutoSize = False
-                btn.Tag = entryLocal
-                btn.Text = entryLocal.Name
-                btn.TextAlign = ContentAlignment.MiddleCenter
-                btn.TextImageRelation = TextImageRelation.ImageBeforeText
-                btn.Margin = New Padding(3)
-                btn.UseVisualStyleBackColor = True
-
-                ' ----- ICON -----
-                Dim iconImage As Image = GetProgramIcon(entryLocal)
-                If iconImage IsNot Nothing Then
-                    Dim finalIcon As Image = ScaleIcon(iconImage, 24)
-
-                    ' Admin shield overlay
-                    If entryLocal.RunAsAdmin Then
-                        Dim shield = GetAdminShieldIcon(16)
-                        finalIcon = OverlayShieldIcon(finalIcon, shield)
-                    End If
-
-                    btn.Image = finalIcon
-                    btn.ImageAlign = ContentAlignment.MiddleLeft
-                End If
-
-                ' ----- TOOLTIP -----
-                Dim tipText As String = entryLocal.Name
-                If Not String.IsNullOrWhiteSpace(entryLocal.Path) Then
-                    tipText &= Environment.NewLine & entryLocal.Path
-                End If
-                If Not String.IsNullOrWhiteSpace(entryLocal.Arguments) Then
-                    tipText &= Environment.NewLine & entryLocal.Arguments
-                End If
-                If entryLocal.RunAsAdmin Then
-                    tipText &= Environment.NewLine & "Runs as Administrator"
-                End If
-
-                ToolTipForQuickButtons.SetToolTip(btn, tipText)
-
-                ' ============================================================
-                ' ✅ REQUIRED: CLICK HANDLER (THIS FIXES YOUR ISSUE)
-                ' ============================================================
-                AddHandler btn.Click,
-                Sub(sender, e)
-                    Dim pe = TryCast(DirectCast(sender, Button).Tag, ProgramEntry)
-                    If pe IsNot Nothing Then
-                        LaunchProgram(pe)
-                    End If
-                End Sub
-
-                ' ----- DRAG SUPPORT -----
-                AddHandler btn.MouseDown,
-                Sub(s, e)
-                    If e.Button = MouseButtons.Left Then
-                        _dragButton = DirectCast(s, Button)
-                        _dragStartPoint = e.Location
-                    End If
-                End Sub
-
-                AddHandler btn.MouseMove,
-                Sub(s, e)
-                    If _dragButton Is Nothing Then Return
-                    If e.Button <> MouseButtons.Left Then Return
-
-                    ' Only begin drag after threshold exceeded
-                    If Math.Abs(e.X - _dragStartPoint.X) >= DragThreshold _
-                       OrElse Math.Abs(e.Y - _dragStartPoint.Y) >= DragThreshold Then
-
-                        flpQuickLaunch.DoDragDrop(_dragButton, DragDropEffects.Move)
-                    End If
-                End Sub
-
-                AddHandler btn.MouseUp,
-                Sub(s, e)
-                    _dragButton = Nothing
-                End Sub
-
-                flpQuickLaunch.Controls.Add(btn)
-            Next
-
-        Finally
-            flpQuickLaunch.ResumeLayout()
-        End Try
-    End Sub
-
-
-    Private Sub flpQuickLaunch_DragOver(sender As Object, e As DragEventArgs) _
-    Handles flpQuickLaunch.DragOver
-
-        If _isReorderingQuickLaunch Then Return
-        If Not e.Data.GetDataPresent(GetType(Button)) Then Return
-
-        e.Effect = DragDropEffects.Move
-
-        Dim panel = flpQuickLaunch
-        Dim draggedBtn = TryCast(e.Data.GetData(GetType(Button)), Button)
-        If draggedBtn Is Nothing Then Return
-
-        Dim clientPoint = panel.PointToClient(New Point(e.X, e.Y))
-        Dim target = TryCast(panel.GetChildAtPoint(clientPoint), Button)
-
-        If target Is Nothing OrElse target Is draggedBtn Then Return
-
-        Dim draggedIndex = panel.Controls.GetChildIndex(draggedBtn)
-        Dim targetIndex = panel.Controls.GetChildIndex(target)
-        If draggedIndex = targetIndex Then Return
-
-        Try
-            _isReorderingQuickLaunch = True
-            panel.SuspendLayout()
-            panel.Controls.SetChildIndex(draggedBtn, targetIndex)
-        Finally
-            panel.ResumeLayout()
-            _isReorderingQuickLaunch = False
-        End Try
-    End Sub
-
-    Private Sub flpQuickLaunch_DragDrop(sender As Object, e As DragEventArgs) _
-    Handles flpQuickLaunch.DragDrop
-
-        Dim panel = flpQuickLaunch
-
-
-        ' Rebuild QuickLaunchIds from visual order
-        Dim newIds As New List(Of String)
-
-        For Each ctrl As Control In panel.Controls
-            Dim btn = TryCast(ctrl, Button)
-            If btn Is Nothing Then Continue For
-
-            Dim entry = TryCast(btn.Tag, ProgramEntry)
-            If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Id) Then Continue For
-
-            newIds.Add(entry.Id)
-        Next
-
-        ' Ensure list size remains consistent
-        If _options.QuickLaunchIds Is Nothing Then
-            _options.QuickLaunchIds = newIds
-        Else
-            _options.QuickLaunchIds.Clear()
-            _options.QuickLaunchIds.AddRange(newIds)
-        End If
-
-        OptionsManager.Save(_options)
-
-        ' Optional: refresh menu labels & combos
-        RefreshQuickSlotMenuLabels()
-        FillComboFromListBox()
-
-        _dragButton = Nothing
-    End Sub
-
-
-    ' Assign the currently-selected program in lstPrograms to the slot (0-based)
-    ' Enforce uniqueness: the same Id can appear in at most one slot.
-    Private Sub AssignSelectedListItemToQuickSlot(slot As Integer)
-        Dim entry As ProgramEntry = TryCast(lstPrograms.SelectedItem, ProgramEntry)
-        If entry Is Nothing Then
-            MessageBox.Show("Select a program to assign.", "Quick Launch", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Return
-        End If
-
-        ' Ensure list exists at default size (9)
-        If _options.QuickLaunchIds Is Nothing Then
-            _options.QuickLaunchIds = Enumerable.Repeat("", 20).ToList()
-        End If
-
-        ' OPTIONAL HARD CAP: Uncomment to enforce 9 slots (0..8)
-        'If slot > 8 Then
-        '    MessageBox.Show("That quick slot does not exist.", "Quick Launch", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        '    Return
-        'End If
-
-        ' Grow only as needed to support the selected slot
-        While _options.QuickLaunchIds.Count <= slot
-            _options.QuickLaunchIds.Add("")
-        End While
-
-        ' ENFORCE UNIQUENESS: remove this Id from any other slot first
-        Dim id As String = entry.Id
-        For i = 0 To _options.QuickLaunchIds.Count - 1
-            If i <> slot AndAlso String.Equals(_options.QuickLaunchIds(i), id, StringComparison.OrdinalIgnoreCase) Then
-                _options.QuickLaunchIds(i) = ""
-            End If
-        Next
-
-        ' Assign to target slot
-        _options.QuickLaunchIds(slot) = id
-
-        OptionsManager.Save(_options)
-        RefreshQuickLaunchButtons()
-        RefreshQuickSlotMenuLabels()
-        FillComboFromListBox()
-    End Sub
-
-    Private Sub ClearQuickSlot(slot As Integer)
-        If _options.QuickLaunchIds Is Nothing Then Exit Sub
-        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then Exit Sub
-        If Not String.IsNullOrWhiteSpace(_options.QuickLaunchIds(slot)) Then
-            Dim label = GetQuickSlotClearLabel(slot)
-            If MessageBox.Show($"Clear assignment?{Environment.NewLine}{label}",
-                       "Quick Launch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) <> DialogResult.Yes Then
-                Return
-            End If
-        End If
-        _options.QuickLaunchIds(slot) = ""
-
-        OptionsManager.Save(_options)
-        RefreshQuickLaunchButtons()
-        RefreshQuickSlotMenuLabels()
-        FillComboFromListBox()
-    End Sub
-
-    Private Function GetQuickSlotDisplay(slot As Integer) As String
-        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then
-            Return $"Slot {slot + 1} — (empty)"
-        End If
-        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then
-            Return $"Slot {slot + 1} — (empty)"
-        End If
-
-        Dim id As String = _options.QuickLaunchIds(slot)
-        If String.IsNullOrWhiteSpace(id) Then Return $"Slot {slot + 1} — (empty)"
-
-        Dim entry As ProgramEntry =
-            _launcherConfig?.
-            Programs?.
-            FirstOrDefault(Function(p) p IsNot Nothing AndAlso String.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase))
-
-        If entry Is Nothing Then Return $"Slot {slot + 1} — ⚠ missing"
-        If Not entry.Enabled Then Return $"Slot {slot + 1} — ⚠ disabled"
-        Return $"Slot {slot + 1} — {entry.Name}"
-    End Function
-
-    Private Function GetQuickSlotTooltip(slot As Integer) As String
-        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then Return ""
-        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then Return ""
-        Dim id As String = _options.QuickLaunchIds(slot)
-        If String.IsNullOrWhiteSpace(id) Then Return "(empty)"
-
-        Dim entry As ProgramEntry =
-            _launcherConfig?.
-            Programs?.
-            FirstOrDefault(Function(p) p IsNot Nothing AndAlso String.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase))
-
-        If entry Is Nothing Then Return "(missing)"
-        Dim sb As New System.Text.StringBuilder()
-        sb.AppendLine(entry.Name)
-        If Not String.IsNullOrWhiteSpace(entry.Path) Then sb.AppendLine(entry.Path)
-        If Not String.IsNullOrWhiteSpace(entry.Arguments) Then sb.AppendLine(entry.Arguments)
-        Return sb.ToString().TrimEnd()
-    End Function
-    Private Function GetQuickSlotClearLabel(slot As Integer) As String
-        ' Base label
-        Dim prefix As String = $"Clear Slot {slot + 1} — "
-
-        ' If options list not ready
-        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then
-            Return prefix & "(empty)"
-        End If
-        If slot < 0 OrElse slot >= _options.QuickLaunchIds.Count Then
-            Return prefix & "(empty)"
-        End If
-
-        ' Get Id in this slot
-        Dim id As String = _options.QuickLaunchIds(slot)
-        If String.IsNullOrWhiteSpace(id) Then
-            Return prefix & "(empty)"
-        End If
-
-        ' Resolve to ProgramEntry
-        Dim entry As ProgramEntry =
-        _launcherConfig?.
-        Programs?.
-        FirstOrDefault(Function(p) p IsNot Nothing AndAlso String.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase))
-
-        If entry Is Nothing Then Return prefix & "⚠ missing"
-        If Not entry.Enabled Then Return prefix & "⚠ disabled"
-        Return prefix & entry.Name
-    End Function
-
-
-    ' ---------------- Context Menu (Assign/Clear slots) ----------------
-
-    Private _ctxPrograms As ContextMenuStrip
-    Private _miAssignRoot As ToolStripMenuItem
-    Private _miClearRoot As ToolStripMenuItem
-    Private _ctxBuilt As Boolean = False  ' prevents double-build
-
-    Private Sub EnsureProgramsContextMenu()
-
-        ' Prevent re-entrancy / recursion
-        If _ctxRebuilding Then Return
-        _ctxRebuilding = True
-
-        Try
-            ' If already built and valid, do NOT rebuild
-            If _ctxBuilt AndAlso _ctxPrograms IsNot Nothing Then
-                Return
-            End If
-
-            ' Dispose previous context menu safely
-            If _ctxPrograms IsNot Nothing Then
-                If lstPrograms IsNot Nothing AndAlso lstPrograms.ContextMenuStrip Is _ctxPrograms Then
-                    lstPrograms.ContextMenuStrip = Nothing
-                End If
-                _ctxPrograms.Dispose()
-                _ctxPrograms = Nothing
-            End If
-
-            ' Create new context menu + roots
-            _ctxPrograms = New ContextMenuStrip()
-            _miAssignRoot = New ToolStripMenuItem("Assign to Quick Slot")
-            _miClearRoot = New ToolStripMenuItem("Clear Quick Slot")
-
-            ' Determine slot count
-            Dim slotCount As Integer = 5
-            If _options IsNot Nothing AndAlso _options.QuickLaunchIds IsNot Nothing Then
-                slotCount = _options.QuickLaunchIds.Count
-                If slotCount <= 0 Then slotCount = 5
-            End If
-
-            ' Build menu items ONCE
-            For slot As Integer = 0 To slotCount - 1
-                Dim slotIndex As Integer = slot
-
-                ' --- Assign item ---
-                Dim miAssign As New ToolStripMenuItem(GetQuickSlotDisplay(slotIndex))
-                miAssign.ToolTipText = GetQuickSlotTooltip(slotIndex)
-                AddHandler miAssign.Click,
-                Sub(sender, e)
-                    AssignSelectedListItemToQuickSlot(slotIndex)
-                End Sub
-                _miAssignRoot.DropDownItems.Add(miAssign)
-
-                ' --- Clear item ---
-                Dim miClear As New ToolStripMenuItem(GetQuickSlotClearLabel(slotIndex))
-                miClear.ToolTipText = GetQuickSlotTooltip(slotIndex)
-                AddHandler miClear.Click,
-                Sub(sender, e)
-                    ClearQuickSlot(slotIndex)
-                End Sub
-                _miClearRoot.DropDownItems.Add(miClear)
-            Next
-
-            ' Optional manual refresh entry (SAFE: only updates labels)
-            Dim miRefresh As New ToolStripMenuItem("Refresh Quick Slot Labels")
-            AddHandler miRefresh.Click,
-            Sub(sender, e)
-                RefreshQuickSlotMenuLabels()
-            End Sub
-
-            ' Build final menu
-            _ctxPrograms.Items.AddRange(New ToolStripItem() {
-            _miAssignRoot,
-            _miClearRoot,
-            New ToolStripSeparator(),
-            miRefresh
-        })
-
-            ' Assign menu to list
-            lstPrograms.ContextMenuStrip = _ctxPrograms
-
-            ' Ensure right-click selects item ONCE
-            RemoveHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
-            AddHandler lstPrograms.MouseUp, AddressOf lstPrograms_MouseUp_SelectOnRightClick
-
-            ' Refresh labels on open (NO rebuilds)
-            RemoveHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
-            AddHandler _ctxPrograms.Opening, AddressOf CtxPrograms_Opening_UpdateLabels
-
-            _ctxBuilt = True
-
-        Finally
-            _ctxRebuilding = False
-        End Try
-
-    End Sub
-    Private Sub CtxPrograms_Opening_UpdateLabels(sender As Object, e As System.ComponentModel.CancelEventArgs)
-        RefreshQuickSlotMenuLabels()
-    End Sub
-
-    Private Sub RefreshQuickSlotMenuLabels()
-        If _miAssignRoot Is Nothing OrElse _miClearRoot Is Nothing Then Return
-        If _options Is Nothing OrElse _options.QuickLaunchIds Is Nothing Then Return
-
-        Dim slotCount As Integer = _options.QuickLaunchIds.Count
-        If slotCount <= 0 Then Return
-
-        ' Update labels & tooltips ONLY
-        For slot As Integer = 0 To slotCount - 1
-            Dim assignItem = TryCast(_miAssignRoot.DropDownItems(slot), ToolStripMenuItem)
-            Dim clearItem = TryCast(_miClearRoot.DropDownItems(slot), ToolStripMenuItem)
-
-            If assignItem IsNot Nothing Then
-                assignItem.Text = GetQuickSlotDisplay(slot)
-                assignItem.ToolTipText = GetQuickSlotTooltip(slot)
-            End If
-
-            If clearItem IsNot Nothing Then
-                clearItem.Text = GetQuickSlotClearLabel(slot)
-                clearItem.ToolTipText = GetQuickSlotTooltip(slot)
-
-                Dim id = _options.QuickLaunchIds(slot)
-                clearItem.Enabled = Not String.IsNullOrWhiteSpace(id)
-            End If
-        Next
-    End Sub
-
-    Private Sub lstPrograms_MouseUp_SelectOnRightClick(sender As Object, e As MouseEventArgs)
-        If e.Button <> MouseButtons.Right Then Return
-
-        Dim index As Integer = lstPrograms.IndexFromPoint(e.Location)
-        If index >= 0 AndAlso index < lstPrograms.Items.Count Then
-            lstPrograms.SelectedIndex = index
-        End If
-    End Sub
-
-    ' ---------------- Misc remaining UI ----------------
-
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) Handles btnTest.Click
-
-        Throw New Exception("Test exception")
-
-    End Sub
-
-
     Private Sub DisableDatabaseSections()
         tbPcDbSize.Text = "Offline"
         tbPcSqlVersion.Text = "Offline"
@@ -1835,82 +1375,6 @@ Public Class FormMain
         UpdateFlavorCommands()
 
     End Sub
-
-    Private Function GetProgramIcon(entry As ProgramEntry) As Image
-
-        If entry Is Nothing Then Return Nothing
-
-        ' Use entry-specific icon if supplied
-        If Not String.IsNullOrWhiteSpace(entry.IconPath) AndAlso
-           IO.File.Exists(entry.IconPath) Then
-
-            If Not _iconCache.ContainsKey(entry.IconPath) Then
-                Using ico = Icon.ExtractAssociatedIcon(entry.IconPath)
-                    _iconCache(entry.IconPath) = ico.ToBitmap()
-                End Using
-            End If
-
-            Return _iconCache(entry.IconPath)
-        End If
-
-        ' Use executable icon
-        If IO.File.Exists(entry.Path) Then
-            If Not _iconCache.ContainsKey(entry.Path) Then
-                Using ico = Icon.ExtractAssociatedIcon(entry.Path)
-                    _iconCache(entry.Path) = ico.ToBitmap()
-                End Using
-            End If
-
-            Return _iconCache(entry.Path)
-        End If
-
-        ' Fallback icon
-        Return SystemIcons.Application.ToBitmap()
-
-    End Function
-
-    Private Function ScaleIcon(img As Image, size As Integer) As Image
-        Dim bmp As New Bitmap(size, size)
-        Using g = Graphics.FromImage(bmp)
-            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-            g.DrawImage(img, 0, 0, size, size)
-        End Using
-        Return bmp
-    End Function
-
-    Private Function GetAdminShieldIcon(size As Integer) As Image
-        If _adminShieldIcon IsNot Nothing Then Return _adminShieldIcon
-
-        ' Use Windows system UAC shield
-        Dim shieldIcon As Icon = SystemIcons.Shield
-
-        _adminShieldIcon = ScaleIcon(shieldIcon.ToBitmap(), size)
-        Return _adminShieldIcon
-    End Function
-
-    Private Function OverlayShieldIcon(
-    baseIcon As Image,
-    shieldIcon As Image,
-    Optional padding As Integer = 2) As Image
-
-        Dim size = baseIcon.Width
-        Dim result As New Bitmap(size, size)
-
-        Using g = Graphics.FromImage(result)
-            g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
-            g.DrawImage(baseIcon, 0, 0, size, size)
-
-            ' Draw shield bottom-right
-            Dim shieldSize = size \ 2
-            Dim x = size - shieldSize - padding
-            Dim y = size - shieldSize - padding
-
-            g.DrawImage(shieldIcon, x, y, shieldSize, shieldSize)
-        End Using
-
-        Return result
-
-    End Function
 
     Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles clbSqlFiles.ItemCheck
 
