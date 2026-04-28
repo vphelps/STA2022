@@ -24,6 +24,7 @@ Public Class AppOptions
 
     <DataMember>
     Public Property ApplyFlavorDefault As String
+    Public Property SqlContainerName As String
 
     <IgnoreDataMember>
     Public ReadOnly Property FlavorFolderPath As String
