@@ -14,7 +14,107 @@ Imports System.Windows.Forms
 '
 ' ===========================================================
 
+Public Enum ExistingVersionAction
+    Overwrite
+    RunExisting
+End Enum
+
+
 Public Module InstallerTools
+    Private Function PromptForExistingVersion(
+    versionPath As String,
+    timeoutSeconds As Integer
+) As ExistingVersionAction
+
+        Dim result As ExistingVersionAction = ExistingVersionAction.Overwrite
+        Dim secondsLeft As Integer = timeoutSeconds
+
+        Using form As New Form()
+            form.Text = "Existing Version Detected"
+            form.StartPosition = FormStartPosition.CenterParent
+            form.FormBorderStyle = FormBorderStyle.FixedDialog
+            form.MaximizeBox = False
+            form.MinimizeBox = False
+            form.Width = 480
+            form.Height = 220
+
+            Dim lblMessage As New Label() With {
+            .AutoSize = False,
+            .Top = 20,
+            .Left = 20,
+            .Width = 420,
+            .Height = 60,
+            .Text =
+                "The following version already exists:" & Environment.NewLine &
+                versionPath & Environment.NewLine & Environment.NewLine &
+                "What would you like to do?"
+        }
+
+            Dim lblCountdown As New Label() With {
+            .Top = 90,
+            .Left = 20,
+            .Width = 420,
+            .Height = 20
+        }
+
+            Dim btnOverwrite As New Button() With {
+            .Text = "Overwrite",
+            .Left = 80,
+            .Top = 130,
+            .Width = 120
+        }
+
+            Dim btnRunExisting As New Button() With {
+            .Text = "Run Existing",
+            .Left = 220,
+            .Top = 130,
+            .Width = 120
+        }
+
+            AddHandler btnOverwrite.Click,
+            Sub()
+                result = ExistingVersionAction.Overwrite
+                form.Close()
+            End Sub
+
+            AddHandler btnRunExisting.Click,
+            Sub()
+                result = ExistingVersionAction.RunExisting
+                form.Close()
+            End Sub
+
+            Dim timer As New Timer() With {.Interval = 1000}
+
+            AddHandler timer.Tick,
+            Sub()
+                secondsLeft -= 1
+                lblCountdown.Text =
+                    $"Defaulting to Overwrite in {secondsLeft} seconds..."
+
+                If secondsLeft <= 0 Then
+                    timer.Stop()
+                    result = ExistingVersionAction.Overwrite
+                    form.Close()
+                End If
+            End Sub
+
+            lblCountdown.Text =
+            $"Defaulting to Overwrite in {secondsLeft} seconds..."
+            timer.Start()
+
+            form.Controls.AddRange({
+            lblMessage,
+            lblCountdown,
+            btnOverwrite,
+            btnRunExisting
+        })
+
+            form.ShowDialog()
+            timer.Stop()
+        End Using
+
+        Return result
+    End Function
 
     ' -------------------------------------------------------
     ' Resolve setup.zip (with optional browse)
@@ -138,25 +238,49 @@ Public Module InstallerTools
                 "Unable to determine installer version.")
         End If
 
-        ' 5️⃣ Final versioned directory
+        ' 5️⃣ Build final versioned directory
         Dim finalDir As String =
-            Path.Combine(
-                upgradeBasePath,
-                "Version " & version)
+    Path.Combine(
+        upgradeBasePath,
+        "Version " & version)
+
+        ' 🔴 NEW: force overwrite by deleting existing directory
+
+        If Directory.Exists(finalDir) Then
+
+            Dim action As ExistingVersionAction =
+        PromptForExistingVersion(finalDir, timeoutSeconds:=10)
+
+            If action = ExistingVersionAction.RunExisting Then
+                ' Skip extraction entirely
+                progressText?.Report("Using existing installation.")
+                Return finalDir
+            End If
+
+            ' Otherwise overwrite
+            Directory.Delete(finalDir, recursive:=True)
+        End If
+
 
         Directory.CreateDirectory(finalDir)
 
-        progressText?.Report($"Finalizing to {finalDir}")
+        progressText?.Report($"Finalizing extraction to {finalDir}...")
 
-        ' 6️⃣ Merge staging → final
+        ' 6️⃣ Copy staging → final (overwrite-safe)
         For Each item In Directory.GetFileSystemEntries(stagingDir)
             Dim dest As String =
-                Path.Combine(finalDir, Path.GetFileName(item))
+        Path.Combine(finalDir, Path.GetFileName(item))
 
             If Directory.Exists(item) Then
-                Directory.Move(item, dest)
+                My.Computer.FileSystem.CopyDirectory(
+            sourceDirectoryName:=item,
+            destinationDirectoryName:=dest,
+            overwrite:=True)
             Else
-                File.Move(item, dest)
+                My.Computer.FileSystem.CopyFile(
+            sourceFileName:=item,
+            destinationFileName:=dest,
+            overwrite:=True)
             End If
         Next
 
