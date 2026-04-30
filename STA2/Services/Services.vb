@@ -2,6 +2,7 @@
 Imports System.Drawing
 Imports System.Security.Principal
 Imports System.Linq
+Imports System.Threading.Tasks
 
 ' ServiceControlEntry is a Class (reference type).
 Public Class ServiceControlEntry
@@ -19,7 +20,13 @@ End Class
 Public Class Services
 
     ' ---------------------------
-    ' Start/Stop/Restart helpers
+    ' Events for UI progress
+    ' ---------------------------
+    Public Shared Event ServiceOperationStarted(ByVal entry As ServiceControlEntry, ByVal operation As String)
+    Public Shared Event ServiceOperationCompleted(ByVal entry As ServiceControlEntry, ByVal operation As String, ByVal success As Boolean)
+
+    ' ---------------------------
+    ' Start/Stop/Restart helpers (synchronous retained for compatibility)
     ' ---------------------------
 
     Public Shared Sub StopService(ByRef entry As ServiceControlEntry)
@@ -68,6 +75,99 @@ Public Class Services
 
         GetServiceStatus(entry)
     End Sub
+
+    ' ---------------------------
+    ' Async APIs: allow UI to call without blocking
+    ' ---------------------------
+
+    Public Shared Async Function StopServiceAsync(ByVal entry As ServiceControlEntry, Optional ByVal timeoutSeconds As Integer = 30) As Task(Of Boolean)
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Service) Then Return False
+
+        RaiseEvent ServiceOperationStarted(entry, "Stop")
+
+        Dim result As Boolean = Await Task.Run(Function()
+                                                   Try
+                                                       Using controller As New ServiceController(entry.Service)
+                                                           controller.Stop()
+                                                           controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(timeoutSeconds))
+                                                       End Using
+                                                       Return True
+                                                   Catch
+                                                       Return False
+                                                   End Try
+                                               End Function).ConfigureAwait(False)
+
+        Try
+            GetServiceStatus(entry)
+        Catch
+        End Try
+
+        RaiseEvent ServiceOperationCompleted(entry, "Stop", result)
+        Return result
+    End Function
+
+    Public Shared Async Function StartServiceAsync(ByVal entry As ServiceControlEntry, Optional ByVal timeoutSeconds As Integer = 30) As Task(Of Boolean)
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Service) Then Return False
+
+        RaiseEvent ServiceOperationStarted(entry, "Start")
+
+        Dim result As Boolean = Await Task.Run(Function()
+                                                   Try
+                                                       Using controller As New ServiceController(entry.Service)
+                                                           controller.Start()
+                                                           controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(timeoutSeconds))
+                                                       End Using
+                                                       Return True
+                                                   Catch
+                                                       Return False
+                                                   End Try
+                                               End Function).ConfigureAwait(False)
+
+        Try
+            GetServiceStatus(entry)
+        Catch
+        End Try
+
+        RaiseEvent ServiceOperationCompleted(entry, "Start", result)
+        Return result
+    End Function
+
+    Public Shared Async Function RestartServiceAsync(ByVal entry As ServiceControlEntry, Optional ByVal timeoutSeconds As Integer = 30) As Task(Of Boolean)
+        If entry Is Nothing OrElse String.IsNullOrWhiteSpace(entry.Service) Then Return False
+
+        RaiseEvent ServiceOperationStarted(entry, "Restart")
+
+        Dim result As Boolean = Await Task.Run(Function()
+                                                   Try
+                                                       Using controller As New ServiceController(entry.Service)
+                                                           Try
+                                                               controller.Stop()
+                                                               controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(timeoutSeconds))
+                                                           Catch
+                                                               ' ignore stop failure/timeouts
+                                                           End Try
+
+                                                           Try
+                                                               controller.Start()
+                                                               controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(timeoutSeconds))
+                                                           Catch
+                                                               ' ignore
+                                                           End Try
+                                                       End Using
+                                                       Return True
+                                                   Catch
+                                                       Return False
+                                                   End Try
+                                               End Function).ConfigureAwait(False)
+
+        Try
+            GetServiceStatus(entry)
+        Catch
+        End Try
+
+        RaiseEvent ServiceOperationCompleted(entry, "Restart", result)
+        Return result
+    End Function
 
     ' ---------------------------
     ' Discovery / UI population

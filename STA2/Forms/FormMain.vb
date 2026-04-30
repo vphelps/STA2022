@@ -1,6 +1,8 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.ServiceProcess
+Imports System.Threading.Tasks
+'Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports STA2.AppData
 
 
@@ -10,6 +12,8 @@ Public Class FormMain
     Private _liveOutputManager As LiveOutputManager
     Private _quickLaunchManager As QuickLaunchManager
     Private _flavorManager As FlavorSelectionManager
+    Private _serviceProgress As System.Windows.Forms.ToolStripProgressBar
+    Private _executionStatusLocked As Boolean = False
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -36,6 +40,14 @@ Public Class FormMain
         InstalledX86 = 1
         InstalledX64 = 2
     End Enum
+    Private Sub SetExecutionStatus(text As String, Optional force As Boolean = False)
+
+        If Not _executionStatusLocked OrElse force Then
+            tslblExecutionStatus.Text = text
+        End If
+
+    End Sub
+
 
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
@@ -93,6 +105,9 @@ Public Class FormMain
 
         ServiceControlList = Services.ServicesExistCheck()
 
+        ' Attach service operation event handlers
+        AttachServiceEvents()
+
         If Not IsRunningAsAdmin() Then
             For Each svc In ServiceControlList
                 If svc.GroupBox IsNot Nothing Then svc.GroupBox.Enabled = False
@@ -108,9 +123,13 @@ Public Class FormMain
         gpMessageLogFilters.Enabled = rbMessageLog.Checked
         btnDbLogRefresh.PerformClick()
 
-        If PCInfo.ValidDatabase Then
-            DatabaseCoordinator.RefreshAdvantageData(Me, "Form Load")
-        End If
+
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+    form:=Me,
+    connectionString:=ConfigValues.ConnectionString,
+    configuredContainerName:=_options?.SqlContainerName
+)
+
 
         Try
             Dim regKey = My.Computer.Registry.ClassesRoot.OpenSubKey("Excel.Application", False).OpenSubKey("CurVer", False)
@@ -125,7 +144,9 @@ Public Class FormMain
         tbTest2.Visible = False
         tbTest3.Visible = False
         tbMLTest1.Visible = False
-        'btnTest.Visible = False
+        btnTest1.Visible = False
+        btnTest2.Visible = False
+
 #End If
 
         btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
@@ -160,15 +181,27 @@ Public Class FormMain
             btnAdminRestart.Text = "Restart as Administrator"
         End If
 
-        tslblExecutionStatus.Text = ""
-        tslblExecutionStatus.Visible = False
+        SetExecutionStatus("")
+        'tslblExecutionStatus.Visible = False
+        ' TEMP: display discovered SQL container name
+        Dim discoveredContainer As String =
+    DatabaseCoordinator.DiscoverSqlContainerName(
+        _options.SqlContainerName)
+
+        If String.IsNullOrWhiteSpace(discoveredContainer) Then
+            tbTest2.Text = "(No SQL container found)"
+        Else
+            tbTest2.Text = discoveredContainer
+        End If
+        DatabaseCoordinator.RefreshAdvantageData(Me)
+
 
     End Sub
 
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpQATools
+        tcSTA.SelectedTab = tpOptions
 #End If
     End Sub
 
@@ -176,22 +209,34 @@ Public Class FormMain
         gpLicInfo.Select()
     End Sub
 
-    Private Sub tmr10Seconds_Tick(sender As Object, e As EventArgs) Handles tmr10Seconds.Tick
+    Private Sub tmr10Seconds_Tick(
+    sender As Object,
+    e As EventArgs
+) Handles tmr10Seconds.Tick
+
+        ' Lightweight UI work only
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        tslblCeVersion.Text = "Version:  " + info.Version
+        tslblCeVersion.Text = "Version:  " & info.Version
 
         CodeHelper.Refresher()
-        If Not PCInfo.ValidDatabase Then
-            tpAdvData.Enabled = False
-            tpDbInfo.Enabled = False
-            tpGeneral.Enabled = False
-            tpDbLogs.Enabled = False
-        Else
-            tpAdvData.Enabled = True
-            tpDbInfo.Enabled = True
-            tpGeneral.Enabled = True
-            tpDbLogs.Enabled = True
-        End If
+
+        ' ✅ Fire-and-forget async call (VB style)
+#Disable Warning BC42358
+        DatabaseCoordinator.EvaluateDatabaseAvailabilityAsync(
+    Me,
+    ConfigValues.ConnectionString,
+    _options?.SqlContainerName
+)
+#Enable Warning BC42358
+
+        ' ✅ UI enable/disable based on current known DB state
+        Dim dbOnline As Boolean = PCInfo.ValidDatabase
+
+        tpAdvData.Enabled = dbOnline
+        tpDbInfo.Enabled = dbOnline
+        tpGeneral.Enabled = dbOnline
+        tpDbLogs.Enabled = dbOnline
+
     End Sub
 
     Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
@@ -405,41 +450,182 @@ Public Class FormMain
         dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
     End Sub
 
-    Private Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click, btnRelayServiceSS.Click
-        Dim caller As Button = DirectCast(sender, Button)
+    ' ---------------------------
+    ' Service control handlers (now call Services async APIs)
+    ' ---------------------------
 
-        Dim temp As Integer
+    Private Async Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click, btnRelayServiceSS.Click
+        Dim caller As Button = DirectCast(sender, Button)
         caller.Enabled = False
+
+        ' Find entry for this SS button
+        Dim temp As Integer = -1
         For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).SSButton.Equals(caller) Then
+            If ServiceControlList.Item(index).SSButton IsNot Nothing AndAlso ServiceControlList.Item(index).SSButton.Equals(caller) Then
                 temp = index
+                Exit For
             End If
         Next
 
-        LastServiceEntry = ServiceControlList.Item(temp)
-        Dim controller As New ServiceController(LastServiceEntry.Service)
-        Dim serviceControllerStatus = controller.Status
+        If temp = -1 Then
+            caller.Enabled = True
+            Return
+        End If
 
-        If LastServiceEntry.TextBox.Text = "Running" Then
-            Services.StopService(LastServiceEntry)
-        ElseIf LastServiceEntry.TextBox.Text = "Stopped" Then
-            Services.StartService(LastServiceEntry)
+        Dim entry = ServiceControlList.Item(temp)
+        LastServiceEntry = entry
+
+        Try
+            Dim currentStatus = String.Empty
+            If entry.TextBox IsNot Nothing Then currentStatus = entry.TextBox.Text
+
+            If String.Equals(currentStatus, "Running", StringComparison.OrdinalIgnoreCase) Then
+                Await Services.StopServiceAsync(entry)
+            Else
+                Await Services.StartServiceAsync(entry)
+            End If
+
+        Finally
+            caller.Enabled = True
+        End Try
+    End Sub
+
+    Private Async Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click, btnRelayServiceRS.Click
+        Dim caller As Button = DirectCast(sender, Button)
+        caller.Enabled = False
+
+        ' Find entry for this RS button
+        Dim temp As Integer = -1
+        For index = 0 To ServiceControlList.Count - 1
+            If ServiceControlList.Item(index).RSButton IsNot Nothing AndAlso ServiceControlList.Item(index).RSButton.Equals(caller) Then
+                temp = index
+                Exit For
+            End If
+        Next
+
+        If temp = -1 Then
+            caller.Enabled = True
+            Return
+        End If
+
+        Dim entry = ServiceControlList.Item(temp)
+        LastServiceEntry = entry
+        entry.RSButton.Tag = "restart"
+
+        Try
+            Await Services.RestartServiceAsync(entry)
+        Finally
+            caller.Enabled = True
+        End Try
+    End Sub
+
+    ' Initialize progress control and insert into StatusStrip1
+    Private Sub InitServiceProgress()
+        If _serviceProgress IsNot Nothing Then Return
+        _serviceProgress = New System.Windows.Forms.ToolStripProgressBar() With {
+            .Name = "tsServiceProgress",
+            .Style = ProgressBarStyle.Marquee,
+            .MarqueeAnimationSpeed = 30,
+            .Visible = False
+        }
+        Dim idx As Integer = StatusStrip1.Items.IndexOf(tslblExecutionStatus)
+        If idx >= 0 Then
+            StatusStrip1.Items.Insert(idx + 1, _serviceProgress)
+        Else
+            StatusStrip1.Items.Add(_serviceProgress)
         End If
     End Sub
 
-    Private Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click, btnRelayServiceRS.Click
-        Dim temp As Integer
-        Dim caller As Button = DirectCast(sender, Button)
-        caller.Enabled = False
+    ' Show progress and disable service controls (UI thread)
+    Private Sub ShowServiceProgress(text As String)
+        If Me.InvokeRequired Then
+            Me.Invoke(Sub() ShowServiceProgress(text))
+            Return
+        End If
 
-        For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).RSButton.Equals(caller) Then
-                temp = index
-            End If
+        InitServiceProgress()
+        SetExecutionStatus(text)
+        'tslblExecutionStatus.Visible = True
+        _serviceProgress.Visible = True
+        _serviceProgress.Style = ProgressBarStyle.Marquee
+        _serviceProgress.MarqueeAnimationSpeed = 30
+
+        Cursor.Current = Cursors.WaitCursor
+
+        ' Disable all service buttons to avoid concurrent operations
+        For Each se In ServiceControlList
+            If se.SSButton IsNot Nothing Then se.SSButton.Enabled = False
+            If se.RSButton IsNot Nothing Then se.RSButton.Enabled = False
         Next
-        LastServiceEntry = ServiceControlList.Item(temp)
-        LastServiceEntry.RSButton.Tag = "restart"
-        Services.RestartService(LastServiceEntry)
+    End Sub
+
+    ' Hide progress and refresh service UI (UI thread)
+    Private Sub HideServiceProgress()
+        If Me.InvokeRequired Then
+            Me.Invoke(Sub() HideServiceProgress())
+            Return
+        End If
+
+        SetExecutionStatus(String.Empty)
+        'tslblExecutionStatus.Visible = False
+        If _serviceProgress IsNot Nothing Then
+            _serviceProgress.Visible = False
+            _serviceProgress.MarqueeAnimationSpeed = 0
+        End If
+
+        Cursor.Current = Cursors.Default
+
+        ' Re-evaluate service statuses and restore button states
+        ServiceControlList = Services.ServicesExistCheck()
+    End Sub
+
+    ' Subscribe to service events in Load
+    Private Sub AttachServiceEvents()
+        Try
+            AddHandler Services.ServiceOperationStarted, AddressOf OnServiceOperationStarted
+            AddHandler Services.ServiceOperationCompleted, AddressOf OnServiceOperationCompleted
+        Catch
+        End Try
+    End Sub
+
+    Private Sub DetachServiceEvents()
+        Try
+            RemoveHandler Services.ServiceOperationStarted, AddressOf OnServiceOperationStarted
+            RemoveHandler Services.ServiceOperationCompleted, AddressOf OnServiceOperationCompleted
+        Catch
+        End Try
+    End Sub
+
+    Private Sub OnServiceOperationStarted(entry As ServiceControlEntry, operation As String)
+        If entry Is Nothing Then Return
+        Dim displayName = If(String.IsNullOrWhiteSpace(entry.DisplayName), entry.Service, entry.DisplayName)
+        ShowServiceProgress($"{operation}: {displayName}…")
+    End Sub
+
+    Private Sub OnServiceOperationCompleted(entry As ServiceControlEntry, operation As String, success As Boolean)
+        If entry Is Nothing Then
+            HideServiceProgress()
+            Return
+        End If
+
+        ' Refresh status for that entry
+        Try
+            Services.GetServiceStatus(entry)
+        Catch
+        End Try
+
+        If success Then
+            SetExecutionStatus($"{operation} completed")
+        Else
+            SetExecutionStatus($"{operation} failed")
+            Try
+                Dim displayName = If(String.IsNullOrWhiteSpace(entry.DisplayName), entry.Service, entry.DisplayName)
+                MessageBox.Show($"{operation} failed for {displayName}", "Service Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Catch
+            End Try
+        End If
+
+        HideServiceProgress()
     End Sub
 
     Private Sub tbCoreService_GotFocus(sender As Object, e As EventArgs) Handles tbCoreService.GotFocus, tbCoreService.GotFocus, tbCloudService.GotFocus, tbAdvCreditService.GotFocus, tbAdvSignageService.GotFocus, tbAdvLicService.GotFocus, tbAdvNotifyService.GotFocus, tbAdvTurnstileEngine.GotFocus, tbAdvantageUpgradeService.GotFocus, tbRelayService.GotFocus
@@ -556,7 +742,7 @@ Public Class FormMain
 
         If tcSTA.SelectedTab.Equals(tpAdvData) Then
             If PCInfo.ValidDatabase Then
-                DatabaseCoordinator.RefreshAdvantageData(Me, "Refresh Button")
+                DatabaseCoordinator.RefreshAdvantageData(Me)
             End If
         ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
             CodeHelper.Refresher()
@@ -695,6 +881,11 @@ Public Class FormMain
 
     Private Sub FormMain_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         Try
+            DetachServiceEvents()
+        Catch
+        End Try
+
+        Try
             OptionsManager.SaveLauncherConfig(_launcherConfig)
         Catch ex As Exception
         End Try
@@ -710,38 +901,39 @@ Public Class FormMain
         Catch
         End Try
     End Sub
-
     Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+
         Cursor.Current = Cursors.WaitCursor
         btnReconnect.Enabled = False
 
         Try
-            ' Test database connection using your existing helper
-            If DatabaseCoordinator.TestConnection(ConfigValues.ConnectionString) Then
-                DatabaseCoordinator.GoOnline(Me)
-                MessageBox.Show("Reconnected to the database.",
-                            "Database",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information)
-            Else
-                ' Still offline
-                MessageBox.Show("Still cannot connect to the database.",
-                            "Database",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning)
+            DatabaseCoordinator.EvaluateDatabaseAvailability(
+            form:=Me,
+            connectionString:=ConfigValues.ConnectionString,
+            configuredContainerName:=_options?.SqlContainerName
+        )
+
+            If Not Variables.OfflineMode Then
+                MessageBox.Show(
+                "Reconnected to the database.",
+                "Database",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
             End If
 
-
         Catch ex As Exception
-            MessageBox.Show($"Reconnect failed: {ex.Message}",
-                        "Database",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error)
+            MessageBox.Show(
+            $"Reconnect failed: {ex.Message}",
+            "Database",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
         Finally
             btnReconnect.Enabled = True
             Cursor.Current = Cursors.Default
         End Try
+
     End Sub
+
 
     Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
 
@@ -761,8 +953,6 @@ Public Class FormMain
         Else
             Diagnostics.Process.Start(Executable)
         End If
-
-
 
 
 
@@ -874,10 +1064,13 @@ Public Class FormMain
     End Sub
 
     Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
+        If _options Is Nothing Then
+            Return
+        End If
 
-        If _options Is Nothing Then Return
         _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
         OptionsManager.Save(_options)
+
         _flavorManager.UpdateFlavorCommands(
             tbApplyFlavorDefault.Text,
             tbDatabaseStartDefault.Text
@@ -886,11 +1079,13 @@ Public Class FormMain
 
 
     Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
+        If _options Is Nothing Then
+            Return
+        End If
 
-        If _options Is Nothing Then Return
         _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
-
         OptionsManager.Save(_options)
+
         _flavorManager.UpdateFlavorCommands(
             tbApplyFlavorDefault.Text,
             tbDatabaseStartDefault.Text
@@ -920,10 +1115,7 @@ Public Class FormMain
         options:=_options,
         liveOutputManager:=_liveOutputManager,
         setStatus:=Sub(text)
-                       CodeHelper.SetExecutionStatus(
-                           owner:=Me,
-                           statusLabel:=tslblExecutionStatus,
-                           text:=text)
+                       SetExecutionStatus(text)
                    End Sub,
         triggerButton:=btnRunApplyFlavorLive,
         scriptRelativePath:="tests\apply-flavors.ps1",
@@ -948,10 +1140,7 @@ Public Class FormMain
             options:=_options,
             liveOutputManager:=_liveOutputManager,
         setStatus:=Sub(text)
-                       CodeHelper.SetExecutionStatus(
-                           owner:=Me,
-                           statusLabel:=tslblExecutionStatus,
-                           text:=text)
+                       SetExecutionStatus(text)
                    End Sub,
             triggerButton:=btnRunDatabaseStartLive,
             scriptRelativePath:="tests\Start-Database.ps1",
@@ -1095,5 +1284,168 @@ Public Class FormMain
         OptionsManager.SaveLauncherConfig(_launcherConfig)
     End Sub
 
+    Private Sub btnRepoDiscardChanges_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles btnRepoDiscardChanges.Click
+
+        If _options Is Nothing OrElse
+           String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+            MessageBox.Show(
+                "Repository path is not configured.",
+                "Discard Changes",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim repoPath As String = _options.RepoFolderPath
+
+        ' Optional preview
+        Dim preview As String = RepoTools.PreviewDiscard(repoPath)
+
+        Dim message As String =
+            "This will permanently discard ALL local changes in the repository:" &
+            Environment.NewLine & Environment.NewLine &
+            repoPath & Environment.NewLine & Environment.NewLine &
+            If(String.IsNullOrWhiteSpace(preview),
+               "No untracked files will be removed.",
+               "The following untracked files will be deleted:" &
+               Environment.NewLine & preview) &
+            Environment.NewLine & Environment.NewLine &
+            "This action CANNOT be undone." &
+            Environment.NewLine & Environment.NewLine &
+            "Continue?"
+
+        If MessageBox.Show(
+            message,
+            "Discard All Changes",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning,
+            MessageBoxDefaultButton.Button2) <> DialogResult.Yes Then
+            Return
+        End If
+
+        Try
+            Cursor.Current = Cursors.WaitCursor
+            btnRepoDiscardChanges.Enabled = False
+
+            RepoTools.DiscardAllChanges(repoPath)
+
+            MessageBox.Show(
+                "All local changes were discarded successfully.",
+                "Discard Complete",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+
+        Catch ex As Exception
+            MessageBox.Show(
+                ex.Message,
+                "Git Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        Finally
+            btnRepoDiscardChanges.Enabled = True
+            Cursor.Current = Cursors.Default
+        End Try
+
+    End Sub
+
+    Private Async Sub btnSetupInstall_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnSetupInstall.Click
+
+        btnSetupInstall.Enabled = False
+
+        _executionStatusLocked = True
+        SetExecutionStatus("Starting setup installation...", force:=True)
+
+        Dim showTextProgress As Boolean = True
+
+        Dim percentProgress As New Progress(Of Integer)(
+        Sub(p)
+        End Sub)
+
+        Dim textProgress As New Progress(Of String)(
+        Sub(t)
+            If showTextProgress Then
+                SetExecutionStatus(t)
+            End If
+        End Sub)
+
+        Try
+            ' Resolve setup.zip (with optional browse)
+            Dim zipPath As String =
+            Await InstallerTools.ResolveSetupZipAsync(
+                zipPath:=AppData.UpgradePath,
+                promptForZip:=True)
+
+            ' Extract ZIP -> AppData.UpgradePath\Version <InstallerVersion>
+            SetExecutionStatus("Preparing extraction...", force:=True)
+
+            Dim extractDir As String =
+            Await InstallerTools.ExtractZipToVersionedDirectoryAsync(
+                zipPath:=zipPath,
+                upgradeBasePath:=AppData.UpgradePath,
+                installerName:="AdvantageSetup-x64.exe",
+                progressPercent:=percentProgress,
+                progressText:=textProgress)
+
+            ' 🔒 stop queued extraction text updates
+            showTextProgress = False
+
+            ' Locate installer in the versioned directory
+            Dim installerPath As String =
+            InstallerTools.FindInstaller(
+                baseDir:=extractDir,
+                installerName:="AdvantageSetup-x64.exe",
+                recursive:=True)
+
+            ' Stable installer-running text
+            SetExecutionStatus("Running Installer", force:=True)
+
+            ' Allow UI repaint before UAC / installer steals focus
+            Await Task.Yield()
+
+            ' Run installer asynchronously
+            Await InstallerTools.RunInstallerAsync(
+            installerPath,
+            "-skipcoreservicescan -skipcloudsyncservicescan PERFORMDBUPGRADE=1",
+            elevate:=True,
+            progressText:=textProgress)
+
+            SetExecutionStatus("Installation complete.", force:=True)
+            Await Task.Delay(1500)
+
+        Catch ex As FileNotFoundException
+            ' User canceled ZIP selection → silent exit
+
+        Catch ex As Exception
+            SetExecutionStatus("Installation failed.", force:=True)
+            MessageBox.Show(
+            ex.Message,
+            "Setup Installation Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        Finally
+            showTextProgress = False
+            _executionStatusLocked = False
+
+            SetExecutionStatus("", force:=True)
+            btnSetupInstall.Enabled = True
+        End Try
+
+    End Sub
+    Private Sub tslblExecutionStatus_TextChanged(
+        sender As Object,
+        e As EventArgs
+    ) Handles tslblExecutionStatus.TextChanged
+
+        ' If there is text, show it; otherwise hide it
+        tslblExecutionStatus.Visible =
+            Not String.IsNullOrWhiteSpace(tslblExecutionStatus.Text)
+    End Sub
 
 End Class
