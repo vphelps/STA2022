@@ -139,6 +139,7 @@
     <Compile Include="Core\BatchLauncher.vb" />
     <Compile Include="Core\CodeHelper.vb" />
     <Compile Include="Core\CommonVariables.vb" />
+    <Compile Include="Core\UIHelpers.vb" />
     <Compile Include="Data\RepoTools.vb" />
     <Compile Include="Tools\Connections.vb" />
     <Compile Include="Core\Constants.vb" />

@@ -207,10 +207,8 @@ Partial Class FormMain
         Me.btnTaskmgr = New System.Windows.Forms.Button()
         Me.btnCalc = New System.Windows.Forms.Button()
         Me.btnTest1 = New System.Windows.Forms.Button()
-        Me.cmbboxAppLaunch = New System.Windows.Forms.ComboBox()
         Me.tbTest1 = New System.Windows.Forms.TextBox()
         Me.tbTest3 = New System.Windows.Forms.TextBox()
-        Me.btnComboAppLaunch = New System.Windows.Forms.Button()
         Me.tbTest2 = New System.Windows.Forms.TextBox()
         Me.gbAdvApps = New System.Windows.Forms.GroupBox()
         Me.btnAdvKiosk = New System.Windows.Forms.Button()
@@ -224,6 +222,8 @@ Partial Class FormMain
         Me.btnPos = New System.Windows.Forms.Button()
         Me.btnAdvReportEditor = New System.Windows.Forms.Button()
         Me.btnAdvGroups = New System.Windows.Forms.Button()
+        Me.cmbboxAppLaunch = New System.Windows.Forms.ComboBox()
+        Me.btnComboAppLaunch = New System.Windows.Forms.Button()
         Me.btnReconnect = New System.Windows.Forms.Button()
         Me.flpQuickLaunch = New System.Windows.Forms.FlowLayoutPanel()
         Me.btnAdminRestart = New System.Windows.Forms.Button()
@@ -249,6 +249,7 @@ Partial Class FormMain
         Me.OpenFileDialog = New System.Windows.Forms.OpenFileDialog()
         Me.ToolTipForQuickButtons = New System.Windows.Forms.ToolTip(Me.components)
         Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
+        Me.btnRepoMain = New System.Windows.Forms.Button()
         Me.btnSetupInstall = New System.Windows.Forms.Button()
         Me.btnRepoDiscardChanges = New System.Windows.Forms.Button()
         Me.btnLaunchLatestInstaller = New System.Windows.Forms.Button()
@@ -313,7 +314,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(249, 121)
+        Me.btnExit.Location = New System.Drawing.Point(249, 122)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(80, 50)
         Me.btnExit.TabIndex = 0
@@ -345,7 +346,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 808)
-        Me.SplitContainer1.SplitterDistance = 626
+        Me.SplitContainer1.SplitterDistance = 627
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -362,7 +363,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 622)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 623)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -375,7 +376,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 596)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 597)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1215,7 +1216,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 596)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 597)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1370,7 +1371,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 596)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 597)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1385,7 +1386,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 565)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 566)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1477,7 +1478,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 596)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 597)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1564,7 +1565,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 466)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 467)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1719,7 +1720,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 596)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 597)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1790,7 +1791,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 596)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 597)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2072,7 +2073,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.clbSqlFiles)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1011, 596)
+        Me.tpQATools.Size = New System.Drawing.Size(1011, 597)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -2183,7 +2184,7 @@ Partial Class FormMain
         Me.clbSqlFiles.CheckOnClick = True
         Me.clbSqlFiles.FormattingEnabled = True
         Me.clbSqlFiles.HorizontalScrollbar = True
-        Me.clbSqlFiles.Location = New System.Drawing.Point(53, 17)
+        Me.clbSqlFiles.Location = New System.Drawing.Point(79, 3)
         Me.clbSqlFiles.Name = "clbSqlFiles"
         Me.clbSqlFiles.Size = New System.Drawing.Size(361, 469)
         Me.clbSqlFiles.TabIndex = 0
@@ -2275,16 +2276,6 @@ Partial Class FormMain
         Me.btnTest1.Text = "Test Button"
         Me.btnTest1.UseVisualStyleBackColor = True
         '
-        'cmbboxAppLaunch
-        '
-        Me.cmbboxAppLaunch.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cmbboxAppLaunch.FormattingEnabled = True
-        Me.cmbboxAppLaunch.Location = New System.Drawing.Point(4, 569)
-        Me.cmbboxAppLaunch.Name = "cmbboxAppLaunch"
-        Me.cmbboxAppLaunch.Size = New System.Drawing.Size(239, 21)
-        Me.cmbboxAppLaunch.Sorted = True
-        Me.cmbboxAppLaunch.TabIndex = 18
-        '
         'tbTest1
         '
         Me.tbTest1.Location = New System.Drawing.Point(444, 52)
@@ -2300,15 +2291,6 @@ Partial Class FormMain
         Me.tbTest3.Size = New System.Drawing.Size(233, 20)
         Me.tbTest3.TabIndex = 21
         Me.tbTest3.Text = "tbTest3"
-        '
-        'btnComboAppLaunch
-        '
-        Me.btnComboAppLaunch.Location = New System.Drawing.Point(249, 567)
-        Me.btnComboAppLaunch.Name = "btnComboAppLaunch"
-        Me.btnComboAppLaunch.Size = New System.Drawing.Size(75, 23)
-        Me.btnComboAppLaunch.TabIndex = 19
-        Me.btnComboAppLaunch.Text = "Launch"
-        Me.btnComboAppLaunch.UseVisualStyleBackColor = True
         '
         'tbTest2
         '
@@ -2448,6 +2430,25 @@ Partial Class FormMain
         Me.btnAdvGroups.TabIndex = 16
         Me.btnAdvGroups.Text = "Groups"
         Me.btnAdvGroups.UseVisualStyleBackColor = True
+        '
+        'cmbboxAppLaunch
+        '
+        Me.cmbboxAppLaunch.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cmbboxAppLaunch.FormattingEnabled = True
+        Me.cmbboxAppLaunch.Location = New System.Drawing.Point(4, 569)
+        Me.cmbboxAppLaunch.Name = "cmbboxAppLaunch"
+        Me.cmbboxAppLaunch.Size = New System.Drawing.Size(239, 21)
+        Me.cmbboxAppLaunch.Sorted = True
+        Me.cmbboxAppLaunch.TabIndex = 18
+        '
+        'btnComboAppLaunch
+        '
+        Me.btnComboAppLaunch.Location = New System.Drawing.Point(249, 567)
+        Me.btnComboAppLaunch.Name = "btnComboAppLaunch"
+        Me.btnComboAppLaunch.Size = New System.Drawing.Size(75, 23)
+        Me.btnComboAppLaunch.TabIndex = 19
+        Me.btnComboAppLaunch.Text = "Launch"
+        Me.btnComboAppLaunch.UseVisualStyleBackColor = True
         '
         'btnReconnect
         '
@@ -2638,6 +2639,7 @@ Partial Class FormMain
         '
         'SplitContainer2.Panel2
         '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.btnRepoMain)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnSetupInstall)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnRepoDiscardChanges)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnLaunchLatestInstaller)
@@ -2650,6 +2652,15 @@ Partial Class FormMain
         Me.SplitContainer2.SplitterDistance = 597
         Me.SplitContainer2.SplitterWidth = 3
         Me.SplitContainer2.TabIndex = 22
+        '
+        'btnRepoMain
+        '
+        Me.btnRepoMain.Location = New System.Drawing.Point(194, 59)
+        Me.btnRepoMain.Name = "btnRepoMain"
+        Me.btnRepoMain.Size = New System.Drawing.Size(80, 50)
+        Me.btnRepoMain.TabIndex = 26
+        Me.btnRepoMain.Text = "Discard Repo Changes"
+        Me.btnRepoMain.UseVisualStyleBackColor = True
         '
         'btnSetupInstall
         '
@@ -3015,4 +3026,5 @@ Partial Class FormMain
     Friend WithEvents btnTest2 As Button
     Friend WithEvents btnRepoDiscardChanges As Button
     Friend WithEvents btnSetupInstall As Button
+    Friend WithEvents btnRepoMain As Button
 End Class

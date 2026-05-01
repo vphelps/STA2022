@@ -914,19 +914,24 @@ Public Class FormMain
         )
 
             If Not Variables.OfflineMode Then
-                MessageBox.Show(
-                "Reconnected to the database.",
-                "Database",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+                'MessageBox.Show(
+                '"Reconnected to the database.",
+                '"Database",
+                'MessageBoxButtons.OK,
+                'MessageBoxIcon.Information)
+
+                UIHelpers.TimedInfoPrompt(message:="Reconnected to the database.", timeoutSeconds:=30, title:="Database")
+
             End If
 
         Catch ex As Exception
-            MessageBox.Show(
-            $"Reconnect failed: {ex.Message}",
-            "Database",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error)
+            '    MessageBox.Show(
+            '    $"Reconnect failed: {ex.Message}",
+            '    "Database",
+            '    MessageBoxButtons.OK,
+            '    MessageBoxIcon.Error)
+
+            UIHelpers.TimedErrorPrompt(message:=$"Reconnect failed: {ex.Message}", timeoutSeconds:=0, title:="Database")
         Finally
             btnReconnect.Enabled = True
             Cursor.Current = Cursors.Default
@@ -1448,4 +1453,59 @@ Public Class FormMain
             Not String.IsNullOrWhiteSpace(tslblExecutionStatus.Text)
     End Sub
 
+    Private Sub btnRepoMain_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRepoMain.Click
+
+        Try
+            If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
+
+                Dim response As DialogResult =
+                UIHelpers.TimedYesNoPrompt(
+                    message:=
+                        "There are uncommitted changes." & Environment.NewLine &
+                        "Discard them and switch to main?",
+                    title:="Confirm",
+                    timeoutSeconds:=10)
+
+                If response <> DialogResult.Yes Then
+                    ' User clicked No OR dialog timed out
+                    Return
+                End If
+
+                RepoTools.DiscardAllChanges(_options.RepoFolderPath)
+            End If
+
+            RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
+
+            UIHelpers.TimedInfoPrompt(
+    message:="Switched to main branch.",
+    title:="Repository",
+    timeoutSeconds:=10)
+
+        Catch ex As Exception
+            UIHelpers.TimedErrorPrompt(
+                message:="Git Error",
+                title:="Repository")
+
+
+        End Try
+
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+        UIHelpers.TimedInfoPrompt(title:="Testing", message:="This is a timed info prompt with no timeout")
+
+
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        Dim strTemp As String = "This is a timed info prompt with a 10 second timeout" & Environment.NewLine &
+                                "It will auto-close after 10 seconds, or you can click OK to close it immediately."
+        UIHelpers.TimedInfoPrompt(title:="Testing", message:=strTemp, timeoutSeconds:=10)
+
+
+    End Sub
 End Class
