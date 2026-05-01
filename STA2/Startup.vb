@@ -170,7 +170,7 @@ Module Startup
 
         If MainFormInstance Is Nothing Then Exit Sub
 
-        MainFormInstance.flpServices.Enabled = isAdmin
+        MainFormInstance.flpServicesOld.Enabled = isAdmin
         MainFormInstance.tbServicesButtonsHelpMessage.Visible = Not isAdmin
 
     End Sub

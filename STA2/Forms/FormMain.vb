@@ -201,7 +201,7 @@ Public Class FormMain
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpOptions
+        tcSTA.SelectedTab = tpServices
 #End If
     End Sub
 
@@ -1508,4 +1508,6 @@ Public Class FormMain
 
 
     End Sub
+
+
 End Class

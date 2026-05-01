@@ -141,6 +141,13 @@
     <Compile Include="Core\CommonVariables.vb" />
     <Compile Include="Core\UIHelpers.vb" />
     <Compile Include="Data\RepoTools.vb" />
+    <Compile Include="Services\ServiceRowControl.Designer.vb">
+      <DependentUpon>ServiceRowControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ServiceRowControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Services\ServicesController.vb" />
     <Compile Include="Tools\Connections.vb" />
     <Compile Include="Core\Constants.vb" />
     <Compile Include="Data\DatabaseCoordinator.vb" />
@@ -211,6 +218,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ServiceRowControl.resx">
+      <DependentUpon>ServiceRowControl.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SplashScreen1.resx">
       <DependentUpon>SplashScreen1.vb</DependentUpon>
