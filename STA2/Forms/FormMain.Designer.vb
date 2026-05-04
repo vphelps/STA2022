@@ -318,7 +318,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(249, 128)
+        Me.btnExit.Location = New System.Drawing.Point(249, 139)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(80, 50)
         Me.btnExit.TabIndex = 0
@@ -350,8 +350,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest3)
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1023, 808)
-        Me.SplitContainer1.SplitterDistance = 633
+        Me.SplitContainer1.Size = New System.Drawing.Size(1023, 854)
+        Me.SplitContainer1.SplitterDistance = 653
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -369,7 +369,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 629)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 649)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -1797,7 +1797,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 603)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 623)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2079,7 +2079,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.clbSqlFiles)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1011, 603)
+        Me.tpQATools.Size = New System.Drawing.Size(1011, 623)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -2129,7 +2129,7 @@ Partial Class FormMain
         '
         'btnResetFlavorDefaults
         '
-        Me.btnResetFlavorDefaults.Location = New System.Drawing.Point(420, 383)
+        Me.btnResetFlavorDefaults.Location = New System.Drawing.Point(374, 371)
         Me.btnResetFlavorDefaults.Name = "btnResetFlavorDefaults"
         Me.btnResetFlavorDefaults.Size = New System.Drawing.Size(80, 50)
         Me.btnResetFlavorDefaults.TabIndex = 28
@@ -2138,7 +2138,7 @@ Partial Class FormMain
         '
         'btnSaveFlavorDefaults
         '
-        Me.btnSaveFlavorDefaults.Location = New System.Drawing.Point(420, 439)
+        Me.btnSaveFlavorDefaults.Location = New System.Drawing.Point(374, 422)
         Me.btnSaveFlavorDefaults.Name = "btnSaveFlavorDefaults"
         Me.btnSaveFlavorDefaults.Size = New System.Drawing.Size(80, 50)
         Me.btnSaveFlavorDefaults.TabIndex = 27
@@ -2190,7 +2190,7 @@ Partial Class FormMain
         Me.clbSqlFiles.CheckOnClick = True
         Me.clbSqlFiles.FormattingEnabled = True
         Me.clbSqlFiles.HorizontalScrollbar = True
-        Me.clbSqlFiles.Location = New System.Drawing.Point(79, 3)
+        Me.clbSqlFiles.Location = New System.Drawing.Point(7, 3)
         Me.clbSqlFiles.Name = "clbSqlFiles"
         Me.clbSqlFiles.Size = New System.Drawing.Size(361, 469)
         Me.clbSqlFiles.TabIndex = 0
@@ -2532,7 +2532,7 @@ Partial Class FormMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion, Me.tslblExecutionStatus, Me.tslblDbState})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 784)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 830)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1371, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2674,8 +2674,8 @@ Partial Class FormMain
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnAdminRestart)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnBatchLaunch)
         Me.SplitContainer2.Panel2.Controls.Add(Me.btnRefreshGeneralTab)
-        Me.SplitContainer2.Size = New System.Drawing.Size(336, 781)
-        Me.SplitContainer2.SplitterDistance = 597
+        Me.SplitContainer2.Size = New System.Drawing.Size(336, 827)
+        Me.SplitContainer2.SplitterDistance = 632
         Me.SplitContainer2.SplitterWidth = 3
         Me.SplitContainer2.TabIndex = 22
         '
@@ -2723,7 +2723,7 @@ Partial Class FormMain
         Me.Panel2.Controls.Add(Me.SplitContainer2)
         Me.Panel2.Location = New System.Drawing.Point(1023, 0)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(336, 781)
+        Me.Panel2.Size = New System.Drawing.Size(336, 827)
         Me.Panel2.TabIndex = 13
         '
         'chkShowHiddenServices
@@ -2741,7 +2741,7 @@ Partial Class FormMain
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1371, 808)
+        Me.ClientSize = New System.Drawing.Size(1371, 854)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)

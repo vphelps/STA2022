@@ -114,7 +114,23 @@ Public Class FormMain
         End If
 
     End Sub
+    Private Sub InitializeFlavors()
 
+        If _options Is Nothing Then Return
+
+        Dim path = _options.FlavorFolderPath
+
+        If String.IsNullOrWhiteSpace(path) OrElse
+       Not IO.Directory.Exists(path) Then
+
+            clbSqlFiles.Items.Clear()
+            Return
+        End If
+
+        _flavorManager.LoadFilesWithDefaults(path)
+        _flavorManager.ApplySavedDefaults(_options.DefaultFlavorNames)
+
+    End Sub
 
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
@@ -143,14 +159,15 @@ Public Class FormMain
         launchCallback:=AddressOf ProgramLauncher.Launch
     )
 
+        ' --------------------------------------------------
+        ' Flavor selection manager (FIXED AND CORRECT)
+        ' --------------------------------------------------
         _flavorManager = New FlavorSelectionManager(
         options:=_options,
         sqlFilesList:=clbSqlFiles,
         applyCommandTextBox:=tbFlavorApplyCommand,
         startCommandTextBox:=tbDatabaseStartCommand
     )
-
-        _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
 
         ' Render Quick Launch buttons
         _quickLaunchManager.Refresh()
@@ -169,12 +186,10 @@ Public Class FormMain
         End If
 
         CodeHelper.GetPcInfo()
-
         Connections.IniFileHandler(False)
         CodeHelper.FirstLoad()
         CodeHelper.Refresher()
 
-        CodeHelper.Refresher()
         rbDbTableSize.Checked = True
         rbMessageLog.Checked = True
         btnDbInfoRefresh.PerformClick()
@@ -189,11 +204,9 @@ Public Class FormMain
 
         ' Excel detection
         Try
-            Dim regKey =
-            My.Computer.Registry.ClassesRoot.
-            OpenSubKey("Excel.Application", False).
-            OpenSubKey("CurVer", False)
-
+            My.Computer.Registry.ClassesRoot _
+            .OpenSubKey("Excel.Application", False) _
+            .OpenSubKey("CurVer", False)
             PCInfo.ExcelInstalled = True
         Catch
             PCInfo.ExcelInstalled = False
@@ -220,14 +233,8 @@ Public Class FormMain
 
         tbWindowTitle.Text = _options.WindowTitle
 
-        If _options IsNot Nothing AndAlso
-       Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
-
-            tbRepoFolder.Text = _options.RepoFolderPath
-            _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
-        End If
-
         If _options IsNot Nothing Then
+            tbRepoFolder.Text = _options.RepoFolderPath
             tbSetupSwitches.Text = _options.SetupSwitches
             tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
             tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
@@ -243,14 +250,14 @@ Public Class FormMain
 
         SetExecutionStatus(String.Empty)
 
-        Dim discoveredContainer As String =
+        Dim discoveredContainer =
         DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
 
-        If String.IsNullOrWhiteSpace(discoveredContainer) Then
-            tbTest2.Text = "(No SQL container found)"
-        Else
-            tbTest2.Text = discoveredContainer
-        End If
+        tbTest2.Text = If(
+        String.IsNullOrWhiteSpace(discoveredContainer),
+        "(No SQL container found)",
+        discoveredContainer
+    )
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
 
@@ -258,7 +265,9 @@ Public Class FormMain
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 
+        ' -------------------------------------------------
         ' Select Services tab by default
+        ' -------------------------------------------------
         tcSTA.SelectedTab = tpServices
 
         ' -------------------------------------------------
@@ -276,13 +285,12 @@ Public Class FormMain
         ' Wire ServiceManager → UI events
         ' -------------------------------------------------
 
-        ' Busy state changes (disable actions / show Working…)
+        ' Busy state changes
         AddHandler _serviceManager.ServiceBusyChanged,
         Sub(serviceName, isBusy)
             Me.BeginInvoke(Sub()
-                               Dim row =
-                    _serviceRows.FirstOrDefault(
-                        Function(r) r.ServiceName = serviceName)
+                               Dim row = _serviceRows.
+                    FirstOrDefault(Function(r) r.ServiceName = serviceName)
 
                                If row IsNot Nothing Then
                                    row.IsBusy = isBusy
@@ -290,31 +298,29 @@ Public Class FormMain
                            End Sub)
         End Sub
 
-        ' Status changes (from polling or optimistic execution)
+        ' Status changes (authoritative "installed" signal)
         AddHandler _serviceManager.ServiceStatusChanged,
-            Sub(serviceName, status)
-                Me.BeginInvoke(Sub()
+        Sub(serviceName, status)
+            Me.BeginInvoke(Sub()
 
-                                   Dim row = _serviceRows.
-                               FirstOrDefault(Function(r) r.ServiceName = serviceName)
+                               Dim row = _serviceRows.
+                    FirstOrDefault(Function(r) r.ServiceName = serviceName)
 
-                                   If row Is Nothing Then Return
+                               If row Is Nothing Then Return
 
-                                   ' ✅ STEP 5: Service is installed and reporting status
-                                   row.Installed = True
-                                   row.IsHidden = False
-                                   row.Visible = True
+                               ' Service exists → must be installed & visible
+                               row.Installed = True
+                               row.IsHidden = False
+                               row.Visible = True
 
-                                   ' ✅ Update status (only if not busy)
-                                   If Not row.IsBusy Then
-                                       row.Status = status
-                                   End If
+                               If Not row.IsBusy Then
+                                   row.Status = status
+                               End If
 
-                               End Sub)
-            End Sub
+                           End Sub)
+        End Sub
 
-
-        ' Operation failures (surface real errors)
+        ' Operation failures
         AddHandler _serviceManager.ServiceOperationFailed,
         Sub(serviceName, ex)
             Me.BeginInvoke(Sub()
@@ -327,29 +333,54 @@ Public Class FormMain
                     MessageBoxIcon.Error)
                            End Sub)
         End Sub
+
+        ' Service not installed
         AddHandler _serviceManager.ServiceNotInstalled,
-            Sub(serviceName)
-                Me.BeginInvoke(Sub()
+        Sub(serviceName)
+            Me.BeginInvoke(Sub()
 
-                                   Dim row = _serviceRows.
-                               FirstOrDefault(Function(r) r.ServiceName = serviceName)
+                               Dim row = _serviceRows.
+                    FirstOrDefault(Function(r) r.ServiceName = serviceName)
 
-                                   If row Is Nothing Then Return
+                               If row Is Nothing Then Return
 
-                                   row.Installed = False
-                                   row.IsHidden = True
+                               row.Installed = False
+                               row.IsHidden = True
 
-                                   ' Apply visibility based on toggle state
-                                   row.Visible = chkShowHiddenServices.Checked
+                               ' Respect persisted toggle
+                               row.Visible = chkShowHiddenServices.Checked
 
-                               End Sub)
-            End Sub
+                           End Sub)
+        End Sub
+
         ' -------------------------------------------------
-        ' Start background service polling (5 seconds)
+        ' Start background service polling
         ' -------------------------------------------------
         _serviceManager.StartPolling(
-        serviceNames:=_serviceNames,
-        intervalMilliseconds:=5000)
+            serviceNames:=_serviceNames,
+            intervalMilliseconds:=5000
+        )
+
+        ' -------------------------------------------------
+        ' ✅ OPTION A: Derive FlavorFolderPath from RepoFolderPath
+        ' -------------------------------------------------
+        If _options IsNot Nothing AndAlso
+           String.IsNullOrWhiteSpace(_options.FlavorFolderPath) AndAlso
+           Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+
+            Dim inferredFlavorPath As String =
+                IO.Path.Combine(_options.RepoFolderPath, "tests", "flavors")
+
+            If IO.Directory.Exists(inferredFlavorPath) Then
+                _options.FlavorFolderPath = inferredFlavorPath
+                OptionsManager.Save(_options)
+            End If
+        End If
+
+        ' -------------------------------------------------
+        ' ✅ Initialize flavors now that path is valid
+        ' -------------------------------------------------
+        InitializeFlavors()
     End Sub
 
     Private Sub tbLocName_GotFocus(sender As Object, e As EventArgs) Handles tbLocName.GotFocus, tbLicSvr.GotFocus, tbCoreSvr.GotFocus, tbDbVer.GotFocus, tbWebEnabled.GotFocus, tbShiftDate.GotFocus

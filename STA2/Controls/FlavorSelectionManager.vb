@@ -175,5 +175,36 @@ Public Class FlavorSelectionManager
             Return FileName
         End Function
     End Class
+    Public Sub ApplySavedDefaults(defaultFlavors As List(Of String))
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+            Return
+        End If
+
+        Dim defaultSet As New HashSet(Of String)(
+            defaultFlavors,
+            StringComparer.OrdinalIgnoreCase)
+
+        _clbSqlFiles.BeginUpdate()
+
+        For i As Integer = 0 To _clbSqlFiles.Items.Count - 1
+
+            Dim item = TryCast(_clbSqlFiles.Items(i), SqlFileItem)
+            If item Is Nothing Then Continue For
+
+            Dim flavorName As String =
+                Path.GetFileNameWithoutExtension(item.FilePath)
+
+            _clbSqlFiles.SetItemChecked(
+                i,
+                defaultSet.Contains(flavorName)
+            )
+
+        Next
+
+        _clbSqlFiles.EndUpdate()
+
+    End Sub
+
 
 End Class
