@@ -256,6 +256,7 @@ Partial Class FormMain
         Me.btnRepoDiscardChanges = New System.Windows.Forms.Button()
         Me.btnLaunchLatestInstaller = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.chkShowHiddenServices = New System.Windows.Forms.CheckBox()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -341,6 +342,7 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.chkShowHiddenServices)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnTest1)
@@ -2724,6 +2726,16 @@ Partial Class FormMain
         Me.Panel2.Size = New System.Drawing.Size(336, 781)
         Me.Panel2.TabIndex = 13
         '
+        'chkShowHiddenServices
+        '
+        Me.chkShowHiddenServices.AutoSize = True
+        Me.chkShowHiddenServices.Location = New System.Drawing.Point(503, 7)
+        Me.chkShowHiddenServices.Name = "chkShowHiddenServices"
+        Me.chkShowHiddenServices.Size = New System.Drawing.Size(130, 17)
+        Me.chkShowHiddenServices.TabIndex = 18
+        Me.chkShowHiddenServices.Text = "Show hidden services"
+        Me.chkShowHiddenServices.UseVisualStyleBackColor = True
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -3054,4 +3066,5 @@ Partial Class FormMain
     Friend WithEvents btnRepoMain As Button
     Friend WithEvents tpServices As TabPage
     Friend WithEvents flpServices As FlowLayoutPanel
+    Friend WithEvents chkShowHiddenServices As CheckBox
 End Class

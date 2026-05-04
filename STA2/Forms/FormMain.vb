@@ -155,6 +155,9 @@ Public Class FormMain
         ' Render Quick Launch buttons
         _quickLaunchManager.Refresh()
 
+        ' Restore persisted "Show hidden services" option
+        chkShowHiddenServices.Checked = _options.ShowHiddenServices
+
         ' Attach Quick Launch context menu
         _quickLaunchManager.EnsureContextMenu(
         lstPrograms:=lstPrograms,
@@ -289,20 +292,27 @@ Public Class FormMain
 
         ' Status changes (from polling or optimistic execution)
         AddHandler _serviceManager.ServiceStatusChanged,
-        Sub(serviceName, status)
-            Me.BeginInvoke(Sub()
-                               Dim row =
-                    _serviceRows.FirstOrDefault(
-                        Function(r) r.ServiceName = serviceName)
+            Sub(serviceName, status)
+                Me.BeginInvoke(Sub()
 
-                               If row IsNot Nothing AndAlso
-                   row.Installed AndAlso
-                   Not row.IsBusy Then
+                                   Dim row = _serviceRows.
+                               FirstOrDefault(Function(r) r.ServiceName = serviceName)
 
-                                   row.Status = status
-                               End If
-                           End Sub)
-        End Sub
+                                   If row Is Nothing Then Return
+
+                                   ' ✅ STEP 5: Service is installed and reporting status
+                                   row.Installed = True
+                                   row.IsHidden = False
+                                   row.Visible = True
+
+                                   ' ✅ Update status (only if not busy)
+                                   If Not row.IsBusy Then
+                                       row.Status = status
+                                   End If
+
+                               End Sub)
+            End Sub
+
 
         ' Operation failures (surface real errors)
         AddHandler _serviceManager.ServiceOperationFailed,
@@ -318,18 +328,22 @@ Public Class FormMain
                            End Sub)
         End Sub
         AddHandler _serviceManager.ServiceNotInstalled,
-    Sub(serviceName)
-        Me.BeginInvoke(Sub()
-                           Dim row = _serviceRows.
-                                     FirstOrDefault(Function(r) r.ServiceName = serviceName)
+            Sub(serviceName)
+                Me.BeginInvoke(Sub()
 
-                           If row IsNot Nothing Then
-                               row.Installed = False
-                               row.IsBusy = False
-                           End If
-                       End Sub)
-    End Sub
+                                   Dim row = _serviceRows.
+                               FirstOrDefault(Function(r) r.ServiceName = serviceName)
 
+                                   If row Is Nothing Then Return
+
+                                   row.Installed = False
+                                   row.IsHidden = True
+
+                                   ' Apply visibility based on toggle state
+                                   row.Visible = chkShowHiddenServices.Checked
+
+                               End Sub)
+            End Sub
         ' -------------------------------------------------
         ' Start background service polling (5 seconds)
         ' -------------------------------------------------
@@ -1545,5 +1559,21 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub chkShowHiddenServices_CheckedChanged(
+        sender As Object,
+        e As EventArgs
+    ) Handles chkShowHiddenServices.CheckedChanged
+
+        ' Persist immediately in memory
+        _options.ShowHiddenServices = chkShowHiddenServices.Checked
+
+        ' Apply visibility to hidden rows
+        For Each row In _serviceRows
+            If row.IsHidden Then
+                row.Visible = chkShowHiddenServices.Checked
+            End If
+        Next
+
+    End Sub
 
 End Class

@@ -1,40 +1,83 @@
-﻿Imports System.IO
-Imports System.Runtime.Serialization
+﻿Imports Newtonsoft.Json
 
-<DataContract>
+<Serializable>
 Public Class AppOptions
 
-    <DataMember>
-    Public Property WindowTitle As String = "Technician's Assistant"
+    ' -------------------------------------------------
+    ' General UI / application behavior
+    ' -------------------------------------------------
 
-    <DataMember>
+    Public Property WindowTitle As String
+
+    ' Persisted toggle: show services that are not installed
+    Public Property ShowHiddenServices As Boolean = False
+
+
+    ' -------------------------------------------------
+    ' Repository / paths
+    ' -------------------------------------------------
+
     Public Property RepoFolderPath As String
+    Public Property FlavorFolderPath As String
 
-    <DataMember>
+
+    ' -------------------------------------------------
+    ' Database / SQL
+    ' -------------------------------------------------
+
+    Public Property SqlContainerName As String
+    Public Property ConnectionString As String
+
+
+    ' -------------------------------------------------
+    ' Installer / setup defaults
+    ' -------------------------------------------------
+
     Public Property SetupSwitches As String
+    Public Property StartDatabaseDefault As String
+    Public Property ApplyFlavorDefault As String
 
-    <DataMember>
-    Public Property QuickLaunchIds As List(Of String)
 
-    <DataMember>
+    ' -------------------------------------------------
+    ' Flavor selection defaults
+    ' -------------------------------------------------
+
     Public Property DefaultFlavorNames As List(Of String)
 
-    <DataMember>
-    Public Property StartDatabaseDefault As String
 
-    <DataMember>
-    Public Property ApplyFlavorDefault As String
-    Public Property SqlContainerName As String
+    ' -------------------------------------------------
+    ' Quick Launch
+    ' -------------------------------------------------
 
-    <IgnoreDataMember>
-    Public ReadOnly Property FlavorFolderPath As String
-        Get
-            If String.IsNullOrWhiteSpace(RepoFolderPath) Then
-                Return Nothing
-            End If
+    ' List length normalized by OptionsManager
+    Public Property QuickLaunchIds As List(Of String)
 
-            Return Path.Combine(RepoFolderPath, "tests", "flavors")
-        End Get
-    End Property
+    ' IDs assigned to toolbar / quick buttons
+    Public Property QuickLaunchButtonIds As List(Of String)
+
+
+    ' -------------------------------------------------
+    ' Constructor
+    ' -------------------------------------------------
+
+    Public Sub New()
+
+        ' Ensure collections are initialized
+        DefaultFlavorNames = New List(Of String)
+        QuickLaunchIds = Nothing          ' Initialized by OptionsManager
+        QuickLaunchButtonIds = New List(Of String)
+
+        ' Sensible string defaults
+        WindowTitle = String.Empty
+        RepoFolderPath = String.Empty
+        FlavorFolderPath = String.Empty
+        SetupSwitches = String.Empty
+        StartDatabaseDefault = String.Empty
+        ApplyFlavorDefault = String.Empty
+
+        ' Feature toggles
+        ShowHiddenServices = False
+
+    End Sub
 
 End Class

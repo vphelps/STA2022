@@ -3,12 +3,13 @@
 Public Class ServiceRowControl
 
     ' -------------------------------------------------
-    ' Public API (set by FormMain / ServiceManager)
+    ' Public state (set by FormMain / ServiceManager)
     ' -------------------------------------------------
 
     Public Property ServiceName As String
     Public Property DisplayName As String
 
+    ' True when the service exists on the machine
     Public Property Installed As Boolean
         Get
             Return _installed
@@ -20,6 +21,10 @@ Public Class ServiceRowControl
     End Property
     Private _installed As Boolean = True
 
+    ' True when service is not installed and may be hidden
+    Public Property IsHidden As Boolean = False
+
+    ' Whether the app is running with admin privileges
     Public Property IsAdmin As Boolean
         Get
             Return _isAdmin
@@ -31,6 +36,7 @@ Public Class ServiceRowControl
     End Property
     Private _isAdmin As Boolean = False
 
+    ' True while a start/stop/restart operation is running
     Public Property IsBusy As Boolean
         Get
             Return _isBusy
@@ -42,6 +48,7 @@ Public Class ServiceRowControl
     End Property
     Private _isBusy As Boolean = False
 
+    ' Current service status
     Public Property Status As ServiceControllerStatus
         Get
             Return _status
@@ -51,10 +58,11 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
-    Private _status As ServiceControllerStatus = ServiceControllerStatus.Stopped
+    Private _status As ServiceControllerStatus =
+        ServiceControllerStatus.Stopped
 
     ' -------------------------------------------------
-    ' Events raised to FormMain
+    ' Events (intent only – handled by FormMain)
     ' -------------------------------------------------
 
     Public Event StartRequested(serviceName As String)
@@ -71,12 +79,16 @@ Public Class ServiceRowControl
     ) Handles MyBase.Load
 
         lblName.Text = DisplayName
+
+        ' Automatically scale icons to fit
+        picStatus.SizeMode = PictureBoxSizeMode.Zoom
+
         UpdateVisualState()
 
     End Sub
 
     ' -------------------------------------------------
-    ' Button handlers (intent only)
+    ' Button click handlers (raise intent only)
     ' -------------------------------------------------
 
     Private Sub btnStart_Click(
@@ -113,7 +125,7 @@ Public Class ServiceRowControl
     End Sub
 
     ' -------------------------------------------------
-    ' Visual state logic (ONLY place icons are set)
+    ' Visual state logic (ONLY place UI is updated)
     ' -------------------------------------------------
 
     Private Sub UpdateVisualState()
@@ -122,28 +134,31 @@ Public Class ServiceRowControl
         If Not Installed Then
             lblStatus.Text = "Not Installed"
             picStatus.Image = ServicesDisplay.GetNotInstalledImage()
+
             btnStart.Enabled = False
             btnStop.Enabled = False
             btnRestart.Enabled = False
             Return
         End If
 
-        ' ---- Busy / in progress ----
+        ' ---- Busy / in-progress ----
         If IsBusy Then
             lblStatus.Text = "Working..."
             picStatus.Image =
                 ServicesDisplay.GetServiceStatusImage(Status)
+
             btnStart.Enabled = False
             btnStop.Enabled = False
             btnRestart.Enabled = False
             Return
         End If
 
-        ' ---- Admin required ----
+        ' ---- Admin privileges required ----
         If Not IsAdmin Then
             lblStatus.Text = "Requires Administrator"
             picStatus.Image =
                 ServicesDisplay.GetServiceStatusImage(Status)
+
             btnStart.Enabled = False
             btnStop.Enabled = False
             btnRestart.Enabled = False
@@ -185,6 +200,7 @@ Public Class ServiceRowControl
                 btnStart.Enabled = False
                 btnStop.Enabled = False
                 btnRestart.Enabled = False
+
         End Select
 
     End Sub
