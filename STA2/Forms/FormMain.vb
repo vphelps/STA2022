@@ -2,7 +2,6 @@
 Imports System.IO
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
-'Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports STA2.AppData
 
 
@@ -12,8 +11,80 @@ Public Class FormMain
     Private _liveOutputManager As LiveOutputManager
     Private _quickLaunchManager As QuickLaunchManager
     Private _flavorManager As FlavorSelectionManager
-    Private _serviceProgress As System.Windows.Forms.ToolStripProgressBar
     Private _executionStatusLocked As Boolean = False
+
+    Private ReadOnly _serviceNames As String() = {
+    "AdvApiServer",
+    "AdvCoreService",
+    "AdvantageCloudSyncService",
+    "AdvCreditService",
+    "AdvLicService",
+    "AdvSignageService",
+    "AdvTurnstileEngine",
+    "AdvNotifyService",
+    "AdvantageUpgradeService",
+    "AdvRelayClient"
+}
+    Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
+    Private _serviceManager As ServiceManager
+    Private Sub BuildServicesUI()
+
+        flpServices.SuspendLayout()
+        flpServices.Controls.Clear()
+        _serviceRows.Clear()
+
+        Dim isAdmin As Boolean = IsRunningAsAdmin()
+
+        For Each svcName In _serviceNames
+
+            ' Initial placeholder state – real status comes from ServiceManager
+            Dim row As New ServiceRowControl() With {
+            .ServiceName = svcName,
+            .DisplayName = svcName,
+            .Installed = True,
+            .Status = ServiceControllerStatus.Stopped,
+            .IsAdmin = isAdmin,
+            .IsBusy = False
+        }
+
+            WireServiceRow(row)
+
+            flpServices.Controls.Add(row)
+            _serviceRows.Add(row)
+
+        Next
+
+        flpServices.ResumeLayout()
+        AdjustServiceRowWidths()
+
+    End Sub
+
+    Private Sub AdjustServiceRowWidths()
+
+        Dim panel = flpServices
+
+        Dim targetWidth As Integer =
+        panel.ClientSize.Width -
+        panel.Padding.Horizontal -
+        SystemInformation.VerticalScrollBarWidth
+
+        For Each row As ServiceRowControl In _serviceRows
+            row.Width = targetWidth
+        Next
+
+    End Sub
+    Private Sub WireServiceRow(row As ServiceRowControl)
+
+        AddHandler row.StartRequested,
+        Sub(svc) OnStartServiceRequested(svc)
+
+        AddHandler row.StopRequested,
+        Sub(svc) OnStopServiceRequested(svc)
+
+        AddHandler row.RestartRequested,
+        Sub(svc) OnRestartServiceRequested(svc)
+
+    End Sub
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -31,10 +102,6 @@ Public Class FormMain
             Me.Text = _options.WindowTitle
         End If
     End Sub
-
-    Public Shared ServiceControlList As New List(Of ServiceControlEntry)
-    Public Shared LastServiceEntry As ServiceControlEntry
-
     Public Enum AppInstallState
         NotInstalled = 0
         InstalledX86 = 1
@@ -55,6 +122,13 @@ Public Class FormMain
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
+        ' --------------------------------------------------
+        ' IMPORTANT:
+        ' DO NOT build Services UI here.
+        ' DO NOT reference flpServices here.
+        ' Services UI is built in FormMain_Shown ONLY.
+        ' --------------------------------------------------
+
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
@@ -62,25 +136,26 @@ Public Class FormMain
 
         ' Quick Launch manager
         _quickLaunchManager = New QuickLaunchManager(
-    panel:=flpQuickLaunch,
-    options:=_options,
-    launcherConfig:=_launcherConfig,
-    toolTip:=ToolTipForQuickButtons,
-    launchCallback:=AddressOf ProgramLauncher.Launch
-)
+        panel:=flpQuickLaunch,
+        options:=_options,
+        launcherConfig:=_launcherConfig,
+        toolTip:=ToolTipForQuickButtons,
+        launchCallback:=AddressOf ProgramLauncher.Launch
+    )
+
         _flavorManager = New FlavorSelectionManager(
-    options:=_options,
-    sqlFilesList:=clbSqlFiles,
-    applyCommandTextBox:=tbFlavorApplyCommand,
-    startCommandTextBox:=tbDatabaseStartCommand
-)
+        options:=_options,
+        sqlFilesList:=clbSqlFiles,
+        applyCommandTextBox:=tbFlavorApplyCommand,
+        startCommandTextBox:=tbDatabaseStartCommand
+    )
 
         _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
 
         ' Render Quick Launch buttons
         _quickLaunchManager.Refresh()
 
-        ' ✅ STEP 3: attach Quick Launch context menu (assign / clear slots)
+        ' Attach Quick Launch context menu
         _quickLaunchManager.EnsureContextMenu(
         lstPrograms:=lstPrograms,
         refreshComboCallback:=AddressOf FillComboFromListBox
@@ -92,29 +167,9 @@ Public Class FormMain
 
         CodeHelper.GetPcInfo()
 
-        If (My.Application.CommandLineArgs.Contains("-test")) Then
-            For i As Integer = tcSTA.TabPages.Count - 1 To 0 Step -1
-                Dim page As TabPage = tcSTA.TabPages(i)
-                If Not page.Equals(tpGeneral) Then tcSTA.TabPages.Remove(page)
-            Next
-        End If
-
         Connections.IniFileHandler(False)
         CodeHelper.FirstLoad()
         CodeHelper.Refresher()
-
-        ServiceControlList = Services.ServicesExistCheck()
-
-        ' Attach service operation event handlers
-        AttachServiceEvents()
-
-        If Not IsRunningAsAdmin() Then
-            For Each svc In ServiceControlList
-                If svc.GroupBox IsNot Nothing Then svc.GroupBox.Enabled = False
-                If svc.SSButton IsNot Nothing Then svc.SSButton.Enabled = False
-                If svc.RSButton IsNot Nothing Then svc.RSButton.Enabled = False
-            Next
-        End If
 
         CodeHelper.Refresher()
         rbDbTableSize.Checked = True
@@ -123,30 +178,31 @@ Public Class FormMain
         gpMessageLogFilters.Enabled = rbMessageLog.Checked
         btnDbLogRefresh.PerformClick()
 
-
         DatabaseCoordinator.EvaluateDatabaseAvailability(
-    form:=Me,
-    connectionString:=ConfigValues.ConnectionString,
-    configuredContainerName:=_options?.SqlContainerName
-)
+        form:=Me,
+        connectionString:=ConfigValues.ConnectionString,
+        configuredContainerName:=_options?.SqlContainerName
+    )
 
-
+        ' Excel detection
         Try
-            Dim regKey = My.Computer.Registry.ClassesRoot.OpenSubKey("Excel.Application", False).OpenSubKey("CurVer", False)
+            Dim regKey =
+            My.Computer.Registry.ClassesRoot.
+            OpenSubKey("Excel.Application", False).
+            OpenSubKey("CurVer", False)
+
             PCInfo.ExcelInstalled = True
-        Catch ex As Exception
+        Catch
             PCInfo.ExcelInstalled = False
         End Try
 
-#If DEBUG Then
-#Else
-        tbTest1.Visible = False
-        tbTest2.Visible = False
-        tbTest3.Visible = False
-        tbMLTest1.Visible = False
-        btnTest1.Visible = False
-        btnTest2.Visible = False
-
+#If Not DEBUG Then
+    tbTest1.Visible = False
+    tbTest2.Visible = False
+    tbTest3.Visible = False
+    tbMLTest1.Visible = False
+    btnTest1.Visible = False
+    btnTest2.Visible = False
 #End If
 
         btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
@@ -162,11 +218,12 @@ Public Class FormMain
         tbWindowTitle.Text = _options.WindowTitle
 
         If _options IsNot Nothing AndAlso
-   Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+       Not String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
 
             tbRepoFolder.Text = _options.RepoFolderPath
             _flavorManager.LoadFilesWithDefaults(_options.FlavorFolderPath)
         End If
+
         If _options IsNot Nothing Then
             tbSetupSwitches.Text = _options.SetupSwitches
             tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
@@ -181,28 +238,104 @@ Public Class FormMain
             btnAdminRestart.Text = "Restart as Administrator"
         End If
 
-        SetExecutionStatus("")
-        'tslblExecutionStatus.Visible = False
-        ' TEMP: display discovered SQL container name
+        SetExecutionStatus(String.Empty)
+
         Dim discoveredContainer As String =
-    DatabaseCoordinator.DiscoverSqlContainerName(
-        _options.SqlContainerName)
+        DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
 
         If String.IsNullOrWhiteSpace(discoveredContainer) Then
             tbTest2.Text = "(No SQL container found)"
         Else
             tbTest2.Text = discoveredContainer
         End If
-        DatabaseCoordinator.RefreshAdvantageData(Me)
 
+        DatabaseCoordinator.RefreshAdvantageData(Me)
 
     End Sub
 
-
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-#If DEBUG Then
+
+        ' Select Services tab by default
         tcSTA.SelectedTab = tpServices
-#End If
+
+        ' -------------------------------------------------
+        ' Build the Services UI (rows only, no logic)
+        ' -------------------------------------------------
+        BuildServicesUI()
+        AdjustServiceRowWidths()
+
+        ' -------------------------------------------------
+        ' Initialize ServiceManager (non-UI logic owner)
+        ' -------------------------------------------------
+        _serviceManager = New ServiceManager()
+
+        ' -------------------------------------------------
+        ' Wire ServiceManager → UI events
+        ' -------------------------------------------------
+
+        ' Busy state changes (disable actions / show Working…)
+        AddHandler _serviceManager.ServiceBusyChanged,
+        Sub(serviceName, isBusy)
+            Me.BeginInvoke(Sub()
+                               Dim row =
+                    _serviceRows.FirstOrDefault(
+                        Function(r) r.ServiceName = serviceName)
+
+                               If row IsNot Nothing Then
+                                   row.IsBusy = isBusy
+                               End If
+                           End Sub)
+        End Sub
+
+        ' Status changes (from polling or optimistic execution)
+        AddHandler _serviceManager.ServiceStatusChanged,
+        Sub(serviceName, status)
+            Me.BeginInvoke(Sub()
+                               Dim row =
+                    _serviceRows.FirstOrDefault(
+                        Function(r) r.ServiceName = serviceName)
+
+                               If row IsNot Nothing AndAlso
+                   row.Installed AndAlso
+                   Not row.IsBusy Then
+
+                                   row.Status = status
+                               End If
+                           End Sub)
+        End Sub
+
+        ' Operation failures (surface real errors)
+        AddHandler _serviceManager.ServiceOperationFailed,
+        Sub(serviceName, ex)
+            Me.BeginInvoke(Sub()
+                               MessageBox.Show(
+                    $"Service operation failed for '{serviceName}'." &
+                    Environment.NewLine & Environment.NewLine &
+                    ex.Message,
+                    "Service Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error)
+                           End Sub)
+        End Sub
+        AddHandler _serviceManager.ServiceNotInstalled,
+    Sub(serviceName)
+        Me.BeginInvoke(Sub()
+                           Dim row = _serviceRows.
+                                     FirstOrDefault(Function(r) r.ServiceName = serviceName)
+
+                           If row IsNot Nothing Then
+                               row.Installed = False
+                               row.IsBusy = False
+                           End If
+                       End Sub)
+    End Sub
+
+        ' -------------------------------------------------
+        ' Start background service polling (5 seconds)
+        ' -------------------------------------------------
+        _serviceManager.StartPolling(
+        serviceNames:=_serviceNames,
+        intervalMilliseconds:=5000)
     End Sub
 
     Private Sub tbLocName_GotFocus(sender As Object, e As EventArgs) Handles tbLocName.GotFocus, tbLicSvr.GotFocus, tbCoreSvr.GotFocus, tbDbVer.GotFocus, tbWebEnabled.GotFocus, tbShiftDate.GotFocus
@@ -258,7 +391,7 @@ Public Class FormMain
             tbPcAdvVersion.BackColor = TextboxColors.Red
             tbPcAdvVersion.ForeColor = TextboxColors.White
         End If
-        Services.ServicesExistCheck()
+        'Services.ServicesExistCheck()
 
         If _options IsNot Nothing Then tbSetupSwitches.Text = _options.SetupSwitches
 
@@ -450,183 +583,13 @@ Public Class FormMain
         dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
     End Sub
 
-    ' ---------------------------
-    ' Service control handlers (now call Services async APIs)
-    ' ---------------------------
 
-    Private Async Sub btnCoreServiceSS_Click(sender As Object, e As EventArgs) Handles btnCoreServiceSS.Click, btnCloudServiceSS.Click, btnApiServiceSS.Click, btnAdvCreditServiceSS.Click, btnAdvTurnstileEngineSS.Click, btnAdvSignageServiceSS.Click, btnAdvNotifyServiceSS.Click, btnAdvLicServiceSS.Click, btnAdvantageUpgradeServiceSS.Click, btnRelayServiceSS.Click
-        Dim caller As Button = DirectCast(sender, Button)
-        caller.Enabled = False
-
-        ' Find entry for this SS button
-        Dim temp As Integer = -1
-        For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).SSButton IsNot Nothing AndAlso ServiceControlList.Item(index).SSButton.Equals(caller) Then
-                temp = index
-                Exit For
-            End If
-        Next
-
-        If temp = -1 Then
-            caller.Enabled = True
-            Return
-        End If
-
-        Dim entry = ServiceControlList.Item(temp)
-        LastServiceEntry = entry
-
-        Try
-            Dim currentStatus = String.Empty
-            If entry.TextBox IsNot Nothing Then currentStatus = entry.TextBox.Text
-
-            If String.Equals(currentStatus, "Running", StringComparison.OrdinalIgnoreCase) Then
-                Await Services.StopServiceAsync(entry)
-            Else
-                Await Services.StartServiceAsync(entry)
-            End If
-
-        Finally
-            caller.Enabled = True
-        End Try
-    End Sub
-
-    Private Async Sub btnApiServiceRS_Click(sender As Object, e As EventArgs) Handles btnApiServiceRS.Click, btnCoreServiceRS.Click, btnCloudServiceRS.Click, btnAdvTurnstileEngineRS.Click, btnAdvSignageServiceRS.Click, btnAdvNotifyServiceRS.Click, btnAdvLicServiceRS.Click, btnAdvCreditServiceRS.Click, btnAdvantageUpgradeServiceRS.Click, btnRelayServiceRS.Click
-        Dim caller As Button = DirectCast(sender, Button)
-        caller.Enabled = False
-
-        ' Find entry for this RS button
-        Dim temp As Integer = -1
-        For index = 0 To ServiceControlList.Count - 1
-            If ServiceControlList.Item(index).RSButton IsNot Nothing AndAlso ServiceControlList.Item(index).RSButton.Equals(caller) Then
-                temp = index
-                Exit For
-            End If
-        Next
-
-        If temp = -1 Then
-            caller.Enabled = True
-            Return
-        End If
-
-        Dim entry = ServiceControlList.Item(temp)
-        LastServiceEntry = entry
-        entry.RSButton.Tag = "restart"
-
-        Try
-            Await Services.RestartServiceAsync(entry)
-        Finally
-            caller.Enabled = True
-        End Try
-    End Sub
 
     ' Initialize progress control and insert into StatusStrip1
-    Private Sub InitServiceProgress()
-        If _serviceProgress IsNot Nothing Then Return
-        _serviceProgress = New System.Windows.Forms.ToolStripProgressBar() With {
-            .Name = "tsServiceProgress",
-            .Style = ProgressBarStyle.Marquee,
-            .MarqueeAnimationSpeed = 30,
-            .Visible = False
-        }
-        Dim idx As Integer = StatusStrip1.Items.IndexOf(tslblExecutionStatus)
-        If idx >= 0 Then
-            StatusStrip1.Items.Insert(idx + 1, _serviceProgress)
-        Else
-            StatusStrip1.Items.Add(_serviceProgress)
-        End If
-    End Sub
-
-    ' Show progress and disable service controls (UI thread)
-    Private Sub ShowServiceProgress(text As String)
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub() ShowServiceProgress(text))
-            Return
-        End If
-
-        InitServiceProgress()
-        SetExecutionStatus(text)
-        'tslblExecutionStatus.Visible = True
-        _serviceProgress.Visible = True
-        _serviceProgress.Style = ProgressBarStyle.Marquee
-        _serviceProgress.MarqueeAnimationSpeed = 30
-
-        Cursor.Current = Cursors.WaitCursor
-
-        ' Disable all service buttons to avoid concurrent operations
-        For Each se In ServiceControlList
-            If se.SSButton IsNot Nothing Then se.SSButton.Enabled = False
-            If se.RSButton IsNot Nothing Then se.RSButton.Enabled = False
-        Next
-    End Sub
-
-    ' Hide progress and refresh service UI (UI thread)
-    Private Sub HideServiceProgress()
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub() HideServiceProgress())
-            Return
-        End If
-
-        SetExecutionStatus(String.Empty)
-        'tslblExecutionStatus.Visible = False
-        If _serviceProgress IsNot Nothing Then
-            _serviceProgress.Visible = False
-            _serviceProgress.MarqueeAnimationSpeed = 0
-        End If
-
-        Cursor.Current = Cursors.Default
-
-        ' Re-evaluate service statuses and restore button states
-        ServiceControlList = Services.ServicesExistCheck()
-    End Sub
 
     ' Subscribe to service events in Load
-    Private Sub AttachServiceEvents()
-        Try
-            AddHandler Services.ServiceOperationStarted, AddressOf OnServiceOperationStarted
-            AddHandler Services.ServiceOperationCompleted, AddressOf OnServiceOperationCompleted
-        Catch
-        End Try
-    End Sub
 
-    Private Sub DetachServiceEvents()
-        Try
-            RemoveHandler Services.ServiceOperationStarted, AddressOf OnServiceOperationStarted
-            RemoveHandler Services.ServiceOperationCompleted, AddressOf OnServiceOperationCompleted
-        Catch
-        End Try
-    End Sub
 
-    Private Sub OnServiceOperationStarted(entry As ServiceControlEntry, operation As String)
-        If entry Is Nothing Then Return
-        Dim displayName = If(String.IsNullOrWhiteSpace(entry.DisplayName), entry.Service, entry.DisplayName)
-        ShowServiceProgress($"{operation}: {displayName}…")
-    End Sub
-
-    Private Sub OnServiceOperationCompleted(entry As ServiceControlEntry, operation As String, success As Boolean)
-        If entry Is Nothing Then
-            HideServiceProgress()
-            Return
-        End If
-
-        ' Refresh status for that entry
-        Try
-            Services.GetServiceStatus(entry)
-        Catch
-        End Try
-
-        If success Then
-            SetExecutionStatus($"{operation} completed")
-        Else
-            SetExecutionStatus($"{operation} failed")
-            Try
-                Dim displayName = If(String.IsNullOrWhiteSpace(entry.DisplayName), entry.Service, entry.DisplayName)
-                MessageBox.Show($"{operation} failed for {displayName}", "Service Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Catch
-            End Try
-        End If
-
-        HideServiceProgress()
-    End Sub
 
     Private Sub tbCoreService_GotFocus(sender As Object, e As EventArgs) Handles tbCoreService.GotFocus, tbCoreService.GotFocus, tbCloudService.GotFocus, tbAdvCreditService.GotFocus, tbAdvSignageService.GotFocus, tbAdvLicService.GotFocus, tbAdvNotifyService.GotFocus, tbAdvTurnstileEngine.GotFocus, tbAdvantageUpgradeService.GotFocus, tbRelayService.GotFocus
         Dim caller As TextBox = DirectCast(sender, TextBox)
@@ -746,7 +709,7 @@ Public Class FormMain
             End If
         ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
             CodeHelper.Refresher()
-            Services.ServicesExistCheck()
+            'Services.ServicesExistCheck()
 
         Else
             Dim TabName As String
@@ -880,10 +843,9 @@ Public Class FormMain
     End Sub
 
     Private Sub FormMain_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        Try
-            DetachServiceEvents()
-        Catch
-        End Try
+        If _serviceManager IsNot Nothing Then
+            _serviceManager.StopPolling()
+        End If
 
         Try
             OptionsManager.SaveLauncherConfig(_launcherConfig)
@@ -1495,17 +1457,91 @@ Public Class FormMain
     End Sub
 
     Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        DebugFormIdentity("ADDING CONTROLS")
 
-        UIHelpers.TimedInfoPrompt(title:="Testing", message:="This is a timed info prompt with no timeout")
 
 
     End Sub
 
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        Dim strTemp As String = "This is a timed info prompt with a 10 second timeout" & Environment.NewLine &
-                                "It will auto-close after 10 seconds, or you can click OK to close it immediately."
-        UIHelpers.TimedInfoPrompt(title:="Testing", message:=strTemp, timeoutSeconds:=10)
+        DebugFormIdentity("VISIBLE FORM")
+    End Sub
+    Private Sub DebugFormIdentity(tag As String)
+        MessageBox.Show(
+        $"[{tag}]{Environment.NewLine}" &
+        $"HashCode: {Me.GetHashCode()}{Environment.NewLine}" &
+        $"Name: {Me.Name}",
+        "FormMain Identity")
+    End Sub
 
+    Private Sub DumpParentChain(ctrl As Control)
+        Dim sb As New System.Text.StringBuilder()
+        Dim c As Control = ctrl
+
+        While c IsNot Nothing
+            sb.AppendLine($"{c.Name} ({c.GetType().Name}) Visible={c.Visible}")
+            c = c.Parent
+        End While
+
+        MessageBox.Show(sb.ToString(), "Parent Chain")
+    End Sub
+    Private Function GetServicesPanel() As FlowLayoutPanel
+        Dim panel = TryCast(tpServices.Controls("flpServices"), FlowLayoutPanel)
+
+        If panel Is Nothing Then
+            Throw New InvalidOperationException(
+                "flpServices was not found on tpServices. Check the designer.")
+        End If
+
+        Return panel
+    End Function
+
+    Private Sub flpServices_SizeChanged(sender As Object, e As EventArgs) Handles flpServices.SizeChanged
+        AdjustServiceRowWidths()
+    End Sub
+
+    ' =========================================================
+    ' ServiceRowControl button handlers
+    ' (direct Windows ServiceController implementation)
+    ' =========================================================
+
+    Private Async Sub OnStartServiceRequested(serviceName As String)
+
+        Dim row = _serviceRows.
+              FirstOrDefault(Function(r) r.ServiceName = serviceName)
+        If row Is Nothing Then Return
+
+        ' ✅ Immediate visual update
+        row.IsBusy = True
+        row.Status = ServiceControllerStatus.StartPending
+
+        Await _serviceManager.StartServiceAsync(serviceName)
+
+    End Sub
+
+    Private Async Sub OnStopServiceRequested(serviceName As String)
+
+        Dim row = _serviceRows.
+              FirstOrDefault(Function(r) r.ServiceName = serviceName)
+        If row Is Nothing Then Return
+
+        row.IsBusy = True
+        row.Status = ServiceControllerStatus.StopPending
+
+        Await _serviceManager.StopServiceAsync(serviceName)
+
+    End Sub
+
+    Private Async Sub OnRestartServiceRequested(serviceName As String)
+
+        Dim row = _serviceRows.
+              FirstOrDefault(Function(r) r.ServiceName = serviceName)
+        If row Is Nothing Then Return
+
+        row.IsBusy = True
+        row.Status = ServiceControllerStatus.StopPending
+
+        Await _serviceManager.RestartServiceAsync(serviceName)
 
     End Sub
 

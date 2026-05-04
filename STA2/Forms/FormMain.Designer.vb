@@ -198,6 +198,8 @@ Partial Class FormMain
         Me.lblFlavorApplyCommand = New System.Windows.Forms.Label()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.clbSqlFiles = New System.Windows.Forms.CheckedListBox()
+        Me.tpServices = New System.Windows.Forms.TabPage()
+        Me.flpServices = New System.Windows.Forms.FlowLayoutPanel()
         Me.btnTest2 = New System.Windows.Forms.Button()
         Me.gpCommonApps = New System.Windows.Forms.GroupBox()
         Me.btnServices = New System.Windows.Forms.Button()
@@ -254,9 +256,6 @@ Partial Class FormMain
         Me.btnRepoDiscardChanges = New System.Windows.Forms.Button()
         Me.btnLaunchLatestInstaller = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
-        Me.tpServices = New System.Windows.Forms.TabPage()
-        Me.pnlServicesTab = New System.Windows.Forms.Panel()
-        Me.flpServices = New System.Windows.Forms.FlowLayoutPanel()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -303,6 +302,7 @@ Partial Class FormMain
         Me.gpAdvUpgrade.SuspendLayout()
         Me.tpQATools.SuspendLayout()
         Me.gbLiveOutput.SuspendLayout()
+        Me.tpServices.SuspendLayout()
         Me.gpCommonApps.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
@@ -311,15 +311,13 @@ Partial Class FormMain
         Me.SplitContainer2.Panel2.SuspendLayout()
         Me.SplitContainer2.SuspendLayout()
         Me.Panel2.SuspendLayout()
-        Me.tpServices.SuspendLayout()
-        Me.pnlServicesTab.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(249, 124)
+        Me.btnExit.Location = New System.Drawing.Point(249, 128)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(80, 50)
         Me.btnExit.TabIndex = 0
@@ -351,7 +349,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 808)
-        Me.SplitContainer1.SplitterDistance = 629
+        Me.SplitContainer1.SplitterDistance = 633
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -369,7 +367,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 625)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 629)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -382,7 +380,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 599)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 603)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -1222,7 +1220,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 599)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 603)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1377,7 +1375,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 599)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 603)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1392,7 +1390,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 568)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 572)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1484,7 +1482,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 599)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 603)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1571,7 +1569,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 469)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 473)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1726,7 +1724,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 599)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 603)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1797,7 +1795,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 599)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 603)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -2079,7 +2077,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.clbSqlFiles)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1011, 599)
+        Me.tpQATools.Size = New System.Drawing.Size(1011, 603)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -2194,6 +2192,26 @@ Partial Class FormMain
         Me.clbSqlFiles.Name = "clbSqlFiles"
         Me.clbSqlFiles.Size = New System.Drawing.Size(361, 469)
         Me.clbSqlFiles.TabIndex = 0
+        '
+        'tpServices
+        '
+        Me.tpServices.Controls.Add(Me.flpServices)
+        Me.tpServices.Location = New System.Drawing.Point(4, 22)
+        Me.tpServices.Name = "tpServices"
+        Me.tpServices.Size = New System.Drawing.Size(1011, 603)
+        Me.tpServices.TabIndex = 11
+        Me.tpServices.Text = "Services Temp"
+        Me.tpServices.UseVisualStyleBackColor = True
+        '
+        'flpServices
+        '
+        Me.flpServices.AutoScroll = True
+        Me.flpServices.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
+        Me.flpServices.Location = New System.Drawing.Point(0, 0)
+        Me.flpServices.Name = "flpServices"
+        Me.flpServices.Size = New System.Drawing.Size(584, 601)
+        Me.flpServices.TabIndex = 0
+        Me.flpServices.WrapContents = False
         '
         'btnTest2
         '
@@ -2706,34 +2724,6 @@ Partial Class FormMain
         Me.Panel2.Size = New System.Drawing.Size(336, 781)
         Me.Panel2.TabIndex = 13
         '
-        'tpServices
-        '
-        Me.tpServices.Controls.Add(Me.pnlServicesTab)
-        Me.tpServices.Location = New System.Drawing.Point(4, 22)
-        Me.tpServices.Name = "tpServices"
-        Me.tpServices.Size = New System.Drawing.Size(1011, 599)
-        Me.tpServices.TabIndex = 11
-        Me.tpServices.Text = "Services Temp"
-        Me.tpServices.UseVisualStyleBackColor = True
-        '
-        'pnlServicesTab
-        '
-        Me.pnlServicesTab.Controls.Add(Me.flpServices)
-        Me.pnlServicesTab.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.pnlServicesTab.Location = New System.Drawing.Point(0, 0)
-        Me.pnlServicesTab.Name = "pnlServicesTab"
-        Me.pnlServicesTab.Size = New System.Drawing.Size(1011, 599)
-        Me.pnlServicesTab.TabIndex = 0
-        '
-        'flpServices
-        '
-        Me.flpServices.AutoScroll = True
-        Me.flpServices.Dock = System.Windows.Forms.DockStyle.Top
-        Me.flpServices.Location = New System.Drawing.Point(0, 0)
-        Me.flpServices.Name = "flpServices"
-        Me.flpServices.Size = New System.Drawing.Size(1011, 100)
-        Me.flpServices.TabIndex = 0
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2817,6 +2807,7 @@ Partial Class FormMain
         Me.tpQATools.ResumeLayout(False)
         Me.tpQATools.PerformLayout()
         Me.gbLiveOutput.ResumeLayout(False)
+        Me.tpServices.ResumeLayout(False)
         Me.gpCommonApps.ResumeLayout(False)
         Me.gbAdvApps.ResumeLayout(False)
         Me.gbAdvApps.PerformLayout()
@@ -2827,8 +2818,6 @@ Partial Class FormMain
         CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer2.ResumeLayout(False)
         Me.Panel2.ResumeLayout(False)
-        Me.tpServices.ResumeLayout(False)
-        Me.pnlServicesTab.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -3064,6 +3053,5 @@ Partial Class FormMain
     Friend WithEvents btnSetupInstall As Button
     Friend WithEvents btnRepoMain As Button
     Friend WithEvents tpServices As TabPage
-    Friend WithEvents pnlServicesTab As Panel
     Friend WithEvents flpServices As FlowLayoutPanel
 End Class

@@ -1,49 +1,13 @@
 ﻿Imports System.ServiceProcess
-Imports System.Drawing
-Imports System.Windows.Forms
 
 Public Class ServiceRowControl
-    Inherits UserControl
 
-    ' ==============================
-    ' Public Events (UI -> Controller)
-    ' ==============================
-    Public Event StartRequested(serviceName As String)
-    Public Event StopRequested(serviceName As String)
-    Public Event RestartRequested(serviceName As String)
-
-    ' ==============================
-    ' Backing Fields
-    ' ==============================
-    Private _serviceName As String
-    Private _displayName As String
-    Private _installed As Boolean = True
-    Private _status As ServiceControllerStatus = ServiceControllerStatus.Stopped
-    Private _isAdmin As Boolean = True
-    Private _isBusy As Boolean = False
-
-    ' ==============================
-    ' Public Properties (State In)
-    ' ==============================
+    ' -------------------------------------------------
+    ' Public API (set by FormMain / ServiceManager)
+    ' -------------------------------------------------
 
     Public Property ServiceName As String
-        Get
-            Return _serviceName
-        End Get
-        Set(value As String)
-            _serviceName = value
-        End Set
-    End Property
-
     Public Property DisplayName As String
-        Get
-            Return _displayName
-        End Get
-        Set(value As String)
-            _displayName = value
-            lblName.Text = value
-        End Set
-    End Property
 
     Public Property Installed As Boolean
         Get
@@ -54,16 +18,7 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
-
-    Public Property Status As ServiceControllerStatus
-        Get
-            Return _status
-        End Get
-        Set(value As ServiceControllerStatus)
-            _status = value
-            UpdateVisualState()
-        End Set
-    End Property
+    Private _installed As Boolean = True
 
     Public Property IsAdmin As Boolean
         Get
@@ -74,6 +29,7 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
+    Private _isAdmin As Boolean = False
 
     Public Property IsBusy As Boolean
         Get
@@ -84,94 +40,153 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
+    Private _isBusy As Boolean = False
 
-    ' ==============================
-    ' Constructor
-    ' ==============================
-    Public Sub New()
-        InitializeComponent()
-        InitializeLayout()
+    Public Property Status As ServiceControllerStatus
+        Get
+            Return _status
+        End Get
+        Set(value As ServiceControllerStatus)
+            _status = value
+            UpdateVisualState()
+        End Set
+    End Property
+    Private _status As ServiceControllerStatus = ServiceControllerStatus.Stopped
+
+    ' -------------------------------------------------
+    ' Events raised to FormMain
+    ' -------------------------------------------------
+
+    Public Event StartRequested(serviceName As String)
+    Public Event StopRequested(serviceName As String)
+    Public Event RestartRequested(serviceName As String)
+
+    ' -------------------------------------------------
+    ' Control lifecycle
+    ' -------------------------------------------------
+
+    Private Sub ServiceRowControl_Load(
+        sender As Object,
+        e As EventArgs
+    ) Handles MyBase.Load
+
+        lblName.Text = DisplayName
         UpdateVisualState()
+
     End Sub
 
-    ' ==============================
-    ' UI Initialization (Manual)
-    ' ==============================
-    Private Sub InitializeLayout()
+    ' -------------------------------------------------
+    ' Button handlers (intent only)
+    ' -------------------------------------------------
 
-        Me.Height = 72
-        Me.Dock = DockStyle.Top
-        Me.BackColor = SystemColors.Window
+    Private Sub btnStart_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles btnStart.Click
 
-        picStatus.Width = 16
-        picStatus.Height = 16
+        If Installed AndAlso IsAdmin AndAlso Not IsBusy Then
+            RaiseEvent StartRequested(ServiceName)
+        End If
 
-        btnStart.Text = "Start"
-        btnStop.Text = "Stop"
-        btnRestart.Text = "Restart"
-
-        AddHandler btnStart.Click,
-            Sub()
-                RaiseEvent StartRequested(ServiceName)
-            End Sub
-
-        AddHandler btnStop.Click,
-            Sub()
-                RaiseEvent StopRequested(ServiceName)
-            End Sub
-
-        AddHandler btnRestart.Click,
-            Sub()
-                RaiseEvent RestartRequested(ServiceName)
-            End Sub
     End Sub
 
-    ' ==============================
-    ' Core State -> UI Mapping
-    ' ==============================
+    Private Sub btnStop_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles btnStop.Click
+
+        If Installed AndAlso IsAdmin AndAlso Not IsBusy Then
+            RaiseEvent StopRequested(ServiceName)
+        End If
+
+    End Sub
+
+    Private Sub btnRestart_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles btnRestart.Click
+
+        If Installed AndAlso IsAdmin AndAlso Not IsBusy Then
+            RaiseEvent RestartRequested(ServiceName)
+        End If
+
+    End Sub
+
+    ' -------------------------------------------------
+    ' Visual state logic (ONLY place icons are set)
+    ' -------------------------------------------------
+
     Private Sub UpdateVisualState()
 
-        ' Default all actions off
-        btnStart.Enabled = False
-        btnStop.Enabled = False
-        btnRestart.Enabled = False
-
-        If Not _installed Then
+        ' ---- Service not installed ----
+        If Not Installed Then
             lblStatus.Text = "Not Installed"
-            picStatus.BackColor = Color.LightGray
+            picStatus.Image = ServicesDisplay.GetNotInstalledImage()
+            btnStart.Enabled = False
+            btnStop.Enabled = False
+            btnRestart.Enabled = False
             Return
         End If
 
-        If Not _isAdmin OrElse _isBusy Then
-            lblStatus.Text = "Unavailable"
-            picStatus.BackColor = Color.DarkGray
+        ' ---- Busy / in progress ----
+        If IsBusy Then
+            lblStatus.Text = "Working..."
+            picStatus.Image =
+                ServicesDisplay.GetServiceStatusImage(Status)
+            btnStart.Enabled = False
+            btnStop.Enabled = False
+            btnRestart.Enabled = False
             Return
         End If
 
-        Select Case _status
+        ' ---- Admin required ----
+        If Not IsAdmin Then
+            lblStatus.Text = "Requires Administrator"
+            picStatus.Image =
+                ServicesDisplay.GetServiceStatusImage(Status)
+            btnStart.Enabled = False
+            btnStop.Enabled = False
+            btnRestart.Enabled = False
+            Return
+        End If
+
+        ' ---- Normal installed / idle states ----
+        picStatus.Image =
+            ServicesDisplay.GetServiceStatusImage(Status)
+
+        Select Case Status
+
             Case ServiceControllerStatus.Running
                 lblStatus.Text = "Running"
-                picStatus.BackColor = Color.Green
+                btnStart.Enabled = False
                 btnStop.Enabled = True
                 btnRestart.Enabled = True
 
             Case ServiceControllerStatus.Stopped
                 lblStatus.Text = "Stopped"
-                picStatus.BackColor = Color.Red
                 btnStart.Enabled = True
+                btnStop.Enabled = False
+                btnRestart.Enabled = False
 
             Case ServiceControllerStatus.StartPending
                 lblStatus.Text = "Starting..."
-                picStatus.BackColor = Color.Gold
+                btnStart.Enabled = False
+                btnStop.Enabled = False
+                btnRestart.Enabled = False
 
             Case ServiceControllerStatus.StopPending
                 lblStatus.Text = "Stopping..."
-                picStatus.BackColor = Color.Gold
+                btnStart.Enabled = False
+                btnStop.Enabled = False
+                btnRestart.Enabled = False
 
             Case Else
-                lblStatus.Text = _status.ToString()
-                picStatus.BackColor = Color.Silver
+                lblStatus.Text = Status.ToString()
+                btnStart.Enabled = False
+                btnStop.Enabled = False
+                btnRestart.Enabled = False
         End Select
+
     End Sub
 
 End Class
