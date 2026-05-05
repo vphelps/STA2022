@@ -83,6 +83,43 @@ Public Class ServiceRowControl
         ' Automatically scale icons to fit
         picStatus.SizeMode = PictureBoxSizeMode.Zoom
 
+        ' Icon-only buttons
+        btnStart.Text = ""
+        btnStop.Text = ""
+        btnRestart.Text = ""
+
+        btnStart.AutoSize = False
+        btnStop.AutoSize = False
+        btnRestart.AutoSize = False
+
+        btnStart.ImageAlign = ContentAlignment.MiddleCenter
+        btnStop.ImageAlign = ContentAlignment.MiddleCenter
+        btnRestart.ImageAlign = ContentAlignment.MiddleCenter
+
+        btnStart.FlatStyle = FlatStyle.Standard
+        btnStop.FlatStyle = FlatStyle.Standard
+        btnRestart.FlatStyle = FlatStyle.Standard
+
+        btnStart.UseVisualStyleBackColor = True
+        btnStop.UseVisualStyleBackColor = True
+        btnRestart.UseVisualStyleBackColor = True
+
+        ' Automatically scale 96x96 icons to button size
+        btnStart.Image =
+        ResizeImageToFit(
+            My.Resources.imgGreenPlay96,
+            btnStart.ClientSize)
+
+        btnStop.Image =
+        ResizeImageToFit(
+            My.Resources.imgRedStop96,
+            btnStop.ClientSize)
+
+        btnRestart.Image =
+        ResizeImageToFit(
+            My.Resources.imgRefresh96,
+            btnRestart.ClientSize)
+
         UpdateVisualState()
 
     End Sub
@@ -204,5 +241,28 @@ Public Class ServiceRowControl
         End Select
 
     End Sub
+    Private Function ResizeImageToFit(
+    source As Image,
+    targetSize As Size
+) As Image
 
+        Dim scale As Single = Math.Min(
+            targetSize.Width / source.Width,
+            targetSize.Height / source.Height)
+
+        Dim width As Integer = CInt(source.Width * scale)
+        Dim height As Integer = CInt(source.Height * scale)
+
+        Dim bmp As New Bitmap(width, height)
+
+        Using g As Graphics = Graphics.FromImage(bmp)
+            g.Clear(Color.Transparent)
+            g.InterpolationMode =
+                Drawing2D.InterpolationMode.HighQualityBicubic
+            g.DrawImage(source, 0, 0, width, height)
+        End Using
+
+        Return bmp
+
+    End Function
 End Class
