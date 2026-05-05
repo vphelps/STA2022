@@ -274,7 +274,27 @@ Public Class FormMain
         ' Build the Services UI (rows only, no logic)
         ' -------------------------------------------------
         BuildServicesUI()
-        AdjustServiceRowWidths()
+
+        ' ✅ STEP 2: Lock label column width based on longest service name
+        If _serviceRows.Count > 0 Then
+
+            Dim nameFont As Font =
+        _serviceRows(0).lblName.Font
+
+            Dim nameColWidth As Integer =
+        ServicesDisplay.MeasureMaxServiceNameWidth(
+            _serviceNames,
+            nameFont
+        )
+
+            For Each row In _serviceRows
+                With row.tblLayout.ColumnStyles(1)
+                    .SizeType = SizeType.Absolute
+                    .Width = nameColWidth
+                End With
+            Next
+
+        End If
 
         ' -------------------------------------------------
         ' Initialize ServiceManager (non-UI logic owner)

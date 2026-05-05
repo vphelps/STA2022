@@ -64,4 +64,27 @@ Public Module ServicesDisplay
         Return My.Resources.imgUnavailableBlack64
     End Function
 
+    Public Function MeasureMaxServiceNameWidth(
+        serviceNames As IEnumerable(Of String),
+        font As Font
+    ) As Integer
+
+        Dim maxWidth As Integer = 0
+
+        For Each name In serviceNames
+            Dim size = TextRenderer.MeasureText(
+                name,
+                font,
+                New Size(Integer.MaxValue, Integer.MaxValue),
+                TextFormatFlags.NoPadding
+            )
+
+            maxWidth = Math.Max(maxWidth, size.Width)
+        Next
+
+        ' Small safety margin for bold glyphs / DPI variance
+        Return maxWidth + 8
+
+    End Function
+
 End Module

@@ -75,11 +75,11 @@ Partial Class ServiceRowControl
         'picStatus
         '
         Me.picStatus.Anchor = System.Windows.Forms.AnchorStyles.Top
-        Me.picStatus.Location = New System.Drawing.Point(13, 6)
+        Me.picStatus.Location = New System.Drawing.Point(19, 6)
         Me.picStatus.Margin = New System.Windows.Forms.Padding(4, 2, 6, 2)
         Me.picStatus.Name = "picStatus"
         Me.tblLayout.SetRowSpan(Me.picStatus, 2)
-        Me.picStatus.Size = New System.Drawing.Size(36, 36)
+        Me.picStatus.Size = New System.Drawing.Size(24, 24)
         Me.picStatus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.picStatus.TabIndex = 0
         Me.picStatus.TabStop = False
@@ -92,7 +92,7 @@ Partial Class ServiceRowControl
         Me.lblName.Location = New System.Drawing.Point(62, 4)
         Me.lblName.Margin = New System.Windows.Forms.Padding(0, 0, 0, 1)
         Me.lblName.Name = "lblName"
-        Me.lblName.Size = New System.Drawing.Size(122, 13)
+        Me.lblName.Size = New System.Drawing.Size(158, 13)
         Me.lblName.TabIndex = 1
         '
         'lblStatus
@@ -102,7 +102,7 @@ Partial Class ServiceRowControl
         Me.lblStatus.Location = New System.Drawing.Point(62, 18)
         Me.lblStatus.Margin = New System.Windows.Forms.Padding(0)
         Me.lblStatus.Name = "lblStatus"
-        Me.lblStatus.Size = New System.Drawing.Size(122, 26)
+        Me.lblStatus.Size = New System.Drawing.Size(158, 24)
         Me.lblStatus.TabIndex = 2
         '
         'pnlButtons
@@ -112,11 +112,11 @@ Partial Class ServiceRowControl
         Me.pnlButtons.Controls.Add(Me.btnStop)
         Me.pnlButtons.Controls.Add(Me.btnRestart)
         Me.pnlButtons.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.pnlButtons.Location = New System.Drawing.Point(184, 6)
+        Me.pnlButtons.Location = New System.Drawing.Point(220, 6)
         Me.pnlButtons.Margin = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.pnlButtons.Name = "pnlButtons"
         Me.tblLayout.SetRowSpan(Me.pnlButtons, 2)
-        Me.pnlButtons.Size = New System.Drawing.Size(108, 38)
+        Me.pnlButtons.Size = New System.Drawing.Size(72, 36)
         Me.pnlButtons.TabIndex = 3
         Me.pnlButtons.WrapContents = False
         '
@@ -125,25 +125,25 @@ Partial Class ServiceRowControl
         Me.btnStart.Location = New System.Drawing.Point(0, 0)
         Me.btnStart.Margin = New System.Windows.Forms.Padding(0)
         Me.btnStart.Name = "btnStart"
-        Me.btnStart.Size = New System.Drawing.Size(36, 36)
+        Me.btnStart.Size = New System.Drawing.Size(24, 24)
         Me.btnStart.TabIndex = 0
         Me.btnStart.Text = "Start"
         '
         'btnStop
         '
-        Me.btnStop.Location = New System.Drawing.Point(36, 0)
+        Me.btnStop.Location = New System.Drawing.Point(24, 0)
         Me.btnStop.Margin = New System.Windows.Forms.Padding(0)
         Me.btnStop.Name = "btnStop"
-        Me.btnStop.Size = New System.Drawing.Size(36, 36)
+        Me.btnStop.Size = New System.Drawing.Size(24, 24)
         Me.btnStop.TabIndex = 1
         Me.btnStop.Text = "Stop"
         '
         'btnRestart
         '
-        Me.btnRestart.Location = New System.Drawing.Point(72, 0)
+        Me.btnRestart.Location = New System.Drawing.Point(48, 0)
         Me.btnRestart.Margin = New System.Windows.Forms.Padding(0)
         Me.btnRestart.Name = "btnRestart"
-        Me.btnRestart.Size = New System.Drawing.Size(36, 36)
+        Me.btnRestart.Size = New System.Drawing.Size(24, 24)
         Me.btnRestart.TabIndex = 2
         Me.btnRestart.Text = "Restart"
         '
