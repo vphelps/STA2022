@@ -28,6 +28,8 @@ Partial Class FormMain
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.tcSTA = New System.Windows.Forms.TabControl()
         Me.tpGeneral = New System.Windows.Forms.TabPage()
+        Me.pnlServicesContainer = New System.Windows.Forms.Panel()
+        Me.tblServices = New System.Windows.Forms.TableLayoutPanel()
         Me.tbServicesButtonsHelpMessage = New System.Windows.Forms.TextBox()
         Me.gpPcInfo = New System.Windows.Forms.GroupBox()
         Me.tlpPcInfo = New System.Windows.Forms.TableLayoutPanel()
@@ -157,8 +159,6 @@ Partial Class FormMain
         Me.lblFlavorApplyCommand = New System.Windows.Forms.Label()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.clbSqlFiles = New System.Windows.Forms.CheckedListBox()
-        Me.pnlServicesContainer = New System.Windows.Forms.Panel()
-        Me.tblServices = New System.Windows.Forms.TableLayoutPanel()
         Me.chkShowHiddenServices = New System.Windows.Forms.CheckBox()
         Me.btnTest2 = New System.Windows.Forms.Button()
         Me.gpCommonApps = New System.Windows.Forms.GroupBox()
@@ -222,6 +222,7 @@ Partial Class FormMain
         Me.SplitContainer1.SuspendLayout()
         Me.tcSTA.SuspendLayout()
         Me.tpGeneral.SuspendLayout()
+        Me.pnlServicesContainer.SuspendLayout()
         Me.gpPcInfo.SuspendLayout()
         Me.tlpPcInfo.SuspendLayout()
         Me.gpLicInfo.SuspendLayout()
@@ -251,7 +252,6 @@ Partial Class FormMain
         Me.gpAdvUpgrade.SuspendLayout()
         Me.tpQATools.SuspendLayout()
         Me.gbLiveOutput.SuspendLayout()
-        Me.pnlServicesContainer.SuspendLayout()
         Me.gpCommonApps.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
@@ -266,7 +266,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(249, 141)
+        Me.btnExit.Location = New System.Drawing.Point(249, 142)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(80, 50)
         Me.btnExit.TabIndex = 0
@@ -290,7 +290,6 @@ Partial Class FormMain
         '
         'SplitContainer1.Panel2
         '
-        Me.SplitContainer1.Panel2.Controls.Add(Me.chkShowHiddenServices)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.btnTest1)
@@ -299,7 +298,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.tbTest2)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 854)
-        Me.SplitContainer1.SplitterDistance = 655
+        Me.SplitContainer1.SplitterDistance = 656
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -316,7 +315,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 651)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 652)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -329,9 +328,44 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 625)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 626)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
+        '
+        'pnlServicesContainer
+        '
+        Me.pnlServicesContainer.Controls.Add(Me.tblServices)
+        Me.pnlServicesContainer.Location = New System.Drawing.Point(593, 3)
+        Me.pnlServicesContainer.Name = "pnlServicesContainer"
+        Me.pnlServicesContainer.Size = New System.Drawing.Size(399, 617)
+        Me.pnlServicesContainer.TabIndex = 1
+        '
+        'tblServices
+        '
+        Me.tblServices.AutoScroll = True
+        Me.tblServices.AutoSize = True
+        Me.tblServices.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.tblServices.BackColor = System.Drawing.Color.Transparent
+        Me.tblServices.ColumnCount = 1
+        Me.tblServices.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblServices.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblServices.Dock = System.Windows.Forms.DockStyle.Top
+        Me.tblServices.Location = New System.Drawing.Point(0, 0)
+        Me.tblServices.Name = "tblServices"
+        Me.tblServices.RowCount = 1
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1.0!))
+        Me.tblServices.Size = New System.Drawing.Size(399, 0)
+        Me.tblServices.TabIndex = 1
         '
         'tbServicesButtonsHelpMessage
         '
@@ -700,7 +734,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 625)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 626)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -855,7 +889,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 625)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 626)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -870,7 +904,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 594)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 595)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -962,7 +996,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 625)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 626)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1049,7 +1083,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 495)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 496)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1204,7 +1238,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 625)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 626)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1275,7 +1309,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 625)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 626)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         Me.tpOptions.UseVisualStyleBackColor = True
@@ -1374,6 +1408,7 @@ Partial Class FormMain
         '
         'gbAppOptions
         '
+        Me.gbAppOptions.Controls.Add(Me.chkShowHiddenServices)
         Me.gbAppOptions.Controls.Add(Me.tbApplyFlavorDefault)
         Me.gbAppOptions.Controls.Add(Me.tbDatabaseStartDefault)
         Me.gbAppOptions.Controls.Add(Me.lblApplyFlavorDefault)
@@ -1394,14 +1429,14 @@ Partial Class FormMain
         '
         'tbApplyFlavorDefault
         '
-        Me.tbApplyFlavorDefault.Location = New System.Drawing.Point(127, 176)
+        Me.tbApplyFlavorDefault.Location = New System.Drawing.Point(127, 161)
         Me.tbApplyFlavorDefault.Name = "tbApplyFlavorDefault"
         Me.tbApplyFlavorDefault.Size = New System.Drawing.Size(365, 20)
         Me.tbApplyFlavorDefault.TabIndex = 29
         '
         'tbDatabaseStartDefault
         '
-        Me.tbDatabaseStartDefault.Location = New System.Drawing.Point(149, 146)
+        Me.tbDatabaseStartDefault.Location = New System.Drawing.Point(150, 135)
         Me.tbDatabaseStartDefault.Name = "tbDatabaseStartDefault"
         Me.tbDatabaseStartDefault.Size = New System.Drawing.Size(343, 20)
         Me.tbDatabaseStartDefault.TabIndex = 28
@@ -1409,7 +1444,7 @@ Partial Class FormMain
         'lblApplyFlavorDefault
         '
         Me.lblApplyFlavorDefault.AutoSize = True
-        Me.lblApplyFlavorDefault.Location = New System.Drawing.Point(19, 179)
+        Me.lblApplyFlavorDefault.Location = New System.Drawing.Point(19, 164)
         Me.lblApplyFlavorDefault.Name = "lblApplyFlavorDefault"
         Me.lblApplyFlavorDefault.Size = New System.Drawing.Size(111, 13)
         Me.lblApplyFlavorDefault.TabIndex = 27
@@ -1418,7 +1453,7 @@ Partial Class FormMain
         'lblDatabaseStartDefault
         '
         Me.lblDatabaseStartDefault.AutoSize = True
-        Me.lblDatabaseStartDefault.Location = New System.Drawing.Point(19, 149)
+        Me.lblDatabaseStartDefault.Location = New System.Drawing.Point(20, 138)
         Me.lblDatabaseStartDefault.Name = "lblDatabaseStartDefault"
         Me.lblDatabaseStartDefault.Size = New System.Drawing.Size(124, 13)
         Me.lblDatabaseStartDefault.TabIndex = 26
@@ -1557,7 +1592,7 @@ Partial Class FormMain
         Me.tpQATools.Controls.Add(Me.clbSqlFiles)
         Me.tpQATools.Location = New System.Drawing.Point(4, 22)
         Me.tpQATools.Name = "tpQATools"
-        Me.tpQATools.Size = New System.Drawing.Size(1011, 625)
+        Me.tpQATools.Size = New System.Drawing.Size(1011, 626)
         Me.tpQATools.TabIndex = 10
         Me.tpQATools.Text = "QA Tools"
         Me.tpQATools.UseVisualStyleBackColor = True
@@ -1673,45 +1708,10 @@ Partial Class FormMain
         Me.clbSqlFiles.Size = New System.Drawing.Size(361, 469)
         Me.clbSqlFiles.TabIndex = 0
         '
-        'pnlServicesContainer
-        '
-        Me.pnlServicesContainer.Controls.Add(Me.tblServices)
-        Me.pnlServicesContainer.Location = New System.Drawing.Point(456, 3)
-        Me.pnlServicesContainer.Name = "pnlServicesContainer"
-        Me.pnlServicesContainer.Size = New System.Drawing.Size(536, 617)
-        Me.pnlServicesContainer.TabIndex = 1
-        '
-        'tblServices
-        '
-        Me.tblServices.AutoScroll = True
-        Me.tblServices.AutoSize = True
-        Me.tblServices.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.tblServices.BackColor = System.Drawing.Color.Transparent
-        Me.tblServices.ColumnCount = 1
-        Me.tblServices.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.tblServices.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.tblServices.Dock = System.Windows.Forms.DockStyle.Top
-        Me.tblServices.Location = New System.Drawing.Point(0, 0)
-        Me.tblServices.Name = "tblServices"
-        Me.tblServices.RowCount = 1
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 617.0!))
-        Me.tblServices.Size = New System.Drawing.Size(536, 0)
-        Me.tblServices.TabIndex = 1
-        '
         'chkShowHiddenServices
         '
         Me.chkShowHiddenServices.AutoSize = True
-        Me.chkShowHiddenServices.Location = New System.Drawing.Point(503, 7)
+        Me.chkShowHiddenServices.Location = New System.Drawing.Point(362, 187)
         Me.chkShowHiddenServices.Name = "chkShowHiddenServices"
         Me.chkShowHiddenServices.Size = New System.Drawing.Size(130, 17)
         Me.chkShowHiddenServices.TabIndex = 18
@@ -2251,6 +2251,8 @@ Partial Class FormMain
         Me.tcSTA.ResumeLayout(False)
         Me.tpGeneral.ResumeLayout(False)
         Me.tpGeneral.PerformLayout()
+        Me.pnlServicesContainer.ResumeLayout(False)
+        Me.pnlServicesContainer.PerformLayout()
         Me.gpPcInfo.ResumeLayout(False)
         Me.tlpPcInfo.ResumeLayout(False)
         Me.tlpPcInfo.PerformLayout()
@@ -2291,8 +2293,6 @@ Partial Class FormMain
         Me.tpQATools.ResumeLayout(False)
         Me.tpQATools.PerformLayout()
         Me.gbLiveOutput.ResumeLayout(False)
-        Me.pnlServicesContainer.ResumeLayout(False)
-        Me.pnlServicesContainer.PerformLayout()
         Me.gpCommonApps.ResumeLayout(False)
         Me.gbAdvApps.ResumeLayout(False)
         Me.gbAdvApps.PerformLayout()
