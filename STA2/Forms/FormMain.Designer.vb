@@ -157,7 +157,6 @@ Partial Class FormMain
         Me.lblFlavorApplyCommand = New System.Windows.Forms.Label()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.clbSqlFiles = New System.Windows.Forms.CheckedListBox()
-        Me.tpServices = New System.Windows.Forms.TabPage()
         Me.pnlServicesContainer = New System.Windows.Forms.Panel()
         Me.tblServices = New System.Windows.Forms.TableLayoutPanel()
         Me.chkShowHiddenServices = New System.Windows.Forms.CheckBox()
@@ -313,7 +312,6 @@ Partial Class FormMain
         Me.tcSTA.Controls.Add(Me.tpStParse)
         Me.tcSTA.Controls.Add(Me.tpOptions)
         Me.tcSTA.Controls.Add(Me.tpQATools)
-        Me.tcSTA.Controls.Add(Me.tpServices)
         Me.tcSTA.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
@@ -1675,15 +1673,6 @@ Partial Class FormMain
         Me.clbSqlFiles.Size = New System.Drawing.Size(361, 469)
         Me.clbSqlFiles.TabIndex = 0
         '
-        'tpServices
-        '
-        Me.tpServices.Location = New System.Drawing.Point(4, 22)
-        Me.tpServices.Name = "tpServices"
-        Me.tpServices.Size = New System.Drawing.Size(1011, 625)
-        Me.tpServices.TabIndex = 11
-        Me.tpServices.Text = "Services Temp"
-        Me.tpServices.UseVisualStyleBackColor = True
-        '
         'pnlServicesContainer
         '
         Me.pnlServicesContainer.Controls.Add(Me.tblServices)
@@ -2507,7 +2496,6 @@ Partial Class FormMain
     Friend WithEvents btnRepoDiscardChanges As Button
     Friend WithEvents btnSetupInstall As Button
     Friend WithEvents btnRepoMain As Button
-    Friend WithEvents tpServices As TabPage
     Friend WithEvents chkShowHiddenServices As CheckBox
     Friend WithEvents pnlServicesContainer As Panel
     Friend WithEvents tblServices As TableLayoutPanel
