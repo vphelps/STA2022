@@ -27,52 +27,53 @@ Public Class FormMain
 }
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
+
+    Private Sub EnableDoubleBuffering(ctrl As Control)
+        Dim prop = ctrl.GetType().GetProperty(
+        "DoubleBuffered",
+        Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Instance
+    )
+        prop?.SetValue(ctrl, True, Nothing)
+    End Sub
+
     Private Sub BuildServicesUI()
 
-        flpServices.SuspendLayout()
-        flpServices.Controls.Clear()
+        ' ✅ Suspend layout and painting while building rows
+        tblServices.SuspendLayout()
+
+        tblServices.Controls.Clear()
+        tblServices.RowStyles.Clear()
+        tblServices.RowCount = 0
         _serviceRows.Clear()
 
-        Dim isAdmin As Boolean = IsRunningAsAdmin()
+        For Each serviceName In _serviceNames
 
-        For Each svcName In _serviceNames
-
-            ' Initial placeholder state – real status comes from ServiceManager
             Dim row As New ServiceRowControl() With {
-            .ServiceName = svcName,
-            .DisplayName = svcName,
-            .Installed = True,
-            .Status = ServiceControllerStatus.Stopped,
-            .IsAdmin = isAdmin,
-            .IsBusy = False
+            .ServiceName = serviceName
         }
 
-            WireServiceRow(row)
+            ' Fill the table cell so width is granted by the parent
+            row.Dock = DockStyle.Fill
+            row.Margin = New Padding(0, 0, 0, 4)
 
-            flpServices.Controls.Add(row)
+            ' Wire button intent events
+            AddHandler row.StartRequested, AddressOf OnStartServiceRequested
+            AddHandler row.StopRequested, AddressOf OnStopServiceRequested
+            AddHandler row.RestartRequested, AddressOf OnRestartServiceRequested
+
+            tblServices.RowCount += 1
+            tblServices.RowStyles.Add(New RowStyle(SizeType.AutoSize))
+            tblServices.Controls.Add(row, 0, tblServices.RowCount - 1)
+
             _serviceRows.Add(row)
 
         Next
 
-        flpServices.ResumeLayout()
-        AdjustServiceRowWidths()
+        ' ✅ One single layout pass + repaint
+        tblServices.ResumeLayout(True)
 
     End Sub
 
-    Private Sub AdjustServiceRowWidths()
-
-        Dim panel = flpServices
-
-        Dim targetWidth As Integer =
-        panel.ClientSize.Width -
-        panel.Padding.Horizontal -
-        SystemInformation.VerticalScrollBarWidth
-
-        For Each row As ServiceRowControl In _serviceRows
-            row.Width = targetWidth
-        Next
-
-    End Sub
     Private Sub WireServiceRow(row As ServiceRowControl)
 
         AddHandler row.StartRequested,
@@ -138,12 +139,6 @@ Public Class FormMain
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-        ' --------------------------------------------------
-        ' IMPORTANT:
-        ' DO NOT build Services UI here.
-        ' DO NOT reference flpServices here.
-        ' Services UI is built in FormMain_Shown ONLY.
-        ' --------------------------------------------------
 
         flpQuickLaunch.AllowDrop = True
 
@@ -260,6 +255,7 @@ Public Class FormMain
     )
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
+        EnableDoubleBuffering(tblServices)
 
     End Sub
 
@@ -295,7 +291,11 @@ Public Class FormMain
             Next
 
         End If
+        Dim isAdmin As Boolean = IsRunningAsAdmin()
 
+        For Each row In _serviceRows
+            row.IsAdmin = isAdmin
+        Next
         ' -------------------------------------------------
         ' Initialize ServiceManager (non-UI logic owner)
         ' -------------------------------------------------
@@ -1550,25 +1550,6 @@ Public Class FormMain
 
         MessageBox.Show(sb.ToString(), "Parent Chain")
     End Sub
-    Private Function GetServicesPanel() As FlowLayoutPanel
-        Dim panel = TryCast(tpServices.Controls("flpServices"), FlowLayoutPanel)
-
-        If panel Is Nothing Then
-            Throw New InvalidOperationException(
-                "flpServices was not found on tpServices. Check the designer.")
-        End If
-
-        Return panel
-    End Function
-
-    Private Sub flpServices_SizeChanged(sender As Object, e As EventArgs) Handles flpServices.SizeChanged
-        AdjustServiceRowWidths()
-    End Sub
-
-    ' =========================================================
-    ' ServiceRowControl button handlers
-    ' (direct Windows ServiceController implementation)
-    ' =========================================================
 
     Private Async Sub OnStartServiceRequested(serviceName As String)
 
@@ -1609,21 +1590,35 @@ Public Class FormMain
         Await _serviceManager.RestartServiceAsync(serviceName)
 
     End Sub
-
     Private Sub chkShowHiddenServices_CheckedChanged(
-        sender As Object,
-        e As EventArgs
-    ) Handles chkShowHiddenServices.CheckedChanged
+    sender As Object,
+    e As EventArgs
+) Handles chkShowHiddenServices.CheckedChanged
 
-        ' Persist immediately in memory
         _options.ShowHiddenServices = chkShowHiddenServices.Checked
 
-        ' Apply visibility to hidden rows
+        tblServices.SuspendLayout()
+
+        ' Toggle visibility
         For Each row In _serviceRows
             If row.IsHidden Then
                 row.Visible = chkShowHiddenServices.Checked
             End If
         Next
+
+        ' ✅ FORCE TableLayoutPanel to recalc row heights
+        ' Trick: nudge a RowStyle value
+        If tblServices.RowStyles.Count > 0 Then
+            Dim lastStyle = tblServices.RowStyles(tblServices.RowStyles.Count - 1)
+            lastStyle.Height += 0.1F
+            lastStyle.Height -= 0.1F
+        End If
+
+        tblServices.ResumeLayout(True)
+
+        ' ✅ FORCE scroll height recalculation (WinForms bug workaround)
+        tblServices.AutoScroll = False
+        tblServices.AutoScroll = True
 
     End Sub
 

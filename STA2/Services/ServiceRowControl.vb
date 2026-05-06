@@ -1,13 +1,48 @@
 ﻿Imports System.ServiceProcess
+Imports System.Drawing
 
 Public Class ServiceRowControl
+
+    ' -------------------------------------------------
+    ' Backing fields
+    ' -------------------------------------------------
+    Private _serviceName As String
+    Private _displayName As String
+    Private _installed As Boolean = True
+    Private _isAdmin As Boolean = False
+    Private _isBusy As Boolean = False
+    Private _status As ServiceControllerStatus =
+        ServiceControllerStatus.Stopped
 
     ' -------------------------------------------------
     ' Public state (set by FormMain / ServiceManager)
     ' -------------------------------------------------
 
     Public Property ServiceName As String
+        Get
+            Return _serviceName
+        End Get
+        Set(value As String)
+            _serviceName = value
+
+            ' ✅ Primary source for lblName
+            lblName.Text = value
+        End Set
+    End Property
+
     Public Property DisplayName As String
+        Get
+            Return _displayName
+        End Get
+        Set(value As String)
+            _displayName = value
+
+            ' ✅ Optional override if provided
+            If Not String.IsNullOrWhiteSpace(value) Then
+                lblName.Text = value
+            End If
+        End Set
+    End Property
 
     ' True when the service exists on the machine
     Public Property Installed As Boolean
@@ -19,9 +54,8 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
-    Private _installed As Boolean = True
 
-    ' True when service is not installed and may be hidden
+    ' True when service is hidden (e.g. not installed)
     Public Property IsHidden As Boolean = False
 
     ' Whether the app is running with admin privileges
@@ -34,7 +68,6 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
-    Private _isAdmin As Boolean = False
 
     ' True while a start/stop/restart operation is running
     Public Property IsBusy As Boolean
@@ -46,7 +79,6 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
-    Private _isBusy As Boolean = False
 
     ' Current service status
     Public Property Status As ServiceControllerStatus
@@ -58,8 +90,6 @@ Public Class ServiceRowControl
             UpdateVisualState()
         End Set
     End Property
-    Private _status As ServiceControllerStatus =
-        ServiceControllerStatus.Stopped
 
     ' -------------------------------------------------
     ' Events (intent only – handled by FormMain)
@@ -78,12 +108,10 @@ Public Class ServiceRowControl
         e As EventArgs
     ) Handles MyBase.Load
 
-        lblName.Text = DisplayName
-
-        ' Automatically scale icons to fit
+        ' --- Status icon ---
         picStatus.SizeMode = PictureBoxSizeMode.Zoom
 
-        ' Icon-only buttons
+        ' --- Icon-only buttons ---
         btnStart.Text = ""
         btnStop.Text = ""
         btnRestart.Text = ""
@@ -104,70 +132,49 @@ Public Class ServiceRowControl
         btnStop.UseVisualStyleBackColor = True
         btnRestart.UseVisualStyleBackColor = True
 
-        ' Automatically scale 96x96 icons to button size
+        ' --- Resize 96×96 icons to button size ---
         btnStart.Image =
-        ResizeImageToFit(
-            My.Resources.imgGreenPlay96,
-            btnStart.ClientSize)
+            ResizeImageToFit(My.Resources.imgGreenPlay96, btnStart.ClientSize)
 
         btnStop.Image =
-        ResizeImageToFit(
-            My.Resources.imgRedStop96,
-            btnStop.ClientSize)
+            ResizeImageToFit(My.Resources.imgRedStop96, btnStop.ClientSize)
 
         btnRestart.Image =
-        ResizeImageToFit(
-            My.Resources.imgRefresh96,
-            btnRestart.ClientSize)
+            ResizeImageToFit(My.Resources.imgRefresh96, btnRestart.ClientSize)
 
         UpdateVisualState()
 
     End Sub
 
     ' -------------------------------------------------
-    ' Button click handlers (raise intent only)
+    ' Button click handlers (intent only)
     ' -------------------------------------------------
 
-    Private Sub btnStart_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles btnStart.Click
-
+    Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
         If Installed AndAlso IsAdmin AndAlso Not IsBusy Then
             RaiseEvent StartRequested(ServiceName)
         End If
-
     End Sub
 
-    Private Sub btnStop_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles btnStop.Click
-
+    Private Sub btnStop_Click(sender As Object, e As EventArgs) Handles btnStop.Click
         If Installed AndAlso IsAdmin AndAlso Not IsBusy Then
             RaiseEvent StopRequested(ServiceName)
         End If
-
     End Sub
 
-    Private Sub btnRestart_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles btnRestart.Click
-
+    Private Sub btnRestart_Click(sender As Object, e As EventArgs) Handles btnRestart.Click
         If Installed AndAlso IsAdmin AndAlso Not IsBusy Then
             RaiseEvent RestartRequested(ServiceName)
         End If
-
     End Sub
 
     ' -------------------------------------------------
-    ' Visual state logic (ONLY place UI is updated)
+    ' Visual state logic (ONLY UI update point)
     ' -------------------------------------------------
 
     Private Sub UpdateVisualState()
 
-        ' ---- Service not installed ----
+        ' --- Service not installed ---
         If Not Installed Then
             lblStatus.Text = "Not Installed"
             picStatus.Image = ServicesDisplay.GetNotInstalledImage()
@@ -178,7 +185,7 @@ Public Class ServiceRowControl
             Return
         End If
 
-        ' ---- Busy / in-progress ----
+        ' --- Busy / in-progress ---
         If IsBusy Then
             lblStatus.Text = "Working..."
             picStatus.Image =
@@ -190,61 +197,53 @@ Public Class ServiceRowControl
             Return
         End If
 
-        ' ---- Admin privileges required ----
-        If Not IsAdmin Then
-            lblStatus.Text = "Requires Administrator"
-            picStatus.Image =
-                ServicesDisplay.GetServiceStatusImage(Status)
-
-            btnStart.Enabled = False
-            btnStop.Enabled = False
-            btnRestart.Enabled = False
-            Return
-        End If
-
-        ' ---- Normal installed / idle states ----
+        ' --- Show actual service status ---
         picStatus.Image =
             ServicesDisplay.GetServiceStatusImage(Status)
 
         Select Case Status
-
             Case ServiceControllerStatus.Running
                 lblStatus.Text = "Running"
-                btnStart.Enabled = False
-                btnStop.Enabled = True
-                btnRestart.Enabled = True
 
             Case ServiceControllerStatus.Stopped
                 lblStatus.Text = "Stopped"
-                btnStart.Enabled = True
-                btnStop.Enabled = False
-                btnRestart.Enabled = False
 
             Case ServiceControllerStatus.StartPending
                 lblStatus.Text = "Starting..."
-                btnStart.Enabled = False
-                btnStop.Enabled = False
-                btnRestart.Enabled = False
 
             Case ServiceControllerStatus.StopPending
                 lblStatus.Text = "Stopping..."
-                btnStart.Enabled = False
-                btnStop.Enabled = False
-                btnRestart.Enabled = False
 
             Case Else
                 lblStatus.Text = Status.ToString()
-                btnStart.Enabled = False
-                btnStop.Enabled = False
-                btnRestart.Enabled = False
-
         End Select
 
+        ' --- Admin gate ONLY controls buttons ---
+        Dim allowActions As Boolean = IsAdmin
+
+        btnStart.Enabled =
+            allowActions AndAlso Status = ServiceControllerStatus.Stopped
+
+        btnStop.Enabled =
+            allowActions AndAlso Status = ServiceControllerStatus.Running
+
+        btnRestart.Enabled =
+            allowActions AndAlso Status = ServiceControllerStatus.Running
+
+        If Not IsAdmin Then
+            lblStatus.Text &= " (Admin required)"
+        End If
+
     End Sub
+
+    ' -------------------------------------------------
+    ' Image scaling helper
+    ' -------------------------------------------------
+
     Private Function ResizeImageToFit(
-    source As Image,
-    targetSize As Size
-) As Image
+        source As Image,
+        targetSize As Size
+    ) As Image
 
         Dim scale As Single = Math.Min(
             targetSize.Width / source.Width,
@@ -265,4 +264,5 @@ Public Class ServiceRowControl
         Return bmp
 
     End Function
+
 End Class
