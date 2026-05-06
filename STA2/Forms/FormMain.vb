@@ -139,7 +139,6 @@ Public Class FormMain
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
-
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
@@ -432,7 +431,7 @@ Public Class FormMain
 
         tpAdvData.Enabled = dbOnline
         tpDbInfo.Enabled = dbOnline
-        tpGeneral.Enabled = dbOnline
+        'tpGeneral.Enabled = dbOnline
         tpDbLogs.Enabled = dbOnline
 
     End Sub
@@ -1609,4 +1608,7 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub tpGeneral_Click(sender As Object, e As EventArgs) Handles tpGeneral.Click
+
+    End Sub
 End Class
