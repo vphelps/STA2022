@@ -8,20 +8,15 @@ Imports Newtonsoft.Json
 
 Public NotInheritable Class OptionsManager
 
-    ' ---------------------------------------------------------------------
-    ' DEFAULT (first-run) number of quick slots.
-    ' Applied ONLY when QuickLaunchIds is Nothing.
-    ' ---------------------------------------------------------------------
-
     ' Shared JSON settings used across options and launcher config
     Private Shared ReadOnly _jsonSettings As New JsonSerializerSettings With {
         .Formatting = Formatting.Indented,
         .NullValueHandling = NullValueHandling.Ignore
     }
 
-    ' ------------------------
-    ' Public: Options
-    ' ------------------------
+    ' =========================================================
+    ' Options
+    ' =========================================================
 
     Public Shared Function LoadOrCreate() As AppOptions
         Dim path = GetOptionsPath()
@@ -30,7 +25,7 @@ Public NotInheritable Class OptionsManager
             Dim opts As AppOptions
 
             If File.Exists(path) Then
-                ' Tolerant read (handles BOM/leading whitespace)
+                ' Tolerant read (handles BOM / leading whitespace)
                 Dim json = SafeReadAllText(path)
                 opts = JsonConvert.DeserializeObject(Of AppOptions)(json, _jsonSettings)
                 If opts Is Nothing Then opts = New AppOptions()
@@ -40,9 +35,10 @@ Public NotInheritable Class OptionsManager
 
             Dim changed As Boolean = False
 
-            ' Initialize only if missing
+            ' Initialize missing collections only
             If opts.QuickLaunchIds Is Nothing Then
-                opts.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+                opts.QuickLaunchIds =
+                    Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
                 changed = True
             End If
 
@@ -51,52 +47,29 @@ Public NotInheritable Class OptionsManager
                 changed = True
             End If
 
-
-            ' Enforce uniqueness and trim trailing empties (prevents run-to-run growth)
+            ' Normalize QuickLaunch only
             changed = DedupeQuickLaunchIds(opts) OrElse changed
             changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
 
             If changed Then
                 Save(opts)
-            Else
-
             End If
 
             Return opts
 
-        Catch ex As Exception
-            ' Fail-soft: return a default object with a first-run list
-            Dim fallback As New AppOptions() With {
-                .QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+        Catch
+            ' Fail-soft fallback
+            Return New AppOptions() With {
+                .QuickLaunchIds =
+                    Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList(),
+                .DefaultFlavorNames = New List(Of String)
             }
-            Return fallback
         End Try
     End Function
 
-    'Public Shared Sub Save(opts As AppOptions)
-    '    Dim path = GetOptionsPath()
-    '    Try
-    '        EnsureParentDirectory(path)
-
-    '        If opts Is Nothing Then opts = New AppOptions()
-    '        If opts.QuickLaunchIds Is Nothing Then
-    '            opts.QuickLaunchIds = Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
-    '        End If
-
-
-    '        ' Keep stable: dedupe + trim
-    '        Dim changed As Boolean = False
-    '        changed = DedupeQuickLaunchIds(opts) OrElse changed
-    '        changed = TrimTrailingEmptyQuickSlots(opts) OrElse changed
-
-
-    '        Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
-    '        File.WriteAllText(path, json, Encoding.UTF8)
-
-    '    Catch ex As Exception
-    '        ' Swallow/log if you have a logger. Never crash the app on options save.
-    '    End Try
-    'End Sub
+    ' =========================================================
+    ' Save (FIXED: preserves flavors + UI toggles)
+    ' =========================================================
 
     Public Shared Sub Save(opts As AppOptions)
         Dim path = GetOptionsPath()
@@ -104,49 +77,61 @@ Public NotInheritable Class OptionsManager
         Try
             EnsureParentDirectory(path)
 
-            ' Never replace opts unless it is actually Nothing
-            If opts Is Nothing Then
-                opts = New AppOptions()
-            End If
+            If opts Is Nothing Then opts = New AppOptions()
 
-            ' Ensure QuickLaunchIds exists, but do NOT touch other properties
+            ' Ensure QuickLaunchIds exists
             If opts.QuickLaunchIds Is Nothing Then
                 opts.QuickLaunchIds =
-                Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+                    Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
             End If
 
             ' -------------------------------------------------
-            ' Preserve non-QuickLaunch properties explicitly
+            ' Snapshot properties NOT owned by QuickLaunch
             ' -------------------------------------------------
             Dim repoFolderSnapshot As String = opts.RepoFolderPath
+            Dim showHiddenSnapshot As Boolean = opts.ShowHiddenServices
 
-            ' Keep stable: dedupe + trim (QuickLaunch only)
+            Dim defaultFlavorsSnapshot As List(Of String) =
+                If(opts.DefaultFlavorNames Is Nothing,
+                   Nothing,
+                   New List(Of String)(opts.DefaultFlavorNames))
+
+            ' -------------------------------------------------
+            ' Normalize QuickLaunch ONLY
+            ' -------------------------------------------------
             DedupeQuickLaunchIds(opts)
             TrimTrailingEmptyQuickSlots(opts)
 
-            ' Restore RepoFolderPath in case helpers modified opts
+            ' -------------------------------------------------
+            ' Restore preserved properties
+            ' -------------------------------------------------
             opts.RepoFolderPath = repoFolderSnapshot
+            opts.ShowHiddenServices = showHiddenSnapshot
+            opts.DefaultFlavorNames = defaultFlavorsSnapshot
 
-            ' Serialize final options object
+            ' -------------------------------------------------
+            ' Serialize
+            ' -------------------------------------------------
             Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
             File.WriteAllText(path, json, Encoding.UTF8)
 
-
         Catch ex As Exception
-            ' Swallow/log if you have a logger. Never crash the app on options save.
             Debug.WriteLine("Options save failed: " & ex.Message)
         End Try
     End Sub
 
     Public Shared Function GetOptionsPath() As String
-        Dim dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "STA2")
+        Dim dir =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "STA2")
         Directory.CreateDirectory(dir)
         Return Path.Combine(dir, "options.json")
     End Function
 
-    ' ------------------------
-    ' Public: Launcher Config
-    ' ------------------------
+    ' =========================================================
+    ' Launcher Config
+    ' =========================================================
 
     Public Shared Function LoadLauncherConfig() As LauncherConfig
         Dim path = GetLauncherConfigPath()
@@ -161,7 +146,7 @@ Public NotInheritable Class OptionsManager
             If cfg Is Nothing Then cfg = New LauncherConfig()
             If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
-            ' Migration: ensure each ProgramEntry has a stable Id & persist if any were missing
+            ' Ensure stable IDs
             Dim changed As Boolean = False
             For Each p In cfg.Programs
                 If p IsNot Nothing AndAlso String.IsNullOrWhiteSpace(p.Id) Then
@@ -170,34 +155,31 @@ Public NotInheritable Class OptionsManager
                 End If
             Next
 
-            If changed Then
-                SaveLauncherConfig(cfg)
-            End If
+            If changed Then SaveLauncherConfig(cfg)
 
             Return cfg
 
         Catch
-            ' Fail-soft: blank config
             Return New LauncherConfig()
         End Try
     End Function
 
     Public Shared Sub SaveLauncherConfig(cfg As LauncherConfig)
         Dim path = GetLauncherConfigPath()
+
         Try
             EnsureParentDirectory(path)
+
             If cfg Is Nothing Then cfg = New LauncherConfig()
             If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
             Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
 
-            ' Robust save: write temp then replace/move (framework-friendly)
             Dim tmp = path & ".tmp"
             File.WriteAllText(tmp, json, Encoding.UTF8)
 
             If File.Exists(path) Then
                 Try
-                    ' Framework-friendly replace:
                     File.Delete(path)
                     File.Move(tmp, path)
                 Catch
@@ -205,7 +187,6 @@ Public NotInheritable Class OptionsManager
                         File.Copy(tmp, path, overwrite:=True)
                         File.Delete(tmp)
                     Catch
-                        ' Last resort: leave tmp if copy failed
                     End Try
                 End Try
             Else
@@ -213,7 +194,7 @@ Public NotInheritable Class OptionsManager
             End If
 
         Catch
-            ' Swallow/log if you have a logger
+            ' Fail-soft
         End Try
     End Sub
 
@@ -222,22 +203,25 @@ Public NotInheritable Class OptionsManager
     End Function
 
     Public Shared Function GetLauncherConfigPath() As String
-        Dim dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "STA2")
+        Dim dir =
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "STA2")
         Directory.CreateDirectory(dir)
         Return Path.Combine(dir, "launcher.config.json")
     End Function
 
-    ' ------------------------
-    ' Public helpers (admin / migrations)
-    ' ------------------------
+    ' =========================================================
+    ' QuickLaunch helpers
+    ' =========================================================
 
-    ''' <summary>
-    ''' Explicit migration helper if you later decide to change the quick slot count.
-    ''' Not called by LoadOrCreate to avoid silent growth across runs.
-    ''' Call it once on purpose (e.g., from a settings action) and then remove the call.
-    ''' </summary>
-    Public Shared Sub EnsureQuickLaunchSlotCount(opts As AppOptions, target As Integer, Optional shrink As Boolean = False)
+    Public Shared Sub EnsureQuickLaunchSlotCount(
+        opts As AppOptions,
+        target As Integer,
+        Optional shrink As Boolean = False)
+
         If opts Is Nothing Then Exit Sub
+
         If opts.QuickLaunchIds Is Nothing Then
             opts.QuickLaunchIds = Enumerable.Repeat("", target).ToList()
         Else
@@ -250,13 +234,10 @@ Public NotInheritable Class OptionsManager
                 End While
             End If
         End If
+
         Save(opts)
     End Sub
 
-    ''' <summary>
-    ''' Ensures each program Id appears at most once across QuickLaunchIds.
-    ''' Keeps the first occurrence, clears later duplicates. Returns True if changed.
-    ''' </summary>
     Public Shared Function DedupeQuickLaunchIds(opts As AppOptions) As Boolean
         If opts Is Nothing OrElse opts.QuickLaunchIds Is Nothing Then Return False
 
@@ -267,25 +248,19 @@ Public NotInheritable Class OptionsManager
             Dim id = opts.QuickLaunchIds(i)
             If String.IsNullOrWhiteSpace(id) Then Continue For
             If Not seen.Add(id) Then
-                ' Duplicate — clear this later occurrence
                 opts.QuickLaunchIds(i) = ""
                 changed = True
             End If
         Next
+
         Return changed
     End Function
 
-    ''' <summary>
-    ''' Trims trailing empty slots while preserving the last assigned slot.
-    ''' Keeps at least DEFAULT slots and enough to include last assigned.
-    ''' Returns True if changed.
-    ''' </summary>
     Public Shared Function TrimTrailingEmptyQuickSlots(opts As AppOptions) As Boolean
         If opts Is Nothing OrElse opts.QuickLaunchIds Is Nothing Then Return False
 
         Dim originalCount = opts.QuickLaunchIds.Count
 
-        ' Find last non-empty index
         Dim lastAssigned As Integer = -1
         For i = 0 To opts.QuickLaunchIds.Count - 1
             If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(i)) Then
@@ -293,27 +268,27 @@ Public NotInheritable Class OptionsManager
             End If
         Next
 
-        ' Keep at least default and enough to include last assigned slot
-        Dim minCount As Integer = Math.Max(GenericConstants.QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
+        Dim minCount =
+            Math.Max(GenericConstants.QUICKLAUNCH_SLOT_COUNT, lastAssigned + 1)
 
         If opts.QuickLaunchIds.Count > minCount Then
-            ' Trim only if the tail beyond minCount is all empty
             For j = minCount To opts.QuickLaunchIds.Count - 1
                 If Not String.IsNullOrWhiteSpace(opts.QuickLaunchIds(j)) Then
-                    Return False ' can't trim; there is a non-empty tail
+                    Return False
                 End If
             Next
-            opts.QuickLaunchIds.RemoveRange(minCount, opts.QuickLaunchIds.Count - minCount)
+            opts.QuickLaunchIds.RemoveRange(
+                minCount,
+                opts.QuickLaunchIds.Count - minCount)
         End If
 
         Return opts.QuickLaunchIds.Count <> originalCount
     End Function
 
-    ' ------------------------
-    ' Private IO helpers
-    ' ------------------------
+    ' =========================================================
+    ' IO Helpers
+    ' =========================================================
 
-    ' Safe tolerant read: strips UTF-8 BOM and leading whitespace if present, then returns text.
     Private Shared Function SafeReadAllText(path As String) As String
         Dim bytes = File.ReadAllBytes(path)
         bytes = StripUtf8Bom(bytes)
@@ -340,20 +315,22 @@ Public NotInheritable Class OptionsManager
 
     Private Shared Function TrimLeadingWhitespace(data As Byte()) As Byte()
         If data Is Nothing OrElse data.Length = 0 Then Return data
+
         Dim i As Integer = 0
         While i < data.Length
-            Dim b = data(i)
-            If b = &H20 OrElse b = &H9 OrElse b = &HD OrElse b = &HA Then
-                i += 1
-            Else
-                Exit While
-            End If
+            Select Case data(i)
+                Case &H20, &H9, &HD, &HA
+                    i += 1
+                Case Else
+                    Exit While
+            End Select
         End While
+
         If i = 0 Then Return data
+
         Dim trimmed(data.Length - i - 1) As Byte
         Buffer.BlockCopy(data, i, trimmed, 0, trimmed.Length)
         Return trimmed
     End Function
-
 
 End Class

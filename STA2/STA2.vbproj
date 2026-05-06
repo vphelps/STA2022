@@ -141,6 +141,14 @@
     <Compile Include="Core\CommonVariables.vb" />
     <Compile Include="Core\UIHelpers.vb" />
     <Compile Include="Data\RepoTools.vb" />
+    <Compile Include="Services\ServiceManager.vb" />
+    <Compile Include="Services\ServiceRowControl.Designer.vb">
+      <DependentUpon>ServiceRowControl.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ServiceRowControl.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Services\ServicesDisplay.vb" />
     <Compile Include="Tools\Connections.vb" />
     <Compile Include="Core\Constants.vb" />
     <Compile Include="Data\DatabaseCoordinator.vb" />
@@ -189,7 +197,6 @@
     <Compile Include="Data\ReliableSql.vb" />
     <Compile Include="Data\SafeDb.vb" />
     <Compile Include="Services\ServiceIntrospection.vb" />
-    <Compile Include="Services\Services.vb" />
     <Compile Include="SplashScreen1.Designer.vb">
       <DependentUpon>SplashScreen1.vb</DependentUpon>
     </Compile>
@@ -211,6 +218,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ServiceRowControl.resx">
+      <DependentUpon>ServiceRowControl.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SplashScreen1.resx">
       <DependentUpon>SplashScreen1.vb</DependentUpon>
@@ -248,6 +258,35 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CenterEdge.ico" />
+    <None Include="Images\NotInstalled.png" />
+    <None Include="Images\Play.png" />
+    <None Include="Images\QuestionMark.png" />
+    <None Include="Images\Refresh.png" />
+    <None Include="Images\Run.png" />
+    <None Include="Images\StatusError.png" />
+    <None Include="Images\StatusExcluded.png" />
+    <None Include="Images\StatusInformation.png" />
+    <None Include="Images\StatusNo.png" />
+    <None Include="Images\StatusOffline.png" />
+    <None Include="Images\StatusOK.png" />
+    <None Include="Images\StatusPaused.png" />
+    <None Include="Images\StatusRunning.png" />
+    <None Include="Images\StatusStopped.png" />
+    <None Include="Images\StatusWarning.png" />
+    <None Include="Images\Stop.png" />
+    <None Include="Images\icons8-play-96.png" />
+    <None Include="Images\icons8-play-button-96.png" />
+    <None Include="Images\icons8-stop-96.png" />
+    <None Include="Images\icons8-check-mark-96.png" />
+    <None Include="Images\icons8-check-mark-button-96.png" />
+    <None Include="Images\icons8-cross-mark-96.png" />
+    <None Include="Images\icons8-question-mark-96.png" />
+    <None Include="Images\icons8-unavailable-96.png" />
+    <None Include="Images\icons8-warning-96.png" />
+    <None Include="Images\icons8-refresh-96.png" />
+    <None Include="Images\NotInstalled1.png" />
+    <None Include="Images\Play1.png" />
+    <None Include="Images\icons8-unavailable-64.png" />
     <Content Include="vernware_logo_XUD_icon.ico" />
   </ItemGroup>
   <ItemGroup>
