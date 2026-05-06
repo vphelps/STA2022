@@ -264,7 +264,7 @@ Public Class FormMain
         ' -------------------------------------------------
         ' Select Services tab by default
         ' -------------------------------------------------
-        tcSTA.SelectedTab = tpServices
+        'tcSTA.SelectedTab = tpServices
 
         ' -------------------------------------------------
         ' Build the Services UI (rows only, no logic)
@@ -648,19 +648,6 @@ Public Class FormMain
         dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
     End Sub
 
-
-
-    ' Initialize progress control and insert into StatusStrip1
-
-    ' Subscribe to service events in Load
-
-
-
-    Private Sub tbCoreService_GotFocus(sender As Object, e As EventArgs) Handles tbCoreService.GotFocus, tbCoreService.GotFocus, tbCloudService.GotFocus, tbAdvCreditService.GotFocus, tbAdvSignageService.GotFocus, tbAdvLicService.GotFocus, tbAdvNotifyService.GotFocus, tbAdvTurnstileEngine.GotFocus, tbAdvantageUpgradeService.GotFocus, tbRelayService.GotFocus
-        Dim caller As TextBox = DirectCast(sender, TextBox)
-        caller.SelectionStart = 0
-        caller.SelectionLength = 0
-    End Sub
 
     Private Sub tcSTA_Click(sender As Object, e As EventArgs) Handles tcSTA.Click
         btnDbLogRefresh.PerformClick()

@@ -49,47 +49,6 @@ Partial Class FormMain
         Me.tbPcArch = New System.Windows.Forms.TextBox()
         Me.tbPcNetVersion = New System.Windows.Forms.TextBox()
         Me.tbPcAdvVersion = New System.Windows.Forms.TextBox()
-        Me.flpServicesOld = New System.Windows.Forms.FlowLayoutPanel()
-        Me.gpApiService = New System.Windows.Forms.GroupBox()
-        Me.btnApiServiceRS = New System.Windows.Forms.Button()
-        Me.tbApiService = New System.Windows.Forms.TextBox()
-        Me.btnApiServiceSS = New System.Windows.Forms.Button()
-        Me.gpCoreService = New System.Windows.Forms.GroupBox()
-        Me.btnCoreServiceRS = New System.Windows.Forms.Button()
-        Me.tbCoreService = New System.Windows.Forms.TextBox()
-        Me.btnCoreServiceSS = New System.Windows.Forms.Button()
-        Me.gpCloudService = New System.Windows.Forms.GroupBox()
-        Me.btnCloudServiceRS = New System.Windows.Forms.Button()
-        Me.tbCloudService = New System.Windows.Forms.TextBox()
-        Me.btnCloudServiceSS = New System.Windows.Forms.Button()
-        Me.gpAdvCreditService = New System.Windows.Forms.GroupBox()
-        Me.btnAdvCreditServiceRS = New System.Windows.Forms.Button()
-        Me.tbAdvCreditService = New System.Windows.Forms.TextBox()
-        Me.btnAdvCreditServiceSS = New System.Windows.Forms.Button()
-        Me.gpAdvSignageService = New System.Windows.Forms.GroupBox()
-        Me.btnAdvSignageServiceRS = New System.Windows.Forms.Button()
-        Me.tbAdvSignageService = New System.Windows.Forms.TextBox()
-        Me.btnAdvSignageServiceSS = New System.Windows.Forms.Button()
-        Me.gpAdvLicService = New System.Windows.Forms.GroupBox()
-        Me.btnAdvLicServiceRS = New System.Windows.Forms.Button()
-        Me.tbAdvLicService = New System.Windows.Forms.TextBox()
-        Me.btnAdvLicServiceSS = New System.Windows.Forms.Button()
-        Me.gpAdvNotifyService = New System.Windows.Forms.GroupBox()
-        Me.btnAdvNotifyServiceRS = New System.Windows.Forms.Button()
-        Me.tbAdvNotifyService = New System.Windows.Forms.TextBox()
-        Me.btnAdvNotifyServiceSS = New System.Windows.Forms.Button()
-        Me.gpRelayService = New System.Windows.Forms.GroupBox()
-        Me.btnRelayServiceRS = New System.Windows.Forms.Button()
-        Me.tbRelayService = New System.Windows.Forms.TextBox()
-        Me.btnRelayServiceSS = New System.Windows.Forms.Button()
-        Me.gpAdvTurnstileEngine = New System.Windows.Forms.GroupBox()
-        Me.btnAdvTurnstileEngineRS = New System.Windows.Forms.Button()
-        Me.tbAdvTurnstileEngine = New System.Windows.Forms.TextBox()
-        Me.btnAdvTurnstileEngineSS = New System.Windows.Forms.Button()
-        Me.gpAdvantageUpgradeService = New System.Windows.Forms.GroupBox()
-        Me.btnAdvantageUpgradeServiceRS = New System.Windows.Forms.Button()
-        Me.tbAdvantageUpgradeService = New System.Windows.Forms.TextBox()
-        Me.btnAdvantageUpgradeServiceSS = New System.Windows.Forms.Button()
         Me.gpLicInfo = New System.Windows.Forms.GroupBox()
         Me.tbShiftDate = New System.Windows.Forms.TextBox()
         Me.tbLocName = New System.Windows.Forms.TextBox()
@@ -266,17 +225,6 @@ Partial Class FormMain
         Me.tpGeneral.SuspendLayout()
         Me.gpPcInfo.SuspendLayout()
         Me.tlpPcInfo.SuspendLayout()
-        Me.flpServicesOld.SuspendLayout()
-        Me.gpApiService.SuspendLayout()
-        Me.gpCoreService.SuspendLayout()
-        Me.gpCloudService.SuspendLayout()
-        Me.gpAdvCreditService.SuspendLayout()
-        Me.gpAdvSignageService.SuspendLayout()
-        Me.gpAdvLicService.SuspendLayout()
-        Me.gpAdvNotifyService.SuspendLayout()
-        Me.gpRelayService.SuspendLayout()
-        Me.gpAdvTurnstileEngine.SuspendLayout()
-        Me.gpAdvantageUpgradeService.SuspendLayout()
         Me.gpLicInfo.SuspendLayout()
         Me.tpAdvData.SuspendLayout()
         CType(Me.dgvApplicationInfo, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -304,7 +252,6 @@ Partial Class FormMain
         Me.gpAdvUpgrade.SuspendLayout()
         Me.tpQATools.SuspendLayout()
         Me.gbLiveOutput.SuspendLayout()
-        Me.tpServices.SuspendLayout()
         Me.pnlServicesContainer.SuspendLayout()
         Me.gpCommonApps.SuspendLayout()
         Me.gbAdvApps.SuspendLayout()
@@ -377,9 +324,9 @@ Partial Class FormMain
         'tpGeneral
         '
         Me.tpGeneral.BackColor = System.Drawing.Color.Gray
+        Me.tpGeneral.Controls.Add(Me.pnlServicesContainer)
         Me.tpGeneral.Controls.Add(Me.tbServicesButtonsHelpMessage)
         Me.tpGeneral.Controls.Add(Me.gpPcInfo)
-        Me.tpGeneral.Controls.Add(Me.flpServicesOld)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
@@ -610,475 +557,6 @@ Partial Class FormMain
         Me.tbPcAdvVersion.Name = "tbPcAdvVersion"
         Me.tbPcAdvVersion.Size = New System.Drawing.Size(258, 20)
         Me.tbPcAdvVersion.TabIndex = 20
-        '
-        'flpServicesOld
-        '
-        Me.flpServicesOld.Controls.Add(Me.gpApiService)
-        Me.flpServicesOld.Controls.Add(Me.gpCoreService)
-        Me.flpServicesOld.Controls.Add(Me.gpCloudService)
-        Me.flpServicesOld.Controls.Add(Me.gpAdvCreditService)
-        Me.flpServicesOld.Controls.Add(Me.gpAdvSignageService)
-        Me.flpServicesOld.Controls.Add(Me.gpAdvLicService)
-        Me.flpServicesOld.Controls.Add(Me.gpAdvNotifyService)
-        Me.flpServicesOld.Controls.Add(Me.gpRelayService)
-        Me.flpServicesOld.Controls.Add(Me.gpAdvTurnstileEngine)
-        Me.flpServicesOld.Controls.Add(Me.gpAdvantageUpgradeService)
-        Me.flpServicesOld.FlowDirection = System.Windows.Forms.FlowDirection.TopDown
-        Me.flpServicesOld.Location = New System.Drawing.Point(415, 6)
-        Me.flpServicesOld.Name = "flpServicesOld"
-        Me.flpServicesOld.Size = New System.Drawing.Size(468, 567)
-        Me.flpServicesOld.TabIndex = 12
-        '
-        'gpApiService
-        '
-        Me.gpApiService.BackColor = System.Drawing.Color.LightGray
-        Me.gpApiService.Controls.Add(Me.btnApiServiceRS)
-        Me.gpApiService.Controls.Add(Me.tbApiService)
-        Me.gpApiService.Controls.Add(Me.btnApiServiceSS)
-        Me.gpApiService.Location = New System.Drawing.Point(3, 3)
-        Me.gpApiService.Name = "gpApiService"
-        Me.gpApiService.Size = New System.Drawing.Size(362, 49)
-        Me.gpApiService.TabIndex = 15
-        Me.gpApiService.TabStop = False
-        Me.gpApiService.Tag = ""
-        Me.gpApiService.Text = "Api Service"
-        '
-        'btnApiServiceRS
-        '
-        Me.btnApiServiceRS.Location = New System.Drawing.Point(278, 16)
-        Me.btnApiServiceRS.Name = "btnApiServiceRS"
-        Me.btnApiServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnApiServiceRS.TabIndex = 15
-        Me.btnApiServiceRS.Tag = "Api Service"
-        Me.btnApiServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnApiServiceRS, "Restart the Advantage API Service")
-        Me.btnApiServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbApiService
-        '
-        Me.tbApiService.BackColor = System.Drawing.SystemColors.Control
-        Me.tbApiService.Location = New System.Drawing.Point(6, 19)
-        Me.tbApiService.Name = "tbApiService"
-        Me.tbApiService.ReadOnly = True
-        Me.tbApiService.Size = New System.Drawing.Size(185, 20)
-        Me.tbApiService.TabIndex = 13
-        Me.tbApiService.Tag = "Api Service"
-        '
-        'btnApiServiceSS
-        '
-        Me.btnApiServiceSS.Location = New System.Drawing.Point(197, 16)
-        Me.btnApiServiceSS.Name = "btnApiServiceSS"
-        Me.btnApiServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnApiServiceSS.TabIndex = 14
-        Me.btnApiServiceSS.Tag = "Api Service"
-        Me.btnApiServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnApiServiceSS, "Start/Stop  the Advantage API Service" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10))
-        Me.btnApiServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpCoreService
-        '
-        Me.gpCoreService.BackColor = System.Drawing.Color.LightGray
-        Me.gpCoreService.Controls.Add(Me.btnCoreServiceRS)
-        Me.gpCoreService.Controls.Add(Me.tbCoreService)
-        Me.gpCoreService.Controls.Add(Me.btnCoreServiceSS)
-        Me.gpCoreService.Location = New System.Drawing.Point(3, 58)
-        Me.gpCoreService.Name = "gpCoreService"
-        Me.gpCoreService.Size = New System.Drawing.Size(362, 49)
-        Me.gpCoreService.TabIndex = 13
-        Me.gpCoreService.TabStop = False
-        Me.gpCoreService.Tag = ""
-        Me.gpCoreService.Text = "Core Service"
-        '
-        'btnCoreServiceRS
-        '
-        Me.btnCoreServiceRS.Location = New System.Drawing.Point(278, 16)
-        Me.btnCoreServiceRS.Name = "btnCoreServiceRS"
-        Me.btnCoreServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnCoreServiceRS.TabIndex = 15
-        Me.btnCoreServiceRS.Tag = "Core Service"
-        Me.btnCoreServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnCoreServiceRS, "Restart the Advantage Core Service")
-        Me.btnCoreServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbCoreService
-        '
-        Me.tbCoreService.Location = New System.Drawing.Point(6, 19)
-        Me.tbCoreService.Name = "tbCoreService"
-        Me.tbCoreService.ReadOnly = True
-        Me.tbCoreService.Size = New System.Drawing.Size(185, 20)
-        Me.tbCoreService.TabIndex = 13
-        Me.tbCoreService.Tag = "Core Service"
-        '
-        'btnCoreServiceSS
-        '
-        Me.btnCoreServiceSS.Location = New System.Drawing.Point(197, 16)
-        Me.btnCoreServiceSS.Name = "btnCoreServiceSS"
-        Me.btnCoreServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnCoreServiceSS.TabIndex = 14
-        Me.btnCoreServiceSS.Tag = "Core Service"
-        Me.btnCoreServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnCoreServiceSS, "Start/Stop the Advantage Core Service")
-        Me.btnCoreServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpCloudService
-        '
-        Me.gpCloudService.BackColor = System.Drawing.Color.LightGray
-        Me.gpCloudService.Controls.Add(Me.btnCloudServiceRS)
-        Me.gpCloudService.Controls.Add(Me.tbCloudService)
-        Me.gpCloudService.Controls.Add(Me.btnCloudServiceSS)
-        Me.gpCloudService.Location = New System.Drawing.Point(3, 113)
-        Me.gpCloudService.Name = "gpCloudService"
-        Me.gpCloudService.Size = New System.Drawing.Size(362, 49)
-        Me.gpCloudService.TabIndex = 14
-        Me.gpCloudService.TabStop = False
-        Me.gpCloudService.Tag = ""
-        Me.gpCloudService.Text = "Cloud Service"
-        '
-        'btnCloudServiceRS
-        '
-        Me.btnCloudServiceRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnCloudServiceRS.Name = "btnCloudServiceRS"
-        Me.btnCloudServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnCloudServiceRS.TabIndex = 18
-        Me.btnCloudServiceRS.Tag = "Cloud Service"
-        Me.btnCloudServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnCloudServiceRS, "Restart the Advantage Cloud Service")
-        Me.btnCloudServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbCloudService
-        '
-        Me.tbCloudService.Location = New System.Drawing.Point(6, 17)
-        Me.tbCloudService.Name = "tbCloudService"
-        Me.tbCloudService.ReadOnly = True
-        Me.tbCloudService.Size = New System.Drawing.Size(185, 20)
-        Me.tbCloudService.TabIndex = 16
-        Me.tbCloudService.Tag = "Cloud Service"
-        '
-        'btnCloudServiceSS
-        '
-        Me.btnCloudServiceSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnCloudServiceSS.Name = "btnCloudServiceSS"
-        Me.btnCloudServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnCloudServiceSS.TabIndex = 17
-        Me.btnCloudServiceSS.Tag = "Cloud Service"
-        Me.btnCloudServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnCloudServiceSS, "Start/Stop the Advantage Cloud Service")
-        Me.btnCloudServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpAdvCreditService
-        '
-        Me.gpAdvCreditService.BackColor = System.Drawing.Color.LightGray
-        Me.gpAdvCreditService.Controls.Add(Me.btnAdvCreditServiceRS)
-        Me.gpAdvCreditService.Controls.Add(Me.tbAdvCreditService)
-        Me.gpAdvCreditService.Controls.Add(Me.btnAdvCreditServiceSS)
-        Me.gpAdvCreditService.Location = New System.Drawing.Point(3, 168)
-        Me.gpAdvCreditService.Name = "gpAdvCreditService"
-        Me.gpAdvCreditService.Size = New System.Drawing.Size(362, 49)
-        Me.gpAdvCreditService.TabIndex = 16
-        Me.gpAdvCreditService.TabStop = False
-        Me.gpAdvCreditService.Tag = ""
-        Me.gpAdvCreditService.Text = "Credit Service"
-        '
-        'btnAdvCreditServiceRS
-        '
-        Me.btnAdvCreditServiceRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnAdvCreditServiceRS.Name = "btnAdvCreditServiceRS"
-        Me.btnAdvCreditServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvCreditServiceRS.TabIndex = 18
-        Me.btnAdvCreditServiceRS.Tag = "Credit Service"
-        Me.btnAdvCreditServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnAdvCreditServiceRS, "Restart the Advantage Credit Service")
-        Me.btnAdvCreditServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbAdvCreditService
-        '
-        Me.tbAdvCreditService.Location = New System.Drawing.Point(6, 17)
-        Me.tbAdvCreditService.Name = "tbAdvCreditService"
-        Me.tbAdvCreditService.ReadOnly = True
-        Me.tbAdvCreditService.Size = New System.Drawing.Size(185, 20)
-        Me.tbAdvCreditService.TabIndex = 16
-        Me.tbAdvCreditService.Tag = "Credit Service"
-        '
-        'btnAdvCreditServiceSS
-        '
-        Me.btnAdvCreditServiceSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnAdvCreditServiceSS.Name = "btnAdvCreditServiceSS"
-        Me.btnAdvCreditServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvCreditServiceSS.TabIndex = 17
-        Me.btnAdvCreditServiceSS.Tag = "Credit Service"
-        Me.btnAdvCreditServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnAdvCreditServiceSS, "Start/Stop the Advantage Credit Service")
-        Me.btnAdvCreditServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpAdvSignageService
-        '
-        Me.gpAdvSignageService.BackColor = System.Drawing.Color.LightGray
-        Me.gpAdvSignageService.Controls.Add(Me.btnAdvSignageServiceRS)
-        Me.gpAdvSignageService.Controls.Add(Me.tbAdvSignageService)
-        Me.gpAdvSignageService.Controls.Add(Me.btnAdvSignageServiceSS)
-        Me.gpAdvSignageService.Location = New System.Drawing.Point(3, 223)
-        Me.gpAdvSignageService.Name = "gpAdvSignageService"
-        Me.gpAdvSignageService.Size = New System.Drawing.Size(362, 49)
-        Me.gpAdvSignageService.TabIndex = 17
-        Me.gpAdvSignageService.TabStop = False
-        Me.gpAdvSignageService.Tag = ""
-        Me.gpAdvSignageService.Text = "Signage Service"
-        '
-        'btnAdvSignageServiceRS
-        '
-        Me.btnAdvSignageServiceRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnAdvSignageServiceRS.Name = "btnAdvSignageServiceRS"
-        Me.btnAdvSignageServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvSignageServiceRS.TabIndex = 18
-        Me.btnAdvSignageServiceRS.Tag = "Signage Service"
-        Me.btnAdvSignageServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnAdvSignageServiceRS, "Restart the Advantage Signage Service")
-        Me.btnAdvSignageServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbAdvSignageService
-        '
-        Me.tbAdvSignageService.Location = New System.Drawing.Point(6, 17)
-        Me.tbAdvSignageService.Name = "tbAdvSignageService"
-        Me.tbAdvSignageService.ReadOnly = True
-        Me.tbAdvSignageService.Size = New System.Drawing.Size(185, 20)
-        Me.tbAdvSignageService.TabIndex = 16
-        Me.tbAdvSignageService.Tag = "Signage Service"
-        '
-        'btnAdvSignageServiceSS
-        '
-        Me.btnAdvSignageServiceSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnAdvSignageServiceSS.Name = "btnAdvSignageServiceSS"
-        Me.btnAdvSignageServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvSignageServiceSS.TabIndex = 17
-        Me.btnAdvSignageServiceSS.Tag = "Signage Service"
-        Me.btnAdvSignageServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnAdvSignageServiceSS, "Start/Stop the Advantage Signage Service")
-        Me.btnAdvSignageServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpAdvLicService
-        '
-        Me.gpAdvLicService.BackColor = System.Drawing.Color.LightGray
-        Me.gpAdvLicService.Controls.Add(Me.btnAdvLicServiceRS)
-        Me.gpAdvLicService.Controls.Add(Me.tbAdvLicService)
-        Me.gpAdvLicService.Controls.Add(Me.btnAdvLicServiceSS)
-        Me.gpAdvLicService.Location = New System.Drawing.Point(3, 278)
-        Me.gpAdvLicService.Name = "gpAdvLicService"
-        Me.gpAdvLicService.Size = New System.Drawing.Size(362, 49)
-        Me.gpAdvLicService.TabIndex = 19
-        Me.gpAdvLicService.TabStop = False
-        Me.gpAdvLicService.Tag = ""
-        Me.gpAdvLicService.Text = "License Service"
-        '
-        'btnAdvLicServiceRS
-        '
-        Me.btnAdvLicServiceRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnAdvLicServiceRS.Name = "btnAdvLicServiceRS"
-        Me.btnAdvLicServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvLicServiceRS.TabIndex = 18
-        Me.btnAdvLicServiceRS.Tag = "License Service"
-        Me.btnAdvLicServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnAdvLicServiceRS, "Restart the Advantage License Service")
-        Me.btnAdvLicServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbAdvLicService
-        '
-        Me.tbAdvLicService.Location = New System.Drawing.Point(6, 17)
-        Me.tbAdvLicService.Name = "tbAdvLicService"
-        Me.tbAdvLicService.ReadOnly = True
-        Me.tbAdvLicService.Size = New System.Drawing.Size(185, 20)
-        Me.tbAdvLicService.TabIndex = 16
-        Me.tbAdvLicService.Tag = "License Service"
-        '
-        'btnAdvLicServiceSS
-        '
-        Me.btnAdvLicServiceSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnAdvLicServiceSS.Name = "btnAdvLicServiceSS"
-        Me.btnAdvLicServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvLicServiceSS.TabIndex = 17
-        Me.btnAdvLicServiceSS.Tag = "License Service"
-        Me.btnAdvLicServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnAdvLicServiceSS, "Start/Stop the Advantage License Service")
-        Me.btnAdvLicServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpAdvNotifyService
-        '
-        Me.gpAdvNotifyService.BackColor = System.Drawing.Color.LightGray
-        Me.gpAdvNotifyService.Controls.Add(Me.btnAdvNotifyServiceRS)
-        Me.gpAdvNotifyService.Controls.Add(Me.tbAdvNotifyService)
-        Me.gpAdvNotifyService.Controls.Add(Me.btnAdvNotifyServiceSS)
-        Me.gpAdvNotifyService.Location = New System.Drawing.Point(3, 333)
-        Me.gpAdvNotifyService.Name = "gpAdvNotifyService"
-        Me.gpAdvNotifyService.Size = New System.Drawing.Size(362, 49)
-        Me.gpAdvNotifyService.TabIndex = 21
-        Me.gpAdvNotifyService.TabStop = False
-        Me.gpAdvNotifyService.Tag = ""
-        Me.gpAdvNotifyService.Text = "Notification Service"
-        '
-        'btnAdvNotifyServiceRS
-        '
-        Me.btnAdvNotifyServiceRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnAdvNotifyServiceRS.Name = "btnAdvNotifyServiceRS"
-        Me.btnAdvNotifyServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvNotifyServiceRS.TabIndex = 18
-        Me.btnAdvNotifyServiceRS.Tag = "Notification Service"
-        Me.btnAdvNotifyServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnAdvNotifyServiceRS, "Restart the Advantage Notification Service")
-        Me.btnAdvNotifyServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbAdvNotifyService
-        '
-        Me.tbAdvNotifyService.Location = New System.Drawing.Point(6, 17)
-        Me.tbAdvNotifyService.Name = "tbAdvNotifyService"
-        Me.tbAdvNotifyService.ReadOnly = True
-        Me.tbAdvNotifyService.Size = New System.Drawing.Size(185, 20)
-        Me.tbAdvNotifyService.TabIndex = 16
-        Me.tbAdvNotifyService.Tag = "Notification Service"
-        '
-        'btnAdvNotifyServiceSS
-        '
-        Me.btnAdvNotifyServiceSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnAdvNotifyServiceSS.Name = "btnAdvNotifyServiceSS"
-        Me.btnAdvNotifyServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvNotifyServiceSS.TabIndex = 17
-        Me.btnAdvNotifyServiceSS.Tag = "Notification Service"
-        Me.btnAdvNotifyServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnAdvNotifyServiceSS, "Start/Stop the Advantage Notification Service")
-        Me.btnAdvNotifyServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpRelayService
-        '
-        Me.gpRelayService.BackColor = System.Drawing.Color.LightGray
-        Me.gpRelayService.Controls.Add(Me.btnRelayServiceRS)
-        Me.gpRelayService.Controls.Add(Me.tbRelayService)
-        Me.gpRelayService.Controls.Add(Me.btnRelayServiceSS)
-        Me.gpRelayService.Location = New System.Drawing.Point(3, 388)
-        Me.gpRelayService.Name = "gpRelayService"
-        Me.gpRelayService.Size = New System.Drawing.Size(362, 49)
-        Me.gpRelayService.TabIndex = 22
-        Me.gpRelayService.TabStop = False
-        Me.gpRelayService.Tag = ""
-        Me.gpRelayService.Text = "Relay Service"
-        '
-        'btnRelayServiceRS
-        '
-        Me.btnRelayServiceRS.Location = New System.Drawing.Point(278, 16)
-        Me.btnRelayServiceRS.Name = "btnRelayServiceRS"
-        Me.btnRelayServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnRelayServiceRS.TabIndex = 15
-        Me.btnRelayServiceRS.Tag = "Core Service"
-        Me.btnRelayServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnRelayServiceRS, "Restart the Advantage Core Service")
-        Me.btnRelayServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbRelayService
-        '
-        Me.tbRelayService.Location = New System.Drawing.Point(6, 19)
-        Me.tbRelayService.Name = "tbRelayService"
-        Me.tbRelayService.ReadOnly = True
-        Me.tbRelayService.Size = New System.Drawing.Size(185, 20)
-        Me.tbRelayService.TabIndex = 13
-        Me.tbRelayService.Tag = "Core Service"
-        '
-        'btnRelayServiceSS
-        '
-        Me.btnRelayServiceSS.Location = New System.Drawing.Point(197, 16)
-        Me.btnRelayServiceSS.Name = "btnRelayServiceSS"
-        Me.btnRelayServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnRelayServiceSS.TabIndex = 14
-        Me.btnRelayServiceSS.Tag = "Core Service"
-        Me.btnRelayServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnRelayServiceSS, "Start/Stop the Advantage Core Service")
-        Me.btnRelayServiceSS.UseVisualStyleBackColor = True
-        '
-        'gpAdvTurnstileEngine
-        '
-        Me.gpAdvTurnstileEngine.BackColor = System.Drawing.Color.LightGray
-        Me.gpAdvTurnstileEngine.Controls.Add(Me.btnAdvTurnstileEngineRS)
-        Me.gpAdvTurnstileEngine.Controls.Add(Me.tbAdvTurnstileEngine)
-        Me.gpAdvTurnstileEngine.Controls.Add(Me.btnAdvTurnstileEngineSS)
-        Me.gpAdvTurnstileEngine.Location = New System.Drawing.Point(3, 443)
-        Me.gpAdvTurnstileEngine.Name = "gpAdvTurnstileEngine"
-        Me.gpAdvTurnstileEngine.Size = New System.Drawing.Size(362, 49)
-        Me.gpAdvTurnstileEngine.TabIndex = 20
-        Me.gpAdvTurnstileEngine.TabStop = False
-        Me.gpAdvTurnstileEngine.Tag = ""
-        Me.gpAdvTurnstileEngine.Text = "Turnstile Service"
-        '
-        'btnAdvTurnstileEngineRS
-        '
-        Me.btnAdvTurnstileEngineRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnAdvTurnstileEngineRS.Name = "btnAdvTurnstileEngineRS"
-        Me.btnAdvTurnstileEngineRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvTurnstileEngineRS.TabIndex = 18
-        Me.btnAdvTurnstileEngineRS.Tag = "Turnstile Service"
-        Me.btnAdvTurnstileEngineRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnAdvTurnstileEngineRS, "Restart the Advantage Turnstile Service")
-        Me.btnAdvTurnstileEngineRS.UseVisualStyleBackColor = True
-        '
-        'tbAdvTurnstileEngine
-        '
-        Me.tbAdvTurnstileEngine.Location = New System.Drawing.Point(6, 17)
-        Me.tbAdvTurnstileEngine.Name = "tbAdvTurnstileEngine"
-        Me.tbAdvTurnstileEngine.ReadOnly = True
-        Me.tbAdvTurnstileEngine.Size = New System.Drawing.Size(185, 20)
-        Me.tbAdvTurnstileEngine.TabIndex = 16
-        Me.tbAdvTurnstileEngine.Tag = "Turnstile Service"
-        '
-        'btnAdvTurnstileEngineSS
-        '
-        Me.btnAdvTurnstileEngineSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnAdvTurnstileEngineSS.Name = "btnAdvTurnstileEngineSS"
-        Me.btnAdvTurnstileEngineSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvTurnstileEngineSS.TabIndex = 17
-        Me.btnAdvTurnstileEngineSS.Tag = "Turnstile Service"
-        Me.btnAdvTurnstileEngineSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnAdvTurnstileEngineSS, "Start/Stop the Advantage Turnstile Service")
-        Me.btnAdvTurnstileEngineSS.UseVisualStyleBackColor = True
-        '
-        'gpAdvantageUpgradeService
-        '
-        Me.gpAdvantageUpgradeService.BackColor = System.Drawing.Color.LightGray
-        Me.gpAdvantageUpgradeService.Controls.Add(Me.btnAdvantageUpgradeServiceRS)
-        Me.gpAdvantageUpgradeService.Controls.Add(Me.tbAdvantageUpgradeService)
-        Me.gpAdvantageUpgradeService.Controls.Add(Me.btnAdvantageUpgradeServiceSS)
-        Me.gpAdvantageUpgradeService.Location = New System.Drawing.Point(3, 498)
-        Me.gpAdvantageUpgradeService.Name = "gpAdvantageUpgradeService"
-        Me.gpAdvantageUpgradeService.Size = New System.Drawing.Size(362, 49)
-        Me.gpAdvantageUpgradeService.TabIndex = 21
-        Me.gpAdvantageUpgradeService.TabStop = False
-        Me.gpAdvantageUpgradeService.Tag = ""
-        Me.gpAdvantageUpgradeService.Text = "Upgrade Service"
-        '
-        'btnAdvantageUpgradeServiceRS
-        '
-        Me.btnAdvantageUpgradeServiceRS.Location = New System.Drawing.Point(278, 14)
-        Me.btnAdvantageUpgradeServiceRS.Name = "btnAdvantageUpgradeServiceRS"
-        Me.btnAdvantageUpgradeServiceRS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvantageUpgradeServiceRS.TabIndex = 18
-        Me.btnAdvantageUpgradeServiceRS.Tag = "Upgrade Service"
-        Me.btnAdvantageUpgradeServiceRS.Text = "Restart"
-        Me.ttSTA2.SetToolTip(Me.btnAdvantageUpgradeServiceRS, "Restart the Advantage Upgrade Service")
-        Me.btnAdvantageUpgradeServiceRS.UseVisualStyleBackColor = True
-        '
-        'tbAdvantageUpgradeService
-        '
-        Me.tbAdvantageUpgradeService.Location = New System.Drawing.Point(6, 17)
-        Me.tbAdvantageUpgradeService.Name = "tbAdvantageUpgradeService"
-        Me.tbAdvantageUpgradeService.ReadOnly = True
-        Me.tbAdvantageUpgradeService.Size = New System.Drawing.Size(185, 20)
-        Me.tbAdvantageUpgradeService.TabIndex = 16
-        Me.tbAdvantageUpgradeService.Tag = "Upgrade Service"
-        '
-        'btnAdvantageUpgradeServiceSS
-        '
-        Me.btnAdvantageUpgradeServiceSS.Location = New System.Drawing.Point(197, 14)
-        Me.btnAdvantageUpgradeServiceSS.Name = "btnAdvantageUpgradeServiceSS"
-        Me.btnAdvantageUpgradeServiceSS.Size = New System.Drawing.Size(75, 23)
-        Me.btnAdvantageUpgradeServiceSS.TabIndex = 17
-        Me.btnAdvantageUpgradeServiceSS.Tag = "Upgrade Service"
-        Me.btnAdvantageUpgradeServiceSS.Text = "Start"
-        Me.ttSTA2.SetToolTip(Me.btnAdvantageUpgradeServiceSS, "Start/Stop the Advantage Upgrade Service")
-        Me.btnAdvantageUpgradeServiceSS.UseVisualStyleBackColor = True
         '
         'gpLicInfo
         '
@@ -2199,7 +1677,6 @@ Partial Class FormMain
         '
         'tpServices
         '
-        Me.tpServices.Controls.Add(Me.pnlServicesContainer)
         Me.tpServices.Location = New System.Drawing.Point(4, 22)
         Me.tpServices.Name = "tpServices"
         Me.tpServices.Size = New System.Drawing.Size(1011, 625)
@@ -2210,7 +1687,7 @@ Partial Class FormMain
         'pnlServicesContainer
         '
         Me.pnlServicesContainer.Controls.Add(Me.tblServices)
-        Me.pnlServicesContainer.Location = New System.Drawing.Point(7, 5)
+        Me.pnlServicesContainer.Location = New System.Drawing.Point(456, 3)
         Me.pnlServicesContainer.Name = "pnlServicesContainer"
         Me.pnlServicesContainer.Size = New System.Drawing.Size(536, 617)
         Me.pnlServicesContainer.TabIndex = 1
@@ -2220,6 +1697,7 @@ Partial Class FormMain
         Me.tblServices.AutoScroll = True
         Me.tblServices.AutoSize = True
         Me.tblServices.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.tblServices.BackColor = System.Drawing.Color.Transparent
         Me.tblServices.ColumnCount = 1
         Me.tblServices.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.tblServices.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -2787,27 +2265,6 @@ Partial Class FormMain
         Me.gpPcInfo.ResumeLayout(False)
         Me.tlpPcInfo.ResumeLayout(False)
         Me.tlpPcInfo.PerformLayout()
-        Me.flpServicesOld.ResumeLayout(False)
-        Me.gpApiService.ResumeLayout(False)
-        Me.gpApiService.PerformLayout()
-        Me.gpCoreService.ResumeLayout(False)
-        Me.gpCoreService.PerformLayout()
-        Me.gpCloudService.ResumeLayout(False)
-        Me.gpCloudService.PerformLayout()
-        Me.gpAdvCreditService.ResumeLayout(False)
-        Me.gpAdvCreditService.PerformLayout()
-        Me.gpAdvSignageService.ResumeLayout(False)
-        Me.gpAdvSignageService.PerformLayout()
-        Me.gpAdvLicService.ResumeLayout(False)
-        Me.gpAdvLicService.PerformLayout()
-        Me.gpAdvNotifyService.ResumeLayout(False)
-        Me.gpAdvNotifyService.PerformLayout()
-        Me.gpRelayService.ResumeLayout(False)
-        Me.gpRelayService.PerformLayout()
-        Me.gpAdvTurnstileEngine.ResumeLayout(False)
-        Me.gpAdvTurnstileEngine.PerformLayout()
-        Me.gpAdvantageUpgradeService.ResumeLayout(False)
-        Me.gpAdvantageUpgradeService.PerformLayout()
         Me.gpLicInfo.ResumeLayout(False)
         Me.gpLicInfo.PerformLayout()
         Me.tpAdvData.ResumeLayout(False)
@@ -2845,7 +2302,6 @@ Partial Class FormMain
         Me.tpQATools.ResumeLayout(False)
         Me.tpQATools.PerformLayout()
         Me.gbLiveOutput.ResumeLayout(False)
-        Me.tpServices.ResumeLayout(False)
         Me.pnlServicesContainer.ResumeLayout(False)
         Me.pnlServicesContainer.PerformLayout()
         Me.gpCommonApps.ResumeLayout(False)
@@ -2926,44 +2382,7 @@ Partial Class FormMain
     Friend WithEvents lblMsgLogEndDate As Label
     Friend WithEvents lblMsgLogStartDate As Label
     Friend WithEvents lblMsgLogNumRows As Label
-    Friend WithEvents flpServicesOld As FlowLayoutPanel
-    Friend WithEvents btnCoreServiceRS As Button
-    Friend WithEvents tbCoreService As TextBox
-    Friend WithEvents btnCoreServiceSS As Button
-    Friend WithEvents btnCloudServiceRS As Button
-    Friend WithEvents tbCloudService As TextBox
-    Friend WithEvents btnCloudServiceSS As Button
-    Friend WithEvents gpCoreService As GroupBox
-    Friend WithEvents gpCloudService As GroupBox
     Friend WithEvents tmr1Sec As Timer
-    Friend WithEvents gpApiService As GroupBox
-    Friend WithEvents btnApiServiceRS As Button
-    Friend WithEvents tbApiService As TextBox
-    Friend WithEvents btnApiServiceSS As Button
-    Friend WithEvents gpAdvCreditService As GroupBox
-    Friend WithEvents btnAdvCreditServiceRS As Button
-    Friend WithEvents tbAdvCreditService As TextBox
-    Friend WithEvents btnAdvCreditServiceSS As Button
-    Friend WithEvents gpAdvSignageService As GroupBox
-    Friend WithEvents btnAdvSignageServiceRS As Button
-    Friend WithEvents tbAdvSignageService As TextBox
-    Friend WithEvents btnAdvSignageServiceSS As Button
-    Friend WithEvents gpAdvLicService As GroupBox
-    Friend WithEvents btnAdvLicServiceRS As Button
-    Friend WithEvents tbAdvLicService As TextBox
-    Friend WithEvents btnAdvLicServiceSS As Button
-    Friend WithEvents gpAdvTurnstileEngine As GroupBox
-    Friend WithEvents btnAdvTurnstileEngineRS As Button
-    Friend WithEvents tbAdvTurnstileEngine As TextBox
-    Friend WithEvents btnAdvTurnstileEngineSS As Button
-    Friend WithEvents gpAdvNotifyService As GroupBox
-    Friend WithEvents btnAdvNotifyServiceRS As Button
-    Friend WithEvents tbAdvNotifyService As TextBox
-    Friend WithEvents btnAdvNotifyServiceSS As Button
-    Friend WithEvents gpAdvantageUpgradeService As GroupBox
-    Friend WithEvents btnAdvantageUpgradeServiceRS As Button
-    Friend WithEvents tbAdvantageUpgradeService As TextBox
-    Friend WithEvents btnAdvantageUpgradeServiceSS As Button
     Friend WithEvents tpAdvData As TabPage
     Friend WithEvents dgvAppOptions As DataGridView
     Friend WithEvents OptionName As DataGridViewTextBoxColumn
@@ -3050,10 +2469,6 @@ Partial Class FormMain
     Friend WithEvents tbTest2 As TextBox
     Friend WithEvents btnReconnect As Button
     Friend WithEvents tslblDbState As ToolStripStatusLabel
-    Friend WithEvents gpRelayService As GroupBox
-    Friend WithEvents btnRelayServiceRS As Button
-    Friend WithEvents tbRelayService As TextBox
-    Friend WithEvents btnRelayServiceSS As Button
     Friend WithEvents SplitContainer2 As SplitContainer
     Friend WithEvents btnAdvKiosk As Button
     Friend WithEvents btnAdvKioskSetup As Button

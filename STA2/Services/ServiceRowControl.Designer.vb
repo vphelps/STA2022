@@ -67,10 +67,9 @@ Partial Class ServiceRowControl
         Me.tblLayout.Name = "tblLayout"
         Me.tblLayout.Padding = New System.Windows.Forms.Padding(2, 4, 6, 4)
         Me.tblLayout.RowCount = 2
-        Me.tblLayout.RowStyles.Clear()
-        Me.tblLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize))
-        Me.tblLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize))
-        Me.tblLayout.Size = New System.Drawing.Size(1938, 36)
+        Me.tblLayout.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tblLayout.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.tblLayout.Size = New System.Drawing.Size(0, 36)
         Me.tblLayout.TabIndex = 0
         '
         'picStatus
@@ -121,7 +120,7 @@ Partial Class ServiceRowControl
         Me.pnlButtons.Margin = New System.Windows.Forms.Padding(0, 2, 0, 0)
         Me.pnlButtons.Name = "pnlButtons"
         Me.tblLayout.SetRowSpan(Me.pnlButtons, 2)
-        Me.pnlButtons.Size = New System.Drawing.Size(1770, 26)
+        Me.pnlButtons.Size = New System.Drawing.Size(72, 26)
         Me.pnlButtons.TabIndex = 3
         Me.pnlButtons.WrapContents = False
         '
@@ -154,20 +153,16 @@ Partial Class ServiceRowControl
         '
         'ServiceRowControl
         '
-
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.AutoSize = True
         Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.BackColor = System.Drawing.Color.LightGray
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Controls.Add(Me.tblLayout)
         Me.Margin = New System.Windows.Forms.Padding(0, 0, 0, 6)
-
-        ' ✅ allow vertical growth for 2 text rows
         Me.MinimumSize = New System.Drawing.Size(0, 36)
-        Me.MaximumSize = New System.Drawing.Size(0, 0) ' no vertical cap
-
         Me.Name = "ServiceRowControl"
-
+        Me.Size = New System.Drawing.Size(0, 36)
         Me.tblLayout.ResumeLayout(False)
         Me.tblLayout.PerformLayout()
         CType(Me.picStatus, System.ComponentModel.ISupportInitialize).EndInit()

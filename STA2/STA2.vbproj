@@ -197,7 +197,6 @@
     <Compile Include="Data\ReliableSql.vb" />
     <Compile Include="Data\SafeDb.vb" />
     <Compile Include="Services\ServiceIntrospection.vb" />
-    <Compile Include="Services\Services.vb" />
     <Compile Include="SplashScreen1.Designer.vb">
       <DependentUpon>SplashScreen1.vb</DependentUpon>
     </Compile>
