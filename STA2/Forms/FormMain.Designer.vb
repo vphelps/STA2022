@@ -227,6 +227,8 @@ Partial Class FormMain
         Me.tblFlavorListHints = New System.Windows.Forms.TableLayoutPanel()
         Me.lblFLHints1 = New System.Windows.Forms.Label()
         Me.lblFLHints2 = New System.Windows.Forms.Label()
+        Me.tlpButtons2 = New System.Windows.Forms.TableLayoutPanel()
+        Me.tlpButtons1 = New System.Windows.Forms.TableLayoutPanel()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -277,6 +279,8 @@ Partial Class FormMain
         Me.Panel2.SuspendLayout()
         Me.gbFlavorsList.SuspendLayout()
         Me.tblFlavorListHints.SuspendLayout()
+        Me.tlpButtons2.SuspendLayout()
+        Me.tlpButtons1.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -340,11 +344,11 @@ Partial Class FormMain
         '
         Me.tpGeneral.BackColor = System.Drawing.Color.Gray
         Me.tpGeneral.Controls.Add(Me.tblFlavorListHints)
-        Me.tpGeneral.Controls.Add(Me.gbFlavorsList)
         Me.tpGeneral.Controls.Add(Me.gbLiveOutput)
         Me.tpGeneral.Controls.Add(Me.pnlServicesContainer)
         Me.tpGeneral.Controls.Add(Me.gpPcInfo)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
+        Me.tpGeneral.Controls.Add(Me.gbFlavorsList)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
@@ -1823,12 +1827,7 @@ Partial Class FormMain
         'gpCommonApps
         '
         Me.gpCommonApps.BackColor = System.Drawing.Color.LightGray
-        Me.gpCommonApps.Controls.Add(Me.btnServices)
-        Me.gpCommonApps.Controls.Add(Me.btnDevices)
-        Me.gpCommonApps.Controls.Add(Me.btnEventViewer)
-        Me.gpCommonApps.Controls.Add(Me.btnAppWiz)
-        Me.gpCommonApps.Controls.Add(Me.btnTaskmgr)
-        Me.gpCommonApps.Controls.Add(Me.btnCalc)
+        Me.gpCommonApps.Controls.Add(Me.tlpButtons2)
         Me.gpCommonApps.Location = New System.Drawing.Point(725, 7)
         Me.gpCommonApps.Name = "gpCommonApps"
         Me.gpCommonApps.Size = New System.Drawing.Size(271, 138)
@@ -1838,7 +1837,7 @@ Partial Class FormMain
         '
         'btnServices
         '
-        Me.btnServices.Location = New System.Drawing.Point(178, 75)
+        Me.btnServices.Location = New System.Drawing.Point(179, 62)
         Me.btnServices.Name = "btnServices"
         Me.btnServices.Size = New System.Drawing.Size(80, 50)
         Me.btnServices.TabIndex = 25
@@ -1847,7 +1846,7 @@ Partial Class FormMain
         '
         'btnDevices
         '
-        Me.btnDevices.Location = New System.Drawing.Point(178, 20)
+        Me.btnDevices.Location = New System.Drawing.Point(179, 3)
         Me.btnDevices.Name = "btnDevices"
         Me.btnDevices.Size = New System.Drawing.Size(80, 50)
         Me.btnDevices.TabIndex = 24
@@ -1856,7 +1855,7 @@ Partial Class FormMain
         '
         'btnEventViewer
         '
-        Me.btnEventViewer.Location = New System.Drawing.Point(92, 75)
+        Me.btnEventViewer.Location = New System.Drawing.Point(91, 62)
         Me.btnEventViewer.Name = "btnEventViewer"
         Me.btnEventViewer.Size = New System.Drawing.Size(80, 50)
         Me.btnEventViewer.TabIndex = 23
@@ -1865,7 +1864,7 @@ Partial Class FormMain
         '
         'btnAppWiz
         '
-        Me.btnAppWiz.Location = New System.Drawing.Point(92, 19)
+        Me.btnAppWiz.Location = New System.Drawing.Point(91, 3)
         Me.btnAppWiz.Name = "btnAppWiz"
         Me.btnAppWiz.Size = New System.Drawing.Size(80, 50)
         Me.btnAppWiz.TabIndex = 22
@@ -1874,7 +1873,7 @@ Partial Class FormMain
         '
         'btnTaskmgr
         '
-        Me.btnTaskmgr.Location = New System.Drawing.Point(6, 75)
+        Me.btnTaskmgr.Location = New System.Drawing.Point(3, 62)
         Me.btnTaskmgr.Name = "btnTaskmgr"
         Me.btnTaskmgr.Size = New System.Drawing.Size(80, 50)
         Me.btnTaskmgr.TabIndex = 21
@@ -1883,7 +1882,7 @@ Partial Class FormMain
         '
         'btnCalc
         '
-        Me.btnCalc.Location = New System.Drawing.Point(6, 19)
+        Me.btnCalc.Location = New System.Drawing.Point(3, 3)
         Me.btnCalc.Name = "btnCalc"
         Me.btnCalc.Size = New System.Drawing.Size(80, 50)
         Me.btnCalc.TabIndex = 20
@@ -1926,17 +1925,8 @@ Partial Class FormMain
         'gbAdvApps
         '
         Me.gbAdvApps.BackColor = System.Drawing.Color.LightGray
-        Me.gbAdvApps.Controls.Add(Me.btnAdvKiosk)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvKioskSetup)
+        Me.gbAdvApps.Controls.Add(Me.tlpButtons1)
         Me.gbAdvApps.Controls.Add(Me.lblAdvApps)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvUpgrade)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvManager)
-        Me.gbAdvApps.Controls.Add(Me.btnCenterEdgeConfig)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvCardTech)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvRedeem)
-        Me.gbAdvApps.Controls.Add(Me.btnPos)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvReportEditor)
-        Me.gbAdvApps.Controls.Add(Me.btnAdvGroups)
         Me.gbAdvApps.Location = New System.Drawing.Point(4, 4)
         Me.gbAdvApps.Name = "gbAdvApps"
         Me.gbAdvApps.Size = New System.Drawing.Size(434, 155)
@@ -1947,9 +1937,9 @@ Partial Class FormMain
         'btnAdvKiosk
         '
         Me.btnAdvKiosk.Enabled = False
-        Me.btnAdvKiosk.Location = New System.Drawing.Point(265, 77)
+        Me.btnAdvKiosk.Location = New System.Drawing.Point(252, 59)
         Me.btnAdvKiosk.Name = "btnAdvKiosk"
-        Me.btnAdvKiosk.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvKiosk.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvKiosk.TabIndex = 20
         Me.btnAdvKiosk.Text = "Kiosk"
         Me.btnAdvKiosk.UseVisualStyleBackColor = True
@@ -1957,9 +1947,9 @@ Partial Class FormMain
         'btnAdvKioskSetup
         '
         Me.btnAdvKioskSetup.Enabled = False
-        Me.btnAdvKioskSetup.Location = New System.Drawing.Point(265, 20)
+        Me.btnAdvKioskSetup.Location = New System.Drawing.Point(252, 3)
         Me.btnAdvKioskSetup.Name = "btnAdvKioskSetup"
-        Me.btnAdvKioskSetup.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvKioskSetup.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvKioskSetup.TabIndex = 19
         Me.btnAdvKioskSetup.Text = "Kiosk Setup"
         Me.btnAdvKioskSetup.UseVisualStyleBackColor = True
@@ -1978,7 +1968,7 @@ Partial Class FormMain
         'btnAdvUpgrade
         '
         Me.btnAdvUpgrade.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnAdvUpgrade.Location = New System.Drawing.Point(348, 77)
+        Me.btnAdvUpgrade.Location = New System.Drawing.Point(336, 60)
         Me.btnAdvUpgrade.Name = "btnAdvUpgrade"
         Me.btnAdvUpgrade.Size = New System.Drawing.Size(80, 50)
         Me.btnAdvUpgrade.TabIndex = 18
@@ -1988,9 +1978,9 @@ Partial Class FormMain
         'btnAdvManager
         '
         Me.btnAdvManager.Enabled = False
-        Me.btnAdvManager.Location = New System.Drawing.Point(7, 20)
+        Me.btnAdvManager.Location = New System.Drawing.Point(3, 3)
         Me.btnAdvManager.Name = "btnAdvManager"
-        Me.btnAdvManager.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvManager.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvManager.TabIndex = 15
         Me.btnAdvManager.Text = "Manager " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Console"
         Me.btnAdvManager.UseVisualStyleBackColor = True
@@ -1998,7 +1988,7 @@ Partial Class FormMain
         'btnCenterEdgeConfig
         '
         Me.btnCenterEdgeConfig.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(348, 20)
+        Me.btnCenterEdgeConfig.Location = New System.Drawing.Point(336, 3)
         Me.btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         Me.btnCenterEdgeConfig.Size = New System.Drawing.Size(80, 50)
         Me.btnCenterEdgeConfig.TabIndex = 12
@@ -2008,9 +1998,9 @@ Partial Class FormMain
         'btnAdvCardTech
         '
         Me.btnAdvCardTech.Enabled = False
-        Me.btnAdvCardTech.Location = New System.Drawing.Point(179, 76)
+        Me.btnAdvCardTech.Location = New System.Drawing.Point(169, 59)
         Me.btnAdvCardTech.Name = "btnAdvCardTech"
-        Me.btnAdvCardTech.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvCardTech.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvCardTech.TabIndex = 15
         Me.btnAdvCardTech.Text = "Card Tech"
         Me.btnAdvCardTech.UseVisualStyleBackColor = True
@@ -2018,9 +2008,9 @@ Partial Class FormMain
         'btnAdvRedeem
         '
         Me.btnAdvRedeem.Enabled = False
-        Me.btnAdvRedeem.Location = New System.Drawing.Point(93, 76)
+        Me.btnAdvRedeem.Location = New System.Drawing.Point(86, 59)
         Me.btnAdvRedeem.Name = "btnAdvRedeem"
-        Me.btnAdvRedeem.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvRedeem.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvRedeem.TabIndex = 15
         Me.btnAdvRedeem.Text = "Redemption"
         Me.btnAdvRedeem.UseVisualStyleBackColor = True
@@ -2028,9 +2018,9 @@ Partial Class FormMain
         'btnPos
         '
         Me.btnPos.Enabled = False
-        Me.btnPos.Location = New System.Drawing.Point(93, 20)
+        Me.btnPos.Location = New System.Drawing.Point(86, 3)
         Me.btnPos.Name = "btnPos"
-        Me.btnPos.Size = New System.Drawing.Size(80, 50)
+        Me.btnPos.Size = New System.Drawing.Size(77, 50)
         Me.btnPos.TabIndex = 15
         Me.btnPos.Text = "POS"
         Me.btnPos.UseVisualStyleBackColor = True
@@ -2038,9 +2028,9 @@ Partial Class FormMain
         'btnAdvReportEditor
         '
         Me.btnAdvReportEditor.Enabled = False
-        Me.btnAdvReportEditor.Location = New System.Drawing.Point(7, 76)
+        Me.btnAdvReportEditor.Location = New System.Drawing.Point(3, 59)
         Me.btnAdvReportEditor.Name = "btnAdvReportEditor"
-        Me.btnAdvReportEditor.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvReportEditor.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvReportEditor.TabIndex = 17
         Me.btnAdvReportEditor.Text = "Report Editor"
         Me.btnAdvReportEditor.UseVisualStyleBackColor = True
@@ -2048,9 +2038,9 @@ Partial Class FormMain
         'btnAdvGroups
         '
         Me.btnAdvGroups.Enabled = False
-        Me.btnAdvGroups.Location = New System.Drawing.Point(179, 20)
+        Me.btnAdvGroups.Location = New System.Drawing.Point(169, 3)
         Me.btnAdvGroups.Name = "btnAdvGroups"
-        Me.btnAdvGroups.Size = New System.Drawing.Size(80, 50)
+        Me.btnAdvGroups.Size = New System.Drawing.Size(77, 50)
         Me.btnAdvGroups.TabIndex = 16
         Me.btnAdvGroups.Text = "Groups"
         Me.btnAdvGroups.UseVisualStyleBackColor = True
@@ -2414,6 +2404,56 @@ Partial Class FormMain
         Me.lblFLHints2.Text = "Double Click to apply highlighted"
         Me.lblFLHints2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
+        'tlpButtons2
+        '
+        Me.tlpButtons2.ColumnCount = 3
+        Me.tlpButtons2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.tlpButtons2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.tlpButtons2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.tlpButtons2.Controls.Add(Me.btnServices, 2, 1)
+        Me.tlpButtons2.Controls.Add(Me.btnCalc, 0, 0)
+        Me.tlpButtons2.Controls.Add(Me.btnEventViewer, 1, 1)
+        Me.tlpButtons2.Controls.Add(Me.btnDevices, 2, 0)
+        Me.tlpButtons2.Controls.Add(Me.btnTaskmgr, 0, 1)
+        Me.tlpButtons2.Controls.Add(Me.btnAppWiz, 1, 0)
+        Me.tlpButtons2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.tlpButtons2.Location = New System.Drawing.Point(3, 16)
+        Me.tlpButtons2.Name = "tlpButtons2"
+        Me.tlpButtons2.RowCount = 2
+        Me.tlpButtons2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tlpButtons2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tlpButtons2.Size = New System.Drawing.Size(265, 119)
+        Me.tlpButtons2.TabIndex = 36
+        '
+        'tlpButtons1
+        '
+        Me.tlpButtons1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.tlpButtons1.BackColor = System.Drawing.Color.LightGray
+        Me.tlpButtons1.ColumnCount = 5
+        Me.tlpButtons1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.tlpButtons1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.tlpButtons1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.tlpButtons1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.tlpButtons1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20.0!))
+        Me.tlpButtons1.Controls.Add(Me.btnAdvUpgrade, 4, 1)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvKiosk, 3, 1)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvCardTech, 2, 1)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvRedeem, 1, 1)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvReportEditor, 0, 1)
+        Me.tlpButtons1.Controls.Add(Me.btnCenterEdgeConfig, 4, 0)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvKioskSetup, 3, 0)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvGroups, 2, 0)
+        Me.tlpButtons1.Controls.Add(Me.btnPos, 1, 0)
+        Me.tlpButtons1.Controls.Add(Me.btnAdvManager, 0, 0)
+        Me.tlpButtons1.Location = New System.Drawing.Point(9, 18)
+        Me.tlpButtons1.Name = "tlpButtons1"
+        Me.tlpButtons1.RowCount = 2
+        Me.tlpButtons1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tlpButtons1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tlpButtons1.Size = New System.Drawing.Size(419, 113)
+        Me.tlpButtons1.TabIndex = 37
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2494,6 +2534,8 @@ Partial Class FormMain
         Me.gbFlavorsList.ResumeLayout(False)
         Me.tblFlavorListHints.ResumeLayout(False)
         Me.tblFlavorListHints.PerformLayout()
+        Me.tlpButtons2.ResumeLayout(False)
+        Me.tlpButtons1.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2701,4 +2743,6 @@ Partial Class FormMain
     Friend WithEvents tblFlavorListHints As TableLayoutPanel
     Friend WithEvents lblFLHints1 As Label
     Friend WithEvents lblFLHints2 As Label
+    Friend WithEvents tlpButtons2 As TableLayoutPanel
+    Friend WithEvents tlpButtons1 As TableLayoutPanel
 End Class
