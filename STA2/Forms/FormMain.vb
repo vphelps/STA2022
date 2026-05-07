@@ -1335,12 +1335,12 @@ Public Class FormMain
             Environment.NewLine & Environment.NewLine &
             "Continue?"
 
-        If MessageBox.Show(
-            message,
-            "Discard All Changes",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Warning,
-            MessageBoxDefaultButton.Button2) <> DialogResult.Yes Then
+
+
+        If UIHelpers.TimedYesNoPrompt(
+            message:=message,
+            title:="Discard All Changes",
+            timeoutSeconds:=30) <> DialogResult.Yes Then
             Return
         End If
 
@@ -1350,18 +1350,16 @@ Public Class FormMain
 
             RepoTools.DiscardAllChanges(repoPath)
 
-            MessageBox.Show(
-                "All local changes were discarded successfully.",
-                "Discard Complete",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            UIHelpers.TimedInfoPrompt(
+    message:="All local changes were discarded successfully.",
+    title:="Discard Complete",
+    timeoutSeconds:=10)
 
         Catch ex As Exception
-            MessageBox.Show(
-                ex.Message,
-                "Git Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
+            UIHelpers.TimedErrorPrompt(
+                message:="Git Error",
+                title:="Repository")
+
         Finally
             btnRepoDiscardChanges.Enabled = True
             Cursor.Current = Cursors.Default
@@ -1608,7 +1606,7 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub tpGeneral_Click(sender As Object, e As EventArgs) Handles tpGeneral.Click
+    Private Sub lblFlavorApplyCommand_Click(sender As Object, e As EventArgs) Handles lblFlavorApplyCommand.Click
 
     End Sub
 End Class
