@@ -165,7 +165,7 @@ Public Class FormMain
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
+        rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
@@ -427,6 +427,7 @@ Public Class FormMain
         ' ✅ Initialize flavors now that path is valid
         ' -------------------------------------------------
         InitializeFlavors()
+        SyncFlavorsListMirror()
     End Sub
 
     Private Sub tbLocName_GotFocus(sender As Object, e As EventArgs) Handles tbLocName.GotFocus, tbLicSvr.GotFocus, tbCoreSvr.GotFocus, tbDbVer.GotFocus, tbWebEnabled.GotFocus, tbShiftDate.GotFocus
@@ -1078,6 +1079,8 @@ Public Class FormMain
     Handles clbSqlFiles.Enter
 
         _flavorManager.RefreshPreservingSelection()
+        SyncFlavorsListMirror()
+
     End Sub
 
 
@@ -1151,6 +1154,14 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
+
+        ' ✅ ENSURE output tab is active FIRST
+        tcSTA.SelectedTab = tpGeneral
+
+        ' ✅ Allow WinForms to finish layout
+        Await Task.Yield()
+
+        _liveOutputManager.ForceRedraw()
 
         Dim flavorArgs As String =
         CodeHelper.BuildFlavorsArgument(
@@ -1632,8 +1643,161 @@ Public Class FormMain
         tblServices.AutoScroll = True
 
     End Sub
+    Private Sub cmsApplySingleFlavor_Opening(
+    sender As Object,
+    e As CancelEventArgs
+) Handles cmsApplySingleFlavor.Opening
 
-    Private Sub lblFlavorApplyCommand_Click(sender As Object, e As EventArgs) Handles lblFlavorApplyCommand.Click
+        Dim count = lbFlavorsList.SelectedItems.Count
+        e.Cancel = (count = 0)
+
+        If count = 1 Then
+            miApplySingleFlavor.Text = "Apply selected flavor"
+        Else
+            miApplySingleFlavor.Text = $"Apply {count} selected flavors"
+        End If
 
     End Sub
+
+    Private Sub clbSqlFiles_MouseDown(
+        sender As Object,
+        e As MouseEventArgs
+    ) Handles clbSqlFiles.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim index = clbSqlFiles.IndexFromPoint(e.Location)
+            If index >= 0 Then
+                clbSqlFiles.SelectedIndex = index
+            End If
+        End If
+
+    End Sub
+    Private Async Sub miApplySingleFlavor_Click(
+    sender As Object,
+    e As EventArgs
+) Handles miApplySingleFlavor.Click
+
+        Await ApplySelectedFlavorsAsync()
+
+    End Sub
+
+    Private Sub tcSTA_SelectedIndexChanged(
+    sender As Object,
+    e As EventArgs
+) Handles tcSTA.SelectedIndexChanged
+
+        If tcSTA.SelectedTab Is tpGeneral Then
+
+            ' ✅ Defer until WinForms finishes showing the tab
+            BeginInvoke(Sub()
+                            ForceLiveOutputRedraw()
+                        End Sub)
+
+        End If
+
+    End Sub
+
+    Private Sub ForceLiveOutputRedraw()
+
+        If rtbLiveOutput.IsDisposed Then Return
+
+        rtbLiveOutput.SuspendLayout()
+
+        ' Force WinForms to fully re-sync layout + paint
+        rtbLiveOutput.Hide()
+        rtbLiveOutput.Show()
+
+        rtbLiveOutput.PerformLayout()
+        rtbLiveOutput.Refresh()
+
+        ' Restore scroll state
+        rtbLiveOutput.SelectionStart = rtbLiveOutput.TextLength
+        rtbLiveOutput.ScrollToCaret()
+
+        rtbLiveOutput.ResumeLayout()
+
+    End Sub
+    Private Sub SyncFlavorsListMirror()
+
+        lbFlavorsList.BeginUpdate()
+        lbFlavorsList.Items.Clear()
+
+        For Each item As FlavorSelectionManager.SqlFileItem In
+            clbSqlFiles.Items.OfType(Of FlavorSelectionManager.SqlFileItem)()
+
+            lbFlavorsList.Items.Add(item)
+
+        Next
+
+        lbFlavorsList.DisplayMember = NameOf(FlavorSelectionManager.SqlFileItem.FlavorName)
+
+        lbFlavorsList.EndUpdate()
+
+    End Sub
+
+
+    Private Sub lbFlavorsList_MouseDown(
+    sender As Object,
+    e As MouseEventArgs
+) Handles lbFlavorsList.MouseDown
+
+        If e.Button <> MouseButtons.Right Then Return
+
+        Dim index = lbFlavorsList.IndexFromPoint(e.Location)
+        If index < 0 Then Return
+
+        ' ✅ Preserve multi-selection
+        If Not lbFlavorsList.SelectedIndices.Contains(index) Then
+            lbFlavorsList.SelectedIndex = index
+        End If
+
+    End Sub
+
+    Private Async Sub lbFlavorsList_DoubleClick(
+    sender As Object,
+    e As EventArgs
+) Handles lbFlavorsList.DoubleClick
+
+        ' Optional: only apply when 1 item is selected
+        If lbFlavorsList.SelectedItems.Count = 0 Then Return
+
+        Await ApplySelectedFlavorsAsync()
+
+    End Sub
+
+    Private Async Function ApplySelectedFlavorsAsync() As Task
+
+        If lbFlavorsList.SelectedItems.Count = 0 Then Return
+
+        Dim selectedFlavors As New List(Of String)
+
+        For Each item As FlavorSelectionManager.SqlFileItem In
+            lbFlavorsList.SelectedItems.OfType(Of FlavorSelectionManager.SqlFileItem)()
+
+            selectedFlavors.Add(item.FlavorName)
+        Next
+
+        If selectedFlavors.Count = 0 Then Return
+
+        Dim flavorArgs As String =
+            CodeHelper.BuildFlavorsArgument(selectedFlavors)
+
+        Dim description As String =
+            If(selectedFlavors.Count = 1,
+               $"Applying flavor '{selectedFlavors(0)}'",
+               $"Applying {selectedFlavors.Count} flavors")
+
+        Await PowerShellRunner.RunLiveScriptAsync(
+            options:=_options,
+            liveOutputManager:=_liveOutputManager,
+            setStatus:=Sub(text)
+                           SetExecutionStatus(text)
+                       End Sub,
+            triggerButton:=Nothing,
+            scriptRelativePath:="tests\apply-flavors.ps1",
+            scriptArgs:=flavorArgs,
+            runningStatusText:=description & " (live output)…"
+        )
+
+    End Function
 End Class
