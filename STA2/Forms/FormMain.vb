@@ -13,21 +13,33 @@ Public Class FormMain
     Private _flavorManager As FlavorSelectionManager
     Private _executionStatusLocked As Boolean = False
 
-    Private ReadOnly _serviceNames As String() = {
-    "AdvApiServer",
-    "AdvCoreService",
-    "AdvantageCloudSyncService",
-    "AdvCreditService",
-    "AdvLicService",
-    "AdvSignageService",
-    "AdvTurnstileEngine",
-    "AdvNotifyService",
-    "AdvantageUpgradeService",
-    "AdvRelayClient"
-}
+
+    Private ReadOnly _serviceNames As String() =
+    {
+        "AdvApiServer",
+        "AdvCoreService",
+        "AdvantageCloudSyncService",
+        "AdvCreditService",
+        "AdvLicService",
+        "AdvSignageService",
+        "AdvTurnstileEngine",
+        "AdvNotifyService",
+        "AdvantageUpgradeService",
+        "AdvRelayClient"
+    }.OrderBy(Function(s) s).ToArray()
+
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
-
+    Private Function GetServiceDisplayName(serviceName As String) As String
+        Try
+            Using sc As New ServiceController(serviceName)
+                Return sc.DisplayName
+            End Using
+        Catch
+            ' Fallback if service is missing or inaccessible
+            Return serviceName
+        End Try
+    End Function
     Private Sub EnableDoubleBuffering(ctrl As Control)
         Dim prop = ctrl.GetType().GetProperty(
         "DoubleBuffered",
@@ -46,13 +58,28 @@ Public Class FormMain
         tblServices.RowCount = 0
         _serviceRows.Clear()
 
-        For Each serviceName In _serviceNames
+        ' ✅ Step 3: Resolve display names and sort by DisplayName
+        Dim services =
+        _serviceNames.
+            Select(Function(sn)
+                       Dim display = GetServiceDisplayName(sn)
+                       Return New With {
+                           .ServiceName = sn,
+                           .DisplayName = display
+                       }
+                   End Function).
+            OrderBy(Function(x) x.DisplayName, StringComparer.CurrentCultureIgnoreCase).
+            ToList()
+
+        ' ✅ Step 4: Build rows in sorted order
+        For Each item In services
 
             Dim row As New ServiceRowControl() With {
-            .ServiceName = serviceName
+            .ServiceName = item.ServiceName,
+            .DisplayName = item.DisplayName
         }
 
-            ' Fill the table cell so width is granted by the parent
+            ' Layout (keep as you had before)
             row.Dock = DockStyle.Fill
             row.Margin = New Padding(0, 0, 0, 4)
 

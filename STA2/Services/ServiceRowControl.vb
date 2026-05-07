@@ -25,8 +25,8 @@ Public Class ServiceRowControl
         Set(value As String)
             _serviceName = value
 
-            ' ✅ Primary source for lblName
-            lblName.Text = value
+            ' ✅ Do NOT update lblName here
+            ' ServiceName is technical, not UI-facing
         End Set
     End Property
 
@@ -37,9 +37,12 @@ Public Class ServiceRowControl
         Set(value As String)
             _displayName = value
 
-            ' ✅ Optional override if provided
+            ' ✅ DisplayName is the ONLY source for lblName
             If Not String.IsNullOrWhiteSpace(value) Then
                 lblName.Text = value
+            Else
+                ' Fallback safety (should rarely happen)
+                lblName.Text = _serviceName
             End If
         End Set
     End Property
