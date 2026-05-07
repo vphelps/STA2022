@@ -1813,6 +1813,61 @@ Public Class FormMain
     End Function
 
 
+    '    Private Async Sub btnManageInstallerVersions_Click(
+    '    sender As Object,
+    '    e As EventArgs
+    ') Handles btnManageInstallerVersions.Click
+
+    '        btnManageInstallerVersions.Enabled = False
+    '        Try
+    '            ' 1️⃣ Discover installed versions (fast, filesystem only)
+    '            Dim versions =
+    '            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+    '            ' 2️⃣ Apply safety rules OFF the UI thread
+    '            Await Task.Run(Sub()
+    '                               InstallerTools.ApplyCleanupSafetyRules(
+    '                               versions,
+    '                               runExistingVersionPath:=_runExistingVersionPath)
+    '                           End Sub)
+
+    '#If DEBUG Then
+    '            ' 🔍 Diagnostic visibility (safe to remove later)
+    '            For Each v In versions
+    '                Debug.WriteLine(
+    '                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
+    '            Next
+    '#End If
+
+    '            ' 3️⃣ Show Manage Installed Versions dialog
+    '            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+
+    '                If dlg.ShowDialog(Me) = DialogResult.OK Then
+
+    '                    ' 4️⃣ Confirmation dialog
+    '                    Using confirm As New ConfirmInstallerVersionCleanupForm(
+    '                    dlg.SelectedForCleanup)
+
+    '                        If confirm.ShowDialog(Me) = DialogResult.OK Then
+
+    '                            ' 5️⃣ Execute cleanup (safe + authoritative)
+    '                            Dim result =
+    '                            InstallerTools.ExecuteInstallerVersionCleanup(
+    '                                dlg.SelectedForCleanup)
+
+    '                            ' 6️⃣ Show summary
+    '                            ShowCleanupSummary(result)
+
+    '                        End If
+    '                    End Using
+    '                End If
+    '            End Using
+
+    '        Finally
+    '            btnManageInstallerVersions.Enabled = True
+    '        End Try
+
+    '    End Sub
     Private Async Sub btnManageInstallerVersions_Click(
     sender As Object,
     e As EventArgs
@@ -1820,44 +1875,40 @@ Public Class FormMain
 
         btnManageInstallerVersions.Enabled = False
         Try
-            ' 1️⃣ Discover installed versions (fast, filesystem only)
             Dim versions =
             InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
 
-            ' 2️⃣ Apply safety rules OFF the UI thread
-            Await Task.Run(Sub()
-                               InstallerTools.ApplyCleanupSafetyRules(
-                               versions,
-                               runExistingVersionPath:=_runExistingVersionPath)
-                           End Sub)
+            Await ProgressOverlayService.RunWithOverlayAsync(
+            Me,
+            "Scanning installed installer versions…" & Environment.NewLine &
+            "Please wait.",
+            Function()
+                Return Task.Run(Sub()
+                                    InstallerTools.ApplyCleanupSafetyRules(
+                                        versions,
+                                        runExistingVersionPath:=_runExistingVersionPath)
+                                End Sub)
+            End Function
+        )
 
 #If DEBUG Then
-            ' 🔍 Diagnostic visibility (safe to remove later)
             For Each v In versions
                 Debug.WriteLine(
                 $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
             Next
 #End If
 
-            ' 3️⃣ Show Manage Installed Versions dialog
             Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
-
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
-
-                    ' 4️⃣ Confirmation dialog
                     Using confirm As New ConfirmInstallerVersionCleanupForm(
                     dlg.SelectedForCleanup)
 
                         If confirm.ShowDialog(Me) = DialogResult.OK Then
-
-                            ' 5️⃣ Execute cleanup (safe + authoritative)
                             Dim result =
                             InstallerTools.ExecuteInstallerVersionCleanup(
                                 dlg.SelectedForCleanup)
 
-                            ' 6️⃣ Show summary
                             ShowCleanupSummary(result)
-
                         End If
                     End Using
                 End If
@@ -1910,5 +1961,23 @@ Public Class FormMain
 
     End Sub
 
+    ' =============================
+    ' Progress overlay helper
+    ' =============================
+    Private Function ShowProgressOverlay(message As String) As ProgressOverlayForm
+
+        Dim overlay As New ProgressOverlayForm(message)
+
+        ' Match FormMain client area
+        overlay.Size = Me.ClientSize
+        overlay.Location = Me.PointToScreen(Point.Empty)
+
+        overlay.Show(Me)
+        overlay.BringToFront()
+        overlay.Refresh()
+
+        Return overlay
+
+    End Function
 
 End Class
