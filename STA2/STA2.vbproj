@@ -141,6 +141,18 @@
     <Compile Include="Core\CommonVariables.vb" />
     <Compile Include="Core\UIHelpers.vb" />
     <Compile Include="Data\RepoTools.vb" />
+    <Compile Include="Forms\ConfirmInstallerVersionCleanupForm.Designer.vb">
+      <DependentUpon>ConfirmInstallerVersionCleanupForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ConfirmInstallerVersionCleanupForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ManageInstallerVersionsForm.Designer.vb">
+      <DependentUpon>ManageInstallerVersionsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ManageInstallerVersionsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Services\ServiceManager.vb" />
     <Compile Include="Services\ServiceRowControl.Designer.vb">
       <DependentUpon>ServiceRowControl.vb</DependentUpon>
@@ -172,7 +184,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\LauncherConfig.vb" />
+    <Compile Include="Tools\InstallerCleanupResult.vb" />
+    <Compile Include="Tools\InstallerCleanupRules.vb" />
     <Compile Include="Tools\InstallerTools.vb" />
+    <Compile Include="Tools\InstallerVersionInfo.vb" />
     <Compile Include="Tools\LiveOutputManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -207,12 +222,18 @@
     <Compile Include="Startup.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\ConfirmInstallerVersionCleanupForm.resx">
+      <DependentUpon>ConfirmInstallerVersionCleanupForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ManageInstallerVersionsForm.resx">
+      <DependentUpon>ManageInstallerVersionsForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

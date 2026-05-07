@@ -229,6 +229,7 @@ Partial Class FormMain
         Me.lblFLHints2 = New System.Windows.Forms.Label()
         Me.tlpButtons2 = New System.Windows.Forms.TableLayoutPanel()
         Me.tlpButtons1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.btnManageInstallerVersions = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -2297,6 +2298,7 @@ Partial Class FormMain
         Me.tlpButtons3.Controls.Add(Me.btnSetupInstall, 1, 0)
         Me.tlpButtons3.Controls.Add(Me.btnLaunchLatestInstaller, 1, 1)
         Me.tlpButtons3.Controls.Add(Me.btnRepoDiscardChanges, 1, 2)
+        Me.tlpButtons3.Controls.Add(Me.btnManageInstallerVersions, 2, 0)
         Me.tlpButtons3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tlpButtons3.Location = New System.Drawing.Point(0, 0)
         Me.tlpButtons3.Name = "tlpButtons3"
@@ -2453,6 +2455,15 @@ Partial Class FormMain
         Me.tlpButtons1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
         Me.tlpButtons1.Size = New System.Drawing.Size(419, 113)
         Me.tlpButtons1.TabIndex = 37
+        '
+        'btnManageInstallerVersions
+        '
+        Me.btnManageInstallerVersions.Location = New System.Drawing.Point(169, 3)
+        Me.btnManageInstallerVersions.Name = "btnManageInstallerVersions"
+        Me.btnManageInstallerVersions.Size = New System.Drawing.Size(77, 50)
+        Me.btnManageInstallerVersions.TabIndex = 32
+        Me.btnManageInstallerVersions.Text = "Manage Installer Versions"
+        Me.btnManageInstallerVersions.UseVisualStyleBackColor = True
         '
         'FormMain
         '
@@ -2745,4 +2756,5 @@ Partial Class FormMain
     Friend WithEvents lblFLHints2 As Label
     Friend WithEvents tlpButtons2 As TableLayoutPanel
     Friend WithEvents tlpButtons1 As TableLayoutPanel
+    Friend WithEvents btnManageInstallerVersions As Button
 End Class

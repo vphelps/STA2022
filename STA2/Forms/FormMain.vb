@@ -12,7 +12,7 @@ Public Class FormMain
     Private _quickLaunchManager As QuickLaunchManager
     Private _flavorManager As FlavorSelectionManager
     Private _executionStatusLocked As Boolean = False
-
+    Private _runExistingVersionPath As String
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -240,6 +240,10 @@ Public Class FormMain
     tbMLTest1.Visible = False
     btnTest1.Visible = False
     btnTest2.Visible = False
+
+#End If
+#If DEBUG Then
+        Me.Text += " - DEBUG BUILD"
 #End If
 
         btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
@@ -1446,6 +1450,13 @@ Public Class FormMain
                 progressPercent:=percentProgress,
                 progressText:=textProgress)
 
+            ' If user chose Run Existing, this path already existed
+            If Directory.Exists(extractDir) AndAlso
+   extractDir.EndsWith("Version " & AppData.InstalledVersion, StringComparison.OrdinalIgnoreCase) Then
+
+                _runExistingVersionPath = extractDir
+            End If
+
             ' 🔒 stop queued extraction text updates
             showTextProgress = False
 
@@ -1800,4 +1811,104 @@ Public Class FormMain
         )
 
     End Function
+
+
+    Private Async Sub btnManageInstallerVersions_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnManageInstallerVersions.Click
+
+        btnManageInstallerVersions.Enabled = False
+        Try
+            ' 1️⃣ Discover installed versions (fast, filesystem only)
+            Dim versions =
+            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+            ' 2️⃣ Apply safety rules OFF the UI thread
+            Await Task.Run(Sub()
+                               InstallerTools.ApplyCleanupSafetyRules(
+                               versions,
+                               runExistingVersionPath:=_runExistingVersionPath)
+                           End Sub)
+
+#If DEBUG Then
+            ' 🔍 Diagnostic visibility (safe to remove later)
+            For Each v In versions
+                Debug.WriteLine(
+                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
+            Next
+#End If
+
+            ' 3️⃣ Show Manage Installed Versions dialog
+            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+
+                If dlg.ShowDialog(Me) = DialogResult.OK Then
+
+                    ' 4️⃣ Confirmation dialog
+                    Using confirm As New ConfirmInstallerVersionCleanupForm(
+                    dlg.SelectedForCleanup)
+
+                        If confirm.ShowDialog(Me) = DialogResult.OK Then
+
+                            ' 5️⃣ Execute cleanup (safe + authoritative)
+                            Dim result =
+                            InstallerTools.ExecuteInstallerVersionCleanup(
+                                dlg.SelectedForCleanup)
+
+                            ' 6️⃣ Show summary
+                            ShowCleanupSummary(result)
+
+                        End If
+                    End Using
+                End If
+            End Using
+
+        Finally
+            btnManageInstallerVersions.Enabled = True
+        End Try
+
+    End Sub
+    Private Sub ShowCleanupSummary(result As InstallerCleanupResult)
+
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine("Cleanup complete.")
+        sb.AppendLine()
+
+        If result.Deleted.Any() Then
+            sb.AppendLine($"✔ Deleted {result.Deleted.Count} version(s):")
+            For Each v In result.Deleted
+                sb.AppendLine($"  • {v.VersionString}")
+            Next
+            sb.AppendLine()
+        End If
+
+        If result.Skipped.Any() Then
+            sb.AppendLine($"⚠ Skipped {result.Skipped.Count} version(s):")
+            For Each v In result.Skipped
+                sb.AppendLine($"  • {v.VersionString}")
+            Next
+            sb.AppendLine()
+        End If
+
+        If result.Failed.Any() Then
+            sb.AppendLine($"✖ Failed to delete {result.Failed.Count} version(s):")
+            For Each kvp In result.Failed
+                sb.AppendLine($"  • {kvp.Key.VersionString}: {kvp.Value.Message}")
+            Next
+            sb.AppendLine()
+        End If
+
+        Dim freedMb = result.FreedBytes \ (1024 * 1024)
+        sb.AppendLine($"Total disk space freed: {freedMb} MB")
+
+        MessageBox.Show(
+        sb.ToString(),
+        "Installer Version Cleanup",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information)
+
+    End Sub
+
+
 End Class
