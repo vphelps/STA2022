@@ -224,6 +224,9 @@ Partial Class FormMain
         Me.btnRepoDiscardChanges = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.gbFlavorsList = New System.Windows.Forms.GroupBox()
+        Me.tblFlavorListHints = New System.Windows.Forms.TableLayoutPanel()
+        Me.lblFLHints1 = New System.Windows.Forms.Label()
+        Me.lblFLHints2 = New System.Windows.Forms.Label()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -273,6 +276,7 @@ Partial Class FormMain
         Me.tlpButtons3.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.gbFlavorsList.SuspendLayout()
+        Me.tblFlavorListHints.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -335,6 +339,7 @@ Partial Class FormMain
         'tpGeneral
         '
         Me.tpGeneral.BackColor = System.Drawing.Color.Gray
+        Me.tpGeneral.Controls.Add(Me.tblFlavorListHints)
         Me.tpGeneral.Controls.Add(Me.gbFlavorsList)
         Me.tpGeneral.Controls.Add(Me.gbLiveOutput)
         Me.tpGeneral.Controls.Add(Me.pnlServicesContainer)
@@ -356,7 +361,7 @@ Partial Class FormMain
         Me.lbFlavorsList.Location = New System.Drawing.Point(3, 16)
         Me.lbFlavorsList.Name = "lbFlavorsList"
         Me.lbFlavorsList.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended
-        Me.lbFlavorsList.Size = New System.Drawing.Size(194, 394)
+        Me.lbFlavorsList.Size = New System.Drawing.Size(194, 336)
         Me.lbFlavorsList.TabIndex = 35
         '
         'cmsApplySingleFlavor
@@ -378,7 +383,7 @@ Partial Class FormMain
         Me.gbLiveOutput.Controls.Add(Me.rtbLiveOutput)
         Me.gbLiveOutput.Location = New System.Drawing.Point(3, 416)
         Me.gbLiveOutput.Name = "gbLiveOutput"
-        Me.gbLiveOutput.Size = New System.Drawing.Size(584, 207)
+        Me.gbLiveOutput.Size = New System.Drawing.Size(609, 207)
         Me.gbLiveOutput.TabIndex = 34
         Me.gbLiveOutput.TabStop = False
         Me.gbLiveOutput.Text = "Script Output Window"
@@ -393,7 +398,7 @@ Partial Class FormMain
         Me.rtbLiveOutput.Location = New System.Drawing.Point(3, 16)
         Me.rtbLiveOutput.Name = "rtbLiveOutput"
         Me.rtbLiveOutput.ReadOnly = True
-        Me.rtbLiveOutput.Size = New System.Drawing.Size(578, 188)
+        Me.rtbLiveOutput.Size = New System.Drawing.Size(603, 188)
         Me.rtbLiveOutput.TabIndex = 33
         Me.rtbLiveOutput.Text = ""
         Me.rtbLiveOutput.WordWrap = False
@@ -2366,10 +2371,48 @@ Partial Class FormMain
         Me.gbFlavorsList.Controls.Add(Me.lbFlavorsList)
         Me.gbFlavorsList.Location = New System.Drawing.Point(415, 3)
         Me.gbFlavorsList.Name = "gbFlavorsList"
-        Me.gbFlavorsList.Size = New System.Drawing.Size(200, 413)
+        Me.gbFlavorsList.Size = New System.Drawing.Size(200, 355)
         Me.gbFlavorsList.TabIndex = 35
         Me.gbFlavorsList.TabStop = False
-        Me.gbFlavorsList.Text = "GroupBox1"
+        Me.gbFlavorsList.Text = "Flavors List"
+        '
+        'tblFlavorListHints
+        '
+        Me.tblFlavorListHints.BackColor = System.Drawing.Color.LightGray
+        Me.tblFlavorListHints.ColumnCount = 1
+        Me.tblFlavorListHints.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblFlavorListHints.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblFlavorListHints.Controls.Add(Me.lblFLHints1, 0, 0)
+        Me.tblFlavorListHints.Controls.Add(Me.lblFLHints2, 0, 1)
+        Me.tblFlavorListHints.Location = New System.Drawing.Point(415, 361)
+        Me.tblFlavorListHints.Name = "tblFlavorListHints"
+        Me.tblFlavorListHints.RowCount = 2
+        Me.tblFlavorListHints.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblFlavorListHints.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.tblFlavorListHints.Size = New System.Drawing.Size(200, 49)
+        Me.tblFlavorListHints.TabIndex = 36
+        '
+        'lblFLHints1
+        '
+        Me.lblFLHints1.AutoSize = True
+        Me.lblFLHints1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblFLHints1.Location = New System.Drawing.Point(3, 0)
+        Me.lblFLHints1.Name = "lblFLHints1"
+        Me.lblFLHints1.Size = New System.Drawing.Size(194, 24)
+        Me.lblFLHints1.TabIndex = 0
+        Me.lblFLHints1.Text = "Right Click Menu to apply multi select"
+        Me.lblFLHints1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblFLHints2
+        '
+        Me.lblFLHints2.AutoSize = True
+        Me.lblFLHints2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblFLHints2.Location = New System.Drawing.Point(3, 24)
+        Me.lblFLHints2.Name = "lblFLHints2"
+        Me.lblFLHints2.Size = New System.Drawing.Size(194, 25)
+        Me.lblFLHints2.TabIndex = 1
+        Me.lblFLHints2.Text = "Double Click to apply highlighted"
+        Me.lblFLHints2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'FormMain
         '
@@ -2449,6 +2492,8 @@ Partial Class FormMain
         Me.tlpButtons3.ResumeLayout(False)
         Me.Panel2.ResumeLayout(False)
         Me.gbFlavorsList.ResumeLayout(False)
+        Me.tblFlavorListHints.ResumeLayout(False)
+        Me.tblFlavorListHints.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2653,4 +2698,7 @@ Partial Class FormMain
     Friend WithEvents miApplySingleFlavor As ToolStripMenuItem
     Friend WithEvents lbFlavorsList As ListBox
     Friend WithEvents gbFlavorsList As GroupBox
+    Friend WithEvents tblFlavorListHints As TableLayoutPanel
+    Friend WithEvents lblFLHints1 As Label
+    Friend WithEvents lblFLHints2 As Label
 End Class
