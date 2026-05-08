@@ -242,11 +242,17 @@ Public Class FormMain
     tbMLTest1.Visible = False
     btnTest1.Visible = False
     btnTest2.Visible = False
+           lblDatabaseStartCommand.Visible = False
+        tbDatabaseStartCommand.Visible = False
+        lblFlavorApplyCommand.Visible = False
+        tbFlavorApplyCommand.Visible = False
+
 
 #End If
 #If DEBUG Then
         Me.Text += " - DEBUG BUILD"
 #End If
+
 
         btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
         btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))

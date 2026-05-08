@@ -3,6 +3,7 @@
 Public Class ManageInstallerVersionsForm
 
     Private ReadOnly _versions As List(Of InstallerVersionInfo)
+    Private _suppressSelection As Boolean
 
     Public ReadOnly Property SelectedForCleanup As List(Of InstallerVersionInfo)
         Get
@@ -68,15 +69,19 @@ Public Class ManageInstallerVersionsForm
         Dim sizeMb = info.SizeBytes \ (1024 * 1024)
 
         Dim label As String =
-            If(info.IsLatest,
-               "Current",
-               If(info.Track = ReleaseTrack.LongTermSupport,
-                  "LTS",
-                  "Fast Track"))
+        If(info.IsLatest,
+           "Current",
+           If(info.Track = ReleaseTrack.LongTermSupport,
+              "LTS",
+              "Fast Track"))
 
-        Return $"{info.VersionString,-28} {label,-12} {sizeMb,6} MB"
+        ' 🔒 Prefix locked items so users can see they are protected
+        Dim prefix As String =
+        If(info.CanDelete, "", "🔒 ")
+
+        Return $"{prefix}{info.VersionString,-28} {label,-12} {sizeMb,6} MB"
+
     End Function
-
     ' -------------------------
     ' CheckedListBox rendering
     ' -------------------------
@@ -95,14 +100,45 @@ Public Class ManageInstallerVersionsForm
     ' Summary update
     ' -------------------------
     Private Sub clbVersions_ItemCheck(
-        sender As Object,
-        e As ItemCheckEventArgs
-    ) Handles clbVersions.ItemCheck
+    sender As Object,
+    e As ItemCheckEventArgs
+) Handles clbVersions.ItemCheck
 
+        Dim info = TryCast(clbVersions.Items(e.Index), InstallerVersionInfo)
+        If info Is Nothing Then Return
+
+        ' 🚫 Prevent checking if this version cannot be deleted
+        If Not info.CanDelete Then
+            e.NewValue = e.CurrentValue
+            Return
+        End If
+
+        ' ✅ Update summary only for allowed changes
         BeginInvoke(Sub() UpdateSummary())
 
     End Sub
 
+    Private Sub clbVersions_SelectedIndexChanged(
+    sender As Object,
+    e As EventArgs
+) Handles clbVersions.SelectedIndexChanged
+
+        If _suppressSelection Then Return
+
+        Dim index = clbVersions.SelectedIndex
+        If index < 0 Then Return
+
+        Dim info = TryCast(clbVersions.Items(index), InstallerVersionInfo)
+        If info Is Nothing Then Return
+
+        ' 🚫 Prevent selecting locked items
+        If Not info.CanDelete Then
+            _suppressSelection = True
+            clbVersions.ClearSelected()
+            _suppressSelection = False
+        End If
+
+    End Sub
     Private Sub UpdateSummary()
 
         Dim totalBytes As Long =
