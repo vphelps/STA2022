@@ -13,6 +13,8 @@ Public Class FormMain
     Private _flavorManager As FlavorSelectionManager
     Private _executionStatusLocked As Boolean = False
     Private _runExistingVersionPath As String
+    Private _tabHintLabel As Label
+    Private _tabHintTimer As Timer
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -283,6 +285,7 @@ Public Class FormMain
         "(No SQL container found)",
         discoveredContainer
     )
+        InitializeTabSwitchHint()
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
         EnableDoubleBuffering(tblServices)
@@ -1979,5 +1982,95 @@ Public Class FormMain
         Return overlay
 
     End Function
+    Protected Overrides Function ProcessCmdKey(
+    ByRef msg As Message,
+    keyData As Keys
+) As Boolean
+
+        ' Ctrl + Tab → next tab
+        If keyData = (Keys.Control Or Keys.Tab) Then
+            SelectNextSTATab(forward:=True)
+            Return True
+        End If
+
+        ' Ctrl + Shift + Tab → previous tab
+        If keyData = (Keys.Control Or Keys.Shift Or Keys.Tab) Then
+            SelectNextSTATab(forward:=False)
+            Return True
+        End If
+
+        ' Let all other keys behave normally
+        Return MyBase.ProcessCmdKey(msg, keyData)
+
+    End Function
+    Private Sub SelectNextSTATab(forward As Boolean)
+
+        If tcSTA Is Nothing OrElse
+       tcSTA.TabPages.Count = 0 Then Return
+
+        Dim count As Integer = tcSTA.TabPages.Count
+        Dim index As Integer = tcSTA.SelectedIndex
+
+        If forward Then
+            index = (index + 1) Mod count
+        Else
+            index = (index - 1 + count) Mod count
+        End If
+
+        tcSTA.SelectedIndex = index
+
+        ' ✅ Show visual hint
+        ShowTabSwitchHint(forward)
+
+    End Sub
+    Private Sub InitializeTabSwitchHint()
+
+        _tabHintLabel = New Label With {
+            .Visible = False,
+            .AutoSize = True,
+            .BackColor = Color.FromArgb(220, Color.Black),
+            .ForeColor = Color.White,
+            .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+            .Padding = New Padding(10),
+            .BorderStyle = BorderStyle.FixedSingle
+        }
+
+        Me.Controls.Add(_tabHintLabel)
+        _tabHintLabel.BringToFront()
+
+        _tabHintTimer = New Timer With {
+            .Interval = 700
+        }
+
+        AddHandler _tabHintTimer.Tick,
+            Sub()
+                _tabHintTimer.Stop()
+                _tabHintLabel.Visible = False
+            End Sub
+
+    End Sub
+    Private Sub ShowTabSwitchHint(forward As Boolean)
+
+        If tcSTA.SelectedTab Is Nothing Then Return
+
+        Dim arrow As String =
+            If(forward, "▶ ", "◀ ")
+
+        _tabHintLabel.Text =
+            arrow & tcSTA.SelectedTab.Text
+
+        ' Position centered near top
+        _tabHintLabel.Location =
+            New Point(
+                (Me.ClientSize.Width - _tabHintLabel.Width) \ 2,
+                20)
+
+        _tabHintLabel.Visible = True
+        _tabHintLabel.BringToFront()
+
+        _tabHintTimer.Stop()
+        _tabHintTimer.Start()
+
+    End Sub
 
 End Class
