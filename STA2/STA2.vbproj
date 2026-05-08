@@ -260,8 +260,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
+    <None Include="Docs\BatchLauncher_Method_Overview.md" />
+    <None Include="Docs\CodeHelper_Method_Overview.md" />
+    <None Include="Docs\CommonVariables.md" />
+    <None Include="Docs\Constants_Method_Overview.md" />
     <None Include="Docs\FormMain_Method_Overview.md" />
+    <None Include="Docs\GlobalErrorHandler_Method_Overview.md" />
+    <None Include="Docs\IconHelpers_Method_Overview.md" />
+    <None Include="Docs\IniFile_Method_Overview.md" />
     <None Include="Docs\ProgressOverlayService.md" />
+    <None Include="Docs\UIHelpers_Method_Overview.md" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
