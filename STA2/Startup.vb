@@ -64,8 +64,6 @@ Module Startup
         If args.Contains("-BatchLaunch", StringComparer.OrdinalIgnoreCase) Then
 
             ' Batch mode: no UI, silent execution
-            Connections.IniFileHandler(False)
-
             Dim result = BatchLauncher.RunBatch(
                 launcher,
                 caller:="Startup:-BatchLaunch",
@@ -77,85 +75,82 @@ Module Startup
         End If
 
         ' =====================================================
+        ' CREATE MAIN FORM EARLY (needed for ownership & state)
+        ' =====================================================
+        MainFormInstance = New FormMain(options, launcher)
+
+        ' =====================================================
         ' INITIALIZE DATABASE INFRASTRUCTURE
         ' =====================================================
         ReliableSql.Initialize(ConfigValues.ConnectionString)
 
         ' =====================================================
-        ' PROBE DATABASE CONNECTIVITY
+        ' DOCKER-FIRST STARTUP CHECK
         ' =====================================================
-        Variables.OfflineMode = Not ProbeDatabaseWithPrompt()
+        Dim canAttemptDatabase As Boolean =
+    DatabaseCoordinator.CanAttemptDatabaseStartup(
+        configuredContainerName:=options.SqlContainerName)
+
+        If canAttemptDatabase Then
+            ' Docker & container are available — now test SQL connectivity
+            If Not DatabaseCoordinator.TestConnection(ConfigValues.ConnectionString, 5) Then
+
+                Dim decision As DialogResult =
+            UIHelpers.TimedYesNoPrompt(
+                owner:=Nothing,
+                message:=
+                    "Docker is running, but the database cannot be reached." &
+                    Environment.NewLine & Environment.NewLine &
+                    "Do you want to start the application in OFFLINE mode?",
+                title:="Database Unavailable",
+                timeoutSeconds:=10,
+                defaultChoice:=DialogResult.Yes)
+
+                If decision = DialogResult.No Then
+                    ' ❌ User chose to quit
+                    Application.Exit()
+                    Environment.Exit(0)
+                    Return
+                End If
+
+                ' ✅ Timeout or Yes → Offline mode
+                Variables.OfflineMode = True
+                PCInfo.ValidDatabase = False
+
+            End If
+        Else
+            ' Docker itself is not available
+            Dim decision As DialogResult =
+        UIHelpers.TimedYesNoPrompt(
+            owner:=Nothing,
+            message:=
+                "Docker or the SQL container is not running." &
+                Environment.NewLine & Environment.NewLine &
+                "Do you want to start the application in OFFLINE mode?",
+            title:="Docker Unavailable",
+            timeoutSeconds:=10,
+            defaultChoice:=DialogResult.Yes)
+
+            If decision = DialogResult.No Then
+                Application.Exit()
+                Environment.Exit(0)
+                Return
+            End If
+
+            Variables.OfflineMode = True
+            PCInfo.ValidDatabase = False
+        End If
 
         ' =====================================================
         ' NORMAL UI STARTUP
         ' =====================================================
         CodeHelper.GetPcInfo()
 
-        MainFormInstance = New FormMain(options, launcher)
-
         AdminUser(IsRunningAsAdmin())
 
         Application.Run(MainFormInstance)
 
     End Sub
-
-    ' =====================================================
-    ' CONNECTIVITY PROBE (Retry / Offline / Exit)
-    ' =====================================================
-    Private Function ProbeDatabaseWithPrompt() As Boolean
-
-        ' Fast path
-        If TestConnection(ConfigValues.ConnectionString) Then
-            Return True
-        End If
-
-        While True
-            Dim dr = MessageBox.Show(
-                "The database is not reachable." & Environment.NewLine &
-                "Check your network/server and try again." & Environment.NewLine & Environment.NewLine &
-                "Yes = Retry" & Environment.NewLine &
-                "No = Work Offline" & Environment.NewLine &
-                "Cancel = Exit Application",
-                "Database Connection",
-                MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button1
-            )
-
-            Select Case dr
-                Case DialogResult.Yes
-                    If TestConnection(ConfigValues.ConnectionString) Then
-                        Return True
-                    End If
-                    Thread.Sleep(1000)
-
-                Case DialogResult.No
-                    ' Work Offline
-                    Return False
-
-                Case DialogResult.Cancel
-                    ' Exit gracefully
-                    Application.Exit()
-                    Environment.Exit(0)
-                    Return False ' compiler safety
-            End Select
-        End While
-        Return False
-
-    End Function
-
-    Private Function TestConnection(connStr As String) As Boolean
-        If String.IsNullOrWhiteSpace(connStr) Then Return False
-
-        Try
-            Using cn As New SqlConnection(connStr)
-                cn.Open()
-                Return True
-            End Using
-        Catch
-            Return False
-        End Try
-    End Function
 
     ' =====================================================
     ' ADMIN CHECKS
