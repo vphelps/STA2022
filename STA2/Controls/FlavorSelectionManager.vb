@@ -46,10 +46,7 @@ Public Class FlavorSelectionManager
             Dim item As New SqlFileItem With {.FilePath = filePath}
             Dim index = _clbSqlFiles.Items.Add(item)
 
-            Dim flavorName =
-                Path.GetFileNameWithoutExtension(filePath)
-
-            If defaultSet.Contains(flavorName) Then
+            If defaultSet.Contains(item.FlavorName) Then
                 _clbSqlFiles.SetItemChecked(index, True)
             End If
         Next
@@ -83,12 +80,8 @@ Public Class FlavorSelectionManager
             Dim item As New SqlFileItem With {.FilePath = filePath}
             Dim index = _clbSqlFiles.Items.Add(item)
 
-            Dim flavorName =
-                Path.GetFileNameWithoutExtension(filePath)
-
-            If checkedPaths.Contains(filePath) Then
-                _clbSqlFiles.SetItemChecked(index, True)
-            ElseIf Not _defaultsApplied AndAlso defaultSet.Contains(flavorName) Then
+            If checkedPaths.Contains(filePath) OrElse
+               (Not _defaultsApplied AndAlso defaultSet.Contains(item.FlavorName)) Then
                 _clbSqlFiles.SetItemChecked(index, True)
             End If
         Next
@@ -108,26 +101,21 @@ Public Class FlavorSelectionManager
 
     Public Function GetSelectedFlavorNames() As List(Of String)
 
-        Dim result As New List(Of String)
+        Return _clbSqlFiles.CheckedItems _
+            .OfType(Of SqlFileItem)() _
+            .Select(Function(item) item.FlavorName) _
+            .ToList()
 
-        For Each item In _clbSqlFiles.CheckedItems
-            Dim sqlItem = TryCast(item, SqlFileItem)
-            If sqlItem IsNot Nothing Then
-                result.Add(Path.GetFileNameWithoutExtension(sqlItem.FilePath))
-            End If
-        Next
-
-        Return result
     End Function
 
     Public Sub SaveDefaults()
+
         Dim defaults As List(Of String) =
-    _clbSqlFiles.CheckedItems _
-        .OfType(Of SqlFileItem)() _
-        .Select(Function(item As SqlFileItem) _
-                    Path.GetFileNameWithoutExtension(item.FilePath)) _
-        .Distinct(StringComparer.OrdinalIgnoreCase) _
-        .ToList()
+            _clbSqlFiles.CheckedItems _
+                .OfType(Of SqlFileItem)() _
+                .Select(Function(item) item.FlavorName) _
+                .Distinct(StringComparer.OrdinalIgnoreCase) _
+                .ToList()
 
         _options.DefaultFlavorNames = defaults
         OptionsManager.Save(_options)
@@ -145,14 +133,30 @@ Public Class FlavorSelectionManager
         _clbSqlFiles.BeginUpdate()
 
         For i = 0 To _clbSqlFiles.Items.Count - 1
-
             Dim item = TryCast(_clbSqlFiles.Items(i), SqlFileItem)
             If item Is Nothing Then Continue For
 
-            Dim flavorName =
-                Path.GetFileNameWithoutExtension(item.FilePath)
+            _clbSqlFiles.SetItemChecked(i, defaultSet.Contains(item.FlavorName))
+        Next
 
-            _clbSqlFiles.SetItemChecked(i, defaultSet.Contains(flavorName))
+        _clbSqlFiles.EndUpdate()
+    End Sub
+
+    Public Sub ApplySavedDefaults(defaultFlavors As List(Of String))
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then Return
+
+        Dim defaultSet As New HashSet(Of String)(
+            defaultFlavors,
+            StringComparer.OrdinalIgnoreCase)
+
+        _clbSqlFiles.BeginUpdate()
+
+        For i As Integer = 0 To _clbSqlFiles.Items.Count - 1
+            Dim item = TryCast(_clbSqlFiles.Items(i), SqlFileItem)
+            If item Is Nothing Then Continue For
+
+            _clbSqlFiles.SetItemChecked(i, defaultSet.Contains(item.FlavorName))
         Next
 
         _clbSqlFiles.EndUpdate()
@@ -171,40 +175,17 @@ Public Class FlavorSelectionManager
             End Get
         End Property
 
+        ' ✅ Single authoritative flavor name (NO extension)
+        Public ReadOnly Property FlavorName As String
+            Get
+                Return Path.GetFileNameWithoutExtension(FilePath)
+            End Get
+        End Property
+
         Public Overrides Function ToString() As String
+            ' UI display only
             Return FileName
         End Function
     End Class
-    Public Sub ApplySavedDefaults(defaultFlavors As List(Of String))
-
-        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
-            Return
-        End If
-
-        Dim defaultSet As New HashSet(Of String)(
-            defaultFlavors,
-            StringComparer.OrdinalIgnoreCase)
-
-        _clbSqlFiles.BeginUpdate()
-
-        For i As Integer = 0 To _clbSqlFiles.Items.Count - 1
-
-            Dim item = TryCast(_clbSqlFiles.Items(i), SqlFileItem)
-            If item Is Nothing Then Continue For
-
-            Dim flavorName As String =
-                Path.GetFileNameWithoutExtension(item.FilePath)
-
-            _clbSqlFiles.SetItemChecked(
-                i,
-                defaultSet.Contains(flavorName)
-            )
-
-        Next
-
-        _clbSqlFiles.EndUpdate()
-
-    End Sub
-
 
 End Class

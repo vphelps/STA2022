@@ -12,22 +12,36 @@ Public Class FormMain
     Private _quickLaunchManager As QuickLaunchManager
     Private _flavorManager As FlavorSelectionManager
     Private _executionStatusLocked As Boolean = False
+    Private _runExistingVersionPath As String
+    Private _tabHintLabel As Label
+    Private _tabHintTimer As Timer
 
-    Private ReadOnly _serviceNames As String() = {
-    "AdvApiServer",
-    "AdvCoreService",
-    "AdvantageCloudSyncService",
-    "AdvCreditService",
-    "AdvLicService",
-    "AdvSignageService",
-    "AdvTurnstileEngine",
-    "AdvNotifyService",
-    "AdvantageUpgradeService",
-    "AdvRelayClient"
-}
+    Private ReadOnly _serviceNames As String() =
+    {
+        "AdvApiServer",
+        "AdvCoreService",
+        "AdvantageCloudSyncService",
+        "AdvCreditService",
+        "AdvLicService",
+        "AdvSignageService",
+        "AdvTurnstileEngine",
+        "AdvNotifyService",
+        "AdvantageUpgradeService",
+        "AdvRelayClient"
+    }.OrderBy(Function(s) s).ToArray()
+
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
-
+    Private Function GetServiceDisplayName(serviceName As String) As String
+        Try
+            Using sc As New ServiceController(serviceName)
+                Return sc.DisplayName
+            End Using
+        Catch
+            ' Fallback if service is missing or inaccessible
+            Return serviceName
+        End Try
+    End Function
     Private Sub EnableDoubleBuffering(ctrl As Control)
         Dim prop = ctrl.GetType().GetProperty(
         "DoubleBuffered",
@@ -46,13 +60,28 @@ Public Class FormMain
         tblServices.RowCount = 0
         _serviceRows.Clear()
 
-        For Each serviceName In _serviceNames
+        ' ✅ Step 3: Resolve display names and sort by DisplayName
+        Dim services =
+        _serviceNames.
+            Select(Function(sn)
+                       Dim display = GetServiceDisplayName(sn)
+                       Return New With {
+                           .ServiceName = sn,
+                           .DisplayName = display
+                       }
+                   End Function).
+            OrderBy(Function(x) x.DisplayName, StringComparer.CurrentCultureIgnoreCase).
+            ToList()
+
+        ' ✅ Step 4: Build rows in sorted order
+        For Each item In services
 
             Dim row As New ServiceRowControl() With {
-            .ServiceName = serviceName
+            .ServiceName = item.ServiceName,
+            .DisplayName = item.DisplayName
         }
 
-            ' Fill the table cell so width is granted by the parent
+            ' Layout (keep as you had before)
             row.Dock = DockStyle.Fill
             row.Margin = New Padding(0, 0, 0, 4)
 
@@ -138,8 +167,7 @@ Public Class FormMain
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-
+        rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
@@ -214,7 +242,17 @@ Public Class FormMain
     tbMLTest1.Visible = False
     btnTest1.Visible = False
     btnTest2.Visible = False
+           lblDatabaseStartCommand.Visible = False
+        tbDatabaseStartCommand.Visible = False
+        lblFlavorApplyCommand.Visible = False
+        tbFlavorApplyCommand.Visible = False
+
+
 #End If
+#If DEBUG Then
+        Me.Text += " - DEBUG BUILD"
+#End If
+
 
         btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
         btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
@@ -253,6 +291,7 @@ Public Class FormMain
         "(No SQL container found)",
         discoveredContainer
     )
+        InitializeTabSwitchHint()
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
         EnableDoubleBuffering(tblServices)
@@ -401,6 +440,7 @@ Public Class FormMain
         ' ✅ Initialize flavors now that path is valid
         ' -------------------------------------------------
         InitializeFlavors()
+        SyncFlavorsListMirror()
     End Sub
 
     Private Sub tbLocName_GotFocus(sender As Object, e As EventArgs) Handles tbLocName.GotFocus, tbLicSvr.GotFocus, tbCoreSvr.GotFocus, tbDbVer.GotFocus, tbWebEnabled.GotFocus, tbShiftDate.GotFocus
@@ -432,7 +472,7 @@ Public Class FormMain
 
         tpAdvData.Enabled = dbOnline
         tpDbInfo.Enabled = dbOnline
-        tpGeneral.Enabled = dbOnline
+        'tpGeneral.Enabled = dbOnline
         tpDbLogs.Enabled = dbOnline
 
     End Sub
@@ -1052,6 +1092,8 @@ Public Class FormMain
     Handles clbSqlFiles.Enter
 
         _flavorManager.RefreshPreservingSelection()
+        SyncFlavorsListMirror()
+
     End Sub
 
 
@@ -1125,6 +1167,14 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
+
+        ' ✅ ENSURE output tab is active FIRST
+        tcSTA.SelectedTab = tpGeneral
+
+        ' ✅ Allow WinForms to finish layout
+        Await Task.Yield()
+
+        _liveOutputManager.ForceRedraw()
 
         Dim flavorArgs As String =
         CodeHelper.BuildFlavorsArgument(
@@ -1336,12 +1386,12 @@ Public Class FormMain
             Environment.NewLine & Environment.NewLine &
             "Continue?"
 
-        If MessageBox.Show(
-            message,
-            "Discard All Changes",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Warning,
-            MessageBoxDefaultButton.Button2) <> DialogResult.Yes Then
+
+
+        If UIHelpers.TimedYesNoPrompt(
+            message:=message,
+            title:="Discard All Changes",
+            timeoutSeconds:=30) <> DialogResult.Yes Then
             Return
         End If
 
@@ -1351,18 +1401,16 @@ Public Class FormMain
 
             RepoTools.DiscardAllChanges(repoPath)
 
-            MessageBox.Show(
-                "All local changes were discarded successfully.",
-                "Discard Complete",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            UIHelpers.TimedInfoPrompt(
+    message:="All local changes were discarded successfully.",
+    title:="Discard Complete",
+    timeoutSeconds:=10)
 
         Catch ex As Exception
-            MessageBox.Show(
-                ex.Message,
-                "Git Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
+            UIHelpers.TimedErrorPrompt(
+                message:="Git Error",
+                title:="Repository")
+
         Finally
             btnRepoDiscardChanges.Enabled = True
             Cursor.Current = Cursors.Default
@@ -1410,6 +1458,13 @@ Public Class FormMain
                 installerName:="AdvantageSetup-x64.exe",
                 progressPercent:=percentProgress,
                 progressText:=textProgress)
+
+            ' If user chose Run Existing, this path already existed
+            If Directory.Exists(extractDir) AndAlso
+   extractDir.EndsWith("Version " & AppData.InstalledVersion, StringComparison.OrdinalIgnoreCase) Then
+
+                _runExistingVersionPath = extractDir
+            End If
 
             ' 🔒 stop queued extraction text updates
             showTextProgress = False
@@ -1606,6 +1661,421 @@ Public Class FormMain
         ' ✅ FORCE scroll height recalculation (WinForms bug workaround)
         tblServices.AutoScroll = False
         tblServices.AutoScroll = True
+
+    End Sub
+    Private Sub cmsApplySingleFlavor_Opening(
+    sender As Object,
+    e As CancelEventArgs
+) Handles cmsApplySingleFlavor.Opening
+
+        Dim count = lbFlavorsList.SelectedItems.Count
+        e.Cancel = (count = 0)
+
+        If count = 1 Then
+            miApplySingleFlavor.Text = "Apply selected flavor"
+        Else
+            miApplySingleFlavor.Text = $"Apply {count} selected flavors"
+        End If
+
+    End Sub
+
+    Private Sub clbSqlFiles_MouseDown(
+        sender As Object,
+        e As MouseEventArgs
+    ) Handles clbSqlFiles.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim index = clbSqlFiles.IndexFromPoint(e.Location)
+            If index >= 0 Then
+                clbSqlFiles.SelectedIndex = index
+            End If
+        End If
+
+    End Sub
+    Private Async Sub miApplySingleFlavor_Click(
+    sender As Object,
+    e As EventArgs
+) Handles miApplySingleFlavor.Click
+
+        Await ApplySelectedFlavorsAsync()
+
+    End Sub
+
+    Private Sub tcSTA_SelectedIndexChanged(
+    sender As Object,
+    e As EventArgs
+) Handles tcSTA.SelectedIndexChanged
+
+        If tcSTA.SelectedTab Is tpGeneral Then
+
+            ' ✅ Defer until WinForms finishes showing the tab
+            BeginInvoke(Sub()
+                            ForceLiveOutputRedraw()
+                        End Sub)
+
+        End If
+
+    End Sub
+
+    Private Sub ForceLiveOutputRedraw()
+
+        If rtbLiveOutput.IsDisposed Then Return
+
+        rtbLiveOutput.SuspendLayout()
+
+        ' Force WinForms to fully re-sync layout + paint
+        rtbLiveOutput.Hide()
+        rtbLiveOutput.Show()
+
+        rtbLiveOutput.PerformLayout()
+        rtbLiveOutput.Refresh()
+
+        ' Restore scroll state
+        rtbLiveOutput.SelectionStart = rtbLiveOutput.TextLength
+        rtbLiveOutput.ScrollToCaret()
+
+        rtbLiveOutput.ResumeLayout()
+
+    End Sub
+    Private Sub SyncFlavorsListMirror()
+
+        lbFlavorsList.BeginUpdate()
+        lbFlavorsList.Items.Clear()
+
+        For Each item As FlavorSelectionManager.SqlFileItem In
+            clbSqlFiles.Items.OfType(Of FlavorSelectionManager.SqlFileItem)()
+
+            lbFlavorsList.Items.Add(item)
+
+        Next
+
+        lbFlavorsList.DisplayMember = NameOf(FlavorSelectionManager.SqlFileItem.FlavorName)
+
+        lbFlavorsList.EndUpdate()
+
+    End Sub
+
+
+    Private Sub lbFlavorsList_MouseDown(
+    sender As Object,
+    e As MouseEventArgs
+) Handles lbFlavorsList.MouseDown
+
+        If e.Button <> MouseButtons.Right Then Return
+
+        Dim index = lbFlavorsList.IndexFromPoint(e.Location)
+        If index < 0 Then Return
+
+        ' ✅ Preserve multi-selection
+        If Not lbFlavorsList.SelectedIndices.Contains(index) Then
+            lbFlavorsList.SelectedIndex = index
+        End If
+
+    End Sub
+
+    Private Async Sub lbFlavorsList_DoubleClick(
+    sender As Object,
+    e As EventArgs
+) Handles lbFlavorsList.DoubleClick
+
+        ' Optional: only apply when 1 item is selected
+        If lbFlavorsList.SelectedItems.Count = 0 Then Return
+
+        Await ApplySelectedFlavorsAsync()
+
+    End Sub
+
+    Private Async Function ApplySelectedFlavorsAsync() As Task
+
+        If lbFlavorsList.SelectedItems.Count = 0 Then Return
+
+        Dim selectedFlavors As New List(Of String)
+
+        For Each item As FlavorSelectionManager.SqlFileItem In
+            lbFlavorsList.SelectedItems.OfType(Of FlavorSelectionManager.SqlFileItem)()
+
+            selectedFlavors.Add(item.FlavorName)
+        Next
+
+        If selectedFlavors.Count = 0 Then Return
+
+        Dim flavorArgs As String =
+            CodeHelper.BuildFlavorsArgument(selectedFlavors)
+
+        Dim description As String =
+            If(selectedFlavors.Count = 1,
+               $"Applying flavor '{selectedFlavors(0)}'",
+               $"Applying {selectedFlavors.Count} flavors")
+
+        Await PowerShellRunner.RunLiveScriptAsync(
+            options:=_options,
+            liveOutputManager:=_liveOutputManager,
+            setStatus:=Sub(text)
+                           SetExecutionStatus(text)
+                       End Sub,
+            triggerButton:=Nothing,
+            scriptRelativePath:="tests\apply-flavors.ps1",
+            scriptArgs:=flavorArgs,
+            runningStatusText:=description & " (live output)…"
+        )
+
+    End Function
+
+
+    '    Private Async Sub btnManageInstallerVersions_Click(
+    '    sender As Object,
+    '    e As EventArgs
+    ') Handles btnManageInstallerVersions.Click
+
+    '        btnManageInstallerVersions.Enabled = False
+    '        Try
+    '            ' 1️⃣ Discover installed versions (fast, filesystem only)
+    '            Dim versions =
+    '            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+    '            ' 2️⃣ Apply safety rules OFF the UI thread
+    '            Await Task.Run(Sub()
+    '                               InstallerTools.ApplyCleanupSafetyRules(
+    '                               versions,
+    '                               runExistingVersionPath:=_runExistingVersionPath)
+    '                           End Sub)
+
+    '#If DEBUG Then
+    '            ' 🔍 Diagnostic visibility (safe to remove later)
+    '            For Each v In versions
+    '                Debug.WriteLine(
+    '                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
+    '            Next
+    '#End If
+
+    '            ' 3️⃣ Show Manage Installed Versions dialog
+    '            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+
+    '                If dlg.ShowDialog(Me) = DialogResult.OK Then
+
+    '                    ' 4️⃣ Confirmation dialog
+    '                    Using confirm As New ConfirmInstallerVersionCleanupForm(
+    '                    dlg.SelectedForCleanup)
+
+    '                        If confirm.ShowDialog(Me) = DialogResult.OK Then
+
+    '                            ' 5️⃣ Execute cleanup (safe + authoritative)
+    '                            Dim result =
+    '                            InstallerTools.ExecuteInstallerVersionCleanup(
+    '                                dlg.SelectedForCleanup)
+
+    '                            ' 6️⃣ Show summary
+    '                            ShowCleanupSummary(result)
+
+    '                        End If
+    '                    End Using
+    '                End If
+    '            End Using
+
+    '        Finally
+    '            btnManageInstallerVersions.Enabled = True
+    '        End Try
+
+    '    End Sub
+    Private Async Sub btnManageInstallerVersions_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnManageInstallerVersions.Click
+
+        btnManageInstallerVersions.Enabled = False
+        Try
+            Dim versions =
+            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+            Await ProgressOverlayService.RunWithOverlayAsync(
+            Me,
+            "Scanning installed installer versions…" & Environment.NewLine &
+            "Please wait.",
+            Function()
+                Return Task.Run(Sub()
+                                    InstallerTools.ApplyCleanupSafetyRules(
+                                        versions,
+                                        runExistingVersionPath:=_runExistingVersionPath)
+                                End Sub)
+            End Function
+        )
+
+#If DEBUG Then
+            For Each v In versions
+                Debug.WriteLine(
+                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
+            Next
+#End If
+
+            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+                If dlg.ShowDialog(Me) = DialogResult.OK Then
+                    Using confirm As New ConfirmInstallerVersionCleanupForm(
+                    dlg.SelectedForCleanup)
+
+                        If confirm.ShowDialog(Me) = DialogResult.OK Then
+                            Dim result =
+                            InstallerTools.ExecuteInstallerVersionCleanup(
+                                dlg.SelectedForCleanup)
+
+                            ShowCleanupSummary(result)
+                        End If
+                    End Using
+                End If
+            End Using
+
+        Finally
+            btnManageInstallerVersions.Enabled = True
+        End Try
+
+    End Sub
+    Private Sub ShowCleanupSummary(result As InstallerCleanupResult)
+
+        Dim sb As New Text.StringBuilder()
+
+        sb.AppendLine("Cleanup complete.")
+        sb.AppendLine()
+
+        If result.Deleted.Any() Then
+            sb.AppendLine($"✔ Deleted {result.Deleted.Count} version(s):")
+            For Each v In result.Deleted
+                sb.AppendLine($"  • {v.VersionString}")
+            Next
+            sb.AppendLine()
+        End If
+
+        If result.Skipped.Any() Then
+            sb.AppendLine($"⚠ Skipped {result.Skipped.Count} version(s):")
+            For Each v In result.Skipped
+                sb.AppendLine($"  • {v.VersionString}")
+            Next
+            sb.AppendLine()
+        End If
+
+        If result.Failed.Any() Then
+            sb.AppendLine($"✖ Failed to delete {result.Failed.Count} version(s):")
+            For Each kvp In result.Failed
+                sb.AppendLine($"  • {kvp.Key.VersionString}: {kvp.Value.Message}")
+            Next
+            sb.AppendLine()
+        End If
+
+        Dim freedMb = result.FreedBytes \ (1024 * 1024)
+        sb.AppendLine($"Total disk space freed: {freedMb} MB")
+
+        MessageBox.Show(
+        sb.ToString(),
+        "Installer Version Cleanup",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information)
+
+    End Sub
+
+    ' =============================
+    ' Progress overlay helper
+    ' =============================
+    Private Function ShowProgressOverlay(message As String) As ProgressOverlayForm
+
+        Dim overlay As New ProgressOverlayForm(message)
+
+        ' Match FormMain client area
+        overlay.Size = Me.ClientSize
+        overlay.Location = Me.PointToScreen(Point.Empty)
+
+        overlay.Show(Me)
+        overlay.BringToFront()
+        overlay.Refresh()
+
+        Return overlay
+
+    End Function
+    Protected Overrides Function ProcessCmdKey(
+    ByRef msg As Message,
+    keyData As Keys
+) As Boolean
+
+        ' Ctrl + Tab → next tab
+        If keyData = (Keys.Control Or Keys.Tab) Then
+            SelectNextSTATab(forward:=True)
+            Return True
+        End If
+
+        ' Ctrl + Shift + Tab → previous tab
+        If keyData = (Keys.Control Or Keys.Shift Or Keys.Tab) Then
+            SelectNextSTATab(forward:=False)
+            Return True
+        End If
+
+        ' Let all other keys behave normally
+        Return MyBase.ProcessCmdKey(msg, keyData)
+
+    End Function
+    Private Sub SelectNextSTATab(forward As Boolean)
+
+        If tcSTA Is Nothing OrElse
+       tcSTA.TabPages.Count = 0 Then Return
+
+        Dim count As Integer = tcSTA.TabPages.Count
+        Dim index As Integer = tcSTA.SelectedIndex
+
+        If forward Then
+            index = (index + 1) Mod count
+        Else
+            index = (index - 1 + count) Mod count
+        End If
+
+        tcSTA.SelectedIndex = index
+
+        ' ✅ Show visual hint
+        ShowTabSwitchHint(forward)
+
+    End Sub
+    Private Sub InitializeTabSwitchHint()
+
+        _tabHintLabel = New Label With {
+            .Visible = False,
+            .AutoSize = True,
+            .BackColor = Color.FromArgb(220, Color.Black),
+            .ForeColor = Color.White,
+            .Font = New Font("Segoe UI", 10, FontStyle.Bold),
+            .Padding = New Padding(10),
+            .BorderStyle = BorderStyle.FixedSingle
+        }
+
+        Me.Controls.Add(_tabHintLabel)
+        _tabHintLabel.BringToFront()
+
+        _tabHintTimer = New Timer With {
+            .Interval = 700
+        }
+
+        AddHandler _tabHintTimer.Tick,
+            Sub()
+                _tabHintTimer.Stop()
+                _tabHintLabel.Visible = False
+            End Sub
+
+    End Sub
+    Private Sub ShowTabSwitchHint(forward As Boolean)
+
+        If tcSTA.SelectedTab Is Nothing Then Return
+
+        Dim arrow As String =
+            If(forward, "▶ ", "◀ ")
+
+        _tabHintLabel.Text =
+            arrow & tcSTA.SelectedTab.Text
+
+        ' Position centered near top
+        _tabHintLabel.Location =
+            New Point(
+                (Me.ClientSize.Width - _tabHintLabel.Width) \ 2,
+                20)
+
+        _tabHintLabel.Visible = True
+        _tabHintLabel.BringToFront()
+
+        _tabHintTimer.Stop()
+        _tabHintTimer.Start()
 
     End Sub
 

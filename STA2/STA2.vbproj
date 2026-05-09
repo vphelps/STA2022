@@ -139,8 +139,27 @@
     <Compile Include="Core\BatchLauncher.vb" />
     <Compile Include="Core\CodeHelper.vb" />
     <Compile Include="Core\CommonVariables.vb" />
+    <Compile Include="Core\ProgressOverlayService.vb" />
     <Compile Include="Core\UIHelpers.vb" />
     <Compile Include="Data\RepoTools.vb" />
+    <Compile Include="Forms\ConfirmInstallerVersionCleanupForm.Designer.vb">
+      <DependentUpon>ConfirmInstallerVersionCleanupForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ConfirmInstallerVersionCleanupForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ManageInstallerVersionsForm.Designer.vb">
+      <DependentUpon>ManageInstallerVersionsForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ManageInstallerVersionsForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProgressOverlayForm.Designer.vb">
+      <DependentUpon>ProgressOverlayForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProgressOverlayForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Services\ServiceManager.vb" />
     <Compile Include="Services\ServiceRowControl.Designer.vb">
       <DependentUpon>ServiceRowControl.vb</DependentUpon>
@@ -172,7 +191,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\LauncherConfig.vb" />
+    <Compile Include="Tools\InstallerCleanupResult.vb" />
+    <Compile Include="Tools\InstallerCleanupRules.vb" />
     <Compile Include="Tools\InstallerTools.vb" />
+    <Compile Include="Tools\InstallerVersionInfo.vb" />
     <Compile Include="Tools\LiveOutputManager.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -207,11 +229,21 @@
     <Compile Include="Startup.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\ConfirmInstallerVersionCleanupForm.resx">
+      <DependentUpon>ConfirmInstallerVersionCleanupForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ManageInstallerVersionsForm.resx">
+      <DependentUpon>ManageInstallerVersionsForm.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProgressOverlayForm.resx">
+      <DependentUpon>ProgressOverlayForm.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -228,6 +260,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
+    <None Include="Docs\BatchLauncher_Method_Overview.md" />
+    <None Include="Docs\CodeHelper_Method_Overview.md" />
+    <None Include="Docs\CommonVariables.md" />
+    <None Include="Docs\Constants_Method_Overview.md" />
+    <None Include="Docs\FormMain_Method_Overview.md" />
+    <None Include="Docs\GlobalErrorHandler_Method_Overview.md" />
+    <None Include="Docs\IconHelpers_Method_Overview.md" />
+    <None Include="Docs\IniFile_Method_Overview.md" />
+    <None Include="Docs\ProgressOverlayService.md" />
+    <None Include="Docs\UIHelpers_Method_Overview.md" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -258,22 +300,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CenterEdge.ico" />
-    <None Include="Images\NotInstalled.png" />
-    <None Include="Images\Play.png" />
-    <None Include="Images\QuestionMark.png" />
-    <None Include="Images\Refresh.png" />
-    <None Include="Images\Run.png" />
-    <None Include="Images\StatusError.png" />
-    <None Include="Images\StatusExcluded.png" />
-    <None Include="Images\StatusInformation.png" />
-    <None Include="Images\StatusNo.png" />
-    <None Include="Images\StatusOffline.png" />
-    <None Include="Images\StatusOK.png" />
-    <None Include="Images\StatusPaused.png" />
-    <None Include="Images\StatusRunning.png" />
-    <None Include="Images\StatusStopped.png" />
-    <None Include="Images\StatusWarning.png" />
-    <None Include="Images\Stop.png" />
     <None Include="Images\icons8-play-96.png" />
     <None Include="Images\icons8-play-button-96.png" />
     <None Include="Images\icons8-stop-96.png" />
@@ -284,9 +310,9 @@
     <None Include="Images\icons8-unavailable-96.png" />
     <None Include="Images\icons8-warning-96.png" />
     <None Include="Images\icons8-refresh-96.png" />
-    <None Include="Images\NotInstalled1.png" />
-    <None Include="Images\Play1.png" />
     <None Include="Images\icons8-unavailable-64.png" />
+    <None Include="Images\icons8-open-folder-96.png" />
+    <None Include="Images\icons8-open-folder-16.png" />
     <Content Include="vernware_logo_XUD_icon.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -117,44 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="imgCheckMark96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-check-mark-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgCheckMarkButton96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-check-mark-button-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgCrossMark96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-cross-mark-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgGreenPlay96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-play-button-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgOpenFolder16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-open-folder-16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgOpenFolder96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-open-folder-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgPlay96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-play-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgQuestionMark96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-question-mark-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgRedStop96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-stop-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgRefresh96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-refresh-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgUnavailable96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-unavailable-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgUnavailableBlack64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-unavailable-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="imgWarning96" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Images\icons8-warning-96.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
 </root>

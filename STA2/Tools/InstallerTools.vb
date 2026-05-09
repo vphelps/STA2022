@@ -196,101 +196,96 @@ Public Module InstallerTools
     ' Async ZIP extract → Versioned directory
     ' -------------------------------------------------------
     Public Async Function ExtractZipToVersionedDirectoryAsync(
-        zipPath As String,
-        upgradeBasePath As String,
-        installerName As String,
-        progressPercent As IProgress(Of Integer),
-        progressText As IProgress(Of String)
-    ) As Task(Of String)
+    zipPath As String,
+    upgradeBasePath As String,
+    installerName As String,
+    progressPercent As IProgress(Of Integer),
+    progressText As IProgress(Of String)
+) As Task(Of String)
 
         If String.IsNullOrWhiteSpace(upgradeBasePath) Then
             Throw New ArgumentException("Upgrade base path is required.")
         End If
 
-        ' 1️⃣ Temporary staging folder
+        ' ✅ Use TEMP for staging, not upgrade path
+        Dim stagingRoot As String =
+        Path.Combine(Path.GetTempPath(), "STA2_InstallerStaging")
+
+        Directory.CreateDirectory(stagingRoot)
+
         Dim stagingDir As String =
-            Path.Combine(
-                upgradeBasePath,
-                "__staging_" & Guid.NewGuid().ToString("N"))
+        Path.Combine(stagingRoot, "__staging_" & Guid.NewGuid().ToString("N"))
 
         Directory.CreateDirectory(stagingDir)
 
-        ' 2️⃣ Extract ZIP to staging
-        Await ExtractZipMergeAsync(
+        Try
+            ' 1️⃣ Extract ZIP to staging
+            Await ExtractZipMergeAsync(
             zipPath,
             stagingDir,
             progressPercent,
             progressText)
 
-        ' 3️⃣ Locate installer
-        Dim installerPath As String =
-            FindInstaller(
-                stagingDir,
-                installerName,
-                recursive:=True)
+            ' 2️⃣ Locate installer
+            Dim installerPath As String =
+            FindInstaller(stagingDir, installerName, recursive:=True)
 
-        ' 4️⃣ Read installer version
-        Dim version As String =
+            ' 3️⃣ Read installer version
+            Dim version As String =
             GetInstallerVersion(installerPath)
 
-        If String.IsNullOrWhiteSpace(version) Then
-            Throw New InvalidOperationException(
+            If String.IsNullOrWhiteSpace(version) Then
+                Throw New InvalidOperationException(
                 "Unable to determine installer version.")
-        End If
-
-        ' 5️⃣ Build final versioned directory
-        Dim finalDir As String =
-    Path.Combine(
-        upgradeBasePath,
-        "Version " & version)
-
-        ' 🔴 NEW: force overwrite by deleting existing directory
-
-        If Directory.Exists(finalDir) Then
-
-            Dim action As ExistingVersionAction =
-        PromptForExistingVersion(finalDir, timeoutSeconds:=10)
-
-            If action = ExistingVersionAction.RunExisting Then
-                ' Skip extraction entirely
-                progressText?.Report("Using existing installation.")
-                Return finalDir
             End If
 
-            ' Otherwise overwrite
-            Directory.Delete(finalDir, recursive:=True)
-        End If
+            ' 4️⃣ Final version directory
+            Dim finalDir As String =
+            Path.Combine(upgradeBasePath, "Version " & version)
 
+            ' 5️⃣ Existing version handling
+            If Directory.Exists(finalDir) Then
 
-        Directory.CreateDirectory(finalDir)
+                Dim action As ExistingVersionAction =
+                PromptForExistingVersion(finalDir, timeoutSeconds:=10)
 
-        progressText?.Report($"Finalizing extraction to {finalDir}...")
+                If action = ExistingVersionAction.RunExisting Then
+                    progressText?.Report("Using existing installation.")
+                    Return finalDir
+                End If
 
-        ' 6️⃣ Copy staging → final (overwrite-safe)
-        For Each item In Directory.GetFileSystemEntries(stagingDir)
-            Dim dest As String =
-        Path.Combine(finalDir, Path.GetFileName(item))
-
-            If Directory.Exists(item) Then
-                My.Computer.FileSystem.CopyDirectory(
-            sourceDirectoryName:=item,
-            destinationDirectoryName:=dest,
-            overwrite:=True)
-            Else
-                My.Computer.FileSystem.CopyFile(
-            sourceFileName:=item,
-            destinationFileName:=dest,
-            overwrite:=True)
+                Directory.Delete(finalDir, recursive:=True)
             End If
-        Next
 
-        ' 7️⃣ Cleanup staging
-        Directory.Delete(stagingDir, recursive:=True)
+            Directory.CreateDirectory(finalDir)
 
-        Return finalDir
+            progressText?.Report($"Finalizing extraction to {finalDir}...")
+
+            ' 6️⃣ Copy staging → final
+            For Each item In Directory.GetFileSystemEntries(stagingDir)
+                Dim dest = Path.Combine(finalDir, Path.GetFileName(item))
+
+                If Directory.Exists(item) Then
+                    My.Computer.FileSystem.CopyDirectory(item, dest, overwrite:=True)
+                Else
+                    My.Computer.FileSystem.CopyFile(item, dest, overwrite:=True)
+                End If
+            Next
+
+            Return finalDir
+
+        Finally
+            ' ✅ ALWAYS clean up staging
+            Try
+                If Directory.Exists(stagingDir) Then
+                    Directory.Delete(stagingDir, recursive:=True)
+                End If
+            Catch
+                ' Non-fatal cleanup failure
+            End Try
+        End Try
+
     End Function
-
-
     ' -------------------------------------------------------
     ' ZIP extract with overwrite + progress
     ' -------------------------------------------------------
@@ -415,6 +410,246 @@ Public Module InstallerTools
         End Using
 
         progressText?.Report("Installer finished.")
+    End Function
+    Public Sub CleanupOrphanedStagingDirectories(
+    Optional maxAgeHours As Integer = 24
+)
+
+        Dim stagingRoot As String =
+        Path.Combine(Path.GetTempPath(), "STA2_InstallerStaging")
+
+        If Not Directory.Exists(stagingRoot) Then Return
+
+        Dim cutoff As DateTime =
+        DateTime.Now.AddHours(-Math.Abs(maxAgeHours))
+
+        For Each stagingDirPath As String In
+        Directory.GetDirectories(stagingRoot, "__staging_*")
+
+            Try
+                Dim info As New DirectoryInfo(stagingDirPath)
+
+                If info.CreationTime < cutoff Then
+                    info.Delete(recursive:=True)
+                End If
+
+            Catch
+                ' Ignore cleanup failures (non-fatal)
+            End Try
+
+        Next
+
+    End Sub
+
+    Public Function GetReleaseTrack(version As Version) As ReleaseTrack
+        If version Is Nothing Then
+            Throw New ArgumentNullException(NameOf(version))
+        End If
+
+        ' ✅ Clarified rule:
+        ' LTS → Minor = 1
+        ' Fast Track → Minor ≥ 2
+        If version.Minor = 1 Then
+            Return ReleaseTrack.LongTermSupport
+        Else
+            Return ReleaseTrack.FastTrack
+        End If
+    End Function
+
+    Public Function GetDirectorySizeBytes(path As String) As Long
+        Dim total As Long = 0
+
+        For Each file In Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+            Try
+                total += New FileInfo(file).Length
+            Catch
+                ' Ignore inaccessible files
+            End Try
+        Next
+
+        Return total
+    End Function
+
+    Public Function DiscoverInstalledInstallerVersions(
+    upgradeBasePath As String
+) As List(Of InstallerVersionInfo)
+
+        Dim results As New List(Of InstallerVersionInfo)
+
+        If String.IsNullOrWhiteSpace(upgradeBasePath) Then Return results
+        If Not Directory.Exists(upgradeBasePath) Then Return results
+
+        ' Expected format: "Version 26.10.1.2431"
+        For Each dirPath In Directory.GetDirectories(upgradeBasePath, "Version *")
+
+            Dim dirName As String = Path.GetFileName(dirPath)
+            Dim versionPart As String = dirName.Substring("Version ".Length).Trim()
+
+            Dim parsedVersion As Version = Nothing
+            If Not Version.TryParse(versionPart, parsedVersion) Then
+                ' Skip folders that don't match semantic version format
+                Continue For
+            End If
+
+            Dim info As New InstallerVersionInfo With {
+                .Version = parsedVersion,
+                .VersionString = dirName,
+                .FolderPath = dirPath,
+                .CreationTime = Directory.GetCreationTime(dirPath),
+                .SizeBytes = GetDirectorySizeBytes(dirPath),
+                .Track = GetReleaseTrack(parsedVersion)
+            }
+
+            results.Add(info)
+        Next
+
+        ' ✅ Determine latest version (across all tracks)
+        Dim latest = results.
+            OrderByDescending(Function(v) v.Version).
+            FirstOrDefault()
+
+        If latest IsNot Nothing Then
+            latest.IsLatest = True
+        End If
+
+        Return results
+    End Function
+
+    Public Function ContainsLockedFiles(folderPath As String) As Boolean
+
+        For Each filePath As String In
+        Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)
+
+            Try
+                Using fs As FileStream =
+                File.Open(
+                    filePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.None)
+                End Using
+
+            Catch
+                ' Any failure means the file is locked or inaccessible
+                Return True
+            End Try
+
+        Next
+
+        Return False
+    End Function
+    Public Function IsInstallerRunningFromVersion(folderPath As String) As Boolean
+
+        For Each proc As Process In Process.GetProcesses()
+
+            ' ✅ Filter aggressively by known installer prefix
+            If String.IsNullOrWhiteSpace(proc.ProcessName) OrElse
+           Not proc.ProcessName.StartsWith(
+               "AdvantageSetup",
+               StringComparison.OrdinalIgnoreCase) Then
+                Continue For
+            End If
+
+            Try
+                If proc.MainModule Is Nothing Then Continue For
+
+                Dim exePath = proc.MainModule.FileName
+
+                If exePath IsNot Nothing AndAlso
+               exePath.StartsWith(
+                   folderPath,
+                   StringComparison.OrdinalIgnoreCase) Then
+                    Return True
+                End If
+
+            Catch ex As system.ComponentModel.Win32Exception
+                ' Expected: access denied
+                Continue For
+
+            Catch ex As InvalidOperationException
+                ' Expected: process exited
+                Continue For
+            End Try
+
+        Next
+
+        Return False
+    End Function
+    Public Sub ApplyCleanupSafetyRules(
+    versions As List(Of InstallerVersionInfo),
+    Optional runExistingVersionPath As String = Nothing
+)
+
+        For Each v In versions
+
+            ' 1️⃣ Latest version is always protected
+            If v.IsLatest Then
+                v.LockReason = VersionLockReason.LatestVersion
+                Continue For
+            End If
+
+            ' 2️⃣ LTS (Minor = 1) is always protected
+            If v.Track = ReleaseTrack.LongTermSupport Then
+                v.LockReason = VersionLockReason.LongTermSupport
+                Continue For
+            End If
+
+            ' 3️⃣ Selected as Run Existing in this session
+            If Not String.IsNullOrWhiteSpace(runExistingVersionPath) AndAlso
+               v.FolderPath.Equals(
+                   runExistingVersionPath,
+                   StringComparison.OrdinalIgnoreCase) Then
+
+                v.LockReason = VersionLockReason.SelectedAsRunExisting
+                Continue For
+            End If
+
+            ' 4️⃣ Installer process currently running from this folder
+            If IsInstallerRunningFromVersion(v.FolderPath) Then
+                v.LockReason = VersionLockReason.InstallerRunning
+                Continue For
+            End If
+
+            ' 5️⃣ Any locked file protects the entire version
+            If ContainsLockedFiles(v.FolderPath) Then
+                v.LockReason = VersionLockReason.FileLocked
+                Continue For
+            End If
+
+            ' ✅ Otherwise eligible
+            v.LockReason = VersionLockReason.None
+        Next
+
+    End Sub
+    Public Function ExecuteInstallerVersionCleanup(
+        versionsToDelete As List(Of InstallerVersionInfo)
+    ) As InstallerCleanupResult
+
+        Dim result As New InstallerCleanupResult()
+
+        For Each info In versionsToDelete
+
+            ' ✅ Absolute safety check (never trust UI)
+            If Not info.CanDelete Then
+                result.Skipped.Add(info)
+                Continue For
+            End If
+
+            Try
+                ' Final sanity check
+                If Directory.Exists(info.FolderPath) Then
+                    Directory.Delete(info.FolderPath, recursive:=True)
+                End If
+
+                result.Deleted.Add(info)
+
+            Catch ex As Exception
+                result.Failed.Add(info, ex)
+            End Try
+
+        Next
+
+        Return result
     End Function
 
 End Module

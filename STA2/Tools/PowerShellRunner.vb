@@ -67,45 +67,58 @@ Public Module PowerShellRunner
     ' High-level helper used by FormMain
     ' --------------------------------------------
     Public Async Function RunLiveScriptAsync(
-        options As AppOptions,
-        liveOutputManager As LiveOutputManager,
-        setStatus As Action(Of String),
-        triggerButton As Button,
-        scriptRelativePath As String,
-        scriptArgs As String,
-        runningStatusText As String
-    ) As Task
+    options As AppOptions,
+    liveOutputManager As LiveOutputManager,
+    setStatus As Action(Of String),
+    scriptRelativePath As String,
+    scriptArgs As String,
+    runningStatusText As String,
+    Optional triggerButton As Button = Nothing
+) As Task
 
-        triggerButton.Enabled = False
+        If setStatus Is Nothing Then
+            Throw New ArgumentNullException(NameOf(setStatus))
+        End If
+
+        If liveOutputManager Is Nothing Then
+            Throw New ArgumentNullException(NameOf(liveOutputManager))
+        End If
+
+        If triggerButton IsNot Nothing Then
+            triggerButton.Enabled = False
+        End If
 
         Try
             If options Is Nothing OrElse
-               String.IsNullOrWhiteSpace(options.RepoFolderPath) Then
+           String.IsNullOrWhiteSpace(options.RepoFolderPath) Then
 
                 setStatus.Invoke("Repo folder path not set")
                 Return
             End If
 
             Dim scriptPath As String =
-                Path.Combine(options.RepoFolderPath, scriptRelativePath)
+            Path.Combine(options.RepoFolderPath, scriptRelativePath)
 
             setStatus.Invoke(runningStatusText)
 
             Await RunPowerShellFileWithLiveOutputAsync(
-                scriptPath,
-                scriptArgs,
-                liveOutputManager)
+            scriptPath,
+            scriptArgs,
+            liveOutputManager)
 
             setStatus.Invoke(String.Empty)
 
         Catch ex As Exception
             setStatus.Invoke(String.Empty)
+            Throw   ' ✅ rethrow for debugging (optional but recommended)
 
         Finally
-            triggerButton.Enabled = True
+            If triggerButton IsNot Nothing Then
+                triggerButton.Enabled = True
+            End If
         End Try
-
     End Function
+
 
     ' --------------------------------------------
     ' Core execution + live output plumbing
