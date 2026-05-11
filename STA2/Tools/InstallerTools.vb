@@ -579,8 +579,20 @@ Public Module InstallerTools
     versions As List(Of InstallerVersionInfo),
     Optional runExistingVersionPath As String = Nothing
 )
+        Dim installedFolder As String =
+    InstalledVersionParsing.FindInstalledInstallerFolder(
+        AppData.UpgradePath,
+        "AdvCoreService"
+    )
 
         For Each v In versions
+
+            If Not String.IsNullOrEmpty(installedFolder) AndAlso
+   v.FolderPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
+
+                v.LockReason = VersionLockReason.InstalledVersion
+                Continue For
+            End If
 
             ' 1️⃣ Latest version is always protected
             If v.IsLatest Then

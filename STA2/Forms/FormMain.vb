@@ -299,7 +299,9 @@ Public Class FormMain
     End Sub
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-
+#If DEBUG Then
+        tcSTA.SelectedTab = tpOptions
+#End If
         ' -------------------------------------------------
         ' Select Services tab by default
         ' -------------------------------------------------
@@ -1563,35 +1565,6 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
-        DebugFormIdentity("ADDING CONTROLS")
-
-
-
-    End Sub
-
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        DebugFormIdentity("VISIBLE FORM")
-    End Sub
-    Private Sub DebugFormIdentity(tag As String)
-        MessageBox.Show(
-        $"[{tag}]{Environment.NewLine}" &
-        $"HashCode: {Me.GetHashCode()}{Environment.NewLine}" &
-        $"Name: {Me.Name}",
-        "FormMain Identity")
-    End Sub
-
-    Private Sub DumpParentChain(ctrl As Control)
-        Dim sb As New System.Text.StringBuilder()
-        Dim c As Control = ctrl
-
-        While c IsNot Nothing
-            sb.AppendLine($"{c.Name} ({c.GetType().Name}) Visible={c.Visible}")
-            c = c.Parent
-        End While
-
-        MessageBox.Show(sb.ToString(), "Parent Chain")
-    End Sub
 
     Private Async Sub OnStartServiceRequested(serviceName As String)
 
@@ -2079,4 +2052,85 @@ Public Class FormMain
 
     End Sub
 
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
+        UIHelpers.TimedInfoPrompt(
+    message:=info.Version,
+    title:="Version Number",
+    timeoutSeconds:=0)
+        tbTest1.Text = info.Version
+
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        Dim sb As New System.Text.StringBuilder()
+
+        ' --------------------------------------------------
+        ' 1) Installed version from service
+        ' --------------------------------------------------
+        Dim installedVersionText = GetInstalledVersionString()
+
+        sb.AppendLine("Installed service version string:")
+        sb.AppendLine(installedVersionText)
+        sb.AppendLine()
+
+        Dim installedParsed =
+        InstalledVersionParsing.ParseVersionPartsSafe(installedVersionText)
+
+        If installedParsed.HasValue Then
+            sb.AppendLine($"Parsed installed version:")
+            sb.AppendLine(installedParsed.Value.ToString())
+        Else
+            sb.AppendLine("FAILED to parse installed version")
+        End If
+
+        sb.AppendLine()
+        sb.AppendLine("--------------------------------------------------")
+
+        ' --------------------------------------------------
+        ' 2) Find installed installer folder
+        ' --------------------------------------------------
+        Dim installedFolder =
+        InstalledVersionParsing.FindInstalledInstallerFolder(
+            AppData.UpgradePath,
+            "AdvCoreService"
+        )
+
+        sb.AppendLine("Installed installer folder:")
+        If String.IsNullOrEmpty(installedFolder) Then
+            sb.AppendLine("NOT FOUND")
+        Else
+            sb.AppendLine(installedFolder)
+        End If
+
+        sb.AppendLine()
+        sb.AppendLine("--------------------------------------------------")
+
+        ' --------------------------------------------------
+        ' 3) Enumerate installer folders and show status
+        ' --------------------------------------------------
+        sb.AppendLine("Installer folders found:")
+
+        For Each dirPath In IO.Directory.GetDirectories(AppData.UpgradePath, "Version *")
+
+            Dim folderName = IO.Path.GetFileName(dirPath)
+            Dim marker As String = ""
+
+            If Not String.IsNullOrEmpty(installedFolder) AndAlso
+           dirPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
+                marker = "  <== INSTALLED (LOCKED)"
+            End If
+
+            sb.AppendLine($"- {folderName}{marker}")
+        Next
+
+        MessageBox.Show(
+        sb.ToString(),
+        "Installed Version / Installer Folder Sanity Check",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information
+    )
+
+    End Sub
 End Class

@@ -3,6 +3,10 @@ Imports System.Management
 Imports Microsoft.Win32
 
 Public Module ServiceIntrospection
+    Public Function GetInstalledVersionString() As String
+        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
+        Return info.Version
+    End Function
 
     ' Entry: returns a tuple with:
     '  - Path: the resolved file path (EXE or ServiceDll)

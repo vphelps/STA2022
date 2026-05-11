@@ -191,6 +191,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\LauncherConfig.vb" />
+    <Compile Include="Tools\InstalledVersionParsing.vb" />
     <Compile Include="Tools\InstallerCleanupResult.vb" />
     <Compile Include="Tools\InstallerCleanupRules.vb" />
     <Compile Include="Tools\InstallerTools.vb" />
