@@ -104,7 +104,8 @@ Module Startup
                     "Do you want to start the application in OFFLINE mode?",
                 title:="Database Unavailable",
                 timeoutSeconds:=10,
-                defaultChoice:=DialogResult.Yes)
+                defaultChoice:=DialogResult.Yes,
+icon:=SystemIcons.Error)
 
                 If decision = DialogResult.No Then
                     ' ❌ User chose to quit
