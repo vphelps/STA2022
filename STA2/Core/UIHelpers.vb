@@ -1,27 +1,6 @@
 ﻿Imports System.Windows.Forms
 Imports System.Drawing
 
-' ===========================================================
-' UIHelpers
-'
-' Reusable WinForms UI helper dialogs with:
-' - Auto-sizing based on message text
-' - Optional timeout (timeoutSeconds <= 0 = no timeout)
-' - Owner and no-owner overloads
-'
-' Helpers:
-'   - TimedYesNoPrompt
-'   - TimedInfoPrompt
-'   - TimedWarningPrompt
-'   - TimedErrorPrompt
-'
-' Keyboard semantics (Yes/No):
-'   Enter  -> Yes
-'   Escape -> No
-'
-' Designed for .NET Framework 4.8
-' ===========================================================
-
 Public Module UIHelpers
 
     ' =======================================================
@@ -35,16 +14,17 @@ Public Module UIHelpers
     End Function
 
     ' =======================================================
-    ' TIMED YES / NO PROMPT
+    ' TIMED YES / NO PROMPT (PUBLIC OVERLOADS)
     ' =======================================================
 
     ' No owner, no timeout
     Public Function TimedYesNoPrompt(
         message As String,
         title As String,
-        Optional defaultChoice As DialogResult = DialogResult.No
+        Optional defaultChoice As DialogResult = DialogResult.No,
+        Optional icon As Icon = Nothing
     ) As DialogResult
-        Return TimedYesNoPrompt(Nothing, message, title, 0, defaultChoice)
+        Return TimedYesNoPrompt(Nothing, message, title, 0, defaultChoice, icon)
     End Function
 
     ' With owner, no timeout
@@ -52,9 +32,10 @@ Public Module UIHelpers
         owner As IWin32Window,
         message As String,
         title As String,
-        Optional defaultChoice As DialogResult = DialogResult.No
+        Optional defaultChoice As DialogResult = DialogResult.No,
+        Optional icon As Icon = Nothing
     ) As DialogResult
-        Return TimedYesNoPrompt(owner, message, title, 0, defaultChoice)
+        Return TimedYesNoPrompt(owner, message, title, 0, defaultChoice, icon)
     End Function
 
     ' No owner, with timeout
@@ -62,18 +43,22 @@ Public Module UIHelpers
         message As String,
         title As String,
         timeoutSeconds As Integer,
-        Optional defaultChoice As DialogResult = DialogResult.No
+        Optional defaultChoice As DialogResult = DialogResult.No,
+        Optional icon As Icon = Nothing
     ) As DialogResult
-        Return TimedYesNoPrompt(Nothing, message, title, timeoutSeconds, defaultChoice)
+        Return TimedYesNoPrompt(Nothing, message, title, timeoutSeconds, defaultChoice, icon)
     End Function
 
-    ' Canonical implementation
+    ' =======================================================
+    ' CANONICAL IMPLEMENTATION
+    ' =======================================================
     Public Function TimedYesNoPrompt(
         owner As IWin32Window,
         message As String,
         title As String,
         timeoutSeconds As Integer,
-        Optional defaultChoice As DialogResult = DialogResult.No
+        Optional defaultChoice As DialogResult = DialogResult.No,
+        Optional icon As Icon = Nothing
     ) As DialogResult
 
         If defaultChoice <> DialogResult.Yes AndAlso defaultChoice <> DialogResult.No Then
@@ -82,20 +67,37 @@ Public Module UIHelpers
 
         Dim result As DialogResult = defaultChoice
         Dim useTimeout As Boolean = timeoutSeconds > 0
+        Dim hasIcon As Boolean = (icon IsNot Nothing)
 
         Using dlg As New Form()
-            ConfigureBaseDialog(dlg, title, 440)
+            ConfigureBaseDialog(dlg, title, If(hasIcon, 520, 440))
 
-            Dim lblMessage = CreateMessageLabel(message, 20, 20, 380)
+            Dim leftMargin As Integer = If(hasIcon, 64, 20)
+            Dim textWidth As Integer = If(hasIcon, 420, 380)
+
+            ' Optional icon
+            If hasIcon Then
+                Dim picIcon As New PictureBox() With {
+                    .Image = icon.ToBitmap(),
+                    .Left = 20,
+                    .Top = 20,
+                    .SizeMode = PictureBoxSizeMode.AutoSize
+                }
+                dlg.Controls.Add(picIcon)
+            End If
+
+            Dim lblMessage = CreateMessageLabel(message, leftMargin, 20, textWidth)
             dlg.Controls.Add(lblMessage)
 
             Dim lblCountdown = CreateCountdownLabel(lblMessage.Bottom + 10, useTimeout)
+            lblCountdown.Left = leftMargin
+            lblCountdown.Width = textWidth
             dlg.Controls.Add(lblCountdown)
 
             Dim buttonTop = If(useTimeout, lblCountdown.Bottom, lblMessage.Bottom) + 15
 
-            Dim btnYes = CreateButton("Yes", 120, buttonTop)
-            Dim btnNo = CreateButton("No", 230, buttonTop)
+            Dim btnYes = CreateButton("Yes", If(hasIcon, 170, 120), buttonTop)
+            Dim btnNo = CreateButton("No", If(hasIcon, 290, 230), buttonTop)
 
             dlg.AcceptButton = btnYes
             dlg.CancelButton = btnNo
@@ -137,10 +139,9 @@ Public Module UIHelpers
     End Function
 
     ' =======================================================
-    ' INFO / WARNING / ERROR PROMPTS
+    ' INFO / WARNING / ERROR PROMPTS (UNCHANGED)
     ' =======================================================
 
-    ' --- INFO ---
     Public Sub TimedInfoPrompt(message As String, title As String, Optional timeoutSeconds As Integer = 0)
         TimedInfoPrompt(Nothing, message, title, timeoutSeconds)
     End Sub
@@ -149,7 +150,6 @@ Public Module UIHelpers
         ShowSingleButtonPrompt(ResolveOwner(owner), message, title, timeoutSeconds, SystemIcons.Information)
     End Sub
 
-    ' --- WARNING ---
     Public Sub TimedWarningPrompt(message As String, title As String, Optional timeoutSeconds As Integer = 0)
         TimedWarningPrompt(Nothing, message, title, timeoutSeconds)
     End Sub
@@ -158,7 +158,6 @@ Public Module UIHelpers
         ShowSingleButtonPrompt(ResolveOwner(owner), message, title, timeoutSeconds, SystemIcons.Warning)
     End Sub
 
-    ' --- ERROR ---
     Public Sub TimedErrorPrompt(message As String, title As String, Optional timeoutSeconds As Integer = 0)
         TimedErrorPrompt(Nothing, message, title, timeoutSeconds)
     End Sub
@@ -168,7 +167,7 @@ Public Module UIHelpers
     End Sub
 
     ' =======================================================
-    ' INTERNAL SINGLE-BUTTON PROMPT
+    ' INTERNAL SINGLE-BUTTON PROMPT (UNCHANGED)
     ' =======================================================
     Private Sub ShowSingleButtonPrompt(
         owner As IWin32Window,

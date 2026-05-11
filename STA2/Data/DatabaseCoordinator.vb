@@ -507,4 +507,27 @@ Public Module DatabaseCoordinator
         End If
     End Sub
 
+    ' ============================================================
+    ' Startup-safe Docker precheck (NO UI side effects)
+    ' ============================================================
+    Public Function CanAttemptDatabaseStartup(
+        Optional configuredContainerName As String = Nothing
+    ) As Boolean
+
+        ' Docker installed?
+        If Not IsDockerInstalled() Then Return False
+
+        ' Docker running?
+        If Not IsDockerRunning() Then Return False
+
+        ' Find SQL container (optional at startup)
+        If Not String.IsNullOrWhiteSpace(configuredContainerName) Then
+            If Not SqlContainerExists(configuredContainerName) Then Return False
+            If Not IsSqlContainerRunning(configuredContainerName) Then Return False
+        End If
+
+        Return True
+
+    End Function
+
 End Module
