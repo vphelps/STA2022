@@ -68,12 +68,18 @@ Public Class ManageInstallerVersionsForm
 
         Dim sizeMb = info.SizeBytes \ (1024 * 1024)
 
-        Dim label As String =
-        If(info.IsLatest,
-           "Current",
-           If(info.Track = ReleaseTrack.LongTermSupport,
-              "LTS",
-              "Fast Track"))
+        Dim label As String
+
+        ' ✅ Current = INSTALLED version, not highest
+        If info.LockReason = VersionLockReason.InstalledVersion Then
+            label = "Current"
+
+        ElseIf info.Track = ReleaseTrack.LongTermSupport Then
+            label = "LTS"
+
+        Else
+            label = "Fast Track"
+        End If
 
         ' 🔒 Prefix locked items so users can see they are protected
         Dim prefix As String =
@@ -81,8 +87,7 @@ Public Class ManageInstallerVersionsForm
 
         Return $"{prefix}{info.VersionString,-28} {label,-12} {sizeMb,6} MB"
 
-    End Function
-    ' -------------------------
+    End Function    ' -------------------------
     ' CheckedListBox rendering
     ' -------------------------
     Private Sub clbVersions_Format(

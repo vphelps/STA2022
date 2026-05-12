@@ -232,9 +232,11 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\ConfirmInstallerVersionCleanupForm.resx">
       <DependentUpon>ConfirmInstallerVersionCleanupForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
