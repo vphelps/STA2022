@@ -2064,34 +2064,42 @@ Public Class FormMain
     End Sub
 
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+
         Dim sb As New System.Text.StringBuilder()
+
+        sb.AppendLine("=== INSTALLER VERSION FINAL SANITY CHECK ===")
+        sb.AppendLine()
 
         ' --------------------------------------------------
         ' 1) Installed version from service
         ' --------------------------------------------------
-        Dim installedVersionText = GetInstalledVersionString()
+        Dim installedVersionText As String = GetInstalledVersionString()
 
         sb.AppendLine("Installed service version string:")
-        sb.AppendLine(installedVersionText)
+        If String.IsNullOrWhiteSpace(installedVersionText) Then
+            sb.AppendLine("  <EMPTY>")
+        Else
+            sb.AppendLine("  " & installedVersionText)
+        End If
         sb.AppendLine()
 
         Dim installedParsed =
         InstalledVersionParsing.ParseVersionPartsSafe(installedVersionText)
 
+        sb.AppendLine("Parsed installed version:")
         If installedParsed.HasValue Then
-            sb.AppendLine($"Parsed installed version:")
-            sb.AppendLine(installedParsed.Value.ToString())
+            sb.AppendLine("  " & installedParsed.Value.ToString())
         Else
-            sb.AppendLine("FAILED to parse installed version")
+            sb.AppendLine("  <FAILED TO PARSE>")
         End If
 
         sb.AppendLine()
-        sb.AppendLine("--------------------------------------------------")
+        sb.AppendLine("--------------------------------------------")
 
         ' --------------------------------------------------
-        ' 2) Find installed installer folder
+        ' 2) Installed installer folder
         ' --------------------------------------------------
-        Dim installedFolder =
+        Dim installedFolder As String =
         InstalledVersionParsing.FindInstalledInstallerFolder(
             AppData.UpgradePath,
             "AdvCoreService"
@@ -2099,38 +2107,43 @@ Public Class FormMain
 
         sb.AppendLine("Installed installer folder:")
         If String.IsNullOrEmpty(installedFolder) Then
-            sb.AppendLine("NOT FOUND")
+            sb.AppendLine("  <NOT FOUND>")
         Else
-            sb.AppendLine(installedFolder)
+            sb.AppendLine("  " & installedFolder)
         End If
 
         sb.AppendLine()
-        sb.AppendLine("--------------------------------------------------")
+        sb.AppendLine("--------------------------------------------")
 
         ' --------------------------------------------------
-        ' 3) Enumerate installer folders and show status
+        ' 3) Evaluate installer folders & lock reasons
         ' --------------------------------------------------
-        sb.AppendLine("Installer folders found:")
+        sb.AppendLine("Installer folders status:")
 
-        For Each dirPath In IO.Directory.GetDirectories(AppData.UpgradePath, "Version *")
+        Dim versions =
+        InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
 
-            Dim folderName = IO.Path.GetFileName(dirPath)
-            Dim marker As String = ""
+        ' Apply lock rules exactly as production does
+        InstallerTools.ApplyCleanupSafetyRules(versions)
 
-            If Not String.IsNullOrEmpty(installedFolder) AndAlso
-           dirPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
-                marker = "  <== INSTALLED (LOCKED)"
-            End If
-
-            sb.AppendLine($"- {folderName}{marker}")
+        For Each v In versions
+            sb.AppendLine(
+            $"  {IO.Path.GetFileName(v.FolderPath)}" &
+            $"  ->  LockReason = {v.LockReason}" &
+            $"  | CanDelete = {v.CanDelete}"
+        )
         Next
+
+        sb.AppendLine()
+        sb.AppendLine("=== END SANITY CHECK ===")
 
         MessageBox.Show(
         sb.ToString(),
-        "Installed Version / Installer Folder Sanity Check",
+        "Final Installer Version Sanity Check",
         MessageBoxButtons.OK,
         MessageBoxIcon.Information
     )
+
 
     End Sub
 End Class
