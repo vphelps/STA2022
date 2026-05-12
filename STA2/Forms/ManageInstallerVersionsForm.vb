@@ -180,6 +180,39 @@ Public Class ManageInstallerVersionsForm
         End If
 
     End Sub
+    Private Sub btnSelectAllDeletable_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnSelectAllDeletable.Click
+
+        _suppressSelection = True
+
+        Try
+            For i As Integer = 0 To clbVersions.Items.Count - 1
+
+                Dim info =
+                TryCast(clbVersions.Items(i), InstallerVersionInfo)
+
+                If info Is Nothing Then Continue For
+
+                ' ✅ Only check items that are allowed to be deleted
+                If info.CanDelete Then
+                    clbVersions.SetItemChecked(i, True)
+                Else
+                    clbVersions.SetItemChecked(i, False)
+                End If
+
+            Next
+
+        Finally
+            _suppressSelection = False
+        End Try
+
+        ' ✅ Update summary once after changes
+        UpdateSummary()
+
+    End Sub
+
     Private Function GetTooltipText(info As InstallerVersionInfo) As String
 
         Select Case info.LockReason
@@ -216,14 +249,19 @@ Public Class ManageInstallerVersionsForm
     Private Sub UpdateSummary()
 
         Dim totalBytes As Long =
-            SelectedForCleanup.Sum(Function(v) v.SizeBytes)
+        SelectedForCleanup.Sum(Function(v) v.SizeBytes)
 
         Dim totalMb = totalBytes \ (1024 * 1024)
 
         lblSummary.Text =
-            $"Selected cleanup will free: {totalMb} MB"
+        $"Selected cleanup will free: {totalMb} MB"
 
+        ' ✅ Enable Cleanup only if something is selected
         btnCleanup.Enabled = SelectedForCleanup.Count > 0
+
+        ' ✅ NEW: Enable "Select All Deletable" only if something CAN be deleted
+        btnSelectAllDeletable.Enabled =
+        _versions.Any(Function(v) v.CanDelete)
 
     End Sub
 
@@ -260,5 +298,6 @@ Public Class ManageInstallerVersionsForm
         Close()
 
     End Sub
+
 
 End Class

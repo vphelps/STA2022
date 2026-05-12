@@ -30,6 +30,7 @@ Partial Class ManageInstallerVersionsForm
         Me.btnCleanup = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.managefrmToolTip = New System.Windows.Forms.ToolTip(Me.components)
+        Me.btnSelectAllDeletable = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'lblPath
@@ -87,11 +88,21 @@ Partial Class ManageInstallerVersionsForm
         Me.btnCancel.Text = "Cancel"
         Me.btnCancel.UseVisualStyleBackColor = True
         '
+        'btnSelectAllDeletable
+        '
+        Me.btnSelectAllDeletable.Location = New System.Drawing.Point(622, 388)
+        Me.btnSelectAllDeletable.Name = "btnSelectAllDeletable"
+        Me.btnSelectAllDeletable.Size = New System.Drawing.Size(80, 50)
+        Me.btnSelectAllDeletable.TabIndex = 6
+        Me.btnSelectAllDeletable.Text = "Select All Removable Items"
+        Me.btnSelectAllDeletable.UseVisualStyleBackColor = True
+        '
         'ManageInstallerVersionsForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.Controls.Add(Me.btnSelectAllDeletable)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnCleanup)
         Me.Controls.Add(Me.clbVersions)
@@ -116,4 +127,5 @@ Partial Class ManageInstallerVersionsForm
     Friend WithEvents btnCleanup As Button
     Friend WithEvents btnCancel As Button
     Friend WithEvents managefrmToolTip As ToolTip
+    Friend WithEvents btnSelectAllDeletable As Button
 End Class
