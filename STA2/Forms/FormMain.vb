@@ -1802,44 +1802,40 @@ Public Class FormMain
 
     '        btnManageInstallerVersions.Enabled = False
     '        Try
-    '            ' 1️⃣ Discover installed versions (fast, filesystem only)
     '            Dim versions =
     '            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
 
-    '            ' 2️⃣ Apply safety rules OFF the UI thread
-    '            Await Task.Run(Sub()
-    '                               InstallerTools.ApplyCleanupSafetyRules(
-    '                               versions,
-    '                               runExistingVersionPath:=_runExistingVersionPath)
-    '                           End Sub)
+    '            Await ProgressOverlayService.RunWithOverlayAsync(
+    '            Me,
+    '            "Scanning installed installer versions…" & Environment.NewLine &
+    '            "Please wait.",
+    '            Function()
+    '                Return Task.Run(Sub()
+    '                                    InstallerTools.ApplyCleanupSafetyRules(
+    '                                        versions,
+    '                                        runExistingVersionPath:=_runExistingVersionPath)
+    '                                End Sub)
+    '            End Function
+    '        )
 
     '#If DEBUG Then
-    '            ' 🔍 Diagnostic visibility (safe to remove later)
     '            For Each v In versions
     '                Debug.WriteLine(
     '                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
     '            Next
     '#End If
 
-    '            ' 3️⃣ Show Manage Installed Versions dialog
     '            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
-
     '                If dlg.ShowDialog(Me) = DialogResult.OK Then
-
-    '                    ' 4️⃣ Confirmation dialog
     '                    Using confirm As New ConfirmInstallerVersionCleanupForm(
     '                    dlg.SelectedForCleanup)
 
     '                        If confirm.ShowDialog(Me) = DialogResult.OK Then
-
-    '                            ' 5️⃣ Execute cleanup (safe + authoritative)
     '                            Dim result =
     '                            InstallerTools.ExecuteInstallerVersionCleanup(
     '                                dlg.SelectedForCleanup)
 
-    '                            ' 6️⃣ Show summary
     '                            ShowCleanupSummary(result)
-
     '                        End If
     '                    End Using
     '                End If
@@ -1867,8 +1863,8 @@ Public Class FormMain
             Function()
                 Return Task.Run(Sub()
                                     InstallerTools.ApplyCleanupSafetyRules(
-                                        versions,
-                                        runExistingVersionPath:=_runExistingVersionPath)
+                        versions,
+                        runExistingVersionPath:=_runExistingVersionPath)
                                 End Sub)
             End Function
         )
@@ -1881,19 +1877,16 @@ Public Class FormMain
 #End If
 
             Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
-                    Using confirm As New ConfirmInstallerVersionCleanupForm(
-                    dlg.SelectedForCleanup)
+                    ' ✅ Confirmation has ALREADY occurred in ManageInstallerVersionsForm
+                    Dim result =
+                    InstallerTools.ExecuteInstallerVersionCleanup(
+                        dlg.SelectedForCleanup)
 
-                        If confirm.ShowDialog(Me) = DialogResult.OK Then
-                            Dim result =
-                            InstallerTools.ExecuteInstallerVersionCleanup(
-                                dlg.SelectedForCleanup)
-
-                            ShowCleanupSummary(result)
-                        End If
-                    End Using
+                    ShowCleanupSummary(result)
                 End If
+
             End Using
 
         Finally

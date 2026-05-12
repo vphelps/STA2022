@@ -88,7 +88,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         Me.MinimizeBox = False
         Me.Name = "ConfirmInstallerVersionCleanupForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "ConfirmInstallerVersionCleanupForm"
+        Me.Text = "Confirm Advantage Installer Cleanup"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

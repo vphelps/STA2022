@@ -114,7 +114,7 @@ Partial Class ManageInstallerVersionsForm
         Me.MinimizeBox = False
         Me.Name = "ManageInstallerVersionsForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "ManageInstallerVersionsForm"
+        Me.Text = "Advantage Installer Versions Management"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
