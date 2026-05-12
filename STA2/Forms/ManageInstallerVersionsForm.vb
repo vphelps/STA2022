@@ -18,6 +18,12 @@ Public Class ManageInstallerVersionsForm
         upgradePath As String
     )
         InitializeComponent()
+        managefrmToolTip.IsBalloon = True
+        managefrmToolTip.ToolTipIcon = ToolTipIcon.Info
+        managefrmToolTip.ToolTipTitle = "Installer Version"
+        managefrmToolTip.AutoPopDelay = 8000
+        managefrmToolTip.InitialDelay = 400
+        managefrmToolTip.ReshowDelay = 200
 
         _versions = installedVersions
 
@@ -72,7 +78,7 @@ Public Class ManageInstallerVersionsForm
 
         ' ✅ Current = INSTALLED version, not highest
         If info.LockReason = VersionLockReason.InstalledVersion Then
-            label = "Current"
+            label = "Current (Installed)"
 
         ElseIf info.Track = ReleaseTrack.LongTermSupport Then
             label = "LTS"
@@ -82,8 +88,11 @@ Public Class ManageInstallerVersionsForm
         End If
 
         ' 🔒 Prefix locked items so users can see they are protected
+        'If(info.CanDelete, "", "🔒 ")
         Dim prefix As String =
-        If(info.CanDelete, "", "🔒 ")
+    If(info.LockReason = VersionLockReason.InstalledVersion,
+       "✅ ",
+       If(info.CanDelete, "", "🔒 "))
 
         Return $"{prefix}{info.VersionString,-28} {label,-12} {sizeMb,6} MB"
 
@@ -100,7 +109,34 @@ Public Class ManageInstallerVersionsForm
 
         e.Value = FormatDisplayText(info)
     End Sub
+    Private Sub clbVersions_MouseMove(
+    sender As Object,
+    e As MouseEventArgs
+) Handles clbVersions.MouseMove
 
+        Dim index As Integer = clbVersions.IndexFromPoint(e.Location)
+
+        ' Not over an item → hide tooltip
+        If index < 0 Then
+            managefrmToolTip.Hide(clbVersions)
+            Return
+        End If
+
+        Dim info = TryCast(clbVersions.Items(index), InstallerVersionInfo)
+        If info Is Nothing Then Return
+
+        ' ✅ Only show tooltip for LOCKED items
+        If info.CanDelete Then
+            managefrmToolTip.Hide(clbVersions)
+            Return
+        End If
+
+        managefrmToolTip.SetToolTip(
+        clbVersions,
+        GetTooltipText(info)
+    )
+
+    End Sub
     ' -------------------------
     ' Summary update
     ' -------------------------
@@ -144,6 +180,39 @@ Public Class ManageInstallerVersionsForm
         End If
 
     End Sub
+    Private Function GetTooltipText(info As InstallerVersionInfo) As String
+
+        Select Case info.LockReason
+
+            Case VersionLockReason.InstalledVersion
+                Return "This is the currently installed installer version." &
+                   Environment.NewLine &
+                   "It cannot be removed."
+
+            Case VersionLockReason.LatestVersion
+                Return "This is the newest available installer version."
+
+            Case VersionLockReason.LongTermSupport
+                Return "This Long Term Support (LTS) version is always kept."
+
+            Case VersionLockReason.SelectedAsRunExisting
+                Return "This version was selected to run in this session."
+
+            Case VersionLockReason.InstallerRunning
+                Return "This installer is currently running and cannot be removed."
+
+            Case VersionLockReason.FileLocked
+                Return "One or more files in this version are currently in use."
+
+            Case Else
+                ' This should never be shown, because we hide tooltips
+                ' for deletable items, but keep it safe.
+                Return ""
+        End Select
+
+    End Function
+
+
     Private Sub UpdateSummary()
 
         Dim totalBytes As Long =

@@ -22,12 +22,14 @@ Partial Class ManageInstallerVersionsForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Me.lblPath = New System.Windows.Forms.Label()
         Me.lblExplanation = New System.Windows.Forms.Label()
         Me.lblSummary = New System.Windows.Forms.Label()
         Me.clbVersions = New System.Windows.Forms.CheckedListBox()
         Me.btnCleanup = New System.Windows.Forms.Button()
         Me.btnCancel = New System.Windows.Forms.Button()
+        Me.managefrmToolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.SuspendLayout()
         '
         'lblPath
@@ -113,4 +115,5 @@ Partial Class ManageInstallerVersionsForm
     Friend WithEvents clbVersions As CheckedListBox
     Friend WithEvents btnCleanup As Button
     Friend WithEvents btnCancel As Button
+    Friend WithEvents managefrmToolTip As ToolTip
 End Class
