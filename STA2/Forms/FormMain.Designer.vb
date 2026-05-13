@@ -28,11 +28,13 @@ Partial Class FormMain
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.tcSTA = New System.Windows.Forms.TabControl()
         Me.tpGeneral = New System.Windows.Forms.TabPage()
-        Me.tbOutputScript = New System.Windows.Forms.TextBox()
         Me.tblFlavorListHints = New System.Windows.Forms.TableLayoutPanel()
         Me.lblFLHints1 = New System.Windows.Forms.Label()
         Me.lblFLHints2 = New System.Windows.Forms.Label()
         Me.gbLiveOutput = New System.Windows.Forms.GroupBox()
+        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
+        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
+        Me.tbOutputScript = New System.Windows.Forms.TextBox()
         Me.rtbLiveOutput = New System.Windows.Forms.RichTextBox()
         Me.pnlServicesContainer = New System.Windows.Forms.Panel()
         Me.tblServices = New System.Windows.Forms.TableLayoutPanel()
@@ -74,6 +76,7 @@ Partial Class FormMain
         Me.lbFlavorsList = New System.Windows.Forms.ListBox()
         Me.cmsApplySingleFlavor = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.miApplySingleFlavor = New System.Windows.Forms.ToolStripMenuItem()
+        Me.tsmiApplyDefaultFlavors = New System.Windows.Forms.ToolStripMenuItem()
         Me.tpAdvData = New System.Windows.Forms.TabPage()
         Me.btnSaveWebOptionsCSV = New System.Windows.Forms.Button()
         Me.btnSaveAppotionsCSV = New System.Windows.Forms.Button()
@@ -230,8 +233,6 @@ Partial Class FormMain
         Me.btnManageInstallerVersions = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.ofdStartScript = New System.Windows.Forms.OpenFileDialog()
-        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
-        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -240,6 +241,7 @@ Partial Class FormMain
         Me.tpGeneral.SuspendLayout()
         Me.tblFlavorListHints.SuspendLayout()
         Me.gbLiveOutput.SuspendLayout()
+        Me.TableLayoutPanel2.SuspendLayout()
         Me.pnlServicesContainer.SuspendLayout()
         Me.gpPcInfo.SuspendLayout()
         Me.tlpPcInfo.SuspendLayout()
@@ -284,7 +286,6 @@ Partial Class FormMain
         Me.SplitContainer2.SuspendLayout()
         Me.tlpButtons3.SuspendLayout()
         Me.Panel2.SuspendLayout()
-        Me.TableLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -319,7 +320,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 854)
-        Me.SplitContainer1.SplitterDistance = 673
+        Me.SplitContainer1.SplitterDistance = 678
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -335,7 +336,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 669)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 674)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -350,19 +351,9 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 643)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 648)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
-        '
-        'tbOutputScript
-        '
-        Me.tbOutputScript.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.tbOutputScript.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.tbOutputScript.Location = New System.Drawing.Point(1, 183)
-        Me.tbOutputScript.Margin = New System.Windows.Forms.Padding(1)
-        Me.tbOutputScript.Name = "tbOutputScript"
-        Me.tbOutputScript.Size = New System.Drawing.Size(551, 21)
-        Me.tbOutputScript.TabIndex = 37
         '
         'tblFlavorListHints
         '
@@ -412,6 +403,44 @@ Partial Class FormMain
         Me.gbLiveOutput.TabIndex = 34
         Me.gbLiveOutput.TabStop = False
         Me.gbLiveOutput.Text = "Script Output Window"
+        '
+        'TableLayoutPanel2
+        '
+        Me.TableLayoutPanel2.ColumnCount = 2
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
+        Me.TableLayoutPanel2.Controls.Add(Me.btnCopyScriptOutput, 1, 1)
+        Me.TableLayoutPanel2.Controls.Add(Me.tbOutputScript, 0, 1)
+        Me.TableLayoutPanel2.Controls.Add(Me.rtbLiveOutput, 0, 0)
+        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, 16)
+        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
+        Me.TableLayoutPanel2.RowCount = 2
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(603, 212)
+        Me.TableLayoutPanel2.TabIndex = 0
+        '
+        'btnCopyScriptOutput
+        '
+        Me.btnCopyScriptOutput.Dock = System.Windows.Forms.DockStyle.Right
+        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
+        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(574, 183)
+        Me.btnCopyScriptOutput.Margin = New System.Windows.Forms.Padding(1)
+        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
+        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(28, 28)
+        Me.btnCopyScriptOutput.TabIndex = 38
+        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
+        '
+        'tbOutputScript
+        '
+        Me.tbOutputScript.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.tbOutputScript.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbOutputScript.Location = New System.Drawing.Point(1, 183)
+        Me.tbOutputScript.Margin = New System.Windows.Forms.Padding(1)
+        Me.tbOutputScript.Name = "tbOutputScript"
+        Me.tbOutputScript.Size = New System.Drawing.Size(571, 21)
+        Me.tbOutputScript.TabIndex = 37
         '
         'rtbLiveOutput
         '
@@ -844,16 +873,21 @@ Partial Class FormMain
         '
         'cmsApplySingleFlavor
         '
-        Me.cmsApplySingleFlavor.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.miApplySingleFlavor})
+        Me.cmsApplySingleFlavor.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.miApplySingleFlavor, Me.tsmiApplyDefaultFlavors})
         Me.cmsApplySingleFlavor.Name = "cmsApplySingleFlavor"
-        Me.cmsApplySingleFlavor.Size = New System.Drawing.Size(161, 54)
-        Me.cmsApplySingleFlavor.Text = "Apply this flavor" & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(10)
+        Me.cmsApplySingleFlavor.Size = New System.Drawing.Size(187, 48)
         '
         'miApplySingleFlavor
         '
         Me.miApplySingleFlavor.Name = "miApplySingleFlavor"
-        Me.miApplySingleFlavor.Size = New System.Drawing.Size(160, 50)
-        Me.miApplySingleFlavor.Text = "Apply this flavor" & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(10)
+        Me.miApplySingleFlavor.Size = New System.Drawing.Size(186, 22)
+        Me.miApplySingleFlavor.Text = "Apply this flavor"
+        '
+        'tsmiApplyDefaultFlavors
+        '
+        Me.tsmiApplyDefaultFlavors.Name = "tsmiApplyDefaultFlavors"
+        Me.tsmiApplyDefaultFlavors.Size = New System.Drawing.Size(186, 22)
+        Me.tsmiApplyDefaultFlavors.Text = "Apply Default Flavors"
         '
         'tpAdvData
         '
@@ -868,7 +902,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 643)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 648)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1023,7 +1057,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 643)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 648)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1038,7 +1072,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 612)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 617)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1130,7 +1164,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 643)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 648)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1217,7 +1251,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 513)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 518)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1372,7 +1406,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 643)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 648)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1451,7 +1485,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 643)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 648)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         '
@@ -2467,34 +2501,6 @@ Partial Class FormMain
         '
         Me.ofdStartScript.FileName = "OpenFileDialog1"
         '
-        'TableLayoutPanel2
-        '
-        Me.TableLayoutPanel2.ColumnCount = 2
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
-        Me.TableLayoutPanel2.Controls.Add(Me.btnCopyScriptOutput, 1, 1)
-        Me.TableLayoutPanel2.Controls.Add(Me.tbOutputScript, 0, 1)
-        Me.TableLayoutPanel2.Controls.Add(Me.rtbLiveOutput, 0, 0)
-        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, 16)
-        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
-        Me.TableLayoutPanel2.RowCount = 2
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(603, 212)
-        Me.TableLayoutPanel2.TabIndex = 0
-        '
-        'btnCopyScriptOutput
-        '
-        Me.btnCopyScriptOutput.Dock = System.Windows.Forms.DockStyle.Right
-        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
-        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(572, 183)
-        Me.btnCopyScriptOutput.Margin = New System.Windows.Forms.Padding(1)
-        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
-        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(30, 28)
-        Me.btnCopyScriptOutput.TabIndex = 38
-        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2518,6 +2524,8 @@ Partial Class FormMain
         Me.tblFlavorListHints.ResumeLayout(False)
         Me.tblFlavorListHints.PerformLayout()
         Me.gbLiveOutput.ResumeLayout(False)
+        Me.TableLayoutPanel2.ResumeLayout(False)
+        Me.TableLayoutPanel2.PerformLayout()
         Me.pnlServicesContainer.ResumeLayout(False)
         Me.pnlServicesContainer.PerformLayout()
         Me.gpPcInfo.ResumeLayout(False)
@@ -2576,8 +2584,6 @@ Partial Class FormMain
         Me.SplitContainer2.ResumeLayout(False)
         Me.tlpButtons3.ResumeLayout(False)
         Me.Panel2.ResumeLayout(False)
-        Me.TableLayoutPanel2.ResumeLayout(False)
-        Me.TableLayoutPanel2.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2790,4 +2796,5 @@ Partial Class FormMain
     Friend WithEvents tbOutputScript As TextBox
     Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
     Friend WithEvents btnCopyScriptOutput As Button
+    Friend WithEvents tsmiApplyDefaultFlavors As ToolStripMenuItem
 End Class
