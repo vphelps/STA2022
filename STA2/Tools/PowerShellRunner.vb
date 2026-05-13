@@ -129,7 +129,24 @@ Public Module PowerShellRunner
         liveOutputManager As LiveOutputManager
     ) As Task(Of Integer)
 
+
         liveOutputManager.StartExecution(scriptPath)
+
+        Dim scriptName = Path.GetFileName(scriptPath)
+        Dim commandLine = $"pwsh -File ""{scriptPath}"" {argumentsText}".Trim()
+
+        ' ✅ Send command line to textbox
+        liveOutputManager.SetCommandText(commandLine)
+
+        ' ✅ Header (normal color)
+        liveOutputManager.AppendLine($"--- Running script: {scriptName} ---")
+
+        liveOutputManager.AppendLine("==================================================")
+        liveOutputManager.AppendLineColored(commandLine, Color.DeepSkyBlue)
+        liveOutputManager.AppendLine("==================================================")
+        liveOutputManager.AppendLine("")
+
+
 
         Dim workingDir As String =
             Path.GetDirectoryName(scriptPath)

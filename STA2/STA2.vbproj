@@ -316,6 +316,7 @@
     <None Include="Images\icons8-unavailable-64.png" />
     <None Include="Images\icons8-open-folder-96.png" />
     <None Include="Images\icons8-open-folder-16.png" />
+    <None Include="Images\icons8-copy-16.png" />
     <Content Include="vernware_logo_XUD_icon.ico" />
   </ItemGroup>
   <ItemGroup>

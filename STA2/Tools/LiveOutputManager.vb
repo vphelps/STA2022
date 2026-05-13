@@ -10,11 +10,18 @@ Public Class LiveOutputManager
     Private _stopwatch As Stopwatch
     Private _timer As Timer
     Private _scriptPath As String
+    Private ReadOnly _commandOutput As TextBox
 
-    Public Sub New(owner As Form, output As RichTextBox, groupBox As GroupBox)
+    Public Sub New(
+    owner As Form,
+    output As RichTextBox,
+    groupBox As GroupBox,
+    commandOutput As TextBox
+)
         _owner = owner
         _output = output
         _groupBox = groupBox
+        _commandOutput = commandOutput
     End Sub
 
     ' ----------------------------
@@ -37,6 +44,27 @@ Public Class LiveOutputManager
         _timer.Start()
 
         UpdateRunningHeader(Nothing, EventArgs.Empty)
+    End Sub
+    Public Sub AppendLineColored(text As String, color As Color)
+
+        BeginInvokeUi(Sub()
+
+                          _output.SuspendLayout()
+
+                          Dim start = _output.TextLength
+                          _output.AppendText(text & Environment.NewLine)
+
+                          Dim length = _output.TextLength - start
+                          _output.Select(start, length)
+                          _output.SelectionColor = color
+
+                          _output.SelectionLength = 0
+                          _output.ScrollToCaret()
+
+                          _output.ResumeLayout()
+
+                      End Sub)
+
     End Sub
 
     Public Sub AppendLine(text As String)
@@ -72,10 +100,11 @@ Public Class LiveOutputManager
         Dim scriptName = IO.Path.GetFileName(_scriptPath)
         Dim duration = FormatDuration(_stopwatch.Elapsed)
 
-        AppendLine(
+        AppendLineColored(
             If(exitCode = 0,
                $"--- Script {scriptName} completed successfully in {duration} (Exit 0) ---",
-               $"--- Script {scriptName} completed with errors in {duration} (Exit {exitCode}) ---"))
+               $"--- Script {scriptName} completed with errors in {duration} (Exit {exitCode}) ---"),
+Color.White)
 
         InvokeUi(Sub()
                      _groupBox.Text =
@@ -171,4 +200,28 @@ Public Class LiveOutputManager
         _owner.BeginInvoke(action)
     End Sub
 
+    Public Sub SetCommandText(text As String)
+
+
+        If _commandOutput Is Nothing Then Return
+
+        BeginInvokeUi(Sub()
+                          _commandOutput.Text = CleanCommandLine(text)
+                      End Sub)
+
+    End Sub
+
+    Private Function CleanCommandLine(text As String) As String
+
+        If String.IsNullOrWhiteSpace(text) Then Return text
+
+        ' Remove pwsh -File 
+        Dim result = text.Replace("pwsh -File ", "")
+
+        ' Remove surrounding quotes
+        result = result.Replace("""", "")
+
+        Return result.Trim()
+
+    End Function
 End Class

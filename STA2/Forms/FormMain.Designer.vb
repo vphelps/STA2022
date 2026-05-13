@@ -152,7 +152,6 @@ Partial Class FormMain
         Me.lblApplyFlavorDefault = New System.Windows.Forms.Label()
         Me.tbRepoFolder = New System.Windows.Forms.TextBox()
         Me.lblDatabaseStartDefault = New System.Windows.Forms.Label()
-        Me.btnRepoFolder = New System.Windows.Forms.Button()
         Me.lblRepoFolder = New System.Windows.Forms.Label()
         Me.lblSetupSwitches = New System.Windows.Forms.Label()
         Me.tbSetupSwitches = New System.Windows.Forms.TextBox()
@@ -230,6 +229,12 @@ Partial Class FormMain
         Me.btnRepoDiscardChanges = New System.Windows.Forms.Button()
         Me.btnManageInstallerVersions = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
+        Me.ofdStartScript = New System.Windows.Forms.OpenFileDialog()
+        Me.tbOutputScript = New System.Windows.Forms.TextBox()
+        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
+        Me.btnBrowseApplyScript = New System.Windows.Forms.Button()
+        Me.btnBrowseStartScript = New System.Windows.Forms.Button()
+        Me.btnRepoFolder = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -320,7 +325,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.lblDatabaseStartCommand)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 854)
-        Me.SplitContainer1.SplitterDistance = 671
+        Me.SplitContainer1.SplitterDistance = 672
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -336,22 +341,24 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 667)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 668)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
         '
         Me.tpGeneral.BackColor = System.Drawing.Color.Gray
+        Me.tpGeneral.Controls.Add(Me.tbOutputScript)
         Me.tpGeneral.Controls.Add(Me.tblFlavorListHints)
         Me.tpGeneral.Controls.Add(Me.gbLiveOutput)
         Me.tpGeneral.Controls.Add(Me.pnlServicesContainer)
         Me.tpGeneral.Controls.Add(Me.gpPcInfo)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
         Me.tpGeneral.Controls.Add(Me.gbFlavorsList)
+        Me.tpGeneral.Controls.Add(Me.btnCopyScriptOutput)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 641)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 642)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -399,7 +406,7 @@ Partial Class FormMain
         Me.gbLiveOutput.Controls.Add(Me.rtbLiveOutput)
         Me.gbLiveOutput.Location = New System.Drawing.Point(3, 416)
         Me.gbLiveOutput.Name = "gbLiveOutput"
-        Me.gbLiveOutput.Size = New System.Drawing.Size(609, 207)
+        Me.gbLiveOutput.Size = New System.Drawing.Size(609, 201)
         Me.gbLiveOutput.TabIndex = 34
         Me.gbLiveOutput.TabStop = False
         Me.gbLiveOutput.Text = "Script Output Window"
@@ -414,7 +421,7 @@ Partial Class FormMain
         Me.rtbLiveOutput.Location = New System.Drawing.Point(3, 16)
         Me.rtbLiveOutput.Name = "rtbLiveOutput"
         Me.rtbLiveOutput.ReadOnly = True
-        Me.rtbLiveOutput.Size = New System.Drawing.Size(603, 188)
+        Me.rtbLiveOutput.Size = New System.Drawing.Size(603, 182)
         Me.rtbLiveOutput.TabIndex = 33
         Me.rtbLiveOutput.Text = ""
         Me.rtbLiveOutput.WordWrap = False
@@ -858,7 +865,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 641)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 642)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1013,7 +1020,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 641)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 642)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1028,7 +1035,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 610)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 611)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1120,7 +1127,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 641)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 642)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1207,7 +1214,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 511)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 512)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1362,7 +1369,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 641)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 642)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1441,7 +1448,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 641)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 642)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         '
@@ -1630,6 +1637,8 @@ Partial Class FormMain
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanel1.Controls.Add(Me.btnBrowseApplyScript, 2, 5)
+        Me.TableLayoutPanel1.Controls.Add(Me.btnBrowseStartScript, 2, 4)
         Me.TableLayoutPanel1.Controls.Add(Me.tbApplyFlavorDefault, 1, 5)
         Me.TableLayoutPanel1.Controls.Add(Me.tbDatabaseStartDefault, 1, 4)
         Me.TableLayoutPanel1.Controls.Add(Me.tbWindowTitle, 1, 0)
@@ -1658,7 +1667,7 @@ Partial Class FormMain
         'tbApplyFlavorDefault
         '
         Me.tbApplyFlavorDefault.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.tbApplyFlavorDefault.Location = New System.Drawing.Point(133, 133)
+        Me.tbApplyFlavorDefault.Location = New System.Drawing.Point(133, 136)
         Me.tbApplyFlavorDefault.Name = "tbApplyFlavorDefault"
         Me.tbApplyFlavorDefault.Size = New System.Drawing.Size(315, 20)
         Me.tbApplyFlavorDefault.TabIndex = 29
@@ -1683,9 +1692,9 @@ Partial Class FormMain
         '
         Me.lblApplyFlavorDefault.AutoSize = True
         Me.lblApplyFlavorDefault.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblApplyFlavorDefault.Location = New System.Drawing.Point(3, 130)
+        Me.lblApplyFlavorDefault.Location = New System.Drawing.Point(3, 133)
         Me.lblApplyFlavorDefault.Name = "lblApplyFlavorDefault"
-        Me.lblApplyFlavorDefault.Size = New System.Drawing.Size(124, 27)
+        Me.lblApplyFlavorDefault.Size = New System.Drawing.Size(124, 29)
         Me.lblApplyFlavorDefault.TabIndex = 27
         Me.lblApplyFlavorDefault.Text = "Apply Flavor Default:  "
         Me.lblApplyFlavorDefault.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
@@ -1704,19 +1713,10 @@ Partial Class FormMain
         Me.lblDatabaseStartDefault.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblDatabaseStartDefault.Location = New System.Drawing.Point(3, 104)
         Me.lblDatabaseStartDefault.Name = "lblDatabaseStartDefault"
-        Me.lblDatabaseStartDefault.Size = New System.Drawing.Size(124, 26)
+        Me.lblDatabaseStartDefault.Size = New System.Drawing.Size(124, 29)
         Me.lblDatabaseStartDefault.TabIndex = 26
         Me.lblDatabaseStartDefault.Text = "Start Database Default:  "
         Me.lblDatabaseStartDefault.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'btnRepoFolder
-        '
-        Me.btnRepoFolder.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
-        Me.btnRepoFolder.Location = New System.Drawing.Point(454, 29)
-        Me.btnRepoFolder.Name = "btnRepoFolder"
-        Me.btnRepoFolder.Size = New System.Drawing.Size(30, 23)
-        Me.btnRepoFolder.TabIndex = 23
-        Me.btnRepoFolder.UseVisualStyleBackColor = True
         '
         'lblRepoFolder
         '
@@ -2467,6 +2467,53 @@ Partial Class FormMain
         Me.Panel2.Size = New System.Drawing.Size(336, 827)
         Me.Panel2.TabIndex = 13
         '
+        'ofdStartScript
+        '
+        Me.ofdStartScript.FileName = "OpenFileDialog1"
+        '
+        'tbOutputScript
+        '
+        Me.tbOutputScript.Location = New System.Drawing.Point(3, 616)
+        Me.tbOutputScript.Name = "tbOutputScript"
+        Me.tbOutputScript.Size = New System.Drawing.Size(587, 20)
+        Me.tbOutputScript.TabIndex = 37
+        '
+        'btnCopyScriptOutput
+        '
+        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
+        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(585, 613)
+        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
+        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(30, 23)
+        Me.btnCopyScriptOutput.TabIndex = 33
+        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
+        '
+        'btnBrowseApplyScript
+        '
+        Me.btnBrowseApplyScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnBrowseApplyScript.Location = New System.Drawing.Point(454, 136)
+        Me.btnBrowseApplyScript.Name = "btnBrowseApplyScript"
+        Me.btnBrowseApplyScript.Size = New System.Drawing.Size(30, 23)
+        Me.btnBrowseApplyScript.TabIndex = 32
+        Me.btnBrowseApplyScript.UseVisualStyleBackColor = True
+        '
+        'btnBrowseStartScript
+        '
+        Me.btnBrowseStartScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnBrowseStartScript.Location = New System.Drawing.Point(454, 107)
+        Me.btnBrowseStartScript.Name = "btnBrowseStartScript"
+        Me.btnBrowseStartScript.Size = New System.Drawing.Size(30, 23)
+        Me.btnBrowseStartScript.TabIndex = 31
+        Me.btnBrowseStartScript.UseVisualStyleBackColor = True
+        '
+        'btnRepoFolder
+        '
+        Me.btnRepoFolder.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnRepoFolder.Location = New System.Drawing.Point(454, 29)
+        Me.btnRepoFolder.Name = "btnRepoFolder"
+        Me.btnRepoFolder.Size = New System.Drawing.Size(30, 23)
+        Me.btnRepoFolder.TabIndex = 23
+        Me.btnRepoFolder.UseVisualStyleBackColor = True
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2488,6 +2535,7 @@ Partial Class FormMain
         Me.SplitContainer1.ResumeLayout(False)
         Me.tcSTA.ResumeLayout(False)
         Me.tpGeneral.ResumeLayout(False)
+        Me.tpGeneral.PerformLayout()
         Me.tblFlavorListHints.ResumeLayout(False)
         Me.tblFlavorListHints.PerformLayout()
         Me.gbLiveOutput.ResumeLayout(False)
@@ -2759,4 +2807,9 @@ Partial Class FormMain
     Friend WithEvents tlpButtons1 As TableLayoutPanel
     Friend WithEvents btnManageInstallerVersions As Button
     Friend WithEvents tbMLTest1 As TextBox
+    Friend WithEvents btnBrowseApplyScript As Button
+    Friend WithEvents btnBrowseStartScript As Button
+    Friend WithEvents ofdStartScript As OpenFileDialog
+    Friend WithEvents tbOutputScript As TextBox
+    Friend WithEvents btnCopyScriptOutput As Button
 End Class

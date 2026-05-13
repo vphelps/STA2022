@@ -171,7 +171,7 @@ Public Class FormMain
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
-        _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput)
+        _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput, tbOutputScript)
 
         ' Quick Launch manager
         _quickLaunchManager = New QuickLaunchManager(
@@ -1165,34 +1165,25 @@ Public Class FormMain
                     End Sub)
     End Sub
 
+
     Private Async Sub btnRunApplyFlavorLive_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
 
+
         ' ✅ ENSURE output tab is active FIRST
         tcSTA.SelectedTab = tpGeneral
 
-        ' ✅ Allow WinForms to finish layout
         Await Task.Yield()
-
         _liveOutputManager.ForceRedraw()
 
-        Dim flavorArgs As String =
-        CodeHelper.BuildFlavorsArgument(
-            _flavorManager.GetSelectedFlavorNames())
+        Await RunSelectedScript(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            triggerButton:=btnRunApplyFlavorLive,
+            runningStatusText:="Applying flavors (live output)…"
+        )
 
-        Await PowerShellRunner.RunLiveScriptAsync(
-        options:=_options,
-        liveOutputManager:=_liveOutputManager,
-        setStatus:=Sub(text)
-                       SetExecutionStatus(text)
-                   End Sub,
-        triggerButton:=btnRunApplyFlavorLive,
-        scriptRelativePath:="tests\apply-flavors.ps1",
-        scriptArgs:=flavorArgs,
-        runningStatusText:="Applying flavors (live output)…"
-    )
     End Sub
 
     Private Async Sub btnRunDatabaseStartLive_Click(
@@ -1200,24 +1191,12 @@ Public Class FormMain
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
 
-        Dim flags As String = "-Force"
-        Dim flavorArgs As String =
-    CodeHelper.BuildFlavorsArgument(
-        _flavorManager.GetSelectedFlavorNames())
-
-        Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
-
-        Await PowerShellRunner.RunLiveScriptAsync(
-            options:=_options,
-            liveOutputManager:=_liveOutputManager,
-        setStatus:=Sub(text)
-                       SetExecutionStatus(text)
-                   End Sub,
+        Await RunSelectedScript(
+            scriptPath:=tbDatabaseStartDefault.Text,
             triggerButton:=btnRunDatabaseStartLive,
-            scriptRelativePath:="tests\Start-Database.ps1",
-            scriptArgs:=scriptArgs,
             runningStatusText:="Starting database (live output)…"
         )
+
     End Sub
 
     Private Sub AppendColoredOutput(text As String, color As Color)
@@ -1787,8 +1766,8 @@ Public Class FormMain
                            SetExecutionStatus(text)
                        End Sub,
             triggerButton:=Nothing,
-            scriptRelativePath:="tests\apply-flavors.ps1",
-            scriptArgs:=flavorArgs,
+scriptRelativePath:=tbApplyFlavorDefault.Text,
+scriptArgs:=flavorArgs,
             runningStatusText:=description & " (live output)…"
         )
 
@@ -2139,4 +2118,118 @@ Public Class FormMain
 
 
     End Sub
+
+    Private Sub btnBrowseStartScript_Click(sender As Object, e As EventArgs) Handles btnBrowseStartScript.Click
+
+
+
+        With ofdStartScript
+            .Title = "Select Start Database Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Store selected script path
+            tbDatabaseStartDefault.Text = ofdStartScript.FileName
+
+            ' ✅ Persist to options
+            _options.StartDatabaseDefault = ofdStartScript.FileName
+            OptionsManager.Save(_options)
+
+            ' ✅ Update flavor command previews
+            _flavorManager.UpdateFlavorCommands(
+            tbApplyFlavorDefault.Text,
+            tbDatabaseStartDefault.Text
+        )
+        End If
+
+    End Sub
+
+    Private Sub btnBrowseApplyScript_Click(sender As Object, e As EventArgs) Handles btnBrowseApplyScript.Click
+
+
+        With ofdStartScript   ' ✅ reuse same dialog (or change name if separate)
+            .Title = "Select Apply Flavors Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Set textbox
+            tbApplyFlavorDefault.Text = ofdStartScript.FileName
+
+            ' ✅ Persist option
+            _options.ApplyFlavorDefault = ofdStartScript.FileName
+            OptionsManager.Save(_options)
+
+            ' ✅ Update command previews
+            _flavorManager.UpdateFlavorCommands(
+            tbApplyFlavorDefault.Text,
+            tbDatabaseStartDefault.Text
+        )
+        End If
+
+    End Sub
+    Private Async Function RunSelectedScript(
+    scriptPath As String,
+    triggerButton As Button,
+    runningStatusText As String
+) As Task
+
+        ' ✅ Safety check (shared)
+        If String.IsNullOrWhiteSpace(scriptPath) Then
+            MessageBox.Show(
+            "Please select a script first.",
+            "Missing Script",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' ✅ Build args consistently for BOTH callers
+        Dim flags As String = "-Force"
+
+        Dim flavorArgs As String =
+        CodeHelper.BuildFlavorsArgument(
+            _flavorManager.GetSelectedFlavorNames())
+
+        Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
+
+        ' ✅ Run script
+        Await PowerShellRunner.RunLiveScriptAsync(
+        options:=_options,
+        liveOutputManager:=_liveOutputManager,
+        setStatus:=Sub(text)
+                       SetExecutionStatus(text)
+                   End Sub,
+        triggerButton:=triggerButton,
+        scriptRelativePath:=scriptPath,
+        scriptArgs:=scriptArgs,
+        runningStatusText:=runningStatusText
+    )
+
+    End Function
+    Private Sub btnCopyScriptOutput_Click(sender As Object, e As EventArgs) Handles btnCopyScriptOutput.Click
+
+        Dim textToCopy = tbOutputScript.Text
+
+        If String.IsNullOrWhiteSpace(textToCopy) Then
+            Return
+        End If
+
+        ' ✅ Select all text
+        tbOutputScript.SelectAll()
+
+        ' ✅ Copy to clipboard
+        Clipboard.SetText(textToCopy)
+
+        ' ✅ Remove selection (put caret at end, no highlight)
+        tbOutputScript.SelectionStart = tbOutputScript.TextLength
+        tbOutputScript.SelectionLength = 0
+
+    End Sub
+
 End Class
