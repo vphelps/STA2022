@@ -187,9 +187,7 @@ Public Class FormMain
         ' --------------------------------------------------
         _flavorManager = New FlavorSelectionManager(
         options:=_options,
-        sqlFilesList:=clbSqlFiles,
-        applyCommandTextBox:=tbFlavorApplyCommand,
-        startCommandTextBox:=tbDatabaseStartCommand
+        sqlFilesList:=clbSqlFiles
     )
 
         ' Render Quick Launch buttons
@@ -1134,10 +1132,6 @@ Public Class FormMain
         _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
         OptionsManager.Save(_options)
 
-        _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text
-        )
     End Sub
 
 
@@ -1149,21 +1143,8 @@ Public Class FormMain
         _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
         OptionsManager.Save(_options)
 
-        _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text
-        )
     End Sub
 
-    Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) _
-    Handles clbSqlFiles.ItemCheck
-
-        BeginInvoke(Sub()
-                        _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text)
-                    End Sub)
-    End Sub
 
 
     Private Async Sub btnRunApplyFlavorLive_Click(
@@ -2138,11 +2119,6 @@ scriptArgs:=flavorArgs,
             _options.StartDatabaseDefault = ofdStartScript.FileName
             OptionsManager.Save(_options)
 
-            ' ✅ Update flavor command previews
-            _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text
-        )
         End If
 
     End Sub
@@ -2165,11 +2141,6 @@ scriptArgs:=flavorArgs,
             _options.ApplyFlavorDefault = ofdStartScript.FileName
             OptionsManager.Save(_options)
 
-            ' ✅ Update command previews
-            _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text
-        )
         End If
 
     End Sub

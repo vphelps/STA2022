@@ -28,6 +28,7 @@ Partial Class FormMain
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.tcSTA = New System.Windows.Forms.TabControl()
         Me.tpGeneral = New System.Windows.Forms.TabPage()
+        Me.tbOutputScript = New System.Windows.Forms.TextBox()
         Me.tblFlavorListHints = New System.Windows.Forms.TableLayoutPanel()
         Me.lblFLHints1 = New System.Windows.Forms.Label()
         Me.lblFLHints2 = New System.Windows.Forms.Label()
@@ -73,6 +74,7 @@ Partial Class FormMain
         Me.lbFlavorsList = New System.Windows.Forms.ListBox()
         Me.cmsApplySingleFlavor = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.miApplySingleFlavor = New System.Windows.Forms.ToolStripMenuItem()
+        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
         Me.tpAdvData = New System.Windows.Forms.TabPage()
         Me.btnSaveWebOptionsCSV = New System.Windows.Forms.Button()
         Me.btnSaveAppotionsCSV = New System.Windows.Forms.Button()
@@ -146,12 +148,15 @@ Partial Class FormMain
         Me.cmsQuickLaunchSlot2 = New System.Windows.Forms.ToolStripMenuItem()
         Me.gbAppOptions = New System.Windows.Forms.GroupBox()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
+        Me.btnBrowseApplyScript = New System.Windows.Forms.Button()
+        Me.btnBrowseStartScript = New System.Windows.Forms.Button()
         Me.tbApplyFlavorDefault = New System.Windows.Forms.TextBox()
         Me.tbDatabaseStartDefault = New System.Windows.Forms.TextBox()
         Me.tbWindowTitle = New System.Windows.Forms.TextBox()
         Me.lblApplyFlavorDefault = New System.Windows.Forms.Label()
         Me.tbRepoFolder = New System.Windows.Forms.TextBox()
         Me.lblDatabaseStartDefault = New System.Windows.Forms.Label()
+        Me.btnRepoFolder = New System.Windows.Forms.Button()
         Me.lblRepoFolder = New System.Windows.Forms.Label()
         Me.lblSetupSwitches = New System.Windows.Forms.Label()
         Me.tbSetupSwitches = New System.Windows.Forms.TextBox()
@@ -168,8 +173,6 @@ Partial Class FormMain
         Me.btnTest1 = New System.Windows.Forms.Button()
         Me.tbTest2 = New System.Windows.Forms.TextBox()
         Me.tbTest3 = New System.Windows.Forms.TextBox()
-        Me.tbDatabaseStartCommand = New System.Windows.Forms.TextBox()
-        Me.tbFlavorApplyCommand = New System.Windows.Forms.TextBox()
         Me.gpCommonApps = New System.Windows.Forms.GroupBox()
         Me.tlpButtons2 = New System.Windows.Forms.TableLayoutPanel()
         Me.btnServices = New System.Windows.Forms.Button()
@@ -178,8 +181,6 @@ Partial Class FormMain
         Me.btnDevices = New System.Windows.Forms.Button()
         Me.btnTaskmgr = New System.Windows.Forms.Button()
         Me.btnAppWiz = New System.Windows.Forms.Button()
-        Me.lblFlavorApplyCommand = New System.Windows.Forms.Label()
-        Me.lblDatabaseStartCommand = New System.Windows.Forms.Label()
         Me.gbAdvApps = New System.Windows.Forms.GroupBox()
         Me.tlpButtons1 = New System.Windows.Forms.TableLayoutPanel()
         Me.btnAdvUpgrade = New System.Windows.Forms.Button()
@@ -230,11 +231,6 @@ Partial Class FormMain
         Me.btnManageInstallerVersions = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.ofdStartScript = New System.Windows.Forms.OpenFileDialog()
-        Me.tbOutputScript = New System.Windows.Forms.TextBox()
-        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
-        Me.btnBrowseApplyScript = New System.Windows.Forms.Button()
-        Me.btnBrowseStartScript = New System.Windows.Forms.Button()
-        Me.btnRepoFolder = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -318,14 +314,10 @@ Partial Class FormMain
         'SplitContainer1.Panel2
         '
         Me.SplitContainer1.Panel2.BackColor = System.Drawing.Color.Gray
-        Me.SplitContainer1.Panel2.Controls.Add(Me.tbDatabaseStartCommand)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.tbFlavorApplyCommand)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.lblFlavorApplyCommand)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.lblDatabaseStartCommand)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 854)
-        Me.SplitContainer1.SplitterDistance = 672
+        Me.SplitContainer1.SplitterDistance = 673
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -341,7 +333,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 668)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 669)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -358,9 +350,16 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 642)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 643)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
+        '
+        'tbOutputScript
+        '
+        Me.tbOutputScript.Location = New System.Drawing.Point(3, 616)
+        Me.tbOutputScript.Name = "tbOutputScript"
+        Me.tbOutputScript.Size = New System.Drawing.Size(587, 20)
+        Me.tbOutputScript.TabIndex = 37
         '
         'tblFlavorListHints
         '
@@ -852,6 +851,15 @@ Partial Class FormMain
         Me.miApplySingleFlavor.Size = New System.Drawing.Size(160, 50)
         Me.miApplySingleFlavor.Text = "Apply this flavor" & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(10)
         '
+        'btnCopyScriptOutput
+        '
+        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
+        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(585, 613)
+        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
+        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(30, 23)
+        Me.btnCopyScriptOutput.TabIndex = 33
+        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
+        '
         'tpAdvData
         '
         Me.tpAdvData.Controls.Add(Me.btnSaveWebOptionsCSV)
@@ -865,7 +873,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 642)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 643)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1020,7 +1028,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 642)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 643)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1035,7 +1043,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 611)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 612)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1127,7 +1135,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 642)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 643)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1214,7 +1222,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 512)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 513)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1369,7 +1377,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 642)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 643)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1448,7 +1456,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 642)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 643)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         '
@@ -1664,6 +1672,24 @@ Partial Class FormMain
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(487, 157)
         Me.TableLayoutPanel1.TabIndex = 28
         '
+        'btnBrowseApplyScript
+        '
+        Me.btnBrowseApplyScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnBrowseApplyScript.Location = New System.Drawing.Point(454, 136)
+        Me.btnBrowseApplyScript.Name = "btnBrowseApplyScript"
+        Me.btnBrowseApplyScript.Size = New System.Drawing.Size(30, 23)
+        Me.btnBrowseApplyScript.TabIndex = 32
+        Me.btnBrowseApplyScript.UseVisualStyleBackColor = True
+        '
+        'btnBrowseStartScript
+        '
+        Me.btnBrowseStartScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnBrowseStartScript.Location = New System.Drawing.Point(454, 107)
+        Me.btnBrowseStartScript.Name = "btnBrowseStartScript"
+        Me.btnBrowseStartScript.Size = New System.Drawing.Size(30, 23)
+        Me.btnBrowseStartScript.TabIndex = 31
+        Me.btnBrowseStartScript.UseVisualStyleBackColor = True
+        '
         'tbApplyFlavorDefault
         '
         Me.tbApplyFlavorDefault.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1717,6 +1743,15 @@ Partial Class FormMain
         Me.lblDatabaseStartDefault.TabIndex = 26
         Me.lblDatabaseStartDefault.Text = "Start Database Default:  "
         Me.lblDatabaseStartDefault.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'btnRepoFolder
+        '
+        Me.btnRepoFolder.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnRepoFolder.Location = New System.Drawing.Point(454, 29)
+        Me.btnRepoFolder.Name = "btnRepoFolder"
+        Me.btnRepoFolder.Size = New System.Drawing.Size(30, 23)
+        Me.btnRepoFolder.TabIndex = 23
+        Me.btnRepoFolder.UseVisualStyleBackColor = True
         '
         'lblRepoFolder
         '
@@ -1875,22 +1910,6 @@ Partial Class FormMain
         Me.tbTest3.TabIndex = 21
         Me.tbTest3.Text = "tbTest3"
         '
-        'tbDatabaseStartCommand
-        '
-        Me.tbDatabaseStartCommand.Location = New System.Drawing.Point(444, 103)
-        Me.tbDatabaseStartCommand.Multiline = True
-        Me.tbDatabaseStartCommand.Name = "tbDatabaseStartCommand"
-        Me.tbDatabaseStartCommand.Size = New System.Drawing.Size(275, 50)
-        Me.tbDatabaseStartCommand.TabIndex = 26
-        '
-        'tbFlavorApplyCommand
-        '
-        Me.tbFlavorApplyCommand.Location = New System.Drawing.Point(447, 20)
-        Me.tbFlavorApplyCommand.Multiline = True
-        Me.tbFlavorApplyCommand.Name = "tbFlavorApplyCommand"
-        Me.tbFlavorApplyCommand.Size = New System.Drawing.Size(272, 50)
-        Me.tbFlavorApplyCommand.TabIndex = 26
-        '
         'gpCommonApps
         '
         Me.gpCommonApps.BackColor = System.Drawing.Color.LightGray
@@ -1976,24 +1995,6 @@ Partial Class FormMain
         Me.btnAppWiz.TabIndex = 22
         Me.btnAppWiz.Text = "Programs and Features"
         Me.btnAppWiz.UseVisualStyleBackColor = True
-        '
-        'lblFlavorApplyCommand
-        '
-        Me.lblFlavorApplyCommand.AutoSize = True
-        Me.lblFlavorApplyCommand.Location = New System.Drawing.Point(447, 4)
-        Me.lblFlavorApplyCommand.Name = "lblFlavorApplyCommand"
-        Me.lblFlavorApplyCommand.Size = New System.Drawing.Size(147, 13)
-        Me.lblFlavorApplyCommand.TabIndex = 24
-        Me.lblFlavorApplyCommand.Text = "Apply Flavor Command Line:  "
-        '
-        'lblDatabaseStartCommand
-        '
-        Me.lblDatabaseStartCommand.AutoSize = True
-        Me.lblDatabaseStartCommand.Location = New System.Drawing.Point(447, 82)
-        Me.lblDatabaseStartCommand.Name = "lblDatabaseStartCommand"
-        Me.lblDatabaseStartCommand.Size = New System.Drawing.Size(160, 13)
-        Me.lblDatabaseStartCommand.TabIndex = 25
-        Me.lblDatabaseStartCommand.Text = "Start Database Command Line:  "
         '
         'gbAdvApps
         '
@@ -2162,7 +2163,7 @@ Partial Class FormMain
         Me.btnRunApplyFlavorLive.Name = "btnRunApplyFlavorLive"
         Me.btnRunApplyFlavorLive.Size = New System.Drawing.Size(77, 50)
         Me.btnRunApplyFlavorLive.TabIndex = 30
-        Me.btnRunApplyFlavorLive.Text = "Apply Flavors"
+        Me.btnRunApplyFlavorLive.Text = "Apply Default Flavors"
         Me.btnRunApplyFlavorLive.UseVisualStyleBackColor = True
         '
         'cmbboxAppLaunch
@@ -2471,49 +2472,6 @@ Partial Class FormMain
         '
         Me.ofdStartScript.FileName = "OpenFileDialog1"
         '
-        'tbOutputScript
-        '
-        Me.tbOutputScript.Location = New System.Drawing.Point(3, 616)
-        Me.tbOutputScript.Name = "tbOutputScript"
-        Me.tbOutputScript.Size = New System.Drawing.Size(587, 20)
-        Me.tbOutputScript.TabIndex = 37
-        '
-        'btnCopyScriptOutput
-        '
-        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
-        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(585, 613)
-        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
-        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(30, 23)
-        Me.btnCopyScriptOutput.TabIndex = 33
-        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
-        '
-        'btnBrowseApplyScript
-        '
-        Me.btnBrowseApplyScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
-        Me.btnBrowseApplyScript.Location = New System.Drawing.Point(454, 136)
-        Me.btnBrowseApplyScript.Name = "btnBrowseApplyScript"
-        Me.btnBrowseApplyScript.Size = New System.Drawing.Size(30, 23)
-        Me.btnBrowseApplyScript.TabIndex = 32
-        Me.btnBrowseApplyScript.UseVisualStyleBackColor = True
-        '
-        'btnBrowseStartScript
-        '
-        Me.btnBrowseStartScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
-        Me.btnBrowseStartScript.Location = New System.Drawing.Point(454, 107)
-        Me.btnBrowseStartScript.Name = "btnBrowseStartScript"
-        Me.btnBrowseStartScript.Size = New System.Drawing.Size(30, 23)
-        Me.btnBrowseStartScript.TabIndex = 31
-        Me.btnBrowseStartScript.UseVisualStyleBackColor = True
-        '
-        'btnRepoFolder
-        '
-        Me.btnRepoFolder.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
-        Me.btnRepoFolder.Location = New System.Drawing.Point(454, 29)
-        Me.btnRepoFolder.Name = "btnRepoFolder"
-        Me.btnRepoFolder.Size = New System.Drawing.Size(30, 23)
-        Me.btnRepoFolder.TabIndex = 23
-        Me.btnRepoFolder.UseVisualStyleBackColor = True
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2530,7 +2488,6 @@ Partial Class FormMain
         Me.Text = "Support Tech Assistant"
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
-        Me.SplitContainer1.Panel2.PerformLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
         Me.tcSTA.ResumeLayout(False)
@@ -2767,10 +2724,6 @@ Partial Class FormMain
     Friend WithEvents btnLaunchLatestInstaller As Button
     Friend WithEvents tbSetupSwitches As TextBox
     Friend WithEvents lblSetupSwitches As Label
-    Friend WithEvents tbFlavorApplyCommand As TextBox
-    Friend WithEvents lblDatabaseStartCommand As Label
-    Friend WithEvents lblFlavorApplyCommand As Label
-    Friend WithEvents tbDatabaseStartCommand As TextBox
     Friend WithEvents btnSaveFlavorDefaults As Button
     Friend WithEvents btnResetFlavorDefaults As Button
     Friend WithEvents Panel2 As Panel

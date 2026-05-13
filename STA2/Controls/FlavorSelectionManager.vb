@@ -4,21 +4,22 @@ Public Class FlavorSelectionManager
 
     Private ReadOnly _options As AppOptions
     Private ReadOnly _clbSqlFiles As CheckedListBox
-    Private ReadOnly _applyCommandTextBox As TextBox
-    Private ReadOnly _startCommandTextBox As TextBox
+    'Private ReadOnly _applyCommandTextBox As TextBox
+    'Private ReadOnly _startCommandTextBox As TextBox
 
     Private _defaultsApplied As Boolean = False
 
     Public Sub New(
         options As AppOptions,
-        sqlFilesList As CheckedListBox,
-        applyCommandTextBox As TextBox,
-        startCommandTextBox As TextBox
+        sqlFilesList As CheckedListBox
     )
+        'applyCommandTextBox As TextBox,
+        'startCommandTextBox As TextBox
+
         _options = options
         _clbSqlFiles = sqlFilesList
-        _applyCommandTextBox = applyCommandTextBox
-        _startCommandTextBox = startCommandTextBox
+        '_applyCommandTextBox = applyCommandTextBox
+        '_startCommandTextBox = startCommandTextBox
     End Sub
 
     ' ============================
@@ -88,15 +89,6 @@ Public Class FlavorSelectionManager
 
         _defaultsApplied = True
         _clbSqlFiles.EndUpdate()
-    End Sub
-
-    Public Sub UpdateFlavorCommands(applyPrefix As String, startPrefix As String)
-
-        Dim flavors = GetSelectedFlavorNames()
-        Dim flavorString = String.Join(", ", flavors)
-
-        _applyCommandTextBox.Text = $"{applyPrefix} {flavorString}".Trim()
-        _startCommandTextBox.Text = $"{startPrefix} {flavorString}".Trim()
     End Sub
 
     Public Function GetSelectedFlavorNames() As List(Of String)
