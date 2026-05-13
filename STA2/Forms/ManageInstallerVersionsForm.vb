@@ -258,10 +258,12 @@ Public Class ManageInstallerVersionsForm
 
         ' ✅ Enable Cleanup only if something is selected
         btnCleanup.Enabled = SelectedForCleanup.Count > 0
+        btnUnselectAll.Enabled = SelectedForCleanup.Count > 0
 
         ' ✅ NEW: Enable "Select All Deletable" only if something CAN be deleted
         btnSelectAllDeletable.Enabled =
         _versions.Any(Function(v) v.CanDelete)
+
 
     End Sub
 
@@ -299,5 +301,12 @@ Public Class ManageInstallerVersionsForm
 
     End Sub
 
+    Private Sub btnUnselectAll_Click(sender As Object, e As EventArgs) Handles btnUnselectAll.Click
+        clbVersions.ClearSelected()
+        For i As Integer = 0 To clbVersions.Items.Count - 1
+            clbVersions.SetItemChecked(i, False)
+        Next
+        UpdateSummary()
+    End Sub
 
 End Class

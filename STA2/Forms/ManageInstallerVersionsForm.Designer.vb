@@ -31,12 +31,13 @@ Partial Class ManageInstallerVersionsForm
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.managefrmToolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.btnSelectAllDeletable = New System.Windows.Forms.Button()
+        Me.btnUnselectAll = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'lblPath
         '
         Me.lblPath.AutoSize = True
-        Me.lblPath.Location = New System.Drawing.Point(287, 26)
+        Me.lblPath.Location = New System.Drawing.Point(12, 19)
         Me.lblPath.Name = "lblPath"
         Me.lblPath.Size = New System.Drawing.Size(39, 13)
         Me.lblPath.TabIndex = 0
@@ -45,7 +46,7 @@ Partial Class ManageInstallerVersionsForm
         'lblExplanation
         '
         Me.lblExplanation.AutoSize = True
-        Me.lblExplanation.Location = New System.Drawing.Point(21, 26)
+        Me.lblExplanation.Location = New System.Drawing.Point(12, 63)
         Me.lblExplanation.Name = "lblExplanation"
         Me.lblExplanation.Size = New System.Drawing.Size(72, 13)
         Me.lblExplanation.TabIndex = 1
@@ -54,7 +55,7 @@ Partial Class ManageInstallerVersionsForm
         'lblSummary
         '
         Me.lblSummary.AutoSize = True
-        Me.lblSummary.Location = New System.Drawing.Point(287, 308)
+        Me.lblSummary.Location = New System.Drawing.Point(12, 369)
         Me.lblSummary.Name = "lblSummary"
         Me.lblSummary.Size = New System.Drawing.Size(60, 13)
         Me.lblSummary.TabIndex = 2
@@ -65,14 +66,14 @@ Partial Class ManageInstallerVersionsForm
         Me.clbVersions.CheckOnClick = True
         Me.clbVersions.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.clbVersions.FormattingEnabled = True
-        Me.clbVersions.Location = New System.Drawing.Point(290, 63)
+        Me.clbVersions.Location = New System.Drawing.Point(12, 116)
         Me.clbVersions.Name = "clbVersions"
         Me.clbVersions.Size = New System.Drawing.Size(498, 242)
         Me.clbVersions.TabIndex = 3
         '
         'btnCleanup
         '
-        Me.btnCleanup.Location = New System.Drawing.Point(708, 332)
+        Me.btnCleanup.Location = New System.Drawing.Point(516, 251)
         Me.btnCleanup.Name = "btnCleanup"
         Me.btnCleanup.Size = New System.Drawing.Size(80, 50)
         Me.btnCleanup.TabIndex = 4
@@ -81,7 +82,7 @@ Partial Class ManageInstallerVersionsForm
         '
         'btnCancel
         '
-        Me.btnCancel.Location = New System.Drawing.Point(708, 388)
+        Me.btnCancel.Location = New System.Drawing.Point(516, 308)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(80, 50)
         Me.btnCancel.TabIndex = 5
@@ -90,18 +91,28 @@ Partial Class ManageInstallerVersionsForm
         '
         'btnSelectAllDeletable
         '
-        Me.btnSelectAllDeletable.Location = New System.Drawing.Point(622, 388)
+        Me.btnSelectAllDeletable.Location = New System.Drawing.Point(516, 116)
         Me.btnSelectAllDeletable.Name = "btnSelectAllDeletable"
         Me.btnSelectAllDeletable.Size = New System.Drawing.Size(80, 50)
         Me.btnSelectAllDeletable.TabIndex = 6
         Me.btnSelectAllDeletable.Text = "Select All Removable Items"
         Me.btnSelectAllDeletable.UseVisualStyleBackColor = True
         '
+        'btnUnselectAll
+        '
+        Me.btnUnselectAll.Location = New System.Drawing.Point(518, 172)
+        Me.btnUnselectAll.Name = "btnUnselectAll"
+        Me.btnUnselectAll.Size = New System.Drawing.Size(80, 50)
+        Me.btnUnselectAll.TabIndex = 7
+        Me.btnUnselectAll.Text = "Unselect All"
+        Me.btnUnselectAll.UseVisualStyleBackColor = True
+        '
         'ManageInstallerVersionsForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.ClientSize = New System.Drawing.Size(610, 450)
+        Me.Controls.Add(Me.btnUnselectAll)
         Me.Controls.Add(Me.btnSelectAllDeletable)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnCleanup)
@@ -128,4 +139,5 @@ Partial Class ManageInstallerVersionsForm
     Friend WithEvents btnCancel As Button
     Friend WithEvents managefrmToolTip As ToolTip
     Friend WithEvents btnSelectAllDeletable As Button
+    Friend WithEvents btnUnselectAll As Button
 End Class
