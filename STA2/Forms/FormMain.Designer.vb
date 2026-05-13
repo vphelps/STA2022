@@ -74,7 +74,6 @@ Partial Class FormMain
         Me.lbFlavorsList = New System.Windows.Forms.ListBox()
         Me.cmsApplySingleFlavor = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.miApplySingleFlavor = New System.Windows.Forms.ToolStripMenuItem()
-        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
         Me.tpAdvData = New System.Windows.Forms.TabPage()
         Me.btnSaveWebOptionsCSV = New System.Windows.Forms.Button()
         Me.btnSaveAppotionsCSV = New System.Windows.Forms.Button()
@@ -231,6 +230,8 @@ Partial Class FormMain
         Me.btnManageInstallerVersions = New System.Windows.Forms.Button()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.ofdStartScript = New System.Windows.Forms.OpenFileDialog()
+        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
+        Me.btnCopyScriptOutput = New System.Windows.Forms.Button()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer1.Panel1.SuspendLayout()
         Me.SplitContainer1.Panel2.SuspendLayout()
@@ -283,6 +284,7 @@ Partial Class FormMain
         Me.SplitContainer2.SuspendLayout()
         Me.tlpButtons3.SuspendLayout()
         Me.Panel2.SuspendLayout()
+        Me.TableLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnExit
@@ -339,14 +341,12 @@ Partial Class FormMain
         'tpGeneral
         '
         Me.tpGeneral.BackColor = System.Drawing.Color.Gray
-        Me.tpGeneral.Controls.Add(Me.tbOutputScript)
         Me.tpGeneral.Controls.Add(Me.tblFlavorListHints)
         Me.tpGeneral.Controls.Add(Me.gbLiveOutput)
         Me.tpGeneral.Controls.Add(Me.pnlServicesContainer)
         Me.tpGeneral.Controls.Add(Me.gpPcInfo)
         Me.tpGeneral.Controls.Add(Me.gpLicInfo)
         Me.tpGeneral.Controls.Add(Me.gbFlavorsList)
-        Me.tpGeneral.Controls.Add(Me.btnCopyScriptOutput)
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
@@ -356,9 +356,12 @@ Partial Class FormMain
         '
         'tbOutputScript
         '
-        Me.tbOutputScript.Location = New System.Drawing.Point(3, 616)
+        Me.tbOutputScript.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.tbOutputScript.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.tbOutputScript.Location = New System.Drawing.Point(1, 183)
+        Me.tbOutputScript.Margin = New System.Windows.Forms.Padding(1)
         Me.tbOutputScript.Name = "tbOutputScript"
-        Me.tbOutputScript.Size = New System.Drawing.Size(587, 20)
+        Me.tbOutputScript.Size = New System.Drawing.Size(551, 21)
         Me.tbOutputScript.TabIndex = 37
         '
         'tblFlavorListHints
@@ -402,10 +405,10 @@ Partial Class FormMain
         'gbLiveOutput
         '
         Me.gbLiveOutput.BackColor = System.Drawing.Color.LightGray
-        Me.gbLiveOutput.Controls.Add(Me.rtbLiveOutput)
+        Me.gbLiveOutput.Controls.Add(Me.TableLayoutPanel2)
         Me.gbLiveOutput.Location = New System.Drawing.Point(3, 416)
         Me.gbLiveOutput.Name = "gbLiveOutput"
-        Me.gbLiveOutput.Size = New System.Drawing.Size(609, 201)
+        Me.gbLiveOutput.Size = New System.Drawing.Size(609, 231)
         Me.gbLiveOutput.TabIndex = 34
         Me.gbLiveOutput.TabStop = False
         Me.gbLiveOutput.Text = "Script Output Window"
@@ -413,14 +416,15 @@ Partial Class FormMain
         'rtbLiveOutput
         '
         Me.rtbLiveOutput.BackColor = System.Drawing.Color.Black
+        Me.TableLayoutPanel2.SetColumnSpan(Me.rtbLiveOutput, 2)
         Me.rtbLiveOutput.DetectUrls = False
         Me.rtbLiveOutput.Dock = System.Windows.Forms.DockStyle.Fill
         Me.rtbLiveOutput.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.rtbLiveOutput.ForeColor = System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(0, Byte), Integer))
-        Me.rtbLiveOutput.Location = New System.Drawing.Point(3, 16)
+        Me.rtbLiveOutput.Location = New System.Drawing.Point(3, 3)
         Me.rtbLiveOutput.Name = "rtbLiveOutput"
         Me.rtbLiveOutput.ReadOnly = True
-        Me.rtbLiveOutput.Size = New System.Drawing.Size(603, 182)
+        Me.rtbLiveOutput.Size = New System.Drawing.Size(597, 176)
         Me.rtbLiveOutput.TabIndex = 33
         Me.rtbLiveOutput.Text = ""
         Me.rtbLiveOutput.WordWrap = False
@@ -850,15 +854,6 @@ Partial Class FormMain
         Me.miApplySingleFlavor.Name = "miApplySingleFlavor"
         Me.miApplySingleFlavor.Size = New System.Drawing.Size(160, 50)
         Me.miApplySingleFlavor.Text = "Apply this flavor" & Global.Microsoft.VisualBasic.ChrW(10) & Global.Microsoft.VisualBasic.ChrW(10)
-        '
-        'btnCopyScriptOutput
-        '
-        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
-        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(585, 613)
-        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
-        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(30, 23)
-        Me.btnCopyScriptOutput.TabIndex = 33
-        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
         '
         'tpAdvData
         '
@@ -2472,6 +2467,34 @@ Partial Class FormMain
         '
         Me.ofdStartScript.FileName = "OpenFileDialog1"
         '
+        'TableLayoutPanel2
+        '
+        Me.TableLayoutPanel2.ColumnCount = 2
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
+        Me.TableLayoutPanel2.Controls.Add(Me.btnCopyScriptOutput, 1, 1)
+        Me.TableLayoutPanel2.Controls.Add(Me.tbOutputScript, 0, 1)
+        Me.TableLayoutPanel2.Controls.Add(Me.rtbLiveOutput, 0, 0)
+        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, 16)
+        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
+        Me.TableLayoutPanel2.RowCount = 2
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30.0!))
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(603, 212)
+        Me.TableLayoutPanel2.TabIndex = 0
+        '
+        'btnCopyScriptOutput
+        '
+        Me.btnCopyScriptOutput.Dock = System.Windows.Forms.DockStyle.Right
+        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
+        Me.btnCopyScriptOutput.Location = New System.Drawing.Point(572, 183)
+        Me.btnCopyScriptOutput.Margin = New System.Windows.Forms.Padding(1)
+        Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
+        Me.btnCopyScriptOutput.Size = New System.Drawing.Size(30, 28)
+        Me.btnCopyScriptOutput.TabIndex = 38
+        Me.btnCopyScriptOutput.UseVisualStyleBackColor = True
+        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2492,7 +2515,6 @@ Partial Class FormMain
         Me.SplitContainer1.ResumeLayout(False)
         Me.tcSTA.ResumeLayout(False)
         Me.tpGeneral.ResumeLayout(False)
-        Me.tpGeneral.PerformLayout()
         Me.tblFlavorListHints.ResumeLayout(False)
         Me.tblFlavorListHints.PerformLayout()
         Me.gbLiveOutput.ResumeLayout(False)
@@ -2554,6 +2576,8 @@ Partial Class FormMain
         Me.SplitContainer2.ResumeLayout(False)
         Me.tlpButtons3.ResumeLayout(False)
         Me.Panel2.ResumeLayout(False)
+        Me.TableLayoutPanel2.ResumeLayout(False)
+        Me.TableLayoutPanel2.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -2764,5 +2788,6 @@ Partial Class FormMain
     Friend WithEvents btnBrowseStartScript As Button
     Friend WithEvents ofdStartScript As OpenFileDialog
     Friend WithEvents tbOutputScript As TextBox
+    Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
     Friend WithEvents btnCopyScriptOutput As Button
 End Class

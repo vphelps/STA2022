@@ -2183,7 +2183,7 @@ scriptArgs:=flavorArgs,
     )
 
     End Function
-    Private Sub btnCopyScriptOutput_Click(sender As Object, e As EventArgs) Handles btnCopyScriptOutput.Click
+    Private Sub btnCopyScriptOutput_Click(sender As Object, e As EventArgs)
 
         Dim textToCopy = tbOutputScript.Text
 
