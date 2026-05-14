@@ -31,7 +31,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         '
         'btnCancel
         '
-        Me.btnCancel.Location = New System.Drawing.Point(699, 373)
+        Me.btnCancel.Location = New System.Drawing.Point(372, 180)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(80, 50)
         Me.btnCancel.TabIndex = 11
@@ -40,7 +40,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         '
         'btnConfirmDelete
         '
-        Me.btnConfirmDelete.Location = New System.Drawing.Point(699, 315)
+        Me.btnConfirmDelete.Location = New System.Drawing.Point(372, 124)
         Me.btnConfirmDelete.Name = "btnConfirmDelete"
         Me.btnConfirmDelete.Size = New System.Drawing.Size(80, 50)
         Me.btnConfirmDelete.TabIndex = 10
@@ -50,7 +50,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         'lblSpaceSummary
         '
         Me.lblSpaceSummary.AutoSize = True
-        Me.lblSpaceSummary.Location = New System.Drawing.Point(12, 179)
+        Me.lblSpaceSummary.Location = New System.Drawing.Point(12, 233)
         Me.lblSpaceSummary.Name = "lblSpaceSummary"
         Me.lblSpaceSummary.Size = New System.Drawing.Size(91, 13)
         Me.lblSpaceSummary.TabIndex = 7
@@ -59,7 +59,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         'lblMessage
         '
         Me.lblMessage.AutoSize = True
-        Me.lblMessage.Location = New System.Drawing.Point(12, 12)
+        Me.lblMessage.Location = New System.Drawing.Point(9, 9)
         Me.lblMessage.Name = "lblMessage"
         Me.lblMessage.Size = New System.Drawing.Size(60, 13)
         Me.lblMessage.TabIndex = 6
@@ -68,16 +68,16 @@ Partial Class ConfirmInstallerVersionCleanupForm
         'lbVersions
         '
         Me.lbVersions.FormattingEnabled = True
-        Me.lbVersions.Location = New System.Drawing.Point(425, 6)
+        Me.lbVersions.Location = New System.Drawing.Point(12, 70)
         Me.lbVersions.Name = "lbVersions"
-        Me.lbVersions.Size = New System.Drawing.Size(354, 303)
+        Me.lbVersions.Size = New System.Drawing.Size(354, 160)
         Me.lbVersions.TabIndex = 12
         '
         'ConfirmInstallerVersionCleanupForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 450)
+        Me.ClientSize = New System.Drawing.Size(463, 257)
         Me.Controls.Add(Me.lbVersions)
         Me.Controls.Add(Me.btnCancel)
         Me.Controls.Add(Me.btnConfirmDelete)
@@ -88,7 +88,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         Me.MinimizeBox = False
         Me.Name = "ConfirmInstallerVersionCleanupForm"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "ConfirmInstallerVersionCleanupForm"
+        Me.Text = "Confirm Advantage Installer Cleanup"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

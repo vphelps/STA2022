@@ -191,6 +191,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Config\LauncherConfig.vb" />
+    <Compile Include="Tools\InstalledVersionParsing.vb" />
     <Compile Include="Tools\InstallerCleanupResult.vb" />
     <Compile Include="Tools\InstallerCleanupRules.vb" />
     <Compile Include="Tools\InstallerTools.vb" />
@@ -231,9 +232,11 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\ConfirmInstallerVersionCleanupForm.resx">
       <DependentUpon>ConfirmInstallerVersionCleanupForm.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditProgramForm .resx">
       <DependentUpon>EditProgramForm .vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.vb</DependentUpon>
@@ -313,6 +316,7 @@
     <None Include="Images\icons8-unavailable-64.png" />
     <None Include="Images\icons8-open-folder-96.png" />
     <None Include="Images\icons8-open-folder-16.png" />
+    <None Include="Images\icons8-copy-16.png" />
     <Content Include="vernware_logo_XUD_icon.ico" />
   </ItemGroup>
   <ItemGroup>

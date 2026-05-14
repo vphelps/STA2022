@@ -580,47 +580,94 @@ Public Module InstallerTools
     Optional runExistingVersionPath As String = Nothing
 )
 
+        ' --------------------------------------------------------
+        ' Resolve installed installer folder ONCE
+        ' --------------------------------------------------------
+        Dim installedFolder As String =
+        InstalledVersionParsing.FindInstalledInstallerFolder(
+            AppData.UpgradePath,
+            "AdvCoreService"
+        )
+
         For Each v In versions
 
-            ' 1️⃣ Latest version is always protected
-            If v.IsLatest Then
-                v.LockReason = VersionLockReason.LatestVersion
+            ' ====================================================
+            ' RULE 0 — INSTALLED VERSION (ABSOLUTE PRIORITY)
+            ' ====================================================
+            If Not String.IsNullOrEmpty(installedFolder) AndAlso
+           v.FolderPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
+
+                v.LockReason = VersionLockReason.InstalledVersion
                 Continue For
             End If
 
-            ' 2️⃣ LTS (Minor = 1) is always protected
+
+            ' ====================================================
+            ' RULE 1 — LATEST VERSION (OPTIONAL PROTECTION)
+            '
+            ' 🔹 IMPORTANT:
+            ' 🔹 Latest version is ONLY protected if it is not
+            ' 🔹 allowed to be deleted.
+            '
+            ' 🔹 Since installed version is already handled above,
+            ' 🔹 highest version can now be deleted safely IF desired.
+            ' ====================================================
+            If v.IsLatest Then
+                ' COMMENT OUT the next two lines if you want
+                ' the highest version to ALWAYS be deletable.
+                '
+                ' v.LockReason = VersionLockReason.LatestVersion
+                ' Continue For
+            End If
+
+
+            ' ====================================================
+            ' RULE 2 — LTS (Minor = 1) ALWAYS PROTECTED
+            ' ====================================================
             If v.Track = ReleaseTrack.LongTermSupport Then
                 v.LockReason = VersionLockReason.LongTermSupport
                 Continue For
             End If
 
-            ' 3️⃣ Selected as Run Existing in this session
+
+            ' ====================================================
+            ' RULE 3 — USER SELECTED "RUN EXISTING"
+            ' ====================================================
             If Not String.IsNullOrWhiteSpace(runExistingVersionPath) AndAlso
-               v.FolderPath.Equals(
-                   runExistingVersionPath,
-                   StringComparison.OrdinalIgnoreCase) Then
+           v.FolderPath.Equals(runExistingVersionPath, StringComparison.OrdinalIgnoreCase) Then
 
                 v.LockReason = VersionLockReason.SelectedAsRunExisting
                 Continue For
             End If
 
-            ' 4️⃣ Installer process currently running from this folder
+
+            ' ====================================================
+            ' RULE 4 — INSTALLER CURRENTLY RUNNING
+            ' ====================================================
             If IsInstallerRunningFromVersion(v.FolderPath) Then
                 v.LockReason = VersionLockReason.InstallerRunning
                 Continue For
             End If
 
-            ' 5️⃣ Any locked file protects the entire version
+
+            ' ====================================================
+            ' RULE 5 — FILES LOCKED ON DISK
+            ' ====================================================
             If ContainsLockedFiles(v.FolderPath) Then
                 v.LockReason = VersionLockReason.FileLocked
                 Continue For
             End If
 
-            ' ✅ Otherwise eligible
+
+            ' ====================================================
+            ' RULE 6 — ELIGIBLE FOR CLEANUP
+            ' ====================================================
             v.LockReason = VersionLockReason.None
+
         Next
 
     End Sub
+
     Public Function ExecuteInstallerVersionCleanup(
         versionsToDelete As List(Of InstallerVersionInfo)
     ) As InstallerCleanupResult

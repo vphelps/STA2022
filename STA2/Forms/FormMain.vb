@@ -103,18 +103,18 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub WireServiceRow(row As ServiceRowControl)
+    'Private Sub WireServiceRow(row As ServiceRowControl)
 
-        AddHandler row.StartRequested,
-        Sub(svc) OnStartServiceRequested(svc)
+    '    AddHandler row.StartRequested,
+    '    Sub(svc) OnStartServiceRequested(svc)
 
-        AddHandler row.StopRequested,
-        Sub(svc) OnStopServiceRequested(svc)
+    '    AddHandler row.StopRequested,
+    '    Sub(svc) OnStopServiceRequested(svc)
 
-        AddHandler row.RestartRequested,
-        Sub(svc) OnRestartServiceRequested(svc)
+    '    AddHandler row.RestartRequested,
+    '    Sub(svc) OnRestartServiceRequested(svc)
 
-    End Sub
+    'End Sub
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -171,7 +171,7 @@ Public Class FormMain
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
-        _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput)
+        _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput, tbOutputScript)
 
         ' Quick Launch manager
         _quickLaunchManager = New QuickLaunchManager(
@@ -187,9 +187,7 @@ Public Class FormMain
         ' --------------------------------------------------
         _flavorManager = New FlavorSelectionManager(
         options:=_options,
-        sqlFilesList:=clbSqlFiles,
-        applyCommandTextBox:=tbFlavorApplyCommand,
-        startCommandTextBox:=tbDatabaseStartCommand
+        sqlFilesList:=clbSqlFiles
     )
 
         ' Render Quick Launch buttons
@@ -242,10 +240,6 @@ Public Class FormMain
     tbMLTest1.Visible = False
     btnTest1.Visible = False
     btnTest2.Visible = False
-           lblDatabaseStartCommand.Visible = False
-        tbDatabaseStartCommand.Visible = False
-        lblFlavorApplyCommand.Visible = False
-        tbFlavorApplyCommand.Visible = False
 
 
 #End If
@@ -283,14 +277,14 @@ Public Class FormMain
 
         SetExecutionStatus(String.Empty)
 
-        Dim discoveredContainer =
-        DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
+        '    Dim discoveredContainer =
+        '    DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
 
-        tbTest2.Text = If(
-        String.IsNullOrWhiteSpace(discoveredContainer),
-        "(No SQL container found)",
-        discoveredContainer
-    )
+        '    tbTest2.Text = If(
+        '    String.IsNullOrWhiteSpace(discoveredContainer),
+        '    "(No SQL container found)",
+        '    discoveredContainer
+        ')
         InitializeTabSwitchHint()
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
@@ -299,7 +293,9 @@ Public Class FormMain
     End Sub
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-
+#If DEBUG Then
+        'tcSTA.SelectedTab = tpOptions
+#End If
         ' -------------------------------------------------
         ' Select Services tab by default
         ' -------------------------------------------------
@@ -1132,10 +1128,6 @@ Public Class FormMain
         _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
         OptionsManager.Save(_options)
 
-        _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text
-        )
     End Sub
 
 
@@ -1147,50 +1139,28 @@ Public Class FormMain
         _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
         OptionsManager.Save(_options)
 
-        _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text
-        )
     End Sub
 
-    Private Sub clbSqlFiles_ItemCheck(sender As Object, e As ItemCheckEventArgs) _
-    Handles clbSqlFiles.ItemCheck
 
-        BeginInvoke(Sub()
-                        _flavorManager.UpdateFlavorCommands(
-            tbApplyFlavorDefault.Text,
-            tbDatabaseStartDefault.Text)
-                    End Sub)
-    End Sub
 
     Private Async Sub btnRunApplyFlavorLive_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
 
+
         ' ✅ ENSURE output tab is active FIRST
         tcSTA.SelectedTab = tpGeneral
 
-        ' ✅ Allow WinForms to finish layout
         Await Task.Yield()
-
         _liveOutputManager.ForceRedraw()
 
-        Dim flavorArgs As String =
-        CodeHelper.BuildFlavorsArgument(
-            _flavorManager.GetSelectedFlavorNames())
+        Await RunSelectedScript(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            triggerButton:=btnRunApplyFlavorLive,
+            runningStatusText:="Applying flavors (live output)…"
+        )
 
-        Await PowerShellRunner.RunLiveScriptAsync(
-        options:=_options,
-        liveOutputManager:=_liveOutputManager,
-        setStatus:=Sub(text)
-                       SetExecutionStatus(text)
-                   End Sub,
-        triggerButton:=btnRunApplyFlavorLive,
-        scriptRelativePath:="tests\apply-flavors.ps1",
-        scriptArgs:=flavorArgs,
-        runningStatusText:="Applying flavors (live output)…"
-    )
     End Sub
 
     Private Async Sub btnRunDatabaseStartLive_Click(
@@ -1198,24 +1168,12 @@ Public Class FormMain
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
 
-        Dim flags As String = "-Force"
-        Dim flavorArgs As String =
-    CodeHelper.BuildFlavorsArgument(
-        _flavorManager.GetSelectedFlavorNames())
-
-        Dim scriptArgs As String = $"{flags} {flavorArgs}".Trim()
-
-        Await PowerShellRunner.RunLiveScriptAsync(
-            options:=_options,
-            liveOutputManager:=_liveOutputManager,
-        setStatus:=Sub(text)
-                       SetExecutionStatus(text)
-                   End Sub,
+        Await RunSelectedScript(
+            scriptPath:=tbDatabaseStartDefault.Text,
             triggerButton:=btnRunDatabaseStartLive,
-            scriptRelativePath:="tests\Start-Database.ps1",
-            scriptArgs:=scriptArgs,
             runningStatusText:="Starting database (live output)…"
         )
+
     End Sub
 
     Private Sub AppendColoredOutput(text As String, color As Color)
@@ -1563,35 +1521,6 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
-        DebugFormIdentity("ADDING CONTROLS")
-
-
-
-    End Sub
-
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        DebugFormIdentity("VISIBLE FORM")
-    End Sub
-    Private Sub DebugFormIdentity(tag As String)
-        MessageBox.Show(
-        $"[{tag}]{Environment.NewLine}" &
-        $"HashCode: {Me.GetHashCode()}{Environment.NewLine}" &
-        $"Name: {Me.Name}",
-        "FormMain Identity")
-    End Sub
-
-    Private Sub DumpParentChain(ctrl As Control)
-        Dim sb As New System.Text.StringBuilder()
-        Dim c As Control = ctrl
-
-        While c IsNot Nothing
-            sb.AppendLine($"{c.Name} ({c.GetType().Name}) Visible={c.Visible}")
-            c = c.Parent
-        End While
-
-        MessageBox.Show(sb.ToString(), "Parent Chain")
-    End Sub
 
     Private Async Sub OnStartServiceRequested(serviceName As String)
 
@@ -1663,43 +1592,10 @@ Public Class FormMain
         tblServices.AutoScroll = True
 
     End Sub
-    Private Sub cmsApplySingleFlavor_Opening(
-    sender As Object,
-    e As CancelEventArgs
-) Handles cmsApplySingleFlavor.Opening
 
-        Dim count = lbFlavorsList.SelectedItems.Count
-        e.Cancel = (count = 0)
 
-        If count = 1 Then
-            miApplySingleFlavor.Text = "Apply selected flavor"
-        Else
-            miApplySingleFlavor.Text = $"Apply {count} selected flavors"
-        End If
 
-    End Sub
 
-    Private Sub clbSqlFiles_MouseDown(
-        sender As Object,
-        e As MouseEventArgs
-    ) Handles clbSqlFiles.MouseDown
-
-        If e.Button = MouseButtons.Right Then
-            Dim index = clbSqlFiles.IndexFromPoint(e.Location)
-            If index >= 0 Then
-                clbSqlFiles.SelectedIndex = index
-            End If
-        End If
-
-    End Sub
-    Private Async Sub miApplySingleFlavor_Click(
-    sender As Object,
-    e As EventArgs
-) Handles miApplySingleFlavor.Click
-
-        Await ApplySelectedFlavorsAsync()
-
-    End Sub
 
     Private Sub tcSTA_SelectedIndexChanged(
     sender As Object,
@@ -1807,76 +1703,15 @@ Public Class FormMain
                $"Applying flavor '{selectedFlavors(0)}'",
                $"Applying {selectedFlavors.Count} flavors")
 
-        Await PowerShellRunner.RunLiveScriptAsync(
-            options:=_options,
-            liveOutputManager:=_liveOutputManager,
-            setStatus:=Sub(text)
-                           SetExecutionStatus(text)
-                       End Sub,
-            triggerButton:=Nothing,
-            scriptRelativePath:="tests\apply-flavors.ps1",
-            scriptArgs:=flavorArgs,
-            runningStatusText:=description & " (live output)…"
-        )
+        Await RunSelectedScript(
+    scriptPath:=tbApplyFlavorDefault.Text,
+    triggerButton:=Nothing,
+    runningStatusText:=description & " (live output)…",
+    overrideArgs:=flavorArgs
+)
 
     End Function
 
-
-    '    Private Async Sub btnManageInstallerVersions_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnManageInstallerVersions.Click
-
-    '        btnManageInstallerVersions.Enabled = False
-    '        Try
-    '            ' 1️⃣ Discover installed versions (fast, filesystem only)
-    '            Dim versions =
-    '            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
-
-    '            ' 2️⃣ Apply safety rules OFF the UI thread
-    '            Await Task.Run(Sub()
-    '                               InstallerTools.ApplyCleanupSafetyRules(
-    '                               versions,
-    '                               runExistingVersionPath:=_runExistingVersionPath)
-    '                           End Sub)
-
-    '#If DEBUG Then
-    '            ' 🔍 Diagnostic visibility (safe to remove later)
-    '            For Each v In versions
-    '                Debug.WriteLine(
-    '                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
-    '            Next
-    '#End If
-
-    '            ' 3️⃣ Show Manage Installed Versions dialog
-    '            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
-
-    '                If dlg.ShowDialog(Me) = DialogResult.OK Then
-
-    '                    ' 4️⃣ Confirmation dialog
-    '                    Using confirm As New ConfirmInstallerVersionCleanupForm(
-    '                    dlg.SelectedForCleanup)
-
-    '                        If confirm.ShowDialog(Me) = DialogResult.OK Then
-
-    '                            ' 5️⃣ Execute cleanup (safe + authoritative)
-    '                            Dim result =
-    '                            InstallerTools.ExecuteInstallerVersionCleanup(
-    '                                dlg.SelectedForCleanup)
-
-    '                            ' 6️⃣ Show summary
-    '                            ShowCleanupSummary(result)
-
-    '                        End If
-    '                    End Using
-    '                End If
-    '            End Using
-
-    '        Finally
-    '            btnManageInstallerVersions.Enabled = True
-    '        End Try
-
-    '    End Sub
     Private Async Sub btnManageInstallerVersions_Click(
     sender As Object,
     e As EventArgs
@@ -1894,8 +1729,8 @@ Public Class FormMain
             Function()
                 Return Task.Run(Sub()
                                     InstallerTools.ApplyCleanupSafetyRules(
-                                        versions,
-                                        runExistingVersionPath:=_runExistingVersionPath)
+                        versions,
+                        runExistingVersionPath:=_runExistingVersionPath)
                                 End Sub)
             End Function
         )
@@ -1908,19 +1743,16 @@ Public Class FormMain
 #End If
 
             Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
-                    Using confirm As New ConfirmInstallerVersionCleanupForm(
-                    dlg.SelectedForCleanup)
+                    ' ✅ Confirmation has ALREADY occurred in ManageInstallerVersionsForm
+                    Dim result =
+                    InstallerTools.ExecuteInstallerVersionCleanup(
+                        dlg.SelectedForCleanup)
 
-                        If confirm.ShowDialog(Me) = DialogResult.OK Then
-                            Dim result =
-                            InstallerTools.ExecuteInstallerVersionCleanup(
-                                dlg.SelectedForCleanup)
-
-                            ShowCleanupSummary(result)
-                        End If
-                    End Using
+                    ShowCleanupSummary(result)
                 End If
+
             End Using
 
         Finally
@@ -2076,6 +1908,302 @@ Public Class FormMain
 
         _tabHintTimer.Stop()
         _tabHintTimer.Start()
+
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
+        UIHelpers.TimedInfoPrompt(
+    message:=info.Version,
+    title:="Version Number",
+    timeoutSeconds:=0)
+        tbTest1.Text = info.Version
+
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+
+        Dim sb As New System.Text.StringBuilder()
+
+        sb.AppendLine("=== INSTALLER VERSION FINAL SANITY CHECK ===")
+        sb.AppendLine()
+
+        ' --------------------------------------------------
+        ' 1) Installed version from service
+        ' --------------------------------------------------
+        Dim installedVersionText As String = GetInstalledVersionString()
+
+        sb.AppendLine("Installed service version string:")
+        If String.IsNullOrWhiteSpace(installedVersionText) Then
+            sb.AppendLine("  <EMPTY>")
+        Else
+            sb.AppendLine("  " & installedVersionText)
+        End If
+        sb.AppendLine()
+
+        Dim installedParsed =
+        InstalledVersionParsing.ParseVersionPartsSafe(installedVersionText)
+
+        sb.AppendLine("Parsed installed version:")
+        If installedParsed.HasValue Then
+            sb.AppendLine("  " & installedParsed.Value.ToString())
+        Else
+            sb.AppendLine("  <FAILED TO PARSE>")
+        End If
+
+        sb.AppendLine()
+        sb.AppendLine("--------------------------------------------")
+
+        ' --------------------------------------------------
+        ' 2) Installed installer folder
+        ' --------------------------------------------------
+        Dim installedFolder As String =
+        InstalledVersionParsing.FindInstalledInstallerFolder(
+            AppData.UpgradePath,
+            "AdvCoreService"
+        )
+
+        sb.AppendLine("Installed installer folder:")
+        If String.IsNullOrEmpty(installedFolder) Then
+            sb.AppendLine("  <NOT FOUND>")
+        Else
+            sb.AppendLine("  " & installedFolder)
+        End If
+
+        sb.AppendLine()
+        sb.AppendLine("--------------------------------------------")
+
+        ' --------------------------------------------------
+        ' 3) Evaluate installer folders & lock reasons
+        ' --------------------------------------------------
+        sb.AppendLine("Installer folders status:")
+
+        Dim versions =
+        InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+        ' Apply lock rules exactly as production does
+        InstallerTools.ApplyCleanupSafetyRules(versions)
+
+        For Each v In versions
+            sb.AppendLine(
+            $"  {IO.Path.GetFileName(v.FolderPath)}" &
+            $"  ->  LockReason = {v.LockReason}" &
+            $"  | CanDelete = {v.CanDelete}"
+        )
+        Next
+
+        sb.AppendLine()
+        sb.AppendLine("=== END SANITY CHECK ===")
+
+        MessageBox.Show(
+        sb.ToString(),
+        "Final Installer Version Sanity Check",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information
+    )
+
+
+    End Sub
+
+    Private Sub btnBrowseStartScript_Click(sender As Object, e As EventArgs) Handles btnBrowseStartScript.Click
+
+
+
+        With ofdStartScript
+            .Title = "Select Start Database Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Store selected script path
+            tbDatabaseStartDefault.Text = ofdStartScript.FileName
+
+            ' ✅ Persist to options
+            _options.StartDatabaseDefault = ofdStartScript.FileName
+            OptionsManager.Save(_options)
+
+        End If
+
+    End Sub
+
+    Private Sub btnBrowseApplyScript_Click(sender As Object, e As EventArgs) Handles btnBrowseApplyScript.Click
+
+
+        With ofdStartScript   ' ✅ reuse same dialog (or change name if separate)
+            .Title = "Select Apply Flavors Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Set textbox
+            tbApplyFlavorDefault.Text = ofdStartScript.FileName
+
+            ' ✅ Persist option
+            _options.ApplyFlavorDefault = ofdStartScript.FileName
+            OptionsManager.Save(_options)
+
+        End If
+
+    End Sub
+    Private Async Function RunSelectedScript(
+    scriptPath As String,
+    triggerButton As Button,
+    runningStatusText As String,
+    Optional overrideArgs As String = Nothing
+) As Task
+
+        ' ✅ Safety check
+        If String.IsNullOrWhiteSpace(scriptPath) Then
+            MessageBox.Show(
+            "Please select a script first.",
+            "Missing Script",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim flags As String = "-Force"
+        Dim scriptArgs As String
+
+        If Not String.IsNullOrWhiteSpace(overrideArgs) Then
+            ' ✅ Use explicitly provided args (default flavors or single flavor)
+            scriptArgs = $"{flags} {overrideArgs}".Trim()
+        Else
+            ' ✅ Use selected flavors from UI
+            Dim flavorArgs As String =
+            CodeHelper.BuildFlavorsArgument(
+                _flavorManager.GetSelectedFlavorNames())
+
+            scriptArgs = $"{flags} {flavorArgs}".Trim()
+        End If
+
+        Await PowerShellRunner.RunLiveScriptAsync(
+        options:=_options,
+        liveOutputManager:=_liveOutputManager,
+        setStatus:=Sub(text)
+                       SetExecutionStatus(text)
+                   End Sub,
+        triggerButton:=triggerButton,
+        scriptRelativePath:=scriptPath,
+        scriptArgs:=scriptArgs,
+        runningStatusText:=runningStatusText
+    )
+
+    End Function
+
+    Private Sub btnCopyScriptOutput_Click(sender As Object, e As EventArgs)
+
+        Dim textToCopy = tbOutputScript.Text
+
+        If String.IsNullOrWhiteSpace(textToCopy) Then
+            Return
+        End If
+
+        ' ✅ Select all text
+        tbOutputScript.SelectAll()
+
+        ' ✅ Copy to clipboard
+        Clipboard.SetText(textToCopy)
+
+        ' ✅ Remove selection (put caret at end, no highlight)
+        tbOutputScript.SelectionStart = tbOutputScript.TextLength
+        tbOutputScript.SelectionLength = 0
+
+    End Sub
+
+    Private Sub cmsApplySingleFlavor_Opening(
+sender As Object,
+e As System.ComponentModel.CancelEventArgs
+) Handles cmsApplySingleFlavor.Opening
+
+        Dim count = lbFlavorsList.SelectedItems.Count
+
+        ' ✅ Cancel menu entirely if nothing selected
+        If count = 0 Then
+            e.Cancel = True
+            Return
+        End If
+
+        ' ✅ Update Apply Single Flavor text
+        If count = 1 Then
+            miApplySingleFlavor.Text = "Apply selected flavor"
+        Else
+            miApplySingleFlavor.Text = $"Apply {count} selected flavors"
+        End If
+
+        ' ✅ Enable/disable Default Flavors option
+        tsmiApplyDefaultFlavors.Enabled =
+        _options.DefaultFlavorNames IsNot Nothing AndAlso
+        _options.DefaultFlavorNames.Count > 0
+
+    End Sub
+
+    Private Sub clbSqlFiles_MouseDown(
+    sender As Object,
+    e As MouseEventArgs
+) Handles clbSqlFiles.MouseDown
+
+        If e.Button = MouseButtons.Right Then
+            Dim index = clbSqlFiles.IndexFromPoint(e.Location)
+            If index >= 0 Then
+                clbSqlFiles.SelectedIndex = index
+            End If
+        End If
+
+    End Sub
+    Private Async Sub miApplySingleFlavor_Click(
+    sender As Object,
+    e As EventArgs
+) Handles miApplySingleFlavor.Click
+
+        Await ApplySelectedFlavorsAsync()
+        lbFlavorsList.ClearSelected()
+    End Sub
+
+    Private Async Sub tsmiApplyDefaultFlavors_Click(
+   sender As Object,
+   e As EventArgs
+) Handles tsmiApplyDefaultFlavors.Click
+
+        ' ✅ Validate script path
+        If String.IsNullOrWhiteSpace(tbApplyFlavorDefault.Text) Then
+            MessageBox.Show(
+                "Please select an Apply Flavors script first.",
+                "Missing Script",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' ✅ Get DEFAULT flavors
+        Dim defaultFlavors = _options.DefaultFlavorNames
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+            MessageBox.Show(
+                "No default flavors are configured.",
+                "No Defaults",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+            Return
+        End If
+
+        ' ✅ Build argument string
+        Dim flavorCsv As String = String.Join(",", defaultFlavors)
+        Dim flavorArgs As String = $"-Flavors {flavorCsv}"
+
+        ' ✅ Call shared runner (includes -Force automatically)
+        Await RunSelectedScript(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            triggerButton:=Nothing,
+            runningStatusText:="Applying default flavors (live output)…",
+            overrideArgs:=flavorArgs
+        )
+        lbFlavorsList.ClearSelected()
 
     End Sub
 
