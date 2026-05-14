@@ -103,18 +103,18 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub WireServiceRow(row As ServiceRowControl)
+    'Private Sub WireServiceRow(row As ServiceRowControl)
 
-        AddHandler row.StartRequested,
-        Sub(svc) OnStartServiceRequested(svc)
+    '    AddHandler row.StartRequested,
+    '    Sub(svc) OnStartServiceRequested(svc)
 
-        AddHandler row.StopRequested,
-        Sub(svc) OnStopServiceRequested(svc)
+    '    AddHandler row.StopRequested,
+    '    Sub(svc) OnStopServiceRequested(svc)
 
-        AddHandler row.RestartRequested,
-        Sub(svc) OnRestartServiceRequested(svc)
+    '    AddHandler row.RestartRequested,
+    '    Sub(svc) OnRestartServiceRequested(svc)
 
-    End Sub
+    'End Sub
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -240,10 +240,6 @@ Public Class FormMain
     tbMLTest1.Visible = False
     btnTest1.Visible = False
     btnTest2.Visible = False
-           lblDatabaseStartCommand.Visible = False
-        tbDatabaseStartCommand.Visible = False
-        lblFlavorApplyCommand.Visible = False
-        tbFlavorApplyCommand.Visible = False
 
 
 #End If
@@ -281,14 +277,14 @@ Public Class FormMain
 
         SetExecutionStatus(String.Empty)
 
-        Dim discoveredContainer =
-        DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
+        '    Dim discoveredContainer =
+        '    DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
 
-        tbTest2.Text = If(
-        String.IsNullOrWhiteSpace(discoveredContainer),
-        "(No SQL container found)",
-        discoveredContainer
-    )
+        '    tbTest2.Text = If(
+        '    String.IsNullOrWhiteSpace(discoveredContainer),
+        '    "(No SQL container found)",
+        '    discoveredContainer
+        ')
         InitializeTabSwitchHint()
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
@@ -2207,6 +2203,7 @@ e As System.ComponentModel.CancelEventArgs
             runningStatusText:="Applying default flavors (live output)…",
             overrideArgs:=flavorArgs
         )
+        lbFlavorsList.ClearSelected()
 
     End Sub
 

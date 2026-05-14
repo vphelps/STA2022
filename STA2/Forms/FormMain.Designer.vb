@@ -292,7 +292,7 @@ Partial Class FormMain
         '
         Me.btnExit.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.btnExit.Location = New System.Drawing.Point(252, 173)
+        Me.btnExit.Location = New System.Drawing.Point(252, 192)
         Me.btnExit.Name = "btnExit"
         Me.btnExit.Size = New System.Drawing.Size(77, 50)
         Me.btnExit.TabIndex = 0
@@ -319,8 +319,8 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.BackColor = System.Drawing.Color.Gray
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
-        Me.SplitContainer1.Size = New System.Drawing.Size(1023, 854)
-        Me.SplitContainer1.SplitterDistance = 678
+        Me.SplitContainer1.Size = New System.Drawing.Size(1023, 919)
+        Me.SplitContainer1.SplitterDistance = 682
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -336,7 +336,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 674)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 678)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -351,7 +351,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 648)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 652)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -2179,7 +2179,7 @@ Partial Class FormMain
         '
         'btnRunDatabaseStartLive
         '
-        Me.btnRunDatabaseStartLive.Location = New System.Drawing.Point(252, 59)
+        Me.btnRunDatabaseStartLive.Location = New System.Drawing.Point(252, 64)
         Me.btnRunDatabaseStartLive.Name = "btnRunDatabaseStartLive"
         Me.btnRunDatabaseStartLive.Size = New System.Drawing.Size(77, 50)
         Me.btnRunDatabaseStartLive.TabIndex = 31
@@ -2216,7 +2216,7 @@ Partial Class FormMain
         '
         'btnReconnect
         '
-        Me.btnReconnect.Location = New System.Drawing.Point(3, 115)
+        Me.btnReconnect.Location = New System.Drawing.Point(3, 125)
         Me.btnReconnect.Name = "btnReconnect"
         Me.btnReconnect.Size = New System.Drawing.Size(77, 50)
         Me.btnReconnect.TabIndex = 22
@@ -2236,7 +2236,7 @@ Partial Class FormMain
         '
         'btnAdminRestart
         '
-        Me.btnAdminRestart.Location = New System.Drawing.Point(3, 59)
+        Me.btnAdminRestart.Location = New System.Drawing.Point(3, 64)
         Me.btnAdminRestart.Name = "btnAdminRestart"
         Me.btnAdminRestart.Size = New System.Drawing.Size(77, 50)
         Me.btnAdminRestart.TabIndex = 20
@@ -2245,7 +2245,7 @@ Partial Class FormMain
         '
         'btnRefreshGeneralTab
         '
-        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(3, 171)
+        Me.btnRefreshGeneralTab.Location = New System.Drawing.Point(3, 186)
         Me.btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
         Me.btnRefreshGeneralTab.Size = New System.Drawing.Size(77, 50)
         Me.btnRefreshGeneralTab.TabIndex = 17
@@ -2271,7 +2271,7 @@ Partial Class FormMain
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion, Me.tslblExecutionStatus, Me.tslblDbState})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 830)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 895)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1371, 24)
         Me.StatusStrip1.TabIndex = 12
@@ -2406,8 +2406,8 @@ Partial Class FormMain
         '
         Me.SplitContainer2.Panel2.BackColor = System.Drawing.Color.LightGray
         Me.SplitContainer2.Panel2.Controls.Add(Me.tlpButtons3)
-        Me.SplitContainer2.Size = New System.Drawing.Size(336, 827)
-        Me.SplitContainer2.SplitterDistance = 594
+        Me.SplitContainer2.Size = New System.Drawing.Size(336, 892)
+        Me.SplitContainer2.SplitterDistance = 640
         Me.SplitContainer2.SplitterWidth = 3
         Me.SplitContainer2.TabIndex = 22
         '
@@ -2438,12 +2438,12 @@ Partial Class FormMain
         Me.tlpButtons3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
         Me.tlpButtons3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
         Me.tlpButtons3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
-        Me.tlpButtons3.Size = New System.Drawing.Size(332, 226)
+        Me.tlpButtons3.Size = New System.Drawing.Size(332, 245)
         Me.tlpButtons3.TabIndex = 0
         '
         'btnRepoMain
         '
-        Me.btnRepoMain.Location = New System.Drawing.Point(86, 171)
+        Me.btnRepoMain.Location = New System.Drawing.Point(86, 186)
         Me.btnRepoMain.Name = "btnRepoMain"
         Me.btnRepoMain.Size = New System.Drawing.Size(77, 50)
         Me.btnRepoMain.TabIndex = 26
@@ -2461,7 +2461,7 @@ Partial Class FormMain
         '
         'btnLaunchLatestInstaller
         '
-        Me.btnLaunchLatestInstaller.Location = New System.Drawing.Point(86, 59)
+        Me.btnLaunchLatestInstaller.Location = New System.Drawing.Point(86, 64)
         Me.btnLaunchLatestInstaller.Name = "btnLaunchLatestInstaller"
         Me.btnLaunchLatestInstaller.Size = New System.Drawing.Size(77, 50)
         Me.btnLaunchLatestInstaller.TabIndex = 23
@@ -2470,7 +2470,7 @@ Partial Class FormMain
         '
         'btnRepoDiscardChanges
         '
-        Me.btnRepoDiscardChanges.Location = New System.Drawing.Point(86, 115)
+        Me.btnRepoDiscardChanges.Location = New System.Drawing.Point(86, 125)
         Me.btnRepoDiscardChanges.Name = "btnRepoDiscardChanges"
         Me.btnRepoDiscardChanges.Size = New System.Drawing.Size(77, 50)
         Me.btnRepoDiscardChanges.TabIndex = 24
@@ -2494,7 +2494,7 @@ Partial Class FormMain
         Me.Panel2.Controls.Add(Me.SplitContainer2)
         Me.Panel2.Location = New System.Drawing.Point(1023, 0)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(336, 827)
+        Me.Panel2.Size = New System.Drawing.Size(336, 892)
         Me.Panel2.TabIndex = 13
         '
         'ofdStartScript
@@ -2506,7 +2506,7 @@ Partial Class FormMain
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.btnExit
-        Me.ClientSize = New System.Drawing.Size(1371, 854)
+        Me.ClientSize = New System.Drawing.Size(1371, 919)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.SplitContainer1)
