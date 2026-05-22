@@ -1,0 +1,120 @@
+﻿Imports System.IO
+Imports System.Text
+Imports System.Threading
+Imports System.Windows.Forms
+
+Public Module GlobalErrorHandler
+
+    Private ReadOnly LogFolder As String =
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+
+    ' ---------------------------------------
+    ' UI thread exceptions
+    ' ---------------------------------------
+    Public Sub HandleThreadException(
+        sender As Object,
+        e As ThreadExceptionEventArgs)
+
+        LogException("UI Thread Exception", e.Exception)
+        ShowUserMessage()
+    End Sub
+
+    ' ---------------------------------------
+    ' Non‑UI / background exceptions
+    ' ---------------------------------------
+    Public Sub HandleUnhandledException(
+        sender As Object,
+        e As UnhandledExceptionEventArgs)
+
+        Dim ex As Exception = TryCast(e.ExceptionObject, Exception)
+
+        If ex IsNot Nothing Then
+            LogException("Unhandled Domain Exception", ex)
+        Else
+            LogText("Unhandled non‑Exception object thrown.")
+        End If
+
+        ShowUserMessage()
+    End Sub
+
+    ' ---------------------------------------
+    ' Main logging routine
+    ' ---------------------------------------
+    Private Sub LogException(source As String, ex As Exception)
+
+        Directory.CreateDirectory(LogFolder)
+
+        Dim logFile As String =
+            Path.Combine(LogFolder,
+                $"Error_{DateTime.Now:yyyyMMdd}.log")
+
+        Using sw As New StreamWriter(logFile, True, Encoding.UTF8)
+
+            sw.WriteLine("====================================================")
+            sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+            sw.WriteLine("Source: " & source)
+            sw.WriteLine("Machine: " & Environment.MachineName)
+            sw.WriteLine("User: " & Environment.UserName)
+            sw.WriteLine("OS: " & Environment.OSVersion.ToString)
+            sw.WriteLine(".NET CLR: " & Environment.Version.ToString)
+            sw.WriteLine()
+
+            WriteException(sw, ex)
+
+            sw.WriteLine("====================================================")
+            sw.WriteLine()
+
+        End Using
+
+    End Sub
+
+    Private Sub WriteException(
+        sw As StreamWriter,
+        ex As Exception,
+        Optional level As Integer = 0)
+
+        If ex Is Nothing Then Exit Sub
+
+        Dim indent As String = New String(" "c, level * 2)
+
+        sw.WriteLine(indent & "Exception Type: " & ex.GetType().FullName)
+        sw.WriteLine(indent & "Message: " & ex.Message)
+        sw.WriteLine(indent & "StackTrace:")
+        sw.WriteLine(indent & ex.StackTrace)
+        sw.WriteLine()
+
+        If ex.InnerException IsNot Nothing Then
+            sw.WriteLine(indent & "Inner Exception:")
+            WriteException(sw, ex.InnerException, level + 1)
+        End If
+
+    End Sub
+
+    ' ---------------------------------------
+    ' Fallback logging
+    ' ---------------------------------------
+    Private Sub LogText(message As String)
+
+        Directory.CreateDirectory(LogFolder)
+
+        Dim logFile As String =
+            Path.Combine(LogFolder,
+                $"Error_{DateTime.Now:yyyyMMdd}.log")
+
+        File.AppendAllText(logFile,
+            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {message}{Environment.NewLine}")
+    End Sub
+
+    ' ---------------------------------------
+    ' User-facing message
+    ' ---------------------------------------
+    Private Sub ShowUserMessage()
+        MessageBox.Show(
+            "An unexpected error occurred." & Environment.NewLine &
+            "The error has been logged so it can be reviewed.",
+            "Application Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+    End Sub
+
+End Module

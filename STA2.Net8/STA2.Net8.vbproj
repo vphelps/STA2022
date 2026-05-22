@@ -30,10 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Config\" />
-    <Folder Include="Application\Controls\" />
-    <Folder Include="Application\Core\" />
-    <Folder Include="Application\Data\" />
     <Folder Include="Application\Docs\" />
     <Folder Include="Application\Forms\" />
     <Folder Include="Application\Images\" />

@@ -1,0 +1,67 @@
+﻿Imports System.ServiceProcess
+
+Public Class AppData
+    Public Shared dbAppOptions As New DataSet
+    Public Shared dbWebOptions As New DataSet
+    Public Shared dbApplicationInfo As New DataSet
+
+    Public Shared dbLicData As New DataSet
+    Public Shared CEPath86 As String = "C:\Program Files (x86)\CenterEdge Software\"
+    Public Shared CEPath64 As String = "C:\Program Files\CenterEdge Software\"
+    Public Shared UpgradePath As String = ""
+    Public Shared InstalledVersion As Integer = 0
+
+End Class
+Public Class Variables
+    Public Shared LoggedIn As Boolean = False
+    Public Shared OfflineMode As Boolean = False
+
+End Class
+
+Public Structure PCInfo
+    Public Shared Name As String = ""
+    Public Shared OpSys As String = ""
+    Public Shared Ram As String = ""
+    Public Shared FreeSpace As String = ""
+    Public Shared Architecture As String = ""
+    Public Shared DbSize As String = "0"
+    Public Shared SqlVersion As String = ""
+    Public Shared FrameworkVersion As String = ""
+    Public Shared AdvantageVersion As String = ""
+    Public Shared IsSQLInstalled As Boolean = True
+    Public Shared IsAdvantageInstalled As Boolean = True
+    Public Shared AreServicesInstalled As Boolean = True
+    Public Shared ValidDatabase As Boolean = True
+    Public Shared ExcelInstalled As Boolean = False
+
+End Structure
+
+' ProgramEntry.vb
+Public Class ProgramEntry
+    Public Property Id As String = Guid.NewGuid().ToString("N")
+    Public Property Name As String
+    Public Property Path As String
+    Public Property Arguments As String
+    Public Property WorkingDirectory As String
+    Public Property RunAsAdmin As Boolean
+    Public Property IconPath As String
+    Public Property Enabled As Boolean = True
+    Public Property IncludeInBatch As Boolean = False
+
+    Public Overrides Function ToString() As String
+        Return $"{Name} ({Path})"
+    End Function
+End Class
+
+Public Class ConfigValues
+    Public Shared Server As String
+    Public Shared Database As String
+    Public Shared UserID As String
+    Public Shared StationNo As Integer
+    Public Shared IntegratedSecurity As Integer
+    Public Shared PasswordEncryption As Integer
+    Public Shared Password As String
+    Public Shared ConnectionString As String
+
+
+End Class
