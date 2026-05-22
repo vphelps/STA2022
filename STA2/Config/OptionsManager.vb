@@ -1,6 +1,7 @@
 ﻿Imports System.IO
 Imports System.Text
-Imports Newtonsoft.Json
+Imports System.Text.Json
+Imports System.Text.Json.Serialization
 
 ' NOTE: This class is intentionally UI-free and safe to call at startup.
 ' It initializes QuickLaunchIds only if missing and NORMALIZES/DEDUPES
@@ -8,11 +9,13 @@ Imports Newtonsoft.Json
 
 Public NotInheritable Class OptionsManager
 
-    ' Shared JSON settings used across options and launcher config
-    Private Shared ReadOnly _jsonSettings As New JsonSerializerSettings With {
-        .Formatting = Formatting.Indented,
-        .NullValueHandling = NullValueHandling.Ignore
-    }
+    Private Shared ReadOnly _jsonOptions As New JsonSerializerOptions With {
+    .WriteIndented = True,
+    .PropertyNameCaseInsensitive = True,
+    .DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    .AllowTrailingCommas = True,
+    .ReadCommentHandling = JsonCommentHandling.Skip
+}
 
     ' =========================================================
     ' Options
@@ -27,7 +30,7 @@ Public NotInheritable Class OptionsManager
             If File.Exists(path) Then
                 ' Tolerant read (handles BOM / leading whitespace)
                 Dim json = SafeReadAllText(path)
-                opts = JsonConvert.DeserializeObject(Of AppOptions)(json, _jsonSettings)
+                opts = JsonSerializer.Deserialize(Of AppOptions)(json, _jsonOptions)
                 If opts Is Nothing Then opts = New AppOptions()
             Else
                 opts = New AppOptions()
@@ -112,7 +115,8 @@ Public NotInheritable Class OptionsManager
             ' -------------------------------------------------
             ' Serialize
             ' -------------------------------------------------
-            Dim json = JsonConvert.SerializeObject(opts, _jsonSettings)
+            Dim json = JsonSerializer.Serialize(opts, _jsonOptions)
+
             File.WriteAllText(path, json, Encoding.UTF8)
 
         Catch ex As Exception
@@ -142,7 +146,7 @@ Public NotInheritable Class OptionsManager
 
         Try
             Dim json = SafeReadAllText(path)
-            Dim cfg = JsonConvert.DeserializeObject(Of LauncherConfig)(json, _jsonSettings)
+            Dim cfg = JsonSerializer.Deserialize(Of LauncherConfig)(json, _jsonOptions)
             If cfg Is Nothing Then cfg = New LauncherConfig()
             If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
@@ -173,7 +177,8 @@ Public NotInheritable Class OptionsManager
             If cfg Is Nothing Then cfg = New LauncherConfig()
             If cfg.Programs Is Nothing Then cfg.Programs = New List(Of ProgramEntry)()
 
-            Dim json = JsonConvert.SerializeObject(cfg, _jsonSettings)
+            Dim json = JsonSerializer.Serialize(cfg, _jsonOptions)
+
 
             Dim tmp = path & ".tmp"
             File.WriteAllText(tmp, json, Encoding.UTF8)

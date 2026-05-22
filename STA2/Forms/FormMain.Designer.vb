@@ -133,6 +133,7 @@ Partial Class FormMain
         Me.tpOptions = New System.Windows.Forms.TabPage()
         Me.tbMLTest1 = New System.Windows.Forms.TextBox()
         Me.btnTest2 = New System.Windows.Forms.Button()
+        Me.btnTest1 = New System.Windows.Forms.Button()
         Me.gpFlavorsSettings = New System.Windows.Forms.GroupBox()
         Me.btnSaveFlavorDefaults = New System.Windows.Forms.Button()
         Me.clbSqlFiles = New System.Windows.Forms.CheckedListBox()
@@ -172,7 +173,6 @@ Partial Class FormMain
         Me.cbAdvUpgradeNoSetup = New System.Windows.Forms.CheckBox()
         Me.cbAdvUpgradeQuiet = New System.Windows.Forms.CheckBox()
         Me.tbTest1 = New System.Windows.Forms.TextBox()
-        Me.btnTest1 = New System.Windows.Forms.Button()
         Me.tbTest2 = New System.Windows.Forms.TextBox()
         Me.tbTest3 = New System.Windows.Forms.TextBox()
         Me.gpCommonApps = New System.Windows.Forms.GroupBox()
@@ -320,7 +320,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 919)
-        Me.SplitContainer1.SplitterDistance = 683
+        Me.SplitContainer1.SplitterDistance = 685
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -336,7 +336,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 679)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 681)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -351,7 +351,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 653)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 655)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -902,7 +902,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 653)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 655)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1057,7 +1057,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 653)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 655)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1072,7 +1072,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 622)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 624)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1164,7 +1164,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 653)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 655)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1251,7 +1251,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 523)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 525)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1406,7 +1406,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 653)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 655)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1485,7 +1485,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 653)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 655)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         '
@@ -1505,6 +1505,15 @@ Partial Class FormMain
         Me.btnTest2.TabIndex = 23
         Me.btnTest2.Text = "Test Button 2"
         Me.btnTest2.UseVisualStyleBackColor = True
+        '
+        'btnTest1
+        '
+        Me.btnTest1.Location = New System.Drawing.Point(524, 586)
+        Me.btnTest1.Name = "btnTest1"
+        Me.btnTest1.Size = New System.Drawing.Size(75, 23)
+        Me.btnTest1.TabIndex = 18
+        Me.btnTest1.Text = "Test Button"
+        Me.btnTest1.UseVisualStyleBackColor = True
         '
         'gpFlavorsSettings
         '
@@ -1913,15 +1922,6 @@ Partial Class FormMain
         Me.tbTest1.Size = New System.Drawing.Size(233, 20)
         Me.tbTest1.TabIndex = 19
         Me.tbTest1.Text = "tbTest1"
-        '
-        'btnTest1
-        '
-        Me.btnTest1.Location = New System.Drawing.Point(524, 586)
-        Me.btnTest1.Name = "btnTest1"
-        Me.btnTest1.Size = New System.Drawing.Size(75, 23)
-        Me.btnTest1.TabIndex = 18
-        Me.btnTest1.Text = "Test Button"
-        Me.btnTest1.UseVisualStyleBackColor = True
         '
         'tbTest2
         '

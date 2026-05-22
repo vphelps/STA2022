@@ -1,6 +1,4 @@
-﻿Imports Newtonsoft.Json
-
-<Serializable>
+﻿<Serializable>
 Public Class AppOptions
 
     ' -------------------------------------------------
