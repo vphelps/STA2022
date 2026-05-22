@@ -32,6 +32,7 @@ Public Class FormMain
 
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
+
     Private Function GetServiceDisplayName(serviceName As String) As String
         Try
             Using sc As New ServiceController(serviceName)
@@ -102,19 +103,6 @@ Public Class FormMain
         tblServices.ResumeLayout(True)
 
     End Sub
-
-    'Private Sub WireServiceRow(row As ServiceRowControl)
-
-    '    AddHandler row.StartRequested,
-    '    Sub(svc) OnStartServiceRequested(svc)
-
-    '    AddHandler row.StopRequested,
-    '    Sub(svc) OnStopServiceRequested(svc)
-
-    '    AddHandler row.RestartRequested,
-    '    Sub(svc) OnRestartServiceRequested(svc)
-
-    'End Sub
 
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
@@ -234,12 +222,12 @@ Public Class FormMain
         End Try
 
 #If Not DEBUG Then
-    tbTest1.Visible = False
-    tbTest2.Visible = False
-    tbTest3.Visible = False
-    tbMLTest1.Visible = False
-    btnTest1.Visible = False
-    btnTest2.Visible = False
+        tbTest1.Visible = False
+        tbTest2.Visible = False
+        tbTest3.Visible = False
+        tbMLTest1.Visible = False
+        btnTest1.Visible = False
+        btnTest2.Visible = False
 
 
 #End If
@@ -247,16 +235,7 @@ Public Class FormMain
         Me.Text += " - DEBUG BUILD"
 #End If
 
-
-        btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
-        btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
-        btnAdvCardTech.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvCardTech"))
-        btnAdvReportEditor.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvReportEditor"))
-        btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
-        btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
-        btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
-        btnAdvKioskSetup.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKioskSetup"))
-        btnAdvKiosk.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKiosk"))
+        RefreshUI()
 
         tbWindowTitle.Text = _options.WindowTitle
 
@@ -276,15 +255,6 @@ Public Class FormMain
         End If
 
         SetExecutionStatus(String.Empty)
-
-        '    Dim discoveredContainer =
-        '    DatabaseCoordinator.DiscoverSqlContainerName(_options.SqlContainerName)
-
-        '    tbTest2.Text = If(
-        '    String.IsNullOrWhiteSpace(discoveredContainer),
-        '    "(No SQL container found)",
-        '    discoveredContainer
-        ')
         InitializeTabSwitchHint()
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
@@ -296,14 +266,7 @@ Public Class FormMain
 #If DEBUG Then
         'tcSTA.SelectedTab = tpOptions
 #End If
-        ' -------------------------------------------------
-        ' Select Services tab by default
-        ' -------------------------------------------------
-        'tcSTA.SelectedTab = tpServices
 
-        ' -------------------------------------------------
-        ' Build the Services UI (rows only, no logic)
-        ' -------------------------------------------------
         BuildServicesUI()
 
         ' ✅ STEP 2: Lock label column width based on longest service name
@@ -453,6 +416,7 @@ Public Class FormMain
         tslblCeVersion.Text = "Version:  " & info.Version
 
         CodeHelper.Refresher()
+        RefreshUI()
 
         ' ✅ Fire-and-forget async call (VB style)
 #Disable Warning BC42358
@@ -1071,6 +1035,8 @@ Public Class FormMain
     }
         Process.Start(psi)
 
+        RefreshUI()
+
 
     End Sub
 
@@ -1468,6 +1434,7 @@ Public Class FormMain
             SetExecutionStatus("", force:=True)
             btnSetupInstall.Enabled = True
         End Try
+        RefreshUI()
 
     End Sub
     Private Sub tslblExecutionStatus_TextChanged(
@@ -1913,96 +1880,17 @@ Public Class FormMain
 
     Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
 
-        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
+        Dim strTemp As String = String.Format("RepoFolderPath= |{0}|", _options.RepoFolderPath)
+        strTemp &= Environment.NewLine & String.Format("FlavorFolderPath= |{0}|", _options.FlavorFolderPath)
+        strTemp &= Environment.NewLine & String.Format("StartDatabaseDefault= |{0}|", _options.StartDatabaseDefault)
+        strTemp &= Environment.NewLine & String.Format("ApplyFlavorDefault= |{0}|", _options.ApplyFlavorDefault)
         UIHelpers.TimedInfoPrompt(
-    message:=info.Version,
-    title:="Version Number",
-    timeoutSeconds:=0)
-        tbTest1.Text = info.Version
-
+            message:=strTemp,
+            title:="Options Data",
+            timeoutSeconds:=30)
     End Sub
 
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-
-        Dim sb As New System.Text.StringBuilder()
-
-        sb.AppendLine("=== INSTALLER VERSION FINAL SANITY CHECK ===")
-        sb.AppendLine()
-
-        ' --------------------------------------------------
-        ' 1) Installed version from service
-        ' --------------------------------------------------
-        Dim installedVersionText As String = GetInstalledVersionString()
-
-        sb.AppendLine("Installed service version string:")
-        If String.IsNullOrWhiteSpace(installedVersionText) Then
-            sb.AppendLine("  <EMPTY>")
-        Else
-            sb.AppendLine("  " & installedVersionText)
-        End If
-        sb.AppendLine()
-
-        Dim installedParsed =
-        InstalledVersionParsing.ParseVersionPartsSafe(installedVersionText)
-
-        sb.AppendLine("Parsed installed version:")
-        If installedParsed.HasValue Then
-            sb.AppendLine("  " & installedParsed.Value.ToString())
-        Else
-            sb.AppendLine("  <FAILED TO PARSE>")
-        End If
-
-        sb.AppendLine()
-        sb.AppendLine("--------------------------------------------")
-
-        ' --------------------------------------------------
-        ' 2) Installed installer folder
-        ' --------------------------------------------------
-        Dim installedFolder As String =
-        InstalledVersionParsing.FindInstalledInstallerFolder(
-            AppData.UpgradePath,
-            "AdvCoreService"
-        )
-
-        sb.AppendLine("Installed installer folder:")
-        If String.IsNullOrEmpty(installedFolder) Then
-            sb.AppendLine("  <NOT FOUND>")
-        Else
-            sb.AppendLine("  " & installedFolder)
-        End If
-
-        sb.AppendLine()
-        sb.AppendLine("--------------------------------------------")
-
-        ' --------------------------------------------------
-        ' 3) Evaluate installer folders & lock reasons
-        ' --------------------------------------------------
-        sb.AppendLine("Installer folders status:")
-
-        Dim versions =
-        InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
-
-        ' Apply lock rules exactly as production does
-        InstallerTools.ApplyCleanupSafetyRules(versions)
-
-        For Each v In versions
-            sb.AppendLine(
-            $"  {IO.Path.GetFileName(v.FolderPath)}" &
-            $"  ->  LockReason = {v.LockReason}" &
-            $"  | CanDelete = {v.CanDelete}"
-        )
-        Next
-
-        sb.AppendLine()
-        sb.AppendLine("=== END SANITY CHECK ===")
-
-        MessageBox.Show(
-        sb.ToString(),
-        "Final Installer Version Sanity Check",
-        MessageBoxButtons.OK,
-        MessageBoxIcon.Information
-    )
-
 
     End Sub
 
@@ -2204,6 +2092,41 @@ e As System.ComponentModel.CancelEventArgs
             overrideArgs:=flavorArgs
         )
         lbFlavorsList.ClearSelected()
+
+    End Sub
+
+    Private Sub RefreshUI()
+
+        btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
+        btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
+        btnAdvCardTech.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvCardTech"))
+        btnAdvReportEditor.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvReportEditor"))
+        btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
+        btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
+        btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
+        btnAdvKioskSetup.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKioskSetup"))
+        btnAdvKiosk.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKiosk"))
+        If _options.RepoFolderPath Is Nothing Or _options.RepoFolderPath = "" Then
+            btnRepoMain.Enabled = False
+            btnRepoDiscardChanges.Enabled = False
+        Else
+            btnRepoMain.Enabled = True
+            btnRepoDiscardChanges.Enabled = True
+        End If
+        If _options.StartDatabaseDefault Is Nothing Or _options.StartDatabaseDefault = "" Then
+            btnRunDatabaseStartLive.Enabled = False
+        Else
+            btnRunDatabaseStartLive.Enabled = True
+        End If
+        If _options.ApplyFlavorDefault Is Nothing Or _options.ApplyFlavorDefault = "" Then
+            btnRunApplyFlavorLive.Enabled = False
+            tsmiApplyDefaultFlavors.Enabled = False
+            gbFlavorsList.Enabled = False
+        Else
+            btnRunApplyFlavorLive.Enabled = True
+            tsmiApplyDefaultFlavors.Enabled = True
+            gbFlavorsList.Enabled = True
+        End If
 
     End Sub
 

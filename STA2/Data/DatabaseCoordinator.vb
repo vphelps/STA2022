@@ -69,33 +69,63 @@ Public Module DatabaseCoordinator
         End Sub)
 
     End Sub
-    Public Sub GoOnline(form As FormMain)
+    Public Sub GoOnline(
+    form As FormMain,
+    Optional configuredContainerName As String = Nothing
+)
 
         Variables.OfflineMode = False
         PCInfo.ValidDatabase = True
 
+        ' --------------------------------------------------
+        ' ✅ Detect source (Docker vs Local SQL)
+        ' --------------------------------------------------
+        Dim dbSource As String = "Local SQL"
+
+        Try
+            If IsDockerInstalled() AndAlso IsDockerRunning() Then
+
+                Dim containerName As String =
+                DiscoverSqlContainerName(configuredContainerName)
+
+                If Not String.IsNullOrWhiteSpace(containerName) AndAlso
+               IsSqlContainerRunning(containerName) Then
+
+                    dbSource = $"Docker ({containerName})"
+                End If
+            End If
+        Catch
+            dbSource = "Local SQL"
+        End Try
+
+        ' --------------------------------------------------
+        ' ✅ Update UI safely
+        ' --------------------------------------------------
         InvokeOnUI(form,
-        Sub()
-            EnableDatabaseSections(form)
+    Sub()
 
-            CodeHelper.GetPcInfo()
-            CodeHelper.FirstLoad()
-            CodeHelper.Refresher()
+        EnableDatabaseSections(form)
 
-            If form.tslblDbState IsNot Nothing Then
-                form.tslblDbState.Text = "ONLINE"
-                form.tslblDbState.ForeColor = Color.WhiteSmoke
-                form.tslblDbState.BackColor = Color.DarkGreen
-            End If
+        ' Refresh environment
+        CodeHelper.GetPcInfo()
+        CodeHelper.FirstLoad()
+        CodeHelper.Refresher()
 
-            If form.tslblExecutionStatus IsNot Nothing Then
-                form.tslblExecutionStatus.Text = ""
-                form.tslblExecutionStatus.Visible = False
-            End If
-        End Sub)
+        ' Status label
+        If form.tslblDbState IsNot Nothing Then
+            form.tslblDbState.Text = $"ONLINE ({dbSource})"
+            form.tslblDbState.ForeColor = Color.WhiteSmoke
+            form.tslblDbState.BackColor = Color.DarkGreen
+        End If
+
+        If form.tslblExecutionStatus IsNot Nothing Then
+            form.tslblExecutionStatus.Text = ""
+            form.tslblExecutionStatus.Visible = False
+        End If
+
+    End Sub)
 
     End Sub
-
     ' ============================================================
     ' UI helpers (FormMain‑aware by design)
     ' ============================================================
@@ -426,46 +456,52 @@ Public Module DatabaseCoordinator
     ' but uses the safer helpers above)
     ' ============================================================
     Public Sub EvaluateDatabaseAvailability(
-        form As FormMain,
-        connectionString As String,
-        Optional configuredContainerName As String = Nothing
-    )
+    form As FormMain,
+    connectionString As String,
+    Optional configuredContainerName As String = Nothing
+)
 
-        ' 1️⃣ Docker installed?
-        If Not IsDockerInstalled() Then
-            GoOffline(form, "Docker is not installed")
-            Exit Sub
-        End If
+        ' --------------------------------------------------
+        ' ✅ 1) Try Docker-based SQL first
+        ' --------------------------------------------------
+        Try
+            If IsDockerInstalled() AndAlso IsDockerRunning() Then
 
-        ' 2️⃣ Docker running?
-        If Not IsDockerRunning() Then
-            GoOffline(form, "Docker is installed but not running")
-            Exit Sub
-        End If
+                Dim containerName As String =
+                DiscoverSqlContainerName(configuredContainerName)
 
-        ' 3️⃣ Find SQL container
-        Dim containerName As String =
-            DiscoverSqlContainerName(configuredContainerName)
+                If Not String.IsNullOrWhiteSpace(containerName) AndAlso
+               IsSqlContainerRunning(containerName) Then
 
-        If String.IsNullOrWhiteSpace(containerName) Then
-            GoOffline(form, "SQL Docker container not found")
-            Exit Sub
-        End If
+                    If TestConnection(connectionString, 5) Then
+                        GoOnline(form)
+                        Return
+                    End If
 
-        ' 4️⃣ SQL container running?
-        If Not IsSqlContainerRunning(containerName) Then
-            GoOffline(form, $"SQL container ({containerName}) is not running")
-            Exit Sub
-        End If
+                End If
+            End If
+        Catch
+            ' Ignore Docker errors and fall through to local SQL
+        End Try
 
-        ' 5️⃣ Test SQL connectivity (short timeout)
-        If Not TestConnection(connectionString, 5) Then
-            GoOffline(form, "Unable to connect to SQL Server")
-            Exit Sub
-        End If
 
-        ' ✅ Everything OK
-        GoOnline(form)
+        ' --------------------------------------------------
+        ' ✅ 2) Fallback to LOCAL SQL Server
+        ' --------------------------------------------------
+        Try
+            If TestConnection(connectionString, 5) Then
+                GoOnline(form)
+                Return
+            End If
+        Catch
+            ' Ignore and continue to offline
+        End Try
+
+
+        ' --------------------------------------------------
+        ' ❌ 3) Nothing worked → OFFLINE
+        ' --------------------------------------------------
+        GoOffline(form, "No SQL Server available (Docker or Local)")
 
     End Sub
 
@@ -529,5 +565,22 @@ Public Module DatabaseCoordinator
         Return True
 
     End Function
-
+    Private Function IsLocalSqlAvailable(connectionString As String) As Boolean
+        Try
+            Return TestConnection(connectionString, 3)
+        Catch
+            Return False
+        End Try
+    End Function
+    Private Function IsSqlServerServiceRunning() As Boolean
+        Try
+            Return ServiceProcess.ServiceController.GetServices().
+                Any(Function(s)
+                        Return s.ServiceName.StartsWith("MSSQL", StringComparison.OrdinalIgnoreCase) _
+                            AndAlso s.Status = ServiceProcess.ServiceControllerStatus.Running
+                    End Function)
+        Catch
+            Return False
+        End Try
+    End Function
 End Module
