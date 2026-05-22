@@ -1,5 +1,5 @@
 ﻿
-Imports System.Data.SqlClient
+Imports Microsoft.Data.SqlClient
 Imports System.Security.Cryptography
 Imports System.Text
 
@@ -18,7 +18,6 @@ Public Class Connections
     Dim UserID As String
     Dim Password As String
     Dim StationNo As Integer
-    Dim OldSettings As New My.MySettings
     Public Shared ErrorMessage As String
     Public Shared DBError As Boolean = False
     Public Shared Property _Password As String
