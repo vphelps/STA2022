@@ -2130,4 +2130,7 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
+    Private Sub flpQuickLaunch_Paint(sender As Object, e As PaintEventArgs) Handles flpQuickLaunch.Paint
+
+    End Sub
 End Class
