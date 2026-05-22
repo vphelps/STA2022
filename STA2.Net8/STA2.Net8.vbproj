@@ -33,7 +33,6 @@
     <Folder Include="Application\Docs\" />
     <Folder Include="Application\Forms\" />
     <Folder Include="Application\Images\" />
-    <Folder Include="Application\Tools\" />
     <Folder Include="Application\Services\" />
   </ItemGroup>
 
