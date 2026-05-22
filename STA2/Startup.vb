@@ -12,7 +12,7 @@ Module Startup
     Sub Main()
 
         ' =====================================================
-        ' GLOBAL ERROR HANDLING (FIRST – BEFORE ANY OTHER CODE)
+        ' GLOBAL ERROR HANDLING
         ' =====================================================
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
 
@@ -46,7 +46,6 @@ Module Startup
             End While
         End If
 
-        ' Persist upgraded layout once
         OptionsManager.Save(options)
 
         Dim launcher = OptionsManager.LoadLauncherConfig()
@@ -63,74 +62,38 @@ Module Startup
 
         If args.Contains("-BatchLaunch", StringComparer.OrdinalIgnoreCase) Then
 
-            ' Batch mode: no UI, silent execution
             Dim result = BatchLauncher.RunBatch(
                 launcher,
                 caller:="Startup:-BatchLaunch",
                 silent:=True)
 
-            ' Exit code reflects batch success/failure
             Environment.Exit(If(result.Failed > 0, 1, 0))
             Return
         End If
 
         ' =====================================================
-        ' CREATE MAIN FORM EARLY (needed for ownership & state)
+        ' ✅ DATABASE AVAILABILITY CHECK (UPDATED LOGIC)
+        ' Supports Docker OR Local SQL Server
         ' =====================================================
-        MainFormInstance = New FormMain(options, launcher)
+        Dim dbAvailable As Boolean =
+            DatabaseCoordinator.TestConnection(ConfigValues.ConnectionString, 5)
 
-        ' =====================================================
-        ' INITIALIZE DATABASE INFRASTRUCTURE
-        ' =====================================================
-        ReliableSql.Initialize(ConfigValues.ConnectionString)
+        If Not dbAvailable Then
 
-        ' =====================================================
-        ' DOCKER-FIRST STARTUP CHECK
-        ' =====================================================
-        Dim canAttemptDatabase As Boolean =
-    DatabaseCoordinator.CanAttemptDatabaseStartup(
-        configuredContainerName:=options.SqlContainerName)
-
-        If canAttemptDatabase Then
-            ' Docker & container are available — now test SQL connectivity
-            If Not DatabaseCoordinator.TestConnection(ConfigValues.ConnectionString, 5) Then
-
-                Dim decision As DialogResult =
-            UIHelpers.TimedYesNoPrompt(
-                owner:=Nothing,
-                message:=
-                    "Docker is running, but the database cannot be reached." &
-                    Environment.NewLine & Environment.NewLine &
-                    "Do you want to start the application in OFFLINE mode?",
-                title:="Database Unavailable",
-                timeoutSeconds:=10,
-                defaultChoice:=DialogResult.Yes,
-icon:=SystemIcons.Error)
-
-                If decision = DialogResult.No Then
-                    ' ❌ User chose to quit
-                    Application.Exit()
-                    Environment.Exit(0)
-                    Return
-                End If
-
-                ' ✅ Timeout or Yes → Offline mode
-                Variables.OfflineMode = True
-                PCInfo.ValidDatabase = False
-
-            End If
-        Else
-            ' Docker itself is not available
             Dim decision As DialogResult =
-        UIHelpers.TimedYesNoPrompt(
-            owner:=Nothing,
-            message:=
-                "Docker or the SQL container is not running." &
-                Environment.NewLine & Environment.NewLine &
-                "Do you want to start the application in OFFLINE mode?",
-            title:="Docker Unavailable",
-            timeoutSeconds:=10,
-            defaultChoice:=DialogResult.Yes)
+                UIHelpers.TimedYesNoPrompt(
+                    owner:=Nothing,
+                    message:=
+                        "The database cannot be reached." & Environment.NewLine & Environment.NewLine &
+                        "This may be because:" & Environment.NewLine &
+                        "• Docker is not running" & Environment.NewLine &
+                        "• SQL Server is not running" & Environment.NewLine &
+                        "• Connection settings are incorrect" & Environment.NewLine & Environment.NewLine &
+                        "Do you want to start the application in OFFLINE mode?",
+                    title:="Database Unavailable",
+                    timeoutSeconds:=10,
+                    defaultChoice:=DialogResult.Yes,
+                    icon:=SystemIcons.Error)
 
             If decision = DialogResult.No Then
                 Application.Exit()
@@ -138,9 +101,21 @@ icon:=SystemIcons.Error)
                 Return
             End If
 
+            ' ✅ Offline mode
             Variables.OfflineMode = True
             PCInfo.ValidDatabase = False
+
         End If
+
+        ' =====================================================
+        ' CREATE MAIN FORM
+        ' =====================================================
+        MainFormInstance = New FormMain(options, launcher)
+
+        ' =====================================================
+        ' INITIALIZE DATABASE INFRASTRUCTURE
+        ' =====================================================
+        ReliableSql.Initialize(ConfigValues.ConnectionString)
 
         ' =====================================================
         ' NORMAL UI STARTUP
