@@ -13,6 +13,7 @@ Public Module CodeHelper
         Dim form = Startup.MainFormInstance
         Dim strTemp As String = ""
 
+
         If Variables.OfflineMode Then
             PCInfo.ValidDatabase = False
             form.tbPcDbSize.Text = "Offline"
@@ -41,10 +42,6 @@ Public Module CodeHelper
         ' --------------------------
         Try
             Dim ds As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
-
-            If ds Is Nothing OrElse ds.Tables.Count = 0 OrElse ds.Tables(0).Rows.Count = 0 Then
-                Throw New Exception("DbStats returned no rows.")
-            End If
 
             Dim row0 = ds.Tables(0).Rows(0)
             PCInfo.DbSize = Convert.ToString(row0.Item(0))

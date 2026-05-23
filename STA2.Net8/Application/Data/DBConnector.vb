@@ -1,149 +1,131 @@
 ﻿Imports Microsoft.Data.SqlClient
+Imports System.Data
+Imports System.Diagnostics
 
 Public Class DBConnector
 
     '======================================================================
-    '  getValue – now uses OFFLINE MODE instead of ErrorHandler
+    '  getValue – returns first column of last row (or Nothing)
     '======================================================================
-    Public Shared Function getValue(Query As String)
-        Dim builder As New SqlConnectionStringBuilder
-        Dim Ds As New DataSet
-        Dim result As Object = Nothing
+    Public Shared Function getValue(query As String) As Object
 
-        If Variables.OfflineMode Then Return Nothing
-        If Not PCInfo.ValidDatabase Then Return Ds
-
-        ' Build connection string
-        builder.Add("Data Source", ConfigValues.Server)
-        builder("Integrated Security") = False
-        builder.Add("Initial Catalog", ConfigValues.Database)
-        builder.Add("UID", ConfigValues.UserID)
-        builder.Add("PWD", ConfigValues.Password)
+        If Variables.OfflineMode OrElse Not PCInfo.ValidDatabase Then
+            Return Nothing
+        End If
 
         Try
-            Using cn As New SqlConnection(builder.ConnectionString)
+            Using cn As New SqlConnection(ConfigValues.ConnectionString)
                 cn.Open()
-                Using cmdSQL As New SqlCommand(Query, cn)
-                    Using reader As SqlDataReader = cmdSQL.ExecuteReader()
-                        If reader.HasRows Then
-                            While reader.Read()
-                                result = reader.GetValue(0)
-                            End While
-                        End If
+
+                Using cmd As New SqlCommand(query, cn)
+                    Using reader As SqlDataReader = cmd.ExecuteReader()
+
+                        Dim result As Object = Nothing
+
+                        While reader.Read()
+                            result = reader.GetValue(0)
+                        End While
+
+                        Return result
                     End Using
                 End Using
-                cn.Close()
             End Using
 
         Catch ex As SqlException
-            ' ---- SWITCH TO OFFLINE MODE ----
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
+            HandleDatabaseFailure("SQL ERROR", ex)
             Return Nothing
 
         Catch ex As Exception
-            ' Generic failure: go offline
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
+            HandleDatabaseFailure("GENERAL ERROR", ex)
             Return Nothing
         End Try
 
-        Return result
     End Function
 
 
     '======================================================================
-    '  dbQuery – now OFFLINE MODE instead of ErrorHandler
+    '  dbQuery – returns DataSet or scalar string if single-cell
     '======================================================================
-    Public Shared Function dbQuery(Query As String)
-        Dim builder As New SqlConnectionStringBuilder
-        Dim Ds As New DataSet
-        Dim result As String = ""
+    Public Shared Function dbQuery(query As String) As Object
 
         If Variables.OfflineMode Then Return New DataSet()
-        If Not PCInfo.ValidDatabase Then Return Ds
+        If Not PCInfo.ValidDatabase Then Return New DataSet()
 
-        ' Build connection string
-        builder.Add("Data Source", ConfigValues.Server)
-        builder("Integrated Security") = False
-        builder.Add("Initial Catalog", ConfigValues.Database)
-        builder.Add("UID", ConfigValues.UserID)
-        builder.Add("PWD", ConfigValues.Password)
+        Dim ds As New DataSet
 
         Try
-            Using cn As New SqlConnection(builder.ConnectionString)
+            Using cn As New SqlConnection(ConfigValues.ConnectionString)
                 cn.Open()
-                Using cmdSQL As New SqlCommand(Query, cn)
-                    Using daSQL As New SqlDataAdapter(cmdSQL)
-                        daSQL.Fill(Ds)
+
+                Using cmd As New SqlCommand(query, cn)
+                    Using da As New SqlDataAdapter(cmd)
+                        da.Fill(ds)
                     End Using
                 End Using
-                cn.Close()
             End Using
 
-            ' Convert single-cell results into string output
-            If Ds.Tables.Count > 0 AndAlso
-               Ds.Tables(0).Rows.Count = 1 AndAlso
-               Ds.Tables(0).Columns.Count = 1 Then
+            ' ✅ Scalar shortcut (optional, kept from your original logic)
+            If ds.Tables.Count > 0 AndAlso
+               ds.Tables(0).Rows.Count = 1 AndAlso
+               ds.Tables(0).Columns.Count = 1 Then
 
-                result = Ds.Tables(0).Rows(0)(0).ToString()
-                Return result
+                Return ds.Tables(0).Rows(0)(0).ToString()
             End If
 
+            Return ds
+
         Catch ex As SqlException
-            ' ---- SWITCH TO OFFLINE MODE ----
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
+            HandleDatabaseFailure("SQL ERROR", ex)
             Return New DataSet()
 
         Catch ex As Exception
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
+            HandleDatabaseFailure("GENERAL ERROR", ex)
             Return New DataSet()
         End Try
 
-        Return Ds
     End Function
 
 
     '======================================================================
-    '  dbExecute – now OFFLINE MODE instead of ErrorHandler
+    '  dbExecute – executes INSERT/UPDATE/DELETE
     '======================================================================
     Public Shared Function dbExecute(query As String) As Integer
-        If Variables.OfflineMode Then Return 0
-        If Not PCInfo.ValidDatabase Then Return 0
 
-        Dim builder As New SqlConnectionStringBuilder()
-        builder.Add("Data Source", ConfigValues.Server)
-        builder("Integrated Security") = False
-        builder.Add("Initial Catalog", ConfigValues.Database)
-        builder.Add("UID", ConfigValues.UserID)
-        builder.Add("PWD", ConfigValues.Password)
-
-        Dim affected As Integer = 0
+        If Variables.OfflineMode OrElse Not PCInfo.ValidDatabase Then
+            Return 0
+        End If
 
         Try
-            Using cn As New SqlConnection(builder.ConnectionString)
+            Using cn As New SqlConnection(ConfigValues.ConnectionString)
                 cn.Open()
+
                 Using cmd As New SqlCommand(query, cn)
-                    affected = cmd.ExecuteNonQuery()
+                    Return cmd.ExecuteNonQuery()
                 End Using
-                cn.Close()
             End Using
 
         Catch ex As SqlException
-            ' ---- SWITCH TO OFFLINE MODE ----
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
+            HandleDatabaseFailure("SQL ERROR", ex)
             Return 0
 
         Catch ex As Exception
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
+            HandleDatabaseFailure("GENERAL ERROR", ex)
             Return 0
         End Try
 
-        Return affected
     End Function
+
+
+    '======================================================================
+    '  Centralized DB failure handler
+    '======================================================================
+    Private Shared Sub HandleDatabaseFailure(prefix As String, ex As Exception)
+
+        Debug.WriteLine($"{prefix}: {ex.Message}")
+
+        Variables.OfflineMode = True
+        PCInfo.ValidDatabase = False
+
+    End Sub
 
 End Class

@@ -21,76 +21,43 @@ Public Class Connections
     Public Shared ErrorMessage As String
     Public Shared DBError As Boolean = False
     Public Shared Property _Password As String
-
     Public Shared Sub IniFileHandler(Write As Boolean)
-
 
         Try
             Dim Ini As New IniFile("C:\PFSCommon\PFSConnect.ini")
 
-            ' Read INI
+            ' -------------------------
+            ' ✅ Read INI values ONLY
+            ' -------------------------
             ConfigValues.Server = Ini.ReadString("SQL2000", "DataSource")
             ConfigValues.Database = Ini.ReadString("SQL2000", "Catalog")
-            _Password = Ini.ReadString("SQL2000", "Password")
+            Dim rawPassword As String = Ini.ReadString("SQL2000", "Password")
+
             ConfigValues.UserID = Ini.ReadString("SQL2000", "UserID")
             ConfigValues.StationNo = Ini.ReadInteger("Info", "StationNo")
             ConfigValues.IntegratedSecurity = Ini.ReadInteger("SQL2000", "IntegratedSecurity")
             ConfigValues.PasswordEncryption = Ini.ReadInteger("SQL2000", "PasswordEncryption")
 
-            ' Resolve password (encrypted or plain)
+            ' -------------------------
+            ' ✅ Resolve password
+            ' -------------------------
             If ConfigValues.PasswordEncryption = 1 Then
                 ConfigValues.Password = Encoding.UTF8.GetString(
-                    ProtectedData.Unprotect(
-                        Convert.FromBase64String(_Password),
-                        PasswordEntropy,
-                        DataProtectionScope.LocalMachine))
+                ProtectedData.Unprotect(
+                    Convert.FromBase64String(rawPassword),
+                    PasswordEntropy,
+                    DataProtectionScope.LocalMachine))
             ElseIf ConfigValues.PasswordEncryption = 0 Then
-                ConfigValues.Password = _Password
+                ConfigValues.Password = rawPassword
             Else
                 ConfigValues.Password = String.Empty
             End If
 
-            ' -------------------------
-            ' Build SQL connection string
-            ' -------------------------
-            Dim csb As New SqlConnectionStringBuilder()
-
-            ' Basic
-            csb.DataSource = ConfigValues.Server
-            csb.InitialCatalog = ConfigValues.Database
-
-            ' Auth mode
-            If Convert.ToInt32(ConfigValues.IntegratedSecurity) = 1 Then
-                csb.IntegratedSecurity = True
-                ' When using Integrated Security, do NOT include UserID/Password
-                csb.Remove("User ID")
-                csb.Remove("Password")
-            Else
-                csb.IntegratedSecurity = False
-                csb.UserID = ConfigValues.UserID
-                csb.Password = ConfigValues.Password
-            End If
-
-            ' Optional: common, sensible defaults (tune as needed)
-            csb.ConnectTimeout = 15            ' seconds
-            ' If your SQL Server requires encryption, set to True. Otherwise, keep False or read from INI.
-            ' csb.Encrypt = True
-            ' csb.TrustServerCertificate = True ' only if you must bypass CA validation
-
-            ' Final connection string
-            Dim sqlConnectionString As String = csb.ConnectionString
-
-            ' Store for global use
-            ConfigValues.ConnectionString = sqlConnectionString
-
-            ' (Optional) Initialize ReliableSql with this connection string if you’re using it:
-            ' ReliableSql.Initialize(sqlConnectionString)
+            ' ✅ DO NOT build or assign ConnectionString here anymore
 
         Catch ex As Exception
-            ' You can surface a dialog or keep logging only, as you had before.
-            'ErrorHandler.ErrorHandler("PFSConnect.ini Error: " & ex.Message, ex.StackTrace)
+            MessageBox.Show("PFSConnect.ini Error: " & ex.Message)
         End Try
-
 
     End Sub
 End Class

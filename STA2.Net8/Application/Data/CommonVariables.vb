@@ -1,4 +1,5 @@
 ﻿Imports System.ServiceProcess
+Imports Microsoft.Data.SqlClient
 
 Public Class AppData
     Public Shared dbAppOptions As New DataSet
@@ -53,7 +54,9 @@ Public Class ProgramEntry
     End Function
 End Class
 
+
 Public Class ConfigValues
+
     Public Shared Server As String
     Public Shared Database As String
     Public Shared UserID As String
@@ -61,7 +64,60 @@ Public Class ConfigValues
     Public Shared IntegratedSecurity As Integer
     Public Shared PasswordEncryption As Integer
     Public Shared Password As String
-    Public Shared ConnectionString As String
 
+    ' ❌ Do NOT directly use a raw string anymore
+    Private Shared _connectionString As String
+
+    ' ✅ Use this property everywhere instead
+    Public Shared ReadOnly Property ConnectionString As String
+        Get
+            Dim csb As New SqlConnectionStringBuilder()
+
+            ' Server / DB
+            csb.DataSource = Server
+            csb.InitialCatalog = Database
+
+            ' Auth mode
+            If IntegratedSecurity = 1 Then
+                csb.IntegratedSecurity = True
+            Else
+                csb.UserID = UserID
+                csb.Password = Password
+            End If
+
+            ' ✅ CRITICAL for .NET 8
+            csb.Encrypt = False
+            csb.TrustServerCertificate = True
+            csb.ConnectTimeout = 5
+
+            Return csb.ConnectionString
+        End Get
+    End Property
+    ' ============================================================
+    ' Derived connection strings (used for detection)
+    ' ============================================================
+
+    Public Shared ReadOnly Property DockerConnectionString As String
+        Get
+            Dim csb As New SqlConnectionStringBuilder(ConnectionString)
+
+            ' ✅ Force Docker endpoint (always port 1433)
+            csb.DataSource = "127.0.0.1,1433"
+
+            Return csb.ConnectionString
+        End Get
+    End Property
+
+
+    Public Shared ReadOnly Property LocalSqlConnectionString As String
+        Get
+            Dim csb As New SqlConnectionStringBuilder(ConnectionString)
+
+            ' ✅ Force local instance
+            csb.DataSource = "localhost"
+
+            Return csb.ConnectionString
+        End Get
+    End Property
 
 End Class
