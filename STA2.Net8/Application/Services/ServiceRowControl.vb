@@ -137,7 +137,7 @@ Public Class ServiceRowControl
 
         ' --- Resize 96×96 icons to button size ---
         ' Use shared UIHelpers loader so images are reusable across modules.
-        Dim startImg = UIHelpers.LoadImageFromAppFolder("imgGreenPlay96.png")
+        Dim startImg = ResourceHelper.LoadImage("imgGreenPlay96.png")
         If startImg IsNot Nothing Then
             btnStart.Image = ResizeImageToFit(startImg, btnStart.ClientSize)
             startImg.Dispose()
@@ -145,7 +145,7 @@ Public Class ServiceRowControl
             btnStart.Image = Nothing
         End If
 
-        Dim stopImg = UIHelpers.LoadImageFromAppFolder("imgRedStop96.png")
+        Dim stopImg = ResourceHelper.LoadImage("imgRedStop96.png")
         If stopImg IsNot Nothing Then
             btnStop.Image = ResizeImageToFit(stopImg, btnStop.ClientSize)
             stopImg.Dispose()
@@ -153,7 +153,7 @@ Public Class ServiceRowControl
             btnStop.Image = Nothing
         End If
 
-        Dim refreshImg = UIHelpers.LoadImageFromAppFolder("imgRefresh96.png")
+        Dim refreshImg = ResourceHelper.LoadImage("imgRefresh96.png")
         If refreshImg IsNot Nothing Then
             btnRestart.Image = ResizeImageToFit(refreshImg, btnRestart.ClientSize)
             refreshImg.Dispose()

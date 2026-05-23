@@ -40,15 +40,15 @@ Public Module ServicesDisplay
 
         Select Case status
             Case ServiceControllerStatus.Running
-                Return UIHelpers.LoadImageFromAppFolder("imgCheckMark96")
+                Return ResourceHelper.LoadImage("imgCheckMark96.png")
 
             Case ServiceControllerStatus.Stopped
-                Return UIHelpers.LoadImageFromAppFolder("imgCrossMark96")
+                Return ResourceHelper.LoadImage("imgCrossMark96.png")
 
             Case ServiceControllerStatus.StartPending,
                  ServiceControllerStatus.StopPending,
                  ServiceControllerStatus.Paused
-                Return UIHelpers.LoadImageFromAppFolder("imgRefresh96")
+                Return ResourceHelper.LoadImage("imgRefresh96.png")
 
             Case Else
                 Return RenderGlyph(UnknownGlyph, 18, Color.Gray)
@@ -61,7 +61,7 @@ Public Module ServicesDisplay
     End Function
 
     Public Function GetNotInstalledImage() As Image
-        Return UIHelpers.LoadImageFromAppFolder("imgUnavailableBlack64")
+        Return ResourceHelper.LoadImage("imgUnavailableBlack64.png")
     End Function
 
     Public Function MeasureMaxServiceNameWidth(
