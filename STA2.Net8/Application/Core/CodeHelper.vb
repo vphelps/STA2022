@@ -142,6 +142,7 @@ Public Module CodeHelper
                     frm.tbDbVer.Text = r("Version").ToString()
                     frm.tbWebEnabled.Text = r("EnableWeb").ToString()
                     frm.tbShiftDate.Text = r("ShiftDate").ToString()
+                    PCInfo.DatabaseVersion = r("Version").ToString()
 
                 Else
                     Throw New Exception("LicenseData returned no rows.")
@@ -177,7 +178,7 @@ Public Module CodeHelper
         frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        frm.tslblCeVersion.Text = "Version:  " & info.Version
+        frm.tslblCeVersion.Text = "Software Version:  " & info.Version & " | Database Version:  " & PCInfo.DatabaseVersion
 
         frm.tslblTime.Text =
         DateTime.Now.ToShortDateString() & " " &

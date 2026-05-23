@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.Runtime.Intrinsics
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
 'Imports STA2.AppData
@@ -15,6 +16,7 @@ Public Class FormMain
     Private _runExistingVersionPath As String
     Private _tabHintLabel As Label
     Private _tabHintTimer As Timer
+    Private _scriptRunning As Boolean = False
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -404,7 +406,6 @@ Public Class FormMain
 
         ' Lightweight UI work only
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        tslblCeVersion.Text = "Version:  " & info.Version
 
         CodeHelper.Refresher()
         RefreshUI()
@@ -434,20 +435,7 @@ Public Class FormMain
         Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
         Dim installerPath = FindInstallerFile(latestFolder)
 
-
-
-        If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
-            tbDbVer.BackColor = TextboxColors.White
-            tbDbVer.ForeColor = TextboxColors.Black
-            tbPcAdvVersion.BackColor = TextboxColors.White
-            tbPcAdvVersion.ForeColor = TextboxColors.Black
-        Else
-            tbDbVer.BackColor = TextboxColors.Red
-            tbDbVer.ForeColor = TextboxColors.White
-            tbPcAdvVersion.BackColor = TextboxColors.Red
-            tbPcAdvVersion.ForeColor = TextboxColors.White
-        End If
-        'Services.ServicesExistCheck()
+        RefreshUI()
 
         If _options IsNot Nothing Then tbSetupSwitches.Text = _options.SetupSwitches
 
@@ -1130,6 +1118,8 @@ Public Class FormMain
             triggerButton:=btnRunDatabaseStartLive,
             runningStatusText:="Starting database (live output)…"
         )
+        CodeHelper.Refresher()
+        RefreshUI()
 
     End Sub
 
@@ -1935,46 +1925,55 @@ Public Class FormMain
     runningStatusText As String,
     Optional overrideArgs As String = Nothing
 ) As Task
+        _scriptRunning = True
+        triggerButton.Enabled = False
+        RefreshUI()
 
-        ' ✅ Safety check
-        If String.IsNullOrWhiteSpace(scriptPath) Then
-            MessageBox.Show(
-            "Please select a script first.",
-            "Missing Script",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Warning)
-            Return
-        End If
+        Try
+            ' ✅ Safety check
+            If String.IsNullOrWhiteSpace(scriptPath) Then
+                MessageBox.Show(
+                "Please select a script first.",
+                "Missing Script",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+                Return
+            End If
 
-        Dim flags As String = "-Force"
-        Dim scriptArgs As String
+            Dim flags As String = "-Force"
+            Dim scriptArgs As String
 
-        If Not String.IsNullOrWhiteSpace(overrideArgs) Then
-            ' ✅ Use explicitly provided args (default flavors or single flavor)
-            scriptArgs = $"{flags} {overrideArgs}".Trim()
-        Else
-            ' ✅ Use selected flavors from UI
-            Dim flavorArgs As String =
-            CodeHelper.BuildFlavorsArgument(
-                _flavorManager.GetSelectedFlavorNames())
+            If Not String.IsNullOrWhiteSpace(overrideArgs) Then
+                ' ✅ Use explicitly provided args
+                scriptArgs = $"{flags} {overrideArgs}".Trim()
+            Else
+                ' ✅ Use selected flavors from UI
+                Dim flavorArgs As String =
+                CodeHelper.BuildFlavorsArgument(
+                    _flavorManager.GetSelectedFlavorNames())
 
-            scriptArgs = $"{flags} {flavorArgs}".Trim()
-        End If
+                scriptArgs = $"{flags} {flavorArgs}".Trim()
+            End If
 
-        Await PowerShellRunner.RunLiveScriptAsync(
-        options:=_options,
-        liveOutputManager:=_liveOutputManager,
-        setStatus:=Sub(text)
-                       SetExecutionStatus(text)
-                   End Sub,
-        triggerButton:=triggerButton,
-        scriptRelativePath:=scriptPath,
-        scriptArgs:=scriptArgs,
-        runningStatusText:=runningStatusText
-    )
+            Await PowerShellRunner.RunLiveScriptAsync(
+            options:=_options,
+            liveOutputManager:=_liveOutputManager,
+            setStatus:=Sub(text)
+                           SetExecutionStatus(text)
+                       End Sub,
+            scriptRelativePath:=scriptPath,
+            scriptArgs:=scriptArgs,
+            runningStatusText:=runningStatusText
+        )
+
+
+        Finally
+            ' ✅ ALWAYS runs (even if error or early return)
+            _scriptRunning = False
+            RefreshUI()
+        End Try
 
     End Function
-
     Private Sub btnCopyScriptOutput_Click(sender As Object, e As EventArgs)
 
         Dim textToCopy = tbOutputScript.Text
@@ -2104,12 +2103,12 @@ e As System.ComponentModel.CancelEventArgs
             btnRepoMain.Enabled = True
             btnRepoDiscardChanges.Enabled = True
         End If
-        If _options.StartDatabaseDefault Is Nothing Or _options.StartDatabaseDefault = "" Then
+        If _options.StartDatabaseDefault Is Nothing Or _options.StartDatabaseDefault = "" Or _scriptRunning Then
             btnRunDatabaseStartLive.Enabled = False
         Else
             btnRunDatabaseStartLive.Enabled = True
         End If
-        If _options.ApplyFlavorDefault Is Nothing Or _options.ApplyFlavorDefault = "" Then
+        If _options.ApplyFlavorDefault Is Nothing Or _options.ApplyFlavorDefault = "" Or _scriptRunning Then
             btnRunApplyFlavorLive.Enabled = False
             tsmiApplyDefaultFlavors.Enabled = False
             gbFlavorsList.Enabled = False
@@ -2119,9 +2118,23 @@ e As System.ComponentModel.CancelEventArgs
             gbFlavorsList.Enabled = True
         End If
 
+        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
+        tslblCeVersion.Text = "Software Version:  " & info.Version & " | Database Version:  " & PCInfo.DatabaseVersion
+
+        If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
+            tbDbVer.BackColor = TextboxColors.White
+            tbDbVer.ForeColor = TextboxColors.Black
+            tbPcAdvVersion.BackColor = TextboxColors.White
+            tbPcAdvVersion.ForeColor = TextboxColors.Black
+            tslblCeVersion.BackColor = TextboxColors.Control
+        Else
+            tbDbVer.BackColor = TextboxColors.Red
+            tbDbVer.ForeColor = TextboxColors.White
+            tbPcAdvVersion.BackColor = TextboxColors.Red
+            tbPcAdvVersion.ForeColor = TextboxColors.White
+            tslblCeVersion.BackColor = TextboxColors.Red
+        End If
+
     End Sub
 
-    Private Sub flpQuickLaunch_Paint(sender As Object, e As PaintEventArgs) Handles flpQuickLaunch.Paint
-
-    End Sub
 End Class

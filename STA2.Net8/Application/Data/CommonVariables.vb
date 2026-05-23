@@ -34,7 +34,7 @@ Public Structure PCInfo
     Public Shared AreServicesInstalled As Boolean = True
     Public Shared ValidDatabase As Boolean = True
     Public Shared ExcelInstalled As Boolean = False
-
+    Public Shared DatabaseVersion As String = ""
 End Structure
 
 ' ProgramEntry.vb
