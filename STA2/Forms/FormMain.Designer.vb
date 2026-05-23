@@ -320,7 +320,7 @@ Partial Class FormMain
         Me.SplitContainer1.Panel2.Controls.Add(Me.gpCommonApps)
         Me.SplitContainer1.Panel2.Controls.Add(Me.gbAdvApps)
         Me.SplitContainer1.Size = New System.Drawing.Size(1023, 919)
-        Me.SplitContainer1.SplitterDistance = 685
+        Me.SplitContainer1.SplitterDistance = 686
         Me.SplitContainer1.SplitterWidth = 3
         Me.SplitContainer1.TabIndex = 10
         '
@@ -336,7 +336,7 @@ Partial Class FormMain
         Me.tcSTA.Location = New System.Drawing.Point(0, 0)
         Me.tcSTA.Name = "tcSTA"
         Me.tcSTA.SelectedIndex = 0
-        Me.tcSTA.Size = New System.Drawing.Size(1019, 681)
+        Me.tcSTA.Size = New System.Drawing.Size(1019, 682)
         Me.tcSTA.TabIndex = 11
         '
         'tpGeneral
@@ -351,7 +351,7 @@ Partial Class FormMain
         Me.tpGeneral.Location = New System.Drawing.Point(4, 22)
         Me.tpGeneral.Name = "tpGeneral"
         Me.tpGeneral.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpGeneral.Size = New System.Drawing.Size(1011, 655)
+        Me.tpGeneral.Size = New System.Drawing.Size(1011, 656)
         Me.tpGeneral.TabIndex = 0
         Me.tpGeneral.Text = "General"
         '
@@ -424,7 +424,8 @@ Partial Class FormMain
         'btnCopyScriptOutput
         '
         Me.btnCopyScriptOutput.Dock = System.Windows.Forms.DockStyle.Right
-        Me.btnCopyScriptOutput.Image = Global.STA2.My.Resources.Resources.imgCopy16b
+        Me.btnCopyScriptOutput.ImageKey = "imgCopy16.png"
+        Me.btnCopyScriptOutput.ImageList = Me.ImageList1
         Me.btnCopyScriptOutput.Location = New System.Drawing.Point(574, 183)
         Me.btnCopyScriptOutput.Margin = New System.Windows.Forms.Padding(1)
         Me.btnCopyScriptOutput.Name = "btnCopyScriptOutput"
@@ -902,7 +903,7 @@ Partial Class FormMain
         Me.tpAdvData.Controls.Add(Me.dgvAppOptions)
         Me.tpAdvData.Location = New System.Drawing.Point(4, 22)
         Me.tpAdvData.Name = "tpAdvData"
-        Me.tpAdvData.Size = New System.Drawing.Size(1011, 655)
+        Me.tpAdvData.Size = New System.Drawing.Size(1011, 656)
         Me.tpAdvData.TabIndex = 4
         Me.tpAdvData.Text = "Advantage Data"
         Me.tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1057,7 +1058,7 @@ Partial Class FormMain
         Me.tpDbInfo.Location = New System.Drawing.Point(4, 22)
         Me.tpDbInfo.Name = "tpDbInfo"
         Me.tpDbInfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 655)
+        Me.tpDbInfo.Size = New System.Drawing.Size(1011, 656)
         Me.tpDbInfo.TabIndex = 1
         Me.tpDbInfo.Text = "DB Information"
         Me.tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1072,7 +1073,7 @@ Partial Class FormMain
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbFragmentation)
         Me.pnlDbInfoButtons.Controls.Add(Me.rbDbTableSize)
         Me.pnlDbInfoButtons.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 624)
+        Me.pnlDbInfoButtons.Location = New System.Drawing.Point(3, 625)
         Me.pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         Me.pnlDbInfoButtons.Size = New System.Drawing.Size(1005, 28)
         Me.pnlDbInfoButtons.TabIndex = 1
@@ -1164,7 +1165,7 @@ Partial Class FormMain
         Me.tpDbLogs.Location = New System.Drawing.Point(4, 22)
         Me.tpDbLogs.Name = "tpDbLogs"
         Me.tpDbLogs.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 655)
+        Me.tpDbLogs.Size = New System.Drawing.Size(1011, 656)
         Me.tpDbLogs.TabIndex = 2
         Me.tpDbLogs.Text = "CE DB Logs"
         Me.tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1251,7 +1252,7 @@ Partial Class FormMain
         Me.pnlDbLogs.Controls.Add(Me.rbMessageLog)
         Me.pnlDbLogs.Controls.Add(Me.rbWebCloudUpdates)
         Me.pnlDbLogs.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 525)
+        Me.pnlDbLogs.Location = New System.Drawing.Point(3, 526)
         Me.pnlDbLogs.Name = "pnlDbLogs"
         Me.pnlDbLogs.Size = New System.Drawing.Size(1005, 127)
         Me.pnlDbLogs.TabIndex = 0
@@ -1406,7 +1407,7 @@ Partial Class FormMain
         Me.tpStParse.Location = New System.Drawing.Point(4, 22)
         Me.tpStParse.Name = "tpStParse"
         Me.tpStParse.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpStParse.Size = New System.Drawing.Size(1011, 655)
+        Me.tpStParse.Size = New System.Drawing.Size(1011, 656)
         Me.tpStParse.TabIndex = 3
         Me.tpStParse.Text = "Stack Trace Parser"
         Me.tpStParse.UseVisualStyleBackColor = True
@@ -1485,7 +1486,7 @@ Partial Class FormMain
         Me.tpOptions.Location = New System.Drawing.Point(4, 22)
         Me.tpOptions.Name = "tpOptions"
         Me.tpOptions.Padding = New System.Windows.Forms.Padding(3)
-        Me.tpOptions.Size = New System.Drawing.Size(1011, 655)
+        Me.tpOptions.Size = New System.Drawing.Size(1011, 656)
         Me.tpOptions.TabIndex = 7
         Me.tpOptions.Text = "Options"
         '
@@ -1712,7 +1713,8 @@ Partial Class FormMain
         '
         'btnBrowseApplyScript
         '
-        Me.btnBrowseApplyScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnBrowseApplyScript.ImageKey = "imgOpenFolder16.png"
+        Me.btnBrowseApplyScript.ImageList = Me.ImageList1
         Me.btnBrowseApplyScript.Location = New System.Drawing.Point(454, 136)
         Me.btnBrowseApplyScript.Name = "btnBrowseApplyScript"
         Me.btnBrowseApplyScript.Size = New System.Drawing.Size(30, 23)
@@ -1721,7 +1723,8 @@ Partial Class FormMain
         '
         'btnBrowseStartScript
         '
-        Me.btnBrowseStartScript.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnBrowseStartScript.ImageKey = "imgOpenFolder16.png"
+        Me.btnBrowseStartScript.ImageList = Me.ImageList1
         Me.btnBrowseStartScript.Location = New System.Drawing.Point(454, 107)
         Me.btnBrowseStartScript.Name = "btnBrowseStartScript"
         Me.btnBrowseStartScript.Size = New System.Drawing.Size(30, 23)
@@ -1784,7 +1787,8 @@ Partial Class FormMain
         '
         'btnRepoFolder
         '
-        Me.btnRepoFolder.Image = Global.STA2.My.Resources.Resources.imgOpenFolder16
+        Me.btnRepoFolder.ImageKey = "imgOpenFolder16.png"
+        Me.btnRepoFolder.ImageList = Me.ImageList1
         Me.btnRepoFolder.Location = New System.Drawing.Point(454, 29)
         Me.btnRepoFolder.Name = "btnRepoFolder"
         Me.btnRepoFolder.Size = New System.Drawing.Size(30, 23)
@@ -2265,12 +2269,22 @@ Partial Class FormMain
         '
         Me.ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.ImageList1.TransparentColor = System.Drawing.Color.Transparent
-        Me.ImageList1.Images.SetKeyName(0, "RestartCloud2.bmp")
-        Me.ImageList1.Images.SetKeyName(1, "reload-icon-8.jpg")
+        Me.ImageList1.Images.SetKeyName(0, "imgCheckMark16.png")
+        Me.ImageList1.Images.SetKeyName(1, "imgCheckMarkButton16.png")
+        Me.ImageList1.Images.SetKeyName(2, "imgCopy16.png")
+        Me.ImageList1.Images.SetKeyName(3, "imgCrossMark16.png")
+        Me.ImageList1.Images.SetKeyName(4, "imgGreenPlay16.png")
+        Me.ImageList1.Images.SetKeyName(5, "imgOpenFolder16.png")
+        Me.ImageList1.Images.SetKeyName(6, "imgPlay16.png")
+        Me.ImageList1.Images.SetKeyName(7, "imgQuestionMark16.png")
+        Me.ImageList1.Images.SetKeyName(8, "imgRedStop16.png")
+        Me.ImageList1.Images.SetKeyName(9, "imgRefresh16.png")
+        Me.ImageList1.Images.SetKeyName(10, "imgUnavailable16.png")
+        Me.ImageList1.Images.SetKeyName(11, "imgUnavailableBlack16.png")
+        Me.ImageList1.Images.SetKeyName(12, "imgWarning16.png")
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tslblCeVersion, Me.tslblTime, Me.tslblNetVersion, Me.tslblExecutionStatus, Me.tslblDbState})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 895)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(1371, 24)

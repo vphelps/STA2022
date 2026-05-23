@@ -1,5 +1,6 @@
-﻿Imports System.Windows.Forms
-Imports System.Drawing
+﻿Imports System.Drawing
+Imports System.IO
+Imports System.Windows.Forms
 
 Public Module UIHelpers
 
@@ -298,5 +299,25 @@ Public Module UIHelpers
             t.Dispose()
         End If
     End Sub
+    Public Function LoadImageFromAppFolder(fileName As String) As Image
+        Try
+            Dim base = AppDomain.CurrentDomain.BaseDirectory
+            Dim imagesDir = Path.Combine(base, "Application", "Images")
+            Dim full = Path.Combine(imagesDir, fileName)
+
+            If Not File.Exists(full) Then
+                Return Nothing
+            End If
+
+            ' Read into MemoryStream and clone to avoid locking source file
+            Using fs As New FileStream(full, FileMode.Open, FileAccess.Read, FileShare.Read)
+                Using img = Image.FromStream(fs)
+                    Return New Bitmap(img) ' clone
+                End Using
+            End Using
+        Catch
+            Return Nothing
+        End Try
+    End Function
 
 End Module

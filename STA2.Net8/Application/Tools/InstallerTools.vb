@@ -262,16 +262,17 @@ Public Module InstallerTools
             progressText?.Report($"Finalizing extraction to {finalDir}...")
 
             ' 6️⃣ Copy staging → final
-            For Each item In Directory.GetFileSystemEntries(stagingDir)
-                Dim dest = Path.Combine(finalDir, Path.GetFileName(item))
+            For Each item In System.IO.Directory.GetFileSystemEntries(stagingDir)
 
-                If Directory.Exists(item) Then
-                    My.Computer.FileSystem.CopyDirectory(item, dest, overwrite:=True)
+                Dim dest = System.IO.Path.Combine(finalDir, System.IO.Path.GetFileName(item))
+
+                If System.IO.Directory.Exists(item) Then
+                    CopyDirectory(item, dest)
                 Else
-                    My.Computer.FileSystem.CopyFile(item, dest, overwrite:=True)
+                    System.IO.File.Copy(item, dest, True)
                 End If
-            Next
 
+            Next
             Return finalDir
 
         Finally
@@ -286,6 +287,24 @@ Public Module InstallerTools
         End Try
 
     End Function
+    Private Sub CopyDirectory(sourceDir As String, destDir As String)
+
+        Directory.CreateDirectory(destDir)
+
+        ' Copy files
+        For Each filePath In Directory.GetFiles(sourceDir)
+            Dim destFile = Path.Combine(destDir, Path.GetFileName(filePath))
+            System.IO.File.Copy(filePath, destFile, True)
+        Next
+
+        ' Copy subdirectories recursively
+        For Each dirPath In Directory.GetDirectories(sourceDir)
+            Dim destSubDir = Path.Combine(destDir, Path.GetFileName(dirPath))
+            CopyDirectory(dirPath, destSubDir)
+        Next
+
+    End Sub
+
     ' -------------------------------------------------------
     ' ZIP extract with overwrite + progress
     ' -------------------------------------------------------
@@ -562,7 +581,7 @@ Public Module InstallerTools
                     Return True
                 End If
 
-            Catch ex As system.ComponentModel.Win32Exception
+            Catch ex As System.ComponentModel.Win32Exception
                 ' Expected: access denied
                 Continue For
 

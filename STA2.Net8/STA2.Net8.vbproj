@@ -1,47 +1,68 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <StartupObject>Sub Main</StartupObject>
-    <UseWindowsForms>true</UseWindowsForms>
-    <MyType>WindowsForms</MyType>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
 
-  <ItemGroup>
-    <Import Include="System.Data" />
-    <Import Include="System.Drawing" />
-    <Import Include="System.Windows.Forms" />
-  </ItemGroup>
+		<!-- ✅ Correct Startup binding -->
+		<StartupObject>STA2.Net8.Startup</StartupObject>	
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Update="Application\Services\ServiceRowControl.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="My Project\Application.Designer.vb">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Application.myapp</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<!-- ✅ ADD THIS: ensures Startup.vb is compiled -->
+	<ItemGroup>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="My Project\Application.myapp">
-      <Generator>MyApplicationCodeGenerator</Generator>
-      <LastGenOutput>Application.Designer.vb</LastGenOutput>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<Import Include="System.Data" />
+		<Import Include="System.Drawing" />
+		<Import Include="System.Windows.Forms" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Docs\" />
-    <Folder Include="Application\Forms\" />
-    <Folder Include="Application\Images\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Application\Forms\ConfirmInstallerVersionCleanupForm.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\EditProgramForm .vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\FormMain.Designer.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\FormMain.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\ManageInstallerVersionsForm.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\ProgressOverlayForm.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Services\ServiceRowControl.vb">
+			<SubType>UserControl</SubType>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
-    <PackageReference Include="System.Management" Version="10.0.8" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.8" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Application\Docs\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+		<PackageReference Include="System.Management" Version="10.0.8" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Application\Forms\ConfirmInstallerVersionCleanupForm.resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Application\Forms\EditProgramForm .resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Application\Forms\FormMain.resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+	</ItemGroup>
 
 </Project>

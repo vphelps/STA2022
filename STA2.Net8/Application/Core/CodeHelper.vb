@@ -1,4 +1,5 @@
-﻿Imports System.Windows.Forms
+﻿Imports System.IO
+Imports System.Windows.Forms
 
 Public Module CodeHelper
 
@@ -182,8 +183,8 @@ Public Module CodeHelper
         frm.tslblCeVersion.Text = "Version:  " & info.Version
 
         frm.tslblTime.Text =
-        My.Computer.Clock.LocalTime.ToShortDateString() & " " &
-        My.Computer.Clock.LocalTime.ToShortTimeString()
+        DateTime.Now.ToShortDateString() & " " &
+        DateTime.Now.ToShortTimeString()
 
         ' PC info
         frm.tbPcName.Text = PCInfo.Name
@@ -296,13 +297,14 @@ Public Module CodeHelper
     End Function
 
     Public Sub GetPcInfo()
-        PCInfo.Name = My.Computer.Name
-        PCInfo.OpSys = My.Computer.Info.OSFullName
+        PCInfo.Name = Environment.MachineName
+        PCInfo.OpSys = System.Runtime.InteropServices.RuntimeInformation.OSDescription
 
-        Dim Ram As Integer = My.Computer.Info.TotalPhysicalMemory \ (1024 * 1024 * 1024)
+        Dim ramBytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes
+        Dim Ram As Integer = CInt(ramBytes \ (1024 * 1024 * 1024))
         PCInfo.Ram = $"{Ram} GB"
 
-        Dim drive = My.Computer.FileSystem.GetDriveInfo("C:\")
+        Dim drive = New DriveInfo("C:\")
         Dim freeSpace = drive.TotalFreeSpace \ (1024 * 1024 * 1024)
         Dim totalSpace = drive.TotalSize \ (1024 * 1024 * 1024)
         Dim pct = (freeSpace / totalSpace) * 100
@@ -342,17 +344,18 @@ Public Module CodeHelper
         LogQueries.MessageLogErrorCount =
             String.Format(MessageLogFilters.MessageLogErrorCount, limit, daterange)
     End Sub
-
     Public Function AdvExeCheck(Executable As String)
+
         Dim fileExistsx86 As Boolean =
-            My.Computer.FileSystem.FileExists($"{AppData.CEPath86}{Executable}.exe")
+        File.Exists($"{AppData.CEPath86}{Executable}.exe")
 
         Dim fileExistsx64 As Boolean =
-            My.Computer.FileSystem.FileExists($"{AppData.CEPath64}{Executable}.exe")
+        File.Exists($"{AppData.CEPath64}{Executable}.exe")
 
         If fileExistsx64 Then Return AppInstallState.InstalledX64
         If fileExistsx86 Then Return AppInstallState.InstalledX86
         Return AppInstallState.NotInstalled
+
     End Function
 
 

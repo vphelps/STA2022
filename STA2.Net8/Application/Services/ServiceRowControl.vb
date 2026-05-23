@@ -136,14 +136,30 @@ Public Class ServiceRowControl
         btnRestart.UseVisualStyleBackColor = True
 
         ' --- Resize 96×96 icons to button size ---
-        btnStart.Image =
-            ResizeImageToFit(My.Resources.imgGreenPlay96, btnStart.ClientSize)
+        ' Use shared UIHelpers loader so images are reusable across modules.
+        Dim startImg = UIHelpers.LoadImageFromAppFolder("imgGreenPlay96.png")
+        If startImg IsNot Nothing Then
+            btnStart.Image = ResizeImageToFit(startImg, btnStart.ClientSize)
+            startImg.Dispose()
+        Else
+            btnStart.Image = Nothing
+        End If
 
-        btnStop.Image =
-            ResizeImageToFit(My.Resources.imgRedStop96, btnStop.ClientSize)
+        Dim stopImg = UIHelpers.LoadImageFromAppFolder("imgRedStop96.png")
+        If stopImg IsNot Nothing Then
+            btnStop.Image = ResizeImageToFit(stopImg, btnStop.ClientSize)
+            stopImg.Dispose()
+        Else
+            btnStop.Image = Nothing
+        End If
 
-        btnRestart.Image =
-            ResizeImageToFit(My.Resources.imgRefresh96, btnRestart.ClientSize)
+        Dim refreshImg = UIHelpers.LoadImageFromAppFolder("imgRefresh96.png")
+        If refreshImg IsNot Nothing Then
+            btnRestart.Image = ResizeImageToFit(refreshImg, btnRestart.ClientSize)
+            refreshImg.Dispose()
+        Else
+            btnRestart.Image = Nothing
+        End If
 
         UpdateVisualState()
 
