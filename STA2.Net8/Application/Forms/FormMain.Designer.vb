@@ -350,7 +350,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.Controls.Add(gpCommonApps)
         SplitContainer1.Panel2.Controls.Add(gbAdvApps)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 670
+        SplitContainer1.SplitterDistance = 671
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -368,7 +368,7 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 666)
+        tcSTA.Size = New Size(1190, 667)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -381,7 +381,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 638)
+        tpGeneral.Size = New Size(1182, 639)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -556,7 +556,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 637)
+        tpSysInfo.Size = New Size(1182, 638)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -973,7 +973,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 637)
+        tpAdvData.Size = New Size(1182, 638)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1186,7 +1186,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 637)
+        tpDbLogs.Size = New Size(1182, 638)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1205,7 +1205,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 462)
+        tlpLogData.Size = New Size(1161, 463)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1310,7 +1310,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 488)
+        pnlDbLogs.Location = New Point(4, 489)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1483,7 +1483,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 637)
+        tpDbInfo.Size = New Size(1182, 638)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1498,7 +1498,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 602)
+        pnlDbInfoButtons.Location = New Point(4, 603)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1611,7 +1611,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 637)
+        tpStParse.Size = New Size(1182, 638)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1697,7 +1697,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 637)
+        tpOptions.Size = New Size(1182, 639)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 

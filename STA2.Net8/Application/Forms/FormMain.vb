@@ -53,6 +53,13 @@ Public Class FormMain
     )
         prop?.SetValue(ctrl, True, Nothing)
     End Sub
+    Private Sub UpdateOption(setter As Action)
+        If _options Is Nothing Then Return
+
+        setter()
+        OptionsManager.Save(_options)
+    End Sub
+
 
     Private Sub BuildServicesUI()
 
@@ -407,8 +414,8 @@ Public Class FormMain
                 IO.Path.Combine(_options.RepoFolderPath, "tests", "flavors")
 
             If IO.Directory.Exists(inferredFlavorPath) Then
-                _options.FlavorFolderPath = inferredFlavorPath
-                OptionsManager.Save(_options)
+                UpdateOption(Sub() _options.FlavorFolderPath = inferredFlavorPath)
+
             End If
         End If
 
@@ -867,7 +874,7 @@ Public Class FormMain
     End Sub
 
     Private Sub tbWindowTitle_TextChanged(sender As Object, e As EventArgs) Handles tbWindowTitle.TextChanged
-        _options.WindowTitle = tbWindowTitle.Text
+        UpdateOption(Sub() _options.WindowTitle = tbWindowTitle.Text)
     End Sub
 
 
@@ -912,10 +919,11 @@ Public Class FormMain
         Try
             If _options IsNot Nothing Then
 
-                _options.SetupSwitches = tbSetupSwitches.Text
-                _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
-                _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
-                OptionsManager.Save(_options)
+                UpdateOption(Sub()
+                                 _options.SetupSwitches = tbSetupSwitches.Text
+                                 _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
+                                 _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
+                             End Sub)
             End If
         Catch
         End Try
@@ -1002,9 +1010,7 @@ Public Class FormMain
                 Dim RepoFolderPath As String = dlg.SelectedPath
 
                 ' Update options object
-                _options.RepoFolderPath = RepoFolderPath
-                ' Persist to options.json
-                OptionsManager.Save(_options)
+                UpdateOption(Sub() _options.StartDatabaseDefault = ofdStartScript.FileName)
 
                 ' Optional: show in UI
                 tbRepoFolder.Text = RepoFolderPath
@@ -1047,12 +1053,7 @@ Public Class FormMain
 
     Private Sub tbSetupSwitches_TextChanged(sender As Object, e As EventArgs) Handles tbSetupSwitches.TextChanged
 
-        If _options Is Nothing Then Return
-
-        _options.SetupSwitches = tbSetupSwitches.Text
-        OptionsManager.Save(_options)
-
-
+        UpdateOption(Sub() _options.SetupSwitches = tbSetupSwitches.Text)
     End Sub
 
     Private Sub clbSqlFiles_Enter(sender As Object, e As EventArgs) _
@@ -1092,41 +1093,20 @@ Public Class FormMain
     End Sub
 
     Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
-        If _options Is Nothing Then
-            Return
-        End If
-
-        _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
-        OptionsManager.Save(_options)
-
+        UpdateOption(Sub() _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text))
     End Sub
 
 
     Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
-        If _options Is Nothing Then
-            Return
-        End If
-
-        _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
-        OptionsManager.Save(_options)
-
+        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
     End Sub
-
-
 
     Private Async Sub btnRunApplyFlavorLive_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
 
-
-        ' ✅ ENSURE output tab is active FIRST
-        tcSTA.SelectedTab = tpGeneral
-
-        Await Task.Yield()
-        _liveOutputManager.ForceRedraw()
-
-        Await RunSelectedScript(
+        Await PrepareAndRunScript(
             scriptPath:=tbApplyFlavorDefault.Text,
             triggerButton:=btnRunApplyFlavorLive,
             runningStatusText:="Applying flavors (live output)…"
@@ -1139,11 +1119,12 @@ Public Class FormMain
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
 
-        Await RunSelectedScript(
-            scriptPath:=tbDatabaseStartDefault.Text,
-            triggerButton:=btnRunDatabaseStartLive,
-            runningStatusText:="Starting database (live output)…"
-        )
+        Await PrepareAndRunScript(
+    scriptPath:=tbDatabaseStartDefault.Text,
+    triggerButton:=btnRunDatabaseStartLive,
+    runningStatusText:="Starting database (live output)…"
+)
+
         CodeHelper.Refresher()
         RefreshUI()
 
@@ -1540,7 +1521,7 @@ Public Class FormMain
     e As EventArgs
 ) Handles chkShowHiddenServices.CheckedChanged
 
-        _options.ShowHiddenServices = chkShowHiddenServices.Checked
+        UpdateOption(Sub() _options.ShowHiddenServices = chkShowHiddenServices.Checked)
 
         tblServices.SuspendLayout()
 
@@ -1660,13 +1641,12 @@ Public Class FormMain
                $"Applying flavor '{selectedFlavors(0)}'",
                $"Applying {selectedFlavors.Count} flavors")
 
-        Await RunSelectedScript(
-    scriptPath:=tbApplyFlavorDefault.Text,
-    triggerButton:=Nothing,
-    runningStatusText:=description & " (live output)…",
-    overrideArgs:=flavorArgs
-)
-
+        Await PrepareAndRunScript(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            triggerButton:=Nothing,
+            runningStatusText:=description & " (live output)…",
+            overrideArgs:=flavorArgs
+        )
     End Function
 
     Private Async Sub btnManageInstallerVersions_Click(
@@ -1922,12 +1902,37 @@ Public Class FormMain
             tbApplyFlavorDefault.Text = ofdStartScript.FileName
 
             ' ✅ Persist option
-            _options.ApplyFlavorDefault = ofdStartScript.FileName
-            OptionsManager.Save(_options)
+            UpdateOption(Sub() _options.ApplyFlavorDefault = ofdStartScript.FileName)
 
         End If
 
     End Sub
+    Private Async Function PrepareAndRunScript(
+    scriptPath As String,
+    triggerButton As Button,
+    runningStatusText As String,
+    Optional overrideArgs As String = Nothing
+) As Task
+
+        ' ✅ Always switch to output tab
+        tcSTA.SelectedTab = tpGeneral
+
+        ' ✅ Let UI settle before redraw
+        Await Task.Yield()
+
+        _liveOutputManager.ForceRedraw()
+
+        ' ✅ Delegate actual execution
+        Await RunSelectedScript(
+        scriptPath,
+        triggerButton,
+        runningStatusText,
+        overrideArgs
+    )
+
+    End Function
+
+
     Private Async Function RunSelectedScript(
     scriptPath As String,
     triggerButton As Button,
@@ -1935,7 +1940,11 @@ Public Class FormMain
     Optional overrideArgs As String = Nothing
 ) As Task
         _scriptRunning = True
-        triggerButton.Enabled = False
+
+        If triggerButton IsNot Nothing Then
+            triggerButton.Enabled = False
+        End If
+
         RefreshUI()
 
         Try
@@ -2084,12 +2093,13 @@ e As System.ComponentModel.CancelEventArgs
         Dim flavorArgs As String = $"-Flavors {flavorCsv}"
 
         ' ✅ Call shared runner (includes -Force automatically)
-        Await RunSelectedScript(
-            scriptPath:=tbApplyFlavorDefault.Text,
-            triggerButton:=Nothing,
-            runningStatusText:="Applying default flavors (live output)…",
-            overrideArgs:=flavorArgs
-        )
+        Await PrepareAndRunScript(
+    scriptPath:=tbApplyFlavorDefault.Text,
+    triggerButton:=Nothing,
+    runningStatusText:="Applying default flavors (live output)…",
+    overrideArgs:=flavorArgs
+)
+
         lbFlavorsList.ClearSelected()
 
     End Sub
