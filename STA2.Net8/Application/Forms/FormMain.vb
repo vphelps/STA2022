@@ -17,6 +17,7 @@ Public Class FormMain
     Private _tabHintLabel As Label
     Private _tabHintTimer As Timer
     Private _scriptRunning As Boolean = False
+    Private _hoverHints As HoverHintManager
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -151,27 +152,34 @@ Public Class FormMain
         _flavorManager.ApplySavedDefaults(_options.DefaultFlavorNames)
 
     End Sub
-    Private Sub btnImgSet()
-        btnCopyScriptOutput.Image = ResourceHelper.LoadImage("imgCopy16.png")
-        btnCopyScriptOutput.ImageAlign = ContentAlignment.MiddleCenter
+    Private Sub InitializeUIEnhancements()
+        _hoverHints = New HoverHintManager(Me)
 
-        btnRepoFolder.Image = ResourceHelper.LoadImage("imgOpenFolder16.png")
-        btnRepoFolder.ImageAlign = ContentAlignment.MiddleCenter
+        ' ✅ Button images
+        SetButtonIcon(btnCopyScriptOutput, "imgCopy16.png")
+        SetButtonIcon(btnRepoFolder, "imgOpenFolder16.png")
+        SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
+        SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
 
-        btnBrowseStartScript.Image = ResourceHelper.LoadImage("imgOpenFolder16.png")
-        btnBrowseStartScript.ImageAlign = ContentAlignment.MiddleCenter
+        ' ✅ Hover hints
+        _hoverHints.Add(lbFlavorsList, "🖱 Right-click → Apply selected flavors" & vbCrLf & "⚡ Double-click → Apply highlighted")
+        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with live output")
+        _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
 
-        btnBrowseApplyScript.Image = ResourceHelper.LoadImage("imgOpenFolder16.png")
-        btnBrowseApplyScript.ImageAlign = ContentAlignment.MiddleCenter
     End Sub
+
+    Private Sub SetButtonIcon(btn As Button, imageName As String)
+        btn.Image = ResourceHelper.LoadImage(imageName)
+        btn.ImageAlign = ContentAlignment.MiddleCenter
+    End Sub
+
+
     Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.Close()
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        btnImgSet()
-        InitializeHoverPanel()
-
+        InitializeUIEnhancements()
 
         rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
@@ -2140,108 +2148,10 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private _hoverPanel As Panel
-    Private _hoverLabel As Label
-    Private _hoverShadow As Panel
-    Private _hoverVisible As Boolean = False
-
-    Private Sub InitializeHoverPanel()
-
-        _hoverPanel = New Panel With {
-            .Visible = False,
-            .BackColor = Color.FromArgb(45, 45, 48),
-            .Padding = New Padding(10),
-            .BorderStyle = BorderStyle.FixedSingle,
-            .AutoSize = True,
-            .AutoSizeMode = AutoSizeMode.GrowAndShrink
-        }
-
-        _hoverLabel = New Label With {
-            .ForeColor = Color.White,
-            .BackColor = Color.Transparent,
-            .AutoSize = False,
-            .MaximumSize = New Size(300, 0),
-            .Font = New Font("Segoe UI", 10, FontStyle.Regular),
-            .Text =
-                "🖱 Right-click → Apply selected flavors" & vbCrLf &
-                "⚡ Double-click → Apply highlighted"
-        }
-
-        ' ✅ Fix label size properly
-        _hoverLabel.Size = _hoverLabel.PreferredSize
-
-        _hoverPanel.Controls.Add(_hoverLabel)
-
-        ' ✅ Shadow (simple + reliable)
-        _hoverShadow = New Panel With {
-            .Visible = False,
-            .BackColor = Color.FromArgb(60, 0, 0, 0)
-        }
-
-        ' ✅ Add once (correct order)
-        Me.Controls.Add(_hoverShadow)
-        Me.Controls.Add(_hoverPanel)
-
-        _hoverShadow.SendToBack()
-        _hoverPanel.BringToFront()
-
-    End Sub
-
-    Private Async Sub lbFlavorsList_MouseMove(
-    sender As Object,
-    e As MouseEventArgs
-) Handles lbFlavorsList.MouseMove
-
-        If _hoverVisible Then Return
-
-        _hoverVisible = True
-
-        ' ✅ Smooth delay
-        Await Task.Delay(200)
-        If Not _hoverVisible Then Return
-
-        ' ✅ Convert to form coordinates
-        Dim screenPos = lbFlavorsList.PointToScreen(New Point(e.X, e.Y))
-        Dim formPos = Me.PointToClient(screenPos)
-
-        ' ✅ Show panel FIRST so it gets correct size
-        _hoverPanel.Visible = True
-        _hoverPanel.PerformLayout()
-
-        ' ✅ Small natural offset from cursor
-        Dim offsetX As Integer = 1
-        Dim offsetY As Integer = 1
-
-        ' ✅ Anchor panel using top-left corner (NOT centered)
-        Dim x = formPos.X + offsetX
-        Dim y = formPos.Y + offsetY
-
-        ' ✅ Keep inside window bounds
-        x = Math.Max(5, Math.Min(x, Me.ClientSize.Width - _hoverPanel.Width - 5))
-        y = Math.Max(5, Math.Min(y, Me.ClientSize.Height - _hoverPanel.Height - 5))
-
-        _hoverPanel.Location = New Point(x, y)
-
-        ' ✅ Shadow sync (unchanged)
-        _hoverShadow.Bounds = New Rectangle(
-    x + 4,
-    y + 4,
-    _hoverPanel.Width,
-    _hoverPanel.Height
-)
-        _hoverShadow.Visible = True
-
-    End Sub
-
     Private Sub lbFlavorsList_MouseDown(
     sender As Object,
     e As MouseEventArgs
 ) Handles lbFlavorsList.MouseDown
-
-        _hoverPanel.Visible = False
-        _hoverShadow.Visible = False
-        _hoverVisible = True
-
         ' ✅ Preserve your right-click logic
         If e.Button <> MouseButtons.Right Then Return
 
@@ -2251,17 +2161,6 @@ e As System.ComponentModel.CancelEventArgs
         If Not lbFlavorsList.SelectedIndices.Contains(index) Then
             lbFlavorsList.SelectedIndex = index
         End If
-
-    End Sub
-
-    Private Sub lbFlavorsList_MouseLeave(
-    sender As Object,
-    e As EventArgs
-) Handles lbFlavorsList.MouseLeave
-
-        _hoverPanel.Visible = False
-        _hoverShadow.Visible = False
-        _hoverVisible = False
 
     End Sub
 End Class
