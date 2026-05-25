@@ -19,6 +19,7 @@ Public Class FormMain
     Private _hoverHints As HoverHintManager
     Private _uiStateController As UIStateController
     Private _scriptController As ScriptExecutionController
+    Private _databaseController As DatabaseViewController
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -72,6 +73,7 @@ Public Class FormMain
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
+        _databaseController = New DatabaseViewController(Me)
 
         rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
@@ -126,9 +128,9 @@ Public Class FormMain
 
         rbDbTableSize.Checked = True
         rbMessageLog.Checked = True
-        btnDbInfoRefresh.PerformClick()
+        '_databaseController.RefreshInfo()
         gpMessageLogFilters.Enabled = rbMessageLog.Checked
-        btnDbLogRefresh.PerformClick()
+        '_databaseController.RefreshLogs()
 
         DatabaseCoordinator.EvaluateDatabaseAvailability(
         form:=Me,
@@ -923,8 +925,9 @@ Public Class FormMain
     End Sub
 
     Private Sub tcSTA_Click(sender As Object, e As EventArgs) Handles tcSTA.Click
-        btnDbLogRefresh.PerformClick()
-        btnDbInfoRefresh.PerformClick()
+        If _databaseController Is Nothing Then Return
+        _databaseController.RefreshLogs()
+        _databaseController.RefreshInfo()
     End Sub
     Private Sub SelectNextSTATab(forward As Boolean)
 
@@ -1006,143 +1009,153 @@ Public Class FormMain
 
     End Sub
 
+    'Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
+    '    If Variables.OfflineMode Then Return
+
+    '    If Not (rbDbTableSize.Checked Or rbDbFragmentation.Checked Or rbDbSizeByDay.Checked Or rbDbDeadlocks.Checked) Then
+    '        Return
+    '    End If
+
+    '    btnDbInfoRefresh.Enabled = False
+    '    Cursor.Current = Cursors.WaitCursor
+
+    '    Try
+    '        Dim query As String = String.Empty
+
+    '        If rbDbTableSize.Checked Then
+    '            query = DbInfo.DbSizeByTable
+    '        ElseIf rbDbFragmentation.Checked Then
+    '            query = DbInfo.DbFragmentation
+    '        ElseIf rbDbSizeByDay.Checked Then
+    '            query = String.Format(DbInfo.DbSizeByDay, ConfigValues.Database)
+    '        ElseIf rbDbDeadlocks.Checked Then
+    '            query = DbInfo.DbDeadlocks
+    '        End If
+
+    '        ' ---- SafeDb wrapper ----
+    '        Dim ds As DataSet = SafeDb.TryQuery(query)
+
+    '        If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
+    '            dgvDbTableSize.DataSource = ds.Tables(0)
+    '        Else
+    '            dgvDbTableSize.DataSource = Nothing
+    '        End If
+
+    '        dgvDbTableSize.Refresh()
+
+    '    Catch ex As SafeDb.DatabaseOfflineException
+    '        DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbInfoRefresh")
+    '        dgvDbTableSize.DataSource = Nothing
+
+    '    Catch ex As Exception
+    '        MessageBox.Show(
+    '        $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
+    '        "Database Error",
+    '        MessageBoxButtons.OK,
+    '        MessageBoxIcon.Error
+    '    )
+    '        dgvDbTableSize.DataSource = Nothing
+
+    '    Finally
+    '        Cursor.Current = Cursors.Default
+    '        btnDbInfoRefresh.Enabled = True
+    '    End Try
+    'End Sub
     Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
-        If Variables.OfflineMode Then Return
-
-        If Not (rbDbTableSize.Checked Or rbDbFragmentation.Checked Or rbDbSizeByDay.Checked Or rbDbDeadlocks.Checked) Then
-            Return
-        End If
-
-        btnDbInfoRefresh.Enabled = False
-        Cursor.Current = Cursors.WaitCursor
-
-        Try
-            Dim query As String = String.Empty
-
-            If rbDbTableSize.Checked Then
-                query = DbInfo.DbSizeByTable
-            ElseIf rbDbFragmentation.Checked Then
-                query = DbInfo.DbFragmentation
-            ElseIf rbDbSizeByDay.Checked Then
-                query = String.Format(DbInfo.DbSizeByDay, ConfigValues.Database)
-            ElseIf rbDbDeadlocks.Checked Then
-                query = DbInfo.DbDeadlocks
-            End If
-
-            ' ---- SafeDb wrapper ----
-            Dim ds As DataSet = SafeDb.TryQuery(query)
-
-            If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
-                dgvDbTableSize.DataSource = ds.Tables(0)
-            Else
-                dgvDbTableSize.DataSource = Nothing
-            End If
-
-            dgvDbTableSize.Refresh()
-
-        Catch ex As SafeDb.DatabaseOfflineException
-            DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbInfoRefresh")
-            dgvDbTableSize.DataSource = Nothing
-
-        Catch ex As Exception
-            MessageBox.Show(
-            $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
-            "Database Error",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error
-        )
-            dgvDbTableSize.DataSource = Nothing
-
-        Finally
-            Cursor.Current = Cursors.Default
-            btnDbInfoRefresh.Enabled = True
-        End Try
+        If _databaseController Is Nothing Then Return
+        _databaseController.RefreshInfo()
+    End Sub
+    Private Sub btnDbLogRefresh_Click(sender As Object, e As EventArgs) Handles btnDbLogRefresh.Click, rbWebCloudUpdates.Click, rbMessageLog.Click
+        If _databaseController Is Nothing Then Return
+        _databaseController.RefreshLogs()
     End Sub
     Private Sub rbDbTableSize_CheckedChanged(sender As Object, e As EventArgs) Handles rbDbTableSize.CheckedChanged, rbDbFragmentation.CheckedChanged, rbDbSizeByDay.CheckedChanged, rbDbDeadlocks.CheckedChanged
-        btnDbInfoRefresh.PerformClick()
+        If _databaseController Is Nothing Then Return
+        _databaseController.RefreshInfo()
     End Sub
     Private Sub rbWebCloudUpdates_CheckedChanged(sender As Object, e As EventArgs) Handles rbWebCloudUpdates.CheckedChanged, rbMessageLog.CheckedChanged
         gpMessageLogFilters.Enabled = rbMessageLog.Checked
-        btnDbLogRefresh.PerformClick()
+        If _databaseController Is Nothing Then Return
+        _databaseController.RefreshLogs()
     End Sub
 
-    Private Sub btnDbLogRefresh_Click(sender As Object, e As EventArgs) Handles btnDbLogRefresh.Click, rbWebCloudUpdates.Click, rbMessageLog.Click
-        If Variables.OfflineMode Then Return
+    'Private Sub btnDbLogRefresh_Click(sender As Object, e As EventArgs) Handles btnDbLogRefresh.Click, rbWebCloudUpdates.Click, rbMessageLog.Click
+    '    If Variables.OfflineMode Then Return
 
-        Try
-            If rbWebCloudUpdates.Checked Then
+    '    Try
+    '        If rbWebCloudUpdates.Checked Then
 
-                gpDbLogCount.Text = "Count per table"
-                gpDbLogData.Text = "All WebCloudUpdates Entries"
+    '            gpDbLogCount.Text = "Count per table"
+    '            gpDbLogData.Text = "All WebCloudUpdates Entries"
 
-                ' ---- SafeDb ----
-                Dim dsCount As DataSet = SafeDb.TryQuery(LogQueries.WebCloudTotalCount)
+    '            ' ---- SafeDb ----
+    '            Dim dsCount As DataSet = SafeDb.TryQuery(LogQueries.WebCloudTotalCount)
 
-                If dsCount IsNot Nothing AndAlso dsCount.Tables.Count > 0 Then
-                    dgvDbLogCount.DataSource = dsCount.Tables(0)
-                    dgvDbLogCount.Columns(0).Visible = False
-                    dgvDbLogCount.Columns(1).HeaderText = "Table"
-                    dgvDbLogCount.Columns(2).HeaderText = "Count"
-                Else
-                    dgvDbLogCount.DataSource = Nothing
-                End If
+    '            If dsCount IsNot Nothing AndAlso dsCount.Tables.Count > 0 Then
+    '                dgvDbLogCount.DataSource = dsCount.Tables(0)
+    '                dgvDbLogCount.Columns(0).Visible = False
+    '                dgvDbLogCount.Columns(1).HeaderText = "Table"
+    '                dgvDbLogCount.Columns(2).HeaderText = "Count"
+    '            Else
+    '                dgvDbLogCount.DataSource = Nothing
+    '            End If
 
-                Dim dsData As DataSet = SafeDb.TryQuery(LogQueries.WebCloudUpdates)
+    '            Dim dsData As DataSet = SafeDb.TryQuery(LogQueries.WebCloudUpdates)
 
-                If dsData IsNot Nothing AndAlso dsData.Tables.Count > 0 Then
-                    dgvDbLogData.DataSource = dsData.Tables(0)
-                Else
-                    dgvDbLogData.DataSource = Nothing
-                End If
+    '            If dsData IsNot Nothing AndAlso dsData.Tables.Count > 0 Then
+    '                dgvDbLogData.DataSource = dsData.Tables(0)
+    '            Else
+    '                dgvDbLogData.DataSource = Nothing
+    '            End If
 
-            ElseIf rbMessageLog.Checked Then
-                CodeHelper.MsgLogBuilder(MessageLogFilters.Errors, MessageLogFilters.Limit, MessageLogFilters.DateRange)
+    '        ElseIf rbMessageLog.Checked Then
+    '            CodeHelper.MsgLogBuilder(MessageLogFilters.Errors, MessageLogFilters.Limit, MessageLogFilters.DateRange)
 
-                gpDbLogCount.Text = "Errors per day"
-                gpDbLogData.Text = "MessageLog"
+    '            gpDbLogCount.Text = "Errors per day"
+    '            gpDbLogData.Text = "MessageLog"
 
-                ' ---- SafeDb ----
-                Dim dsErrCount As DataSet = SafeDb.TryQuery(LogQueries.MessageLogErrorCount)
+    '            ' ---- SafeDb ----
+    '            Dim dsErrCount As DataSet = SafeDb.TryQuery(LogQueries.MessageLogErrorCount)
 
-                If dsErrCount IsNot Nothing AndAlso dsErrCount.Tables.Count > 0 Then
-                    dgvDbLogCount.DataSource = dsErrCount.Tables(0)
-                    dgvDbLogCount.Columns(0).Visible = True
-                    dgvDbLogCount.Columns(0).HeaderText = "Date"
-                    dgvDbLogCount.Columns(1).HeaderText = "Program"
-                    dgvDbLogCount.Columns(2).HeaderText = "Count"
-                Else
-                    dgvDbLogCount.DataSource = Nothing
-                End If
+    '            If dsErrCount IsNot Nothing AndAlso dsErrCount.Tables.Count > 0 Then
+    '                dgvDbLogCount.DataSource = dsErrCount.Tables(0)
+    '                dgvDbLogCount.Columns(0).Visible = True
+    '                dgvDbLogCount.Columns(0).HeaderText = "Date"
+    '                dgvDbLogCount.Columns(1).HeaderText = "Program"
+    '                dgvDbLogCount.Columns(2).HeaderText = "Count"
+    '            Else
+    '                dgvDbLogCount.DataSource = Nothing
+    '            End If
 
-                Dim dsLog As DataSet = SafeDb.TryQuery(LogQueries.MessageLog)
+    '            Dim dsLog As DataSet = SafeDb.TryQuery(LogQueries.MessageLog)
 
-                If dsLog IsNot Nothing AndAlso dsLog.Tables.Count > 0 Then
-                    dgvDbLogData.DataSource = dsLog.Tables(0)
-                    dgvDbLogData.Sort(dgvDbLogData.Columns(0), ListSortDirection.Descending)
-                Else
-                    dgvDbLogData.DataSource = Nothing
-                End If
+    '            If dsLog IsNot Nothing AndAlso dsLog.Tables.Count > 0 Then
+    '                dgvDbLogData.DataSource = dsLog.Tables(0)
+    '                dgvDbLogData.Sort(dgvDbLogData.Columns(0), ListSortDirection.Descending)
+    '            Else
+    '                dgvDbLogData.DataSource = Nothing
+    '            End If
 
-            Else
-                gpDbLogData.Text = ""
-                gpDbLogCount.Text = ""
-                Return
-            End If
+    '        Else
+    '            gpDbLogData.Text = ""
+    '            gpDbLogCount.Text = ""
+    '            Return
+    '        End If
 
-            dgvDbLogData.Refresh()
+    '        dgvDbLogData.Refresh()
 
-        Catch ex As SafeDb.DatabaseOfflineException
-            DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbLogRefresh")
-            dgvDbLogCount.DataSource = Nothing
-            dgvDbLogData.DataSource = Nothing
+    '    Catch ex As SafeDb.DatabaseOfflineException
+    '        DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbLogRefresh")
+    '        dgvDbLogCount.DataSource = Nothing
+    '        dgvDbLogData.DataSource = Nothing
 
-        Catch ex As Exception
-            MessageBox.Show($"Database log refresh failed:{Environment.NewLine}{ex.Message}",
-                        "Database Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error)
-        End Try
-    End Sub
+    '    Catch ex As Exception
+    '        MessageBox.Show($"Database log refresh failed:{Environment.NewLine}{ex.Message}",
+    '                    "Database Error",
+    '                    MessageBoxButtons.OK,
+    '                    MessageBoxIcon.Error)
+    '    End Try
+    'End Sub
     Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
 
         Cursor.Current = Cursors.WaitCursor
