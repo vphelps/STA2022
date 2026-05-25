@@ -170,7 +170,6 @@ Public Module CodeHelper
         ' 2) Timers / UI updates
         ' ============================================================
         frm.tmr10Seconds.Start()
-        frm.tslblNetVersion.Text = PCInfo.FrameworkVersion
 
         frm.dtpMsgLogDateFrom.Enabled = frm.cbMsgLogDateRange.Checked
         frm.dtpMsgLogTimeFrom.Enabled = frm.cbMsgLogDateRange.Checked
@@ -178,11 +177,6 @@ Public Module CodeHelper
         frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        frm.tslblCeVersion.Text = "Software Version:  " & info.Version & " | Database Version:  " & PCInfo.DatabaseVersion
-
-        frm.tslblTime.Text =
-        DateTime.Now.ToShortDateString() & " " &
-        DateTime.Now.ToShortTimeString()
 
         ' PC info
         frm.tbPcName.Text = PCInfo.Name

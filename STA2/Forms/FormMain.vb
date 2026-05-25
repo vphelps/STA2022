@@ -689,32 +689,34 @@ Public Class FormMain
     Private Sub btnSaveApplicationInfoCSV_Click(sender As Object, e As EventArgs) Handles btnSaveApplicationInfoCSV.Click, btnSaveWebOptionsCSV.Click, btnSaveAppotionsCSV.Click
         Dim caller As Button = DirectCast(sender, Button)
         Dim dgvSource As DataGridView
+        Dim sfd As SaveFileDialog = New SaveFileDialog()
+
         Select Case caller.Name.ToString
             Case btnSaveApplicationInfoCSV.Name.ToString
-                SaveFileDialog.FileName = "ApplicationInfo.csv"
+                sfd.FileName = "ApplicationInfo.csv"
                 dgvSource = dgvApplicationInfo
 
             Case btnSaveAppotionsCSV.Name.ToString
-                SaveFileDialog.FileName = "AppOptions.csv"
+                sfd.FileName = "AppOptions.csv"
                 dgvSource = dgvAppOptions
 
             Case btnSaveWebOptionsCSV.Name.ToString
-                SaveFileDialog.FileName = "WebOptions.csv"
+                sfd.FileName = "WebOptions.csv"
                 dgvSource = dgvWebOptions
 
             Case Else
                 Exit Sub
         End Select
 
-        SaveFileDialog.InitialDirectory = "C:\CenterEdge"
-        SaveFileDialog.DefaultExt = "csv"
-        SaveFileDialog.CheckPathExists = True
-        SaveFileDialog.CreatePrompt = True
-        SaveFileDialog.AddExtension = True
-        SaveFileDialog.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*"
-        SaveFileDialog.ShowDialog()
+        sfd.InitialDirectory = "C:\CenterEdge"
+        sfd.DefaultExt = "csv"
+        sfd.CheckPathExists = True
+        sfd.CreatePrompt = True
+        sfd.AddExtension = True
+        sfd.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*"
+        sfd.ShowDialog()
 
-        Using writer As StreamWriter = New StreamWriter(SaveFileDialog.FileName)
+        Using writer As StreamWriter = New StreamWriter(sfd.FileName)
             writer.WriteLine("OptionName,OptionValue")
             For Each row As DataGridViewRow In dgvSource.Rows
                 writer.WriteLine(row.Cells(0).Value + "," + row.Cells(1).Value)

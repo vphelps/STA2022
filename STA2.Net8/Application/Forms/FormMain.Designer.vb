@@ -108,15 +108,6 @@ Partial Class FormMain
         dgvAppOptions = New DataGridView()
         OptionName = New DataGridViewTextBoxColumn()
         OptionValue = New DataGridViewTextBoxColumn()
-        tpDbInfo = New TabPage()
-        pnlDbInfoButtons = New Panel()
-        rbDbDeadlocks = New RadioButton()
-        rbDbSizeByDay = New RadioButton()
-        btnDbInfoRefresh = New Button()
-        rbDbFragmentation = New RadioButton()
-        rbDbTableSize = New RadioButton()
-        pnlDbData = New Panel()
-        dgvDbTableSize = New DataGridView()
         tpDbLogs = New TabPage()
         tlpLogData = New TableLayoutPanel()
         gpDbLogCount = New GroupBox()
@@ -138,6 +129,15 @@ Partial Class FormMain
         btnDbLogRefresh = New Button()
         rbMessageLog = New RadioButton()
         rbWebCloudUpdates = New RadioButton()
+        tpDbInfo = New TabPage()
+        pnlDbInfoButtons = New Panel()
+        rbDbDeadlocks = New RadioButton()
+        rbDbSizeByDay = New RadioButton()
+        btnDbInfoRefresh = New Button()
+        rbDbFragmentation = New RadioButton()
+        rbDbTableSize = New RadioButton()
+        pnlDbData = New Panel()
+        dgvDbTableSize = New DataGridView()
         tpStParse = New TabPage()
         Panel1 = New Panel()
         btnStCopy = New Button()
@@ -217,6 +217,26 @@ Partial Class FormMain
         btnComboAppLaunch = New Button()
         btnReconnect = New Button()
         flpQuickLaunch = New FlowLayoutPanel()
+        Button1 = New Button()
+        Button2 = New Button()
+        Button3 = New Button()
+        Button4 = New Button()
+        Button5 = New Button()
+        Button6 = New Button()
+        Button7 = New Button()
+        Button8 = New Button()
+        Button9 = New Button()
+        Button10 = New Button()
+        Button11 = New Button()
+        Button12 = New Button()
+        Button13 = New Button()
+        Button14 = New Button()
+        Button15 = New Button()
+        Button16 = New Button()
+        Button17 = New Button()
+        Button18 = New Button()
+        Button19 = New Button()
+        Button20 = New Button()
         btnAdminRestart = New Button()
         btnRefreshGeneralTab = New Button()
         btnBatchLaunch = New Button()
@@ -233,10 +253,6 @@ Partial Class FormMain
         LeftToolStripPanel = New ToolStripPanel()
         ContentPanel = New ToolStripContentPanel()
         tmr1Sec = New Timer(components)
-        ttSTA2 = New ToolTip(components)
-        FolderBrowserDialog = New FolderBrowserDialog()
-        SaveFileDialog = New SaveFileDialog()
-        OpenFileDialog = New OpenFileDialog()
         ToolTipForQuickButtons = New ToolTip(components)
         SplitContainer2 = New SplitContainer()
         tlpButtons3 = New TableLayoutPanel()
@@ -269,10 +285,6 @@ Partial Class FormMain
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).BeginInit()
         CType(dgvWebOptions, ComponentModel.ISupportInitialize).BeginInit()
         CType(dgvAppOptions, ComponentModel.ISupportInitialize).BeginInit()
-        tpDbInfo.SuspendLayout()
-        pnlDbInfoButtons.SuspendLayout()
-        pnlDbData.SuspendLayout()
-        CType(dgvDbTableSize, ComponentModel.ISupportInitialize).BeginInit()
         tpDbLogs.SuspendLayout()
         tlpLogData.SuspendLayout()
         gpDbLogCount.SuspendLayout()
@@ -282,6 +294,10 @@ Partial Class FormMain
         pnlDbLogs.SuspendLayout()
         gpMessageLogFilters.SuspendLayout()
         CType(nudMsgLog, ComponentModel.ISupportInitialize).BeginInit()
+        tpDbInfo.SuspendLayout()
+        pnlDbInfoButtons.SuspendLayout()
+        pnlDbData.SuspendLayout()
+        CType(dgvDbTableSize, ComponentModel.ISupportInitialize).BeginInit()
         tpStParse.SuspendLayout()
         Panel1.SuspendLayout()
         tpOptions.SuspendLayout()
@@ -296,6 +312,7 @@ Partial Class FormMain
         tlpButtons2.SuspendLayout()
         gbAdvApps.SuspendLayout()
         tlpButtons1.SuspendLayout()
+        flpQuickLaunch.SuspendLayout()
         StatusStrip1.SuspendLayout()
         CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer2.Panel1.SuspendLayout()
@@ -309,10 +326,10 @@ Partial Class FormMain
         ' 
         btnExit.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
         btnExit.DialogResult = DialogResult.Cancel
-        btnExit.Location = New Point(295, 223)
+        btnExit.Location = New Point(295, 174)
         btnExit.Margin = New Padding(4, 3, 4, 3)
         btnExit.Name = "btnExit"
-        btnExit.Size = New Size(89, 58)
+        btnExit.Size = New Size(89, 53)
         btnExit.TabIndex = 0
         btnExit.Text = "Exit"
         btnExit.UseVisualStyleBackColor = True
@@ -336,8 +353,8 @@ Partial Class FormMain
         SplitContainer1.Panel2.BackColor = Color.Gray
         SplitContainer1.Panel2.Controls.Add(gpCommonApps)
         SplitContainer1.Panel2.Controls.Add(gbAdvApps)
-        SplitContainer1.Size = New Size(1194, 1060)
-        SplitContainer1.SplitterDistance = 838
+        SplitContainer1.Size = New Size(1194, 884)
+        SplitContainer1.SplitterDistance = 682
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -346,8 +363,8 @@ Partial Class FormMain
         tcSTA.Controls.Add(tpGeneral)
         tcSTA.Controls.Add(tpSysInfo)
         tcSTA.Controls.Add(tpAdvData)
-        tcSTA.Controls.Add(tpDbInfo)
         tcSTA.Controls.Add(tpDbLogs)
+        tcSTA.Controls.Add(tpDbInfo)
         tcSTA.Controls.Add(tpStParse)
         tcSTA.Controls.Add(tpOptions)
         tcSTA.Dock = DockStyle.Fill
@@ -355,7 +372,7 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 834)
+        tcSTA.Size = New Size(1190, 678)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -369,7 +386,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 806)
+        tpGeneral.Size = New Size(1182, 650)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -381,7 +398,7 @@ Partial Class FormMain
         tblFlavorListHints.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
         tblFlavorListHints.Controls.Add(lblFLHints1, 0, 0)
         tblFlavorListHints.Controls.Add(lblFLHints2, 0, 1)
-        tblFlavorListHints.Location = New Point(484, 417)
+        tblFlavorListHints.Location = New Point(484, 286)
         tblFlavorListHints.Margin = New Padding(4, 3, 4, 3)
         tblFlavorListHints.Name = "tblFlavorListHints"
         tblFlavorListHints.RowCount = 2
@@ -418,7 +435,7 @@ Partial Class FormMain
         ' 
         gbLiveOutput.BackColor = Color.LightGray
         gbLiveOutput.Controls.Add(TableLayoutPanel2)
-        gbLiveOutput.Location = New Point(4, 480)
+        gbLiveOutput.Location = New Point(11, 357)
         gbLiveOutput.Margin = New Padding(4, 3, 4, 3)
         gbLiveOutput.Name = "gbLiveOutput"
         gbLiveOutput.Padding = New Padding(4, 3, 4, 3)
@@ -489,7 +506,7 @@ Partial Class FormMain
         pnlServicesContainer.Location = New Point(749, 3)
         pnlServicesContainer.Margin = New Padding(4, 3, 4, 3)
         pnlServicesContainer.Name = "pnlServicesContainer"
-        pnlServicesContainer.Size = New Size(408, 712)
+        pnlServicesContainer.Size = New Size(408, 616)
         pnlServicesContainer.TabIndex = 1
         ' 
         ' tblServices
@@ -522,9 +539,10 @@ Partial Class FormMain
         ' 
         ' tbServicesButtonsHelpMessage
         ' 
+        tbServicesButtonsHelpMessage.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
         tbServicesButtonsHelpMessage.Enabled = False
         tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbServicesButtonsHelpMessage.Location = New Point(104, 618)
+        tbServicesButtonsHelpMessage.Location = New Point(115, 511)
         tbServicesButtonsHelpMessage.Margin = New Padding(4, 3, 4, 3)
         tbServicesButtonsHelpMessage.Multiline = True
         tbServicesButtonsHelpMessage.Name = "tbServicesButtonsHelpMessage"
@@ -540,7 +558,7 @@ Partial Class FormMain
         gbFlavorsList.Margin = New Padding(4, 3, 4, 3)
         gbFlavorsList.Name = "gbFlavorsList"
         gbFlavorsList.Padding = New Padding(4, 3, 4, 3)
-        gbFlavorsList.Size = New Size(233, 410)
+        gbFlavorsList.Size = New Size(233, 280)
         gbFlavorsList.TabIndex = 35
         gbFlavorsList.TabStop = False
         gbFlavorsList.Text = "Flavors List"
@@ -556,7 +574,7 @@ Partial Class FormMain
         lbFlavorsList.Margin = New Padding(4, 3, 4, 3)
         lbFlavorsList.Name = "lbFlavorsList"
         lbFlavorsList.SelectionMode = SelectionMode.MultiExtended
-        lbFlavorsList.Size = New Size(225, 388)
+        lbFlavorsList.Size = New Size(225, 258)
         lbFlavorsList.TabIndex = 35
         ' 
         ' cmsApplySingleFlavor
@@ -584,7 +602,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 805)
+        tpSysInfo.Size = New Size(1182, 649)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -1001,7 +1019,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 805)
+        tpAdvData.Size = New Size(1182, 649)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1205,136 +1223,6 @@ Partial Class FormMain
         OptionValue.Name = "OptionValue"
         OptionValue.Width = 97
         ' 
-        ' tpDbInfo
-        ' 
-        tpDbInfo.BackColor = Color.DarkGray
-        tpDbInfo.Controls.Add(pnlDbInfoButtons)
-        tpDbInfo.Controls.Add(pnlDbData)
-        tpDbInfo.Location = New Point(4, 24)
-        tpDbInfo.Margin = New Padding(4, 3, 4, 3)
-        tpDbInfo.Name = "tpDbInfo"
-        tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 805)
-        tpDbInfo.TabIndex = 1
-        tpDbInfo.Text = "DB Information"
-        tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
-        ' 
-        ' pnlDbInfoButtons
-        ' 
-        pnlDbInfoButtons.BackColor = Color.LightGray
-        pnlDbInfoButtons.BorderStyle = BorderStyle.Fixed3D
-        pnlDbInfoButtons.Controls.Add(rbDbDeadlocks)
-        pnlDbInfoButtons.Controls.Add(rbDbSizeByDay)
-        pnlDbInfoButtons.Controls.Add(btnDbInfoRefresh)
-        pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
-        pnlDbInfoButtons.Controls.Add(rbDbTableSize)
-        pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 770)
-        pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
-        pnlDbInfoButtons.Name = "pnlDbInfoButtons"
-        pnlDbInfoButtons.Size = New Size(1174, 32)
-        pnlDbInfoButtons.TabIndex = 1
-        ' 
-        ' rbDbDeadlocks
-        ' 
-        rbDbDeadlocks.AutoSize = True
-        rbDbDeadlocks.Location = New Point(326, 2)
-        rbDbDeadlocks.Margin = New Padding(4, 3, 4, 3)
-        rbDbDeadlocks.Name = "rbDbDeadlocks"
-        rbDbDeadlocks.Size = New Size(79, 19)
-        rbDbDeadlocks.TabIndex = 3
-        rbDbDeadlocks.TabStop = True
-        rbDbDeadlocks.Text = "Deadlocks"
-        rbDbDeadlocks.UseVisualStyleBackColor = True
-        ' 
-        ' rbDbSizeByDay
-        ' 
-        rbDbSizeByDay.AutoSize = True
-        rbDbSizeByDay.Location = New Point(226, 2)
-        rbDbSizeByDay.Margin = New Padding(4, 3, 4, 3)
-        rbDbSizeByDay.Name = "rbDbSizeByDay"
-        rbDbSizeByDay.Size = New Size(84, 19)
-        rbDbSizeByDay.TabIndex = 2
-        rbDbSizeByDay.TabStop = True
-        rbDbSizeByDay.Text = "Size by Day"
-        rbDbSizeByDay.UseVisualStyleBackColor = True
-        ' 
-        ' btnDbInfoRefresh
-        ' 
-        btnDbInfoRefresh.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnDbInfoRefresh.Location = New Point(1080, 2)
-        btnDbInfoRefresh.Margin = New Padding(4, 3, 4, 3)
-        btnDbInfoRefresh.Name = "btnDbInfoRefresh"
-        btnDbInfoRefresh.Size = New Size(75, 23)
-        btnDbInfoRefresh.TabIndex = 2
-        btnDbInfoRefresh.Text = "Refresh"
-        btnDbInfoRefresh.UseVisualStyleBackColor = True
-        ' 
-        ' rbDbFragmentation
-        ' 
-        rbDbFragmentation.AutoSize = True
-        rbDbFragmentation.Location = New Point(113, 2)
-        rbDbFragmentation.Margin = New Padding(4, 3, 4, 3)
-        rbDbFragmentation.Name = "rbDbFragmentation"
-        rbDbFragmentation.Size = New Size(103, 19)
-        rbDbFragmentation.TabIndex = 1
-        rbDbFragmentation.TabStop = True
-        rbDbFragmentation.Text = "Fragmentation"
-        rbDbFragmentation.UseVisualStyleBackColor = True
-        ' 
-        ' rbDbTableSize
-        ' 
-        rbDbTableSize.AutoSize = True
-        rbDbTableSize.Location = New Point(4, 2)
-        rbDbTableSize.Margin = New Padding(4, 3, 4, 3)
-        rbDbTableSize.Name = "rbDbTableSize"
-        rbDbTableSize.Size = New Size(92, 19)
-        rbDbTableSize.TabIndex = 0
-        rbDbTableSize.TabStop = True
-        rbDbTableSize.Text = "Size by Table"
-        rbDbTableSize.UseVisualStyleBackColor = True
-        ' 
-        ' pnlDbData
-        ' 
-        pnlDbData.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
-        pnlDbData.Controls.Add(dgvDbTableSize)
-        pnlDbData.Location = New Point(4, 3)
-        pnlDbData.Margin = New Padding(4, 3, 4, 3)
-        pnlDbData.Name = "pnlDbData"
-        pnlDbData.Size = New Size(1177, 628)
-        pnlDbData.TabIndex = 1
-        ' 
-        ' dgvDbTableSize
-        ' 
-        dgvDbTableSize.AllowUserToAddRows = False
-        dgvDbTableSize.AllowUserToDeleteRows = False
-        dgvDbTableSize.AllowUserToOrderColumns = True
-        dgvDbTableSize.BorderStyle = BorderStyle.Fixed3D
-        DataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle7.BackColor = SystemColors.Control
-        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle7.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle7.WrapMode = DataGridViewTriState.True
-        dgvDbTableSize.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle7
-        dgvDbTableSize.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle8.BackColor = SystemColors.Window
-        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle8.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle8.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle8.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle8.WrapMode = DataGridViewTriState.False
-        dgvDbTableSize.DefaultCellStyle = DataGridViewCellStyle8
-        dgvDbTableSize.Dock = DockStyle.Fill
-        dgvDbTableSize.Location = New Point(0, 0)
-        dgvDbTableSize.Margin = New Padding(4, 3, 4, 3)
-        dgvDbTableSize.Name = "dgvDbTableSize"
-        dgvDbTableSize.ReadOnly = True
-        dgvDbTableSize.Size = New Size(1177, 628)
-        dgvDbTableSize.TabIndex = 0
-        ' 
         ' tpDbLogs
         ' 
         tpDbLogs.BackColor = Color.DarkGray
@@ -1344,7 +1232,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 805)
+        tpDbLogs.Size = New Size(1182, 649)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1363,7 +1251,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 516)
+        tlpLogData.Size = New Size(1161, 474)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1375,7 +1263,7 @@ Partial Class FormMain
         gpDbLogCount.Margin = New Padding(4, 3, 4, 3)
         gpDbLogCount.Name = "gpDbLogCount"
         gpDbLogCount.Padding = New Padding(4, 3, 4, 3)
-        gpDbLogCount.Size = New Size(273, 510)
+        gpDbLogCount.Size = New Size(273, 468)
         gpDbLogCount.TabIndex = 3
         gpDbLogCount.TabStop = False
         gpDbLogCount.Text = "Log Count"
@@ -1387,29 +1275,29 @@ Partial Class FormMain
         dgvDbLogCount.AllowUserToResizeRows = False
         dgvDbLogCount.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         dgvDbLogCount.BorderStyle = BorderStyle.Fixed3D
-        DataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle9.BackColor = SystemColors.Control
-        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle9.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle9.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle9.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle9.WrapMode = DataGridViewTriState.True
-        dgvDbLogCount.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle9
+        DataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle7.BackColor = SystemColors.Control
+        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle7.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle7.WrapMode = DataGridViewTriState.True
+        dgvDbLogCount.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle7
         dgvDbLogCount.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle10.BackColor = SystemColors.Window
-        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle10.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle10.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle10.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle10.WrapMode = DataGridViewTriState.False
-        dgvDbLogCount.DefaultCellStyle = DataGridViewCellStyle10
+        DataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle8.BackColor = SystemColors.Window
+        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle8.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle8.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle8.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle8.WrapMode = DataGridViewTriState.False
+        dgvDbLogCount.DefaultCellStyle = DataGridViewCellStyle8
         dgvDbLogCount.Dock = DockStyle.Fill
         dgvDbLogCount.EditMode = DataGridViewEditMode.EditProgrammatically
         dgvDbLogCount.Location = New Point(4, 19)
         dgvDbLogCount.Margin = New Padding(4, 3, 4, 3)
         dgvDbLogCount.Name = "dgvDbLogCount"
-        dgvDbLogCount.Size = New Size(265, 488)
+        dgvDbLogCount.Size = New Size(265, 446)
         dgvDbLogCount.TabIndex = 1
         ' 
         ' gpDbLogData
@@ -1421,7 +1309,7 @@ Partial Class FormMain
         gpDbLogData.Margin = New Padding(4, 3, 4, 3)
         gpDbLogData.Name = "gpDbLogData"
         gpDbLogData.Padding = New Padding(4, 3, 4, 3)
-        gpDbLogData.Size = New Size(872, 510)
+        gpDbLogData.Size = New Size(872, 468)
         gpDbLogData.TabIndex = 4
         gpDbLogData.TabStop = False
         gpDbLogData.Text = "Log Data"
@@ -1433,30 +1321,30 @@ Partial Class FormMain
         dgvDbLogData.AllowUserToResizeRows = False
         dgvDbLogData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         dgvDbLogData.BorderStyle = BorderStyle.Fixed3D
-        DataGridViewCellStyle11.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle11.BackColor = SystemColors.Control
-        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle11.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle11.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle11.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle11.WrapMode = DataGridViewTriState.True
-        dgvDbLogData.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle11
+        DataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle9.BackColor = SystemColors.Control
+        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle9.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle9.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle9.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle9.WrapMode = DataGridViewTriState.True
+        dgvDbLogData.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle9
         dgvDbLogData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle12.BackColor = SystemColors.Window
-        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle12.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle12.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle12.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle12.WrapMode = DataGridViewTriState.False
-        dgvDbLogData.DefaultCellStyle = DataGridViewCellStyle12
+        DataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle10.BackColor = SystemColors.Window
+        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle10.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle10.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle10.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle10.WrapMode = DataGridViewTriState.False
+        dgvDbLogData.DefaultCellStyle = DataGridViewCellStyle10
         dgvDbLogData.Dock = DockStyle.Fill
         dgvDbLogData.EditMode = DataGridViewEditMode.EditProgrammatically
         dgvDbLogData.Location = New Point(4, 19)
         dgvDbLogData.Margin = New Padding(4, 3, 4, 3)
         dgvDbLogData.Name = "dgvDbLogData"
         dgvDbLogData.ReadOnly = True
-        dgvDbLogData.Size = New Size(864, 488)
+        dgvDbLogData.Size = New Size(864, 446)
         dgvDbLogData.TabIndex = 2
         ' 
         ' pnlDbLogs
@@ -1468,7 +1356,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 656)
+        pnlDbLogs.Location = New Point(4, 500)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1487,7 +1375,7 @@ Partial Class FormMain
         gpMessageLogFilters.Controls.Add(dtpMsgLogTimeFrom)
         gpMessageLogFilters.Controls.Add(dtpMsgLogDateTo)
         gpMessageLogFilters.Controls.Add(dtpMsgLogDateFrom)
-        gpMessageLogFilters.Location = New Point(28, 30)
+        gpMessageLogFilters.Location = New Point(5, 3)
         gpMessageLogFilters.Margin = New Padding(4, 3, 4, 3)
         gpMessageLogFilters.Name = "gpMessageLogFilters"
         gpMessageLogFilters.Padding = New Padding(4, 3, 4, 3)
@@ -1600,7 +1488,7 @@ Partial Class FormMain
         ' 
         ' btnDbLogRefresh
         ' 
-        btnDbLogRefresh.Location = New Point(1119, 107)
+        btnDbLogRefresh.Location = New Point(609, 87)
         btnDbLogRefresh.Margin = New Padding(4, 3, 4, 3)
         btnDbLogRefresh.Name = "btnDbLogRefresh"
         btnDbLogRefresh.Size = New Size(88, 27)
@@ -1612,7 +1500,7 @@ Partial Class FormMain
         ' 
         rbMessageLog.AutoSize = True
         rbMessageLog.Checked = True
-        rbMessageLog.Location = New Point(145, 3)
+        rbMessageLog.Location = New Point(609, 24)
         rbMessageLog.Margin = New Padding(4, 3, 4, 3)
         rbMessageLog.Name = "rbMessageLog"
         rbMessageLog.Size = New Size(91, 19)
@@ -1624,13 +1512,142 @@ Partial Class FormMain
         ' rbWebCloudUpdates
         ' 
         rbWebCloudUpdates.AutoSize = True
-        rbWebCloudUpdates.Location = New Point(4, 3)
+        rbWebCloudUpdates.Location = New Point(609, 3)
         rbWebCloudUpdates.Margin = New Padding(4, 3, 4, 3)
         rbWebCloudUpdates.Name = "rbWebCloudUpdates"
         rbWebCloudUpdates.Size = New Size(124, 19)
         rbWebCloudUpdates.TabIndex = 0
         rbWebCloudUpdates.Text = "WebCloudUpdates"
         rbWebCloudUpdates.UseVisualStyleBackColor = True
+        ' 
+        ' tpDbInfo
+        ' 
+        tpDbInfo.BackColor = Color.DarkGray
+        tpDbInfo.Controls.Add(pnlDbInfoButtons)
+        tpDbInfo.Controls.Add(pnlDbData)
+        tpDbInfo.Location = New Point(4, 24)
+        tpDbInfo.Margin = New Padding(4, 3, 4, 3)
+        tpDbInfo.Name = "tpDbInfo"
+        tpDbInfo.Padding = New Padding(4, 3, 4, 3)
+        tpDbInfo.Size = New Size(1182, 649)
+        tpDbInfo.TabIndex = 1
+        tpDbInfo.Text = "DB Information"
+        tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
+        ' 
+        ' pnlDbInfoButtons
+        ' 
+        pnlDbInfoButtons.BackColor = Color.LightGray
+        pnlDbInfoButtons.BorderStyle = BorderStyle.Fixed3D
+        pnlDbInfoButtons.Controls.Add(rbDbDeadlocks)
+        pnlDbInfoButtons.Controls.Add(rbDbSizeByDay)
+        pnlDbInfoButtons.Controls.Add(btnDbInfoRefresh)
+        pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
+        pnlDbInfoButtons.Controls.Add(rbDbTableSize)
+        pnlDbInfoButtons.Dock = DockStyle.Bottom
+        pnlDbInfoButtons.Location = New Point(4, 614)
+        pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
+        pnlDbInfoButtons.Name = "pnlDbInfoButtons"
+        pnlDbInfoButtons.Size = New Size(1174, 32)
+        pnlDbInfoButtons.TabIndex = 1
+        ' 
+        ' rbDbDeadlocks
+        ' 
+        rbDbDeadlocks.AutoSize = True
+        rbDbDeadlocks.Location = New Point(326, 2)
+        rbDbDeadlocks.Margin = New Padding(4, 3, 4, 3)
+        rbDbDeadlocks.Name = "rbDbDeadlocks"
+        rbDbDeadlocks.Size = New Size(79, 19)
+        rbDbDeadlocks.TabIndex = 3
+        rbDbDeadlocks.TabStop = True
+        rbDbDeadlocks.Text = "Deadlocks"
+        rbDbDeadlocks.UseVisualStyleBackColor = True
+        ' 
+        ' rbDbSizeByDay
+        ' 
+        rbDbSizeByDay.AutoSize = True
+        rbDbSizeByDay.Location = New Point(226, 2)
+        rbDbSizeByDay.Margin = New Padding(4, 3, 4, 3)
+        rbDbSizeByDay.Name = "rbDbSizeByDay"
+        rbDbSizeByDay.Size = New Size(84, 19)
+        rbDbSizeByDay.TabIndex = 2
+        rbDbSizeByDay.TabStop = True
+        rbDbSizeByDay.Text = "Size by Day"
+        rbDbSizeByDay.UseVisualStyleBackColor = True
+        ' 
+        ' btnDbInfoRefresh
+        ' 
+        btnDbInfoRefresh.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        btnDbInfoRefresh.Location = New Point(1080, 2)
+        btnDbInfoRefresh.Margin = New Padding(4, 3, 4, 3)
+        btnDbInfoRefresh.Name = "btnDbInfoRefresh"
+        btnDbInfoRefresh.Size = New Size(75, 23)
+        btnDbInfoRefresh.TabIndex = 2
+        btnDbInfoRefresh.Text = "Refresh"
+        btnDbInfoRefresh.UseVisualStyleBackColor = True
+        ' 
+        ' rbDbFragmentation
+        ' 
+        rbDbFragmentation.AutoSize = True
+        rbDbFragmentation.Location = New Point(113, 2)
+        rbDbFragmentation.Margin = New Padding(4, 3, 4, 3)
+        rbDbFragmentation.Name = "rbDbFragmentation"
+        rbDbFragmentation.Size = New Size(103, 19)
+        rbDbFragmentation.TabIndex = 1
+        rbDbFragmentation.TabStop = True
+        rbDbFragmentation.Text = "Fragmentation"
+        rbDbFragmentation.UseVisualStyleBackColor = True
+        ' 
+        ' rbDbTableSize
+        ' 
+        rbDbTableSize.AutoSize = True
+        rbDbTableSize.Location = New Point(4, 2)
+        rbDbTableSize.Margin = New Padding(4, 3, 4, 3)
+        rbDbTableSize.Name = "rbDbTableSize"
+        rbDbTableSize.Size = New Size(92, 19)
+        rbDbTableSize.TabIndex = 0
+        rbDbTableSize.TabStop = True
+        rbDbTableSize.Text = "Size by Table"
+        rbDbTableSize.UseVisualStyleBackColor = True
+        ' 
+        ' pnlDbData
+        ' 
+        pnlDbData.Controls.Add(dgvDbTableSize)
+        pnlDbData.Location = New Point(4, 3)
+        pnlDbData.Margin = New Padding(4, 3, 4, 3)
+        pnlDbData.Name = "pnlDbData"
+        pnlDbData.Size = New Size(1177, 598)
+        pnlDbData.TabIndex = 1
+        ' 
+        ' dgvDbTableSize
+        ' 
+        dgvDbTableSize.AllowUserToAddRows = False
+        dgvDbTableSize.AllowUserToDeleteRows = False
+        dgvDbTableSize.AllowUserToOrderColumns = True
+        dgvDbTableSize.BorderStyle = BorderStyle.Fixed3D
+        DataGridViewCellStyle11.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle11.BackColor = SystemColors.Control
+        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle11.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle11.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle11.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle11.WrapMode = DataGridViewTriState.True
+        dgvDbTableSize.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle11
+        dgvDbTableSize.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        DataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle12.BackColor = SystemColors.Window
+        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle12.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle12.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle12.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle12.WrapMode = DataGridViewTriState.False
+        dgvDbTableSize.DefaultCellStyle = DataGridViewCellStyle12
+        dgvDbTableSize.Dock = DockStyle.Fill
+        dgvDbTableSize.Location = New Point(0, 0)
+        dgvDbTableSize.Margin = New Padding(4, 3, 4, 3)
+        dgvDbTableSize.Name = "dgvDbTableSize"
+        dgvDbTableSize.ReadOnly = True
+        dgvDbTableSize.Size = New Size(1177, 598)
+        dgvDbTableSize.TabIndex = 0
         ' 
         ' tpStParse
         ' 
@@ -1640,7 +1657,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 805)
+        tpStParse.Size = New Size(1182, 649)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1651,7 +1668,7 @@ Partial Class FormMain
         Panel1.Controls.Add(btnStPaste)
         Panel1.Controls.Add(btnStParse)
         Panel1.Controls.Add(btnSTClear)
-        Panel1.Location = New Point(1084, 7)
+        Panel1.Location = New Point(1010, 6)
         Panel1.Margin = New Padding(4, 3, 4, 3)
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(97, 145)
@@ -1726,13 +1743,13 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 805)
+        tpOptions.Size = New Size(1182, 649)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
         ' tbMLTest1
         ' 
-        tbMLTest1.Location = New Point(608, 540)
+        tbMLTest1.Location = New Point(967, 511)
         tbMLTest1.Margin = New Padding(4, 3, 4, 3)
         tbMLTest1.Multiline = True
         tbMLTest1.Name = "tbMLTest1"
@@ -1741,7 +1758,7 @@ Partial Class FormMain
         ' 
         ' btnTest2
         ' 
-        btnTest2.Location = New Point(706, 676)
+        btnTest2.Location = New Point(689, 598)
         btnTest2.Margin = New Padding(4, 3, 4, 3)
         btnTest2.Name = "btnTest2"
         btnTest2.Size = New Size(103, 27)
@@ -1751,7 +1768,7 @@ Partial Class FormMain
         ' 
         ' btnTest1
         ' 
-        btnTest1.Location = New Point(611, 676)
+        btnTest1.Location = New Point(593, 598)
         btnTest1.Margin = New Padding(4, 3, 4, 3)
         btnTest1.Name = "btnTest1"
         btnTest1.Size = New Size(88, 27)
@@ -1765,11 +1782,11 @@ Partial Class FormMain
         gpFlavorsSettings.Controls.Add(btnSaveFlavorDefaults)
         gpFlavorsSettings.Controls.Add(clbSqlFiles)
         gpFlavorsSettings.Controls.Add(btnResetFlavorDefaults)
-        gpFlavorsSettings.Location = New Point(8, 365)
+        gpFlavorsSettings.Location = New Point(9, 320)
         gpFlavorsSettings.Margin = New Padding(4, 3, 4, 3)
         gpFlavorsSettings.Name = "gpFlavorsSettings"
         gpFlavorsSettings.Padding = New Padding(4, 3, 4, 3)
-        gpFlavorsSettings.Size = New Size(553, 338)
+        gpFlavorsSettings.Size = New Size(553, 304)
         gpFlavorsSettings.TabIndex = 27
         gpFlavorsSettings.TabStop = False
         gpFlavorsSettings.Text = "Default Flavors Selection"
@@ -1793,7 +1810,7 @@ Partial Class FormMain
         clbSqlFiles.Location = New Point(4, 19)
         clbSqlFiles.Margin = New Padding(4, 3, 4, 3)
         clbSqlFiles.Name = "clbSqlFiles"
-        clbSqlFiles.Size = New Size(412, 316)
+        clbSqlFiles.Size = New Size(412, 282)
         clbSqlFiles.TabIndex = 0
         ' 
         ' btnResetFlavorDefaults
@@ -1816,7 +1833,7 @@ Partial Class FormMain
         gbAppLaunchSettings.Margin = New Padding(4, 3, 4, 3)
         gbAppLaunchSettings.Name = "gbAppLaunchSettings"
         gbAppLaunchSettings.Padding = New Padding(4, 3, 4, 3)
-        gbAppLaunchSettings.Size = New Size(554, 351)
+        gbAppLaunchSettings.Size = New Size(554, 307)
         gbAppLaunchSettings.TabIndex = 17
         gbAppLaunchSettings.TabStop = False
         gbAppLaunchSettings.Text = "Application Launcher Settings"
@@ -1894,7 +1911,7 @@ Partial Class FormMain
         lstPrograms.Location = New Point(15, 47)
         lstPrograms.Margin = New Padding(4, 3, 4, 3)
         lstPrograms.Name = "lstPrograms"
-        lstPrograms.Size = New Size(390, 259)
+        lstPrograms.Size = New Size(390, 214)
         lstPrograms.Sorted = True
         lstPrograms.TabIndex = 3
         ' 
@@ -2191,7 +2208,7 @@ Partial Class FormMain
         ' 
         ' tbTest1
         ' 
-        tbTest1.Location = New Point(608, 601)
+        tbTest1.Location = New Point(582, 511)
         tbTest1.Margin = New Padding(4, 3, 4, 3)
         tbTest1.Name = "tbTest1"
         tbTest1.Size = New Size(271, 23)
@@ -2200,7 +2217,7 @@ Partial Class FormMain
         ' 
         ' tbTest2
         ' 
-        tbTest2.Location = New Point(608, 624)
+        tbTest2.Location = New Point(582, 540)
         tbTest2.Margin = New Padding(4, 3, 4, 3)
         tbTest2.Name = "tbTest2"
         tbTest2.Size = New Size(271, 23)
@@ -2209,7 +2226,7 @@ Partial Class FormMain
         ' 
         ' tbTest3
         ' 
-        tbTest3.Location = New Point(608, 648)
+        tbTest3.Location = New Point(582, 569)
         tbTest3.Margin = New Padding(4, 3, 4, 3)
         tbTest3.Name = "tbTest3"
         tbTest3.Size = New Size(271, 23)
@@ -2478,10 +2495,10 @@ Partial Class FormMain
         ' 
         ' btnRunDatabaseStartLive
         ' 
-        btnRunDatabaseStartLive.Location = New Point(295, 74)
+        btnRunDatabaseStartLive.Location = New Point(295, 60)
         btnRunDatabaseStartLive.Margin = New Padding(4, 3, 4, 3)
         btnRunDatabaseStartLive.Name = "btnRunDatabaseStartLive"
-        btnRunDatabaseStartLive.Size = New Size(89, 58)
+        btnRunDatabaseStartLive.Size = New Size(89, 51)
         btnRunDatabaseStartLive.TabIndex = 31
         btnRunDatabaseStartLive.Text = "Start Database"
         btnRunDatabaseStartLive.UseVisualStyleBackColor = True
@@ -2491,7 +2508,7 @@ Partial Class FormMain
         btnRunApplyFlavorLive.Location = New Point(295, 3)
         btnRunApplyFlavorLive.Margin = New Padding(4, 3, 4, 3)
         btnRunApplyFlavorLive.Name = "btnRunApplyFlavorLive"
-        btnRunApplyFlavorLive.Size = New Size(89, 58)
+        btnRunApplyFlavorLive.Size = New Size(89, 51)
         btnRunApplyFlavorLive.TabIndex = 30
         btnRunApplyFlavorLive.Text = "Apply Default Flavors"
         btnRunApplyFlavorLive.UseVisualStyleBackColor = True
@@ -2500,7 +2517,7 @@ Partial Class FormMain
         ' 
         cmbboxAppLaunch.DropDownStyle = ComboBoxStyle.DropDownList
         cmbboxAppLaunch.FormattingEnabled = True
-        cmbboxAppLaunch.Location = New Point(5, 655)
+        cmbboxAppLaunch.Location = New Point(3, 581)
         cmbboxAppLaunch.Margin = New Padding(4, 3, 4, 3)
         cmbboxAppLaunch.Name = "cmbboxAppLaunch"
         cmbboxAppLaunch.Size = New Size(278, 23)
@@ -2509,7 +2526,7 @@ Partial Class FormMain
         ' 
         ' btnComboAppLaunch
         ' 
-        btnComboAppLaunch.Location = New Point(290, 653)
+        btnComboAppLaunch.Location = New Point(289, 581)
         btnComboAppLaunch.Margin = New Padding(4, 3, 4, 3)
         btnComboAppLaunch.Name = "btnComboAppLaunch"
         btnComboAppLaunch.Size = New Size(88, 27)
@@ -2519,10 +2536,10 @@ Partial Class FormMain
         ' 
         ' btnReconnect
         ' 
-        btnReconnect.Location = New Point(4, 145)
+        btnReconnect.Location = New Point(4, 117)
         btnReconnect.Margin = New Padding(4, 3, 4, 3)
         btnReconnect.Name = "btnReconnect"
-        btnReconnect.Size = New Size(89, 58)
+        btnReconnect.Size = New Size(89, 51)
         btnReconnect.TabIndex = 22
         btnReconnect.Text = "Reconnect"
         btnReconnect.UseVisualStyleBackColor = True
@@ -2531,30 +2548,250 @@ Partial Class FormMain
         ' 
         flpQuickLaunch.AllowDrop = True
         flpQuickLaunch.BackColor = Color.LightGray
+        flpQuickLaunch.Controls.Add(Button1)
+        flpQuickLaunch.Controls.Add(Button2)
+        flpQuickLaunch.Controls.Add(Button3)
+        flpQuickLaunch.Controls.Add(Button4)
+        flpQuickLaunch.Controls.Add(Button5)
+        flpQuickLaunch.Controls.Add(Button6)
+        flpQuickLaunch.Controls.Add(Button7)
+        flpQuickLaunch.Controls.Add(Button8)
+        flpQuickLaunch.Controls.Add(Button9)
+        flpQuickLaunch.Controls.Add(Button10)
+        flpQuickLaunch.Controls.Add(Button11)
+        flpQuickLaunch.Controls.Add(Button12)
+        flpQuickLaunch.Controls.Add(Button13)
+        flpQuickLaunch.Controls.Add(Button14)
+        flpQuickLaunch.Controls.Add(Button15)
+        flpQuickLaunch.Controls.Add(Button16)
+        flpQuickLaunch.Controls.Add(Button17)
+        flpQuickLaunch.Controls.Add(Button18)
+        flpQuickLaunch.Controls.Add(Button19)
+        flpQuickLaunch.Controls.Add(Button20)
         flpQuickLaunch.FlowDirection = FlowDirection.TopDown
         flpQuickLaunch.ForeColor = SystemColors.ControlText
         flpQuickLaunch.Location = New Point(0, 0)
         flpQuickLaunch.Margin = New Padding(4, 3, 4, 3)
         flpQuickLaunch.Name = "flpQuickLaunch"
-        flpQuickLaunch.Size = New Size(387, 650)
+        flpQuickLaunch.Size = New Size(387, 575)
         flpQuickLaunch.TabIndex = 21
+        ' 
+        ' Button1
+        ' 
+        Button1.Location = New Point(3, 3)
+        Button1.Name = "Button1"
+        Button1.Size = New Size(160, 48)
+        Button1.TabIndex = 0
+        Button1.Text = "Button1"
+        Button1.UseVisualStyleBackColor = True
+        Button1.Visible = False
+        ' 
+        ' Button2
+        ' 
+        Button2.Location = New Point(3, 57)
+        Button2.Name = "Button2"
+        Button2.Size = New Size(160, 48)
+        Button2.TabIndex = 1
+        Button2.Text = "Button2"
+        Button2.UseVisualStyleBackColor = True
+        Button2.Visible = False
+        ' 
+        ' Button3
+        ' 
+        Button3.Location = New Point(3, 111)
+        Button3.Name = "Button3"
+        Button3.Size = New Size(160, 48)
+        Button3.TabIndex = 2
+        Button3.Text = "Button3"
+        Button3.UseVisualStyleBackColor = True
+        Button3.Visible = False
+        ' 
+        ' Button4
+        ' 
+        Button4.Location = New Point(3, 165)
+        Button4.Name = "Button4"
+        Button4.Size = New Size(160, 48)
+        Button4.TabIndex = 3
+        Button4.Text = "Button4"
+        Button4.UseVisualStyleBackColor = True
+        Button4.Visible = False
+        ' 
+        ' Button5
+        ' 
+        Button5.Location = New Point(3, 219)
+        Button5.Name = "Button5"
+        Button5.Size = New Size(160, 48)
+        Button5.TabIndex = 4
+        Button5.Text = "Button5"
+        Button5.UseVisualStyleBackColor = True
+        Button5.Visible = False
+        ' 
+        ' Button6
+        ' 
+        Button6.Location = New Point(3, 273)
+        Button6.Name = "Button6"
+        Button6.Size = New Size(160, 48)
+        Button6.TabIndex = 5
+        Button6.Text = "Button6"
+        Button6.UseVisualStyleBackColor = True
+        Button6.Visible = False
+        ' 
+        ' Button7
+        ' 
+        Button7.Location = New Point(3, 327)
+        Button7.Name = "Button7"
+        Button7.Size = New Size(160, 48)
+        Button7.TabIndex = 6
+        Button7.Text = "Button7"
+        Button7.UseVisualStyleBackColor = True
+        Button7.Visible = False
+        ' 
+        ' Button8
+        ' 
+        Button8.Location = New Point(3, 381)
+        Button8.Name = "Button8"
+        Button8.Size = New Size(160, 48)
+        Button8.TabIndex = 7
+        Button8.Text = "Button8"
+        Button8.UseVisualStyleBackColor = True
+        Button8.Visible = False
+        ' 
+        ' Button9
+        ' 
+        Button9.Location = New Point(3, 435)
+        Button9.Name = "Button9"
+        Button9.Size = New Size(160, 48)
+        Button9.TabIndex = 8
+        Button9.Text = "Button9"
+        Button9.UseVisualStyleBackColor = True
+        Button9.Visible = False
+        ' 
+        ' Button10
+        ' 
+        Button10.Location = New Point(3, 489)
+        Button10.Name = "Button10"
+        Button10.Size = New Size(160, 48)
+        Button10.TabIndex = 9
+        Button10.Text = "Button10"
+        Button10.UseVisualStyleBackColor = True
+        Button10.Visible = False
+        ' 
+        ' Button11
+        ' 
+        Button11.Location = New Point(169, 3)
+        Button11.Name = "Button11"
+        Button11.Size = New Size(160, 48)
+        Button11.TabIndex = 10
+        Button11.Text = "Button11"
+        Button11.UseVisualStyleBackColor = True
+        Button11.Visible = False
+        ' 
+        ' Button12
+        ' 
+        Button12.Location = New Point(169, 57)
+        Button12.Name = "Button12"
+        Button12.Size = New Size(160, 48)
+        Button12.TabIndex = 11
+        Button12.Text = "Button12"
+        Button12.UseVisualStyleBackColor = True
+        Button12.Visible = False
+        ' 
+        ' Button13
+        ' 
+        Button13.Location = New Point(169, 111)
+        Button13.Name = "Button13"
+        Button13.Size = New Size(160, 48)
+        Button13.TabIndex = 12
+        Button13.Text = "Button13"
+        Button13.UseVisualStyleBackColor = True
+        Button13.Visible = False
+        ' 
+        ' Button14
+        ' 
+        Button14.Location = New Point(169, 165)
+        Button14.Name = "Button14"
+        Button14.Size = New Size(160, 48)
+        Button14.TabIndex = 13
+        Button14.Text = "Button14"
+        Button14.UseVisualStyleBackColor = True
+        Button14.Visible = False
+        ' 
+        ' Button15
+        ' 
+        Button15.Location = New Point(169, 219)
+        Button15.Name = "Button15"
+        Button15.Size = New Size(160, 48)
+        Button15.TabIndex = 14
+        Button15.Text = "Button15"
+        Button15.UseVisualStyleBackColor = True
+        Button15.Visible = False
+        ' 
+        ' Button16
+        ' 
+        Button16.Location = New Point(169, 273)
+        Button16.Name = "Button16"
+        Button16.Size = New Size(160, 48)
+        Button16.TabIndex = 15
+        Button16.Text = "Button16"
+        Button16.UseVisualStyleBackColor = True
+        Button16.Visible = False
+        ' 
+        ' Button17
+        ' 
+        Button17.Location = New Point(169, 327)
+        Button17.Name = "Button17"
+        Button17.Size = New Size(160, 48)
+        Button17.TabIndex = 16
+        Button17.Text = "Button17"
+        Button17.UseVisualStyleBackColor = True
+        Button17.Visible = False
+        ' 
+        ' Button18
+        ' 
+        Button18.Location = New Point(169, 381)
+        Button18.Name = "Button18"
+        Button18.Size = New Size(160, 48)
+        Button18.TabIndex = 17
+        Button18.Text = "Button18"
+        Button18.UseVisualStyleBackColor = True
+        Button18.Visible = False
+        ' 
+        ' Button19
+        ' 
+        Button19.Location = New Point(169, 435)
+        Button19.Name = "Button19"
+        Button19.Size = New Size(160, 48)
+        Button19.TabIndex = 18
+        Button19.Text = "Button19"
+        Button19.UseVisualStyleBackColor = True
+        Button19.Visible = False
+        ' 
+        ' Button20
+        ' 
+        Button20.Location = New Point(169, 489)
+        Button20.Name = "Button20"
+        Button20.Size = New Size(160, 48)
+        Button20.TabIndex = 19
+        Button20.Text = "Button20"
+        Button20.UseVisualStyleBackColor = True
+        Button20.Visible = False
         ' 
         ' btnAdminRestart
         ' 
-        btnAdminRestart.Location = New Point(4, 74)
+        btnAdminRestart.Location = New Point(4, 60)
         btnAdminRestart.Margin = New Padding(4, 3, 4, 3)
         btnAdminRestart.Name = "btnAdminRestart"
-        btnAdminRestart.Size = New Size(89, 58)
+        btnAdminRestart.Size = New Size(89, 51)
         btnAdminRestart.TabIndex = 20
         btnAdminRestart.Text = "Relaunch as Admin"
         btnAdminRestart.UseVisualStyleBackColor = True
         ' 
         ' btnRefreshGeneralTab
         ' 
-        btnRefreshGeneralTab.Location = New Point(4, 216)
+        btnRefreshGeneralTab.Location = New Point(4, 174)
         btnRefreshGeneralTab.Margin = New Padding(4, 3, 4, 3)
         btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
-        btnRefreshGeneralTab.Size = New Size(89, 58)
+        btnRefreshGeneralTab.Size = New Size(89, 53)
         btnRefreshGeneralTab.TabIndex = 17
         btnRefreshGeneralTab.Text = "Refresh Tab"
         btnRefreshGeneralTab.UseVisualStyleBackColor = True
@@ -2564,7 +2801,7 @@ Partial Class FormMain
         btnBatchLaunch.Location = New Point(4, 3)
         btnBatchLaunch.Margin = New Padding(4, 3, 4, 3)
         btnBatchLaunch.Name = "btnBatchLaunch"
-        btnBatchLaunch.Size = New Size(89, 58)
+        btnBatchLaunch.Size = New Size(89, 51)
         btnBatchLaunch.TabIndex = 15
         btnBatchLaunch.Text = "Batch Launch"
         btnBatchLaunch.UseVisualStyleBackColor = True
@@ -2572,7 +2809,7 @@ Partial Class FormMain
         ' StatusStrip1
         ' 
         StatusStrip1.Items.AddRange(New ToolStripItem() {tslblTime, tslblCeVersion, tslblNetVersion, tslblExecutionStatus, tslblDbState})
-        StatusStrip1.Location = New Point(0, 1036)
+        StatusStrip1.Location = New Point(0, 860)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Padding = New Padding(1, 0, 16, 0)
         StatusStrip1.Size = New Size(1600, 24)
@@ -2667,25 +2904,10 @@ Partial Class FormMain
         tmr1Sec.Enabled = True
         tmr1Sec.Interval = 250
         ' 
-        ' ttSTA2
-        ' 
-        ttSTA2.IsBalloon = True
-        ttSTA2.ToolTipIcon = ToolTipIcon.Info
-        ttSTA2.ToolTipTitle = "Support Tech Assistant 2022"
-        ' 
-        ' FolderBrowserDialog
-        ' 
-        FolderBrowserDialog.Description = "folders"
-        ' 
-        ' OpenFileDialog
-        ' 
-        OpenFileDialog.FileName = "OpenFileDialog"
-        ' 
         ' SplitContainer2
         ' 
         SplitContainer2.BorderStyle = BorderStyle.Fixed3D
         SplitContainer2.Dock = DockStyle.Fill
-        SplitContainer2.IsSplitterFixed = True
         SplitContainer2.Location = New Point(0, 0)
         SplitContainer2.Margin = New Padding(4, 3, 4, 3)
         SplitContainer2.Name = "SplitContainer2"
@@ -2701,8 +2923,8 @@ Partial Class FormMain
         ' 
         SplitContainer2.Panel2.BackColor = Color.LightGray
         SplitContainer2.Panel2.Controls.Add(tlpButtons3)
-        SplitContainer2.Size = New Size(392, 1029)
-        SplitContainer2.SplitterDistance = 738
+        SplitContainer2.Size = New Size(392, 853)
+        SplitContainer2.SplitterDistance = 616
         SplitContainer2.SplitterWidth = 3
         SplitContainer2.TabIndex = 22
         ' 
@@ -2734,15 +2956,15 @@ Partial Class FormMain
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
-        tlpButtons3.Size = New Size(388, 284)
+        tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
         ' 
         ' btnRepoMain
         ' 
-        btnRepoMain.Location = New Point(101, 216)
+        btnRepoMain.Location = New Point(101, 174)
         btnRepoMain.Margin = New Padding(4, 3, 4, 3)
         btnRepoMain.Name = "btnRepoMain"
-        btnRepoMain.Size = New Size(89, 58)
+        btnRepoMain.Size = New Size(89, 53)
         btnRepoMain.TabIndex = 26
         btnRepoMain.Text = "Switch Repo to Main"
         btnRepoMain.UseVisualStyleBackColor = True
@@ -2752,27 +2974,27 @@ Partial Class FormMain
         btnSetupInstall.Location = New Point(101, 3)
         btnSetupInstall.Margin = New Padding(4, 3, 4, 3)
         btnSetupInstall.Name = "btnSetupInstall"
-        btnSetupInstall.Size = New Size(89, 58)
+        btnSetupInstall.Size = New Size(89, 51)
         btnSetupInstall.TabIndex = 25
         btnSetupInstall.Text = "Extract and Install"
         btnSetupInstall.UseVisualStyleBackColor = True
         ' 
         ' btnLaunchLatestInstaller
         ' 
-        btnLaunchLatestInstaller.Location = New Point(101, 74)
+        btnLaunchLatestInstaller.Location = New Point(101, 60)
         btnLaunchLatestInstaller.Margin = New Padding(4, 3, 4, 3)
         btnLaunchLatestInstaller.Name = "btnLaunchLatestInstaller"
-        btnLaunchLatestInstaller.Size = New Size(89, 58)
+        btnLaunchLatestInstaller.Size = New Size(89, 51)
         btnLaunchLatestInstaller.TabIndex = 23
         btnLaunchLatestInstaller.Text = "Latest Installer"
         btnLaunchLatestInstaller.UseVisualStyleBackColor = True
         ' 
         ' btnRepoDiscardChanges
         ' 
-        btnRepoDiscardChanges.Location = New Point(101, 145)
+        btnRepoDiscardChanges.Location = New Point(101, 117)
         btnRepoDiscardChanges.Margin = New Padding(4, 3, 4, 3)
         btnRepoDiscardChanges.Name = "btnRepoDiscardChanges"
-        btnRepoDiscardChanges.Size = New Size(89, 58)
+        btnRepoDiscardChanges.Size = New Size(89, 51)
         btnRepoDiscardChanges.TabIndex = 24
         btnRepoDiscardChanges.Text = "Discard Repo Changes"
         btnRepoDiscardChanges.UseVisualStyleBackColor = True
@@ -2782,7 +3004,7 @@ Partial Class FormMain
         btnManageInstallerVersions.Location = New Point(198, 3)
         btnManageInstallerVersions.Margin = New Padding(4, 3, 4, 3)
         btnManageInstallerVersions.Name = "btnManageInstallerVersions"
-        btnManageInstallerVersions.Size = New Size(89, 58)
+        btnManageInstallerVersions.Size = New Size(89, 51)
         btnManageInstallerVersions.TabIndex = 32
         btnManageInstallerVersions.Text = "Manage Installer Versions"
         btnManageInstallerVersions.UseVisualStyleBackColor = True
@@ -2794,7 +3016,7 @@ Partial Class FormMain
         Panel2.Location = New Point(1194, 0)
         Panel2.Margin = New Padding(4, 3, 4, 3)
         Panel2.Name = "Panel2"
-        Panel2.Size = New Size(392, 1029)
+        Panel2.Size = New Size(392, 853)
         Panel2.TabIndex = 13
         ' 
         ' ofdStartScript
@@ -2806,7 +3028,7 @@ Partial Class FormMain
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnExit
-        ClientSize = New Size(1600, 1060)
+        ClientSize = New Size(1600, 884)
         Controls.Add(Panel2)
         Controls.Add(StatusStrip1)
         Controls.Add(SplitContainer1)
@@ -2844,11 +3066,6 @@ Partial Class FormMain
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).EndInit()
         CType(dgvWebOptions, ComponentModel.ISupportInitialize).EndInit()
         CType(dgvAppOptions, ComponentModel.ISupportInitialize).EndInit()
-        tpDbInfo.ResumeLayout(False)
-        pnlDbInfoButtons.ResumeLayout(False)
-        pnlDbInfoButtons.PerformLayout()
-        pnlDbData.ResumeLayout(False)
-        CType(dgvDbTableSize, ComponentModel.ISupportInitialize).EndInit()
         tpDbLogs.ResumeLayout(False)
         tlpLogData.ResumeLayout(False)
         gpDbLogCount.ResumeLayout(False)
@@ -2860,6 +3077,11 @@ Partial Class FormMain
         gpMessageLogFilters.ResumeLayout(False)
         gpMessageLogFilters.PerformLayout()
         CType(nudMsgLog, ComponentModel.ISupportInitialize).EndInit()
+        tpDbInfo.ResumeLayout(False)
+        pnlDbInfoButtons.ResumeLayout(False)
+        pnlDbInfoButtons.PerformLayout()
+        pnlDbData.ResumeLayout(False)
+        CType(dgvDbTableSize, ComponentModel.ISupportInitialize).EndInit()
         tpStParse.ResumeLayout(False)
         tpStParse.PerformLayout()
         Panel1.ResumeLayout(False)
@@ -2880,6 +3102,7 @@ Partial Class FormMain
         gbAdvApps.ResumeLayout(False)
         gbAdvApps.PerformLayout()
         tlpButtons1.ResumeLayout(False)
+        flpQuickLaunch.ResumeLayout(False)
         StatusStrip1.ResumeLayout(False)
         StatusStrip1.PerformLayout()
         SplitContainer2.Panel1.ResumeLayout(False)
@@ -2966,7 +3189,6 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents lblAppOptions As Label
     Friend WithEvents lblWebOptions As Label
-    Friend WithEvents ttSTA2 As ToolTip
     Friend WithEvents gpPcInfo As GroupBox
     Friend WithEvents tlpPcInfo As TableLayoutPanel
     Friend WithEvents lblPcAdvVersion As Label
@@ -2998,7 +3220,6 @@ Partial Class FormMain
     Friend WithEvents cbAdvUpgradeQuiet As CheckBox
     Friend WithEvents cbAdvUpgradeNoBackup As CheckBox
     Friend WithEvents cbAdvUpgradeNoSetup As CheckBox
-    Friend WithEvents FolderBrowserDialog As FolderBrowserDialog
     Friend WithEvents gbAdvApps As GroupBox
     Friend WithEvents tbServicesButtonsHelpMessage As TextBox
     Friend WithEvents lblApplicationInfo As Label
@@ -3006,7 +3227,6 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
     Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
     Friend WithEvents btnSaveApplicationInfoCSV As Button
-    Friend WithEvents SaveFileDialog As SaveFileDialog
     Friend WithEvents btnSaveWebOptionsCSV As Button
     Friend WithEvents btnSaveAppotionsCSV As Button
     Friend WithEvents tbAdvupgrade As TextBox
@@ -3015,7 +3235,6 @@ Partial Class FormMain
     Friend WithEvents btnAdvCardTech As Button
     Friend WithEvents lblAdvApps As Label
     Friend WithEvents btnRefreshGeneralTab As Button
-    Friend WithEvents OpenFileDialog As OpenFileDialog
     Friend WithEvents lstPrograms As ListBox
     Friend WithEvents btnEdit As Button
     Friend WithEvents btnAdd As Button
@@ -3103,4 +3322,24 @@ Partial Class FormMain
     Friend WithEvents tpSysInfo As TabPage
     Friend WithEvents pnlGpInfo As Panel
     Friend WithEvents pnlLicInfo As Panel
+    Friend WithEvents Button1 As Button
+    Friend WithEvents Button2 As Button
+    Friend WithEvents Button3 As Button
+    Friend WithEvents Button4 As Button
+    Friend WithEvents Button5 As Button
+    Friend WithEvents Button6 As Button
+    Friend WithEvents Button7 As Button
+    Friend WithEvents Button8 As Button
+    Friend WithEvents Button9 As Button
+    Friend WithEvents Button10 As Button
+    Friend WithEvents Button11 As Button
+    Friend WithEvents Button12 As Button
+    Friend WithEvents Button13 As Button
+    Friend WithEvents Button14 As Button
+    Friend WithEvents Button15 As Button
+    Friend WithEvents Button16 As Button
+    Friend WithEvents Button17 As Button
+    Friend WithEvents Button18 As Button
+    Friend WithEvents Button19 As Button
+    Friend WithEvents Button20 As Button
 End Class
