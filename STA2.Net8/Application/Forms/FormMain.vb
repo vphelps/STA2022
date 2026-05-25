@@ -16,8 +16,9 @@ Public Class FormMain
     Private _runExistingVersionPath As String
     Private _tabHintLabel As Label
     Private _tabHintTimer As Timer
-    Private _scriptRunning As Boolean = False
     Private _hoverHints As HoverHintManager
+    Private _uiStateController As UIStateController
+    Private _scriptController As ScriptExecutionController
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -40,7 +41,16 @@ Public Class FormMain
         InstalledX86 = 1
         InstalledX64 = 2
     End Enum
+    Public Function IsScriptRunning() As Boolean
+        Return _scriptController IsNot Nothing AndAlso _scriptController.IsRunning()
+    End Function
+    Public Sub RefreshUIProxy()
+        _uiStateController.Refresh()
+    End Sub
 
+    Public Sub SetExecutionStatusProxy(text As String, Optional force As Boolean = False)
+        SetExecutionStatus(text, force)
+    End Sub
     Public Sub New(options As AppOptions, launcher As LauncherConfig)
         InitializeComponent()     ' Designer-required
 
@@ -61,12 +71,19 @@ Public Class FormMain
     End Sub
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         InitializeUIEnhancements()
+        _uiStateController = New UIStateController(Me, _options)
 
         rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
 
         ' Live output manager
         _liveOutputManager = New LiveOutputManager(Me, rtbLiveOutput, gbLiveOutput, tbOutputScript)
+
+        _scriptController = New ScriptExecutionController(
+    form:=Me,
+    options:=_options,
+    liveOutputManager:=_liveOutputManager
+)
 
         ' Quick Launch manager
         _quickLaunchManager = New QuickLaunchManager(
@@ -134,7 +151,7 @@ Public Class FormMain
         Me.Text += " - DEBUG BUILD"
 #End If
 
-        RefreshUI()
+        _uiStateController.Refresh()
 
         If _options IsNot Nothing Then tbWindowTitle.Text = _options.WindowTitle
 
@@ -516,91 +533,6 @@ Public Class FormMain
         Await _serviceManager.RestartServiceAsync(serviceName)
 
     End Sub
-    Private Async Function PrepareAndRunScript(
-    scriptPath As String,
-    triggerButton As Button,
-    runningStatusText As String,
-    Optional overrideArgs As String = Nothing
-) As Task
-
-        ' ✅ Always switch to output tab
-        tcSTA.SelectedTab = tpGeneral
-
-        ' ✅ Let UI settle before redraw
-        Await Task.Yield()
-
-        _liveOutputManager.ForceRedraw()
-
-        ' ✅ Delegate actual execution
-        Await RunSelectedScript(
-        scriptPath,
-        triggerButton,
-        runningStatusText,
-        overrideArgs
-    )
-
-    End Function
-
-
-    Private Async Function RunSelectedScript(
-    scriptPath As String,
-    triggerButton As Button,
-    runningStatusText As String,
-    Optional overrideArgs As String = Nothing
-) As Task
-        _scriptRunning = True
-
-        If triggerButton IsNot Nothing Then
-            triggerButton.Enabled = False
-        End If
-
-        RefreshUI()
-
-        Try
-            ' ✅ Safety check
-            If String.IsNullOrWhiteSpace(scriptPath) Then
-                MessageBox.Show(
-                "Please select a script first.",
-                "Missing Script",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
-                Return
-            End If
-
-            Dim flags As String = "-Force"
-            Dim scriptArgs As String
-
-            If Not String.IsNullOrWhiteSpace(overrideArgs) Then
-                ' ✅ Use explicitly provided args
-                scriptArgs = $"{flags} {overrideArgs}".Trim()
-            Else
-                ' ✅ Use selected flavors from UI
-                Dim flavorArgs As String =
-                CodeHelper.BuildFlavorsArgument(
-                    _flavorManager.GetSelectedFlavorNames())
-
-                scriptArgs = $"{flags} {flavorArgs}".Trim()
-            End If
-
-            Await PowerShellRunner.RunLiveScriptAsync(
-            options:=_options,
-            liveOutputManager:=_liveOutputManager,
-            setStatus:=Sub(text)
-                           SetExecutionStatus(text)
-                       End Sub,
-            scriptRelativePath:=scriptPath,
-            scriptArgs:=scriptArgs,
-            runningStatusText:=runningStatusText
-        )
-
-
-        Finally
-            ' ✅ ALWAYS runs (even if error or early return)
-            _scriptRunning = False
-            RefreshUI()
-        End Try
-
-    End Function
     Private Async Function ApplySelectedFlavorsAsync() As Task
 
         If lbFlavorsList.SelectedItems.Count = 0 Then Return
@@ -623,12 +555,12 @@ Public Class FormMain
                $"Applying flavor '{selectedFlavors(0)}'",
                $"Applying {selectedFlavors.Count} flavors")
 
-        Await PrepareAndRunScript(
+        Await _scriptController.RunAsync(
             scriptPath:=tbApplyFlavorDefault.Text,
-            triggerButton:=Nothing,
-            runningStatusText:=description & " (live output)…",
-            overrideArgs:=flavorArgs
+            triggerButton:=btnRunApplyFlavorLive,
+            runningStatusText:="Applying flavors (live output)…"
         )
+
     End Function
 
     Private Sub AppendColoredOutput(text As String, color As Color)
@@ -749,14 +681,14 @@ Public Class FormMain
             btnRepoMain.Enabled = True
             btnRepoDiscardChanges.Enabled = True
         End If
-            If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.StartDatabaseDefault) OrElse _scriptRunning Then
-                btnRunDatabaseStartLive.Enabled = False
-            Else
+        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.StartDatabaseDefault) OrElse IsScriptRunning() Then
+            btnRunDatabaseStartLive.Enabled = False
+        Else
             btnRunDatabaseStartLive.Enabled = True
         End If
-            If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.ApplyFlavorDefault) OrElse _scriptRunning Then
-                btnRunApplyFlavorLive.Enabled = False
-                tsmiApplyDefaultFlavors.Enabled = False
+        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.ApplyFlavorDefault) OrElse IsScriptRunning() Then
+            btnRunApplyFlavorLive.Enabled = False
+            tsmiApplyDefaultFlavors.Enabled = False
             gbFlavorsList.Enabled = False
         Else
             btnRunApplyFlavorLive.Enabled = True
@@ -1043,7 +975,7 @@ Public Class FormMain
 ) Handles tmr10Seconds.Tick
 
         CodeHelper.Refresher()
-        RefreshUI()
+        _uiStateController.Refresh()
 
         ' ✅ Fire-and-forget async call (VB style)
 #Disable Warning BC42358
@@ -1070,7 +1002,7 @@ Public Class FormMain
         Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
         Dim installerPath = FindInstallerFile(latestFolder)
 
-        RefreshUI()
+        _uiStateController.Refresh()
 
     End Sub
 
@@ -1342,12 +1274,12 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
-
-        Await PrepareAndRunScript(
+        Await _scriptController.RunAsync(
             scriptPath:=tbApplyFlavorDefault.Text,
             triggerButton:=btnRunApplyFlavorLive,
             runningStatusText:="Applying flavors (live output)…"
         )
+
 
     End Sub
 
@@ -1355,15 +1287,13 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
-
-        Await PrepareAndRunScript(
+        Await _scriptController.RunAsync(
     scriptPath:=tbDatabaseStartDefault.Text,
     triggerButton:=btnRunDatabaseStartLive,
     runningStatusText:="Starting database (live output)…"
 )
-
         CodeHelper.Refresher()
-        RefreshUI()
+        _uiStateController.Refresh()
 
     End Sub
 
@@ -1601,7 +1531,7 @@ Public Class FormMain
     }
         Process.Start(psi)
 
-        RefreshUI()
+        _uiStateController.Refresh()
 
 
     End Sub
@@ -1697,7 +1627,7 @@ Public Class FormMain
             SetExecutionStatus("", force:=True)
             btnSetupInstall.Enabled = True
         End Try
-        RefreshUI()
+        _uiStateController.Refresh()
 
     End Sub
     Private Async Sub btnManageInstallerVersions_Click(
@@ -2003,13 +1933,11 @@ e As System.ComponentModel.CancelEventArgs
         Dim flavorArgs As String = $"-Flavors {flavorCsv}"
 
         ' ✅ Call shared runner (includes -Force automatically)
-        Await PrepareAndRunScript(
+        Await _scriptController.RunAsync(
     scriptPath:=tbApplyFlavorDefault.Text,
-    triggerButton:=Nothing,
-    runningStatusText:="Applying default flavors (live output)…",
-    overrideArgs:=flavorArgs
+    triggerButton:=btnRunApplyFlavorLive,
+    runningStatusText:="Applying flavors (live output)…"
 )
-
         lbFlavorsList.ClearSelected()
 
     End Sub
@@ -2080,19 +2008,6 @@ e As System.ComponentModel.CancelEventArgs
             btnAdminRestart.Text = "Restart as Administrator"
         End If
     End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     Private Sub tbLocName_GotFocus(sender As Object, e As EventArgs) Handles tbLocName.GotFocus, tbLicSvr.GotFocus, tbCoreSvr.GotFocus, tbDbVer.GotFocus, tbWebEnabled.GotFocus, tbShiftDate.GotFocus
         gpLicInfo.Select()
