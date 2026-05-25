@@ -40,9 +40,6 @@ Partial Class FormMain
         SplitContainer1 = New SplitContainer()
         tcSTA = New TabControl()
         tpGeneral = New TabPage()
-        tblFlavorListHints = New TableLayoutPanel()
-        lblFLHints1 = New Label()
-        lblFLHints2 = New Label()
         gbLiveOutput = New GroupBox()
         TableLayoutPanel2 = New TableLayoutPanel()
         btnCopyScriptOutput = New Button()
@@ -210,7 +207,6 @@ Partial Class FormMain
         btnAdvGroups = New Button()
         btnPos = New Button()
         btnAdvManager = New Button()
-        lblAdvApps = New Label()
         btnRunDatabaseStartLive = New Button()
         btnRunApplyFlavorLive = New Button()
         cmbboxAppLaunch = New ComboBox()
@@ -263,13 +259,13 @@ Partial Class FormMain
         btnManageInstallerVersions = New Button()
         Panel2 = New Panel()
         ofdStartScript = New OpenFileDialog()
+        ToolTip1 = New ToolTip(components)
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
         SplitContainer1.SuspendLayout()
         tcSTA.SuspendLayout()
         tpGeneral.SuspendLayout()
-        tblFlavorListHints.SuspendLayout()
         gbLiveOutput.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
         pnlServicesContainer.SuspendLayout()
@@ -354,7 +350,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.Controls.Add(gpCommonApps)
         SplitContainer1.Panel2.Controls.Add(gbAdvApps)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 683
+        SplitContainer1.SplitterDistance = 670
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -372,13 +368,12 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 679)
+        tcSTA.Size = New Size(1190, 666)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
         ' 
         tpGeneral.BackColor = Color.Gray
-        tpGeneral.Controls.Add(tblFlavorListHints)
         tpGeneral.Controls.Add(gbLiveOutput)
         tpGeneral.Controls.Add(pnlServicesContainer)
         tpGeneral.Controls.Add(gbFlavorsList)
@@ -386,50 +381,9 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 651)
+        tpGeneral.Size = New Size(1182, 638)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
-        ' 
-        ' tblFlavorListHints
-        ' 
-        tblFlavorListHints.BackColor = Color.LightGray
-        tblFlavorListHints.ColumnCount = 1
-        tblFlavorListHints.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
-        tblFlavorListHints.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
-        tblFlavorListHints.Controls.Add(lblFLHints1, 0, 0)
-        tblFlavorListHints.Controls.Add(lblFLHints2, 0, 1)
-        tblFlavorListHints.Location = New Point(484, 286)
-        tblFlavorListHints.Margin = New Padding(4, 3, 4, 3)
-        tblFlavorListHints.Name = "tblFlavorListHints"
-        tblFlavorListHints.RowCount = 2
-        tblFlavorListHints.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tblFlavorListHints.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tblFlavorListHints.Size = New Size(233, 57)
-        tblFlavorListHints.TabIndex = 36
-        ' 
-        ' lblFLHints1
-        ' 
-        lblFLHints1.AutoSize = True
-        lblFLHints1.Dock = DockStyle.Fill
-        lblFLHints1.Location = New Point(4, 0)
-        lblFLHints1.Margin = New Padding(4, 0, 4, 0)
-        lblFLHints1.Name = "lblFLHints1"
-        lblFLHints1.Size = New Size(225, 28)
-        lblFLHints1.TabIndex = 0
-        lblFLHints1.Text = "Right Click Menu to apply multi select"
-        lblFLHints1.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' lblFLHints2
-        ' 
-        lblFLHints2.AutoSize = True
-        lblFLHints2.Dock = DockStyle.Fill
-        lblFLHints2.Location = New Point(4, 28)
-        lblFLHints2.Margin = New Padding(4, 0, 4, 0)
-        lblFLHints2.Name = "lblFLHints2"
-        lblFLHints2.Size = New Size(225, 29)
-        lblFLHints2.TabIndex = 1
-        lblFLHints2.Text = "Double Click to apply highlighted"
-        lblFLHints2.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' gbLiveOutput
         ' 
@@ -602,7 +556,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 650)
+        tpSysInfo.Size = New Size(1182, 637)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -1019,7 +973,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 650)
+        tpAdvData.Size = New Size(1182, 637)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1232,7 +1186,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 650)
+        tpDbLogs.Size = New Size(1182, 637)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1251,7 +1205,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 475)
+        tlpLogData.Size = New Size(1161, 462)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1263,7 +1217,7 @@ Partial Class FormMain
         gpDbLogCount.Margin = New Padding(4, 3, 4, 3)
         gpDbLogCount.Name = "gpDbLogCount"
         gpDbLogCount.Padding = New Padding(4, 3, 4, 3)
-        gpDbLogCount.Size = New Size(273, 469)
+        gpDbLogCount.Size = New Size(273, 471)
         gpDbLogCount.TabIndex = 3
         gpDbLogCount.TabStop = False
         gpDbLogCount.Text = "Log Count"
@@ -1297,7 +1251,7 @@ Partial Class FormMain
         dgvDbLogCount.Location = New Point(4, 19)
         dgvDbLogCount.Margin = New Padding(4, 3, 4, 3)
         dgvDbLogCount.Name = "dgvDbLogCount"
-        dgvDbLogCount.Size = New Size(265, 447)
+        dgvDbLogCount.Size = New Size(265, 449)
         dgvDbLogCount.TabIndex = 1
         ' 
         ' gpDbLogData
@@ -1309,7 +1263,7 @@ Partial Class FormMain
         gpDbLogData.Margin = New Padding(4, 3, 4, 3)
         gpDbLogData.Name = "gpDbLogData"
         gpDbLogData.Padding = New Padding(4, 3, 4, 3)
-        gpDbLogData.Size = New Size(872, 469)
+        gpDbLogData.Size = New Size(872, 471)
         gpDbLogData.TabIndex = 4
         gpDbLogData.TabStop = False
         gpDbLogData.Text = "Log Data"
@@ -1344,7 +1298,7 @@ Partial Class FormMain
         dgvDbLogData.Margin = New Padding(4, 3, 4, 3)
         dgvDbLogData.Name = "dgvDbLogData"
         dgvDbLogData.ReadOnly = True
-        dgvDbLogData.Size = New Size(864, 447)
+        dgvDbLogData.Size = New Size(864, 449)
         dgvDbLogData.TabIndex = 2
         ' 
         ' pnlDbLogs
@@ -1356,7 +1310,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 501)
+        pnlDbLogs.Location = New Point(4, 488)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1529,7 +1483,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 650)
+        tpDbInfo.Size = New Size(1182, 637)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1544,7 +1498,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 615)
+        pnlDbInfoButtons.Location = New Point(4, 602)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1657,7 +1611,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 650)
+        tpStParse.Size = New Size(1182, 637)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1743,7 +1697,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 650)
+        tpOptions.Size = New Size(1182, 637)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
@@ -2237,7 +2191,7 @@ Partial Class FormMain
         ' 
         gpCommonApps.BackColor = Color.LightGray
         gpCommonApps.Controls.Add(tlpButtons2)
-        gpCommonApps.Location = New Point(846, 8)
+        gpCommonApps.Location = New Point(519, 5)
         gpCommonApps.Margin = New Padding(4, 3, 4, 3)
         gpCommonApps.Name = "gpCommonApps"
         gpCommonApps.Padding = New Padding(4, 3, 4, 3)
@@ -2332,19 +2286,17 @@ Partial Class FormMain
         ' 
         gbAdvApps.BackColor = Color.LightGray
         gbAdvApps.Controls.Add(tlpButtons1)
-        gbAdvApps.Controls.Add(lblAdvApps)
         gbAdvApps.Location = New Point(5, 5)
         gbAdvApps.Margin = New Padding(4, 3, 4, 3)
         gbAdvApps.Name = "gbAdvApps"
         gbAdvApps.Padding = New Padding(4, 3, 4, 3)
-        gbAdvApps.Size = New Size(506, 179)
+        gbAdvApps.Size = New Size(506, 159)
         gbAdvApps.TabIndex = 19
         gbAdvApps.TabStop = False
         gbAdvApps.Text = "Advantage Applications"
         ' 
         ' tlpButtons1
         ' 
-        tlpButtons1.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         tlpButtons1.BackColor = Color.LightGray
         tlpButtons1.ColumnCount = 5
         tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
@@ -2362,19 +2314,20 @@ Partial Class FormMain
         tlpButtons1.Controls.Add(btnAdvGroups, 2, 0)
         tlpButtons1.Controls.Add(btnPos, 1, 0)
         tlpButtons1.Controls.Add(btnAdvManager, 0, 0)
-        tlpButtons1.Location = New Point(10, 21)
+        tlpButtons1.Dock = DockStyle.Fill
+        tlpButtons1.Location = New Point(4, 19)
         tlpButtons1.Margin = New Padding(4, 3, 4, 3)
         tlpButtons1.Name = "tlpButtons1"
         tlpButtons1.RowCount = 2
         tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
         tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tlpButtons1.Size = New Size(489, 130)
+        tlpButtons1.Size = New Size(498, 137)
         tlpButtons1.TabIndex = 37
         ' 
         ' btnAdvUpgrade
         ' 
         btnAdvUpgrade.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnAdvUpgrade.Location = New Point(392, 69)
+        btnAdvUpgrade.Location = New Point(401, 76)
         btnAdvUpgrade.Margin = New Padding(4, 3, 4, 3)
         btnAdvUpgrade.Name = "btnAdvUpgrade"
         btnAdvUpgrade.Size = New Size(93, 58)
@@ -2385,7 +2338,7 @@ Partial Class FormMain
         ' btnAdvKiosk
         ' 
         btnAdvKiosk.Enabled = False
-        btnAdvKiosk.Location = New Point(295, 68)
+        btnAdvKiosk.Location = New Point(301, 71)
         btnAdvKiosk.Margin = New Padding(4, 3, 4, 3)
         btnAdvKiosk.Name = "btnAdvKiosk"
         btnAdvKiosk.Size = New Size(89, 58)
@@ -2396,7 +2349,7 @@ Partial Class FormMain
         ' btnAdvCardTech
         ' 
         btnAdvCardTech.Enabled = False
-        btnAdvCardTech.Location = New Point(198, 68)
+        btnAdvCardTech.Location = New Point(202, 71)
         btnAdvCardTech.Margin = New Padding(4, 3, 4, 3)
         btnAdvCardTech.Name = "btnAdvCardTech"
         btnAdvCardTech.Size = New Size(89, 58)
@@ -2407,7 +2360,7 @@ Partial Class FormMain
         ' btnAdvRedeem
         ' 
         btnAdvRedeem.Enabled = False
-        btnAdvRedeem.Location = New Point(101, 68)
+        btnAdvRedeem.Location = New Point(103, 71)
         btnAdvRedeem.Margin = New Padding(4, 3, 4, 3)
         btnAdvRedeem.Name = "btnAdvRedeem"
         btnAdvRedeem.Size = New Size(89, 58)
@@ -2418,7 +2371,7 @@ Partial Class FormMain
         ' btnAdvReportEditor
         ' 
         btnAdvReportEditor.Enabled = False
-        btnAdvReportEditor.Location = New Point(4, 68)
+        btnAdvReportEditor.Location = New Point(4, 71)
         btnAdvReportEditor.Margin = New Padding(4, 3, 4, 3)
         btnAdvReportEditor.Name = "btnAdvReportEditor"
         btnAdvReportEditor.Size = New Size(89, 58)
@@ -2429,7 +2382,7 @@ Partial Class FormMain
         ' btnCenterEdgeConfig
         ' 
         btnCenterEdgeConfig.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnCenterEdgeConfig.Location = New Point(392, 4)
+        btnCenterEdgeConfig.Location = New Point(401, 7)
         btnCenterEdgeConfig.Margin = New Padding(4, 3, 4, 3)
         btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
         btnCenterEdgeConfig.Size = New Size(93, 58)
@@ -2440,7 +2393,7 @@ Partial Class FormMain
         ' btnAdvKioskSetup
         ' 
         btnAdvKioskSetup.Enabled = False
-        btnAdvKioskSetup.Location = New Point(295, 3)
+        btnAdvKioskSetup.Location = New Point(301, 3)
         btnAdvKioskSetup.Margin = New Padding(4, 3, 4, 3)
         btnAdvKioskSetup.Name = "btnAdvKioskSetup"
         btnAdvKioskSetup.Size = New Size(89, 58)
@@ -2451,7 +2404,7 @@ Partial Class FormMain
         ' btnAdvGroups
         ' 
         btnAdvGroups.Enabled = False
-        btnAdvGroups.Location = New Point(198, 3)
+        btnAdvGroups.Location = New Point(202, 3)
         btnAdvGroups.Margin = New Padding(4, 3, 4, 3)
         btnAdvGroups.Name = "btnAdvGroups"
         btnAdvGroups.Size = New Size(89, 58)
@@ -2462,7 +2415,7 @@ Partial Class FormMain
         ' btnPos
         ' 
         btnPos.Enabled = False
-        btnPos.Location = New Point(101, 3)
+        btnPos.Location = New Point(103, 3)
         btnPos.Margin = New Padding(4, 3, 4, 3)
         btnPos.Name = "btnPos"
         btnPos.Size = New Size(89, 58)
@@ -2480,18 +2433,6 @@ Partial Class FormMain
         btnAdvManager.TabIndex = 15
         btnAdvManager.Text = "Manager " & vbCrLf & "Console"
         btnAdvManager.UseVisualStyleBackColor = True
-        ' 
-        ' lblAdvApps
-        ' 
-        lblAdvApps.Anchor = AnchorStyles.Bottom Or AnchorStyles.Left
-        lblAdvApps.AutoSize = True
-        lblAdvApps.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-        lblAdvApps.Location = New Point(29, 158)
-        lblAdvApps.Margin = New Padding(4, 0, 4, 0)
-        lblAdvApps.Name = "lblAdvApps"
-        lblAdvApps.Size = New Size(205, 13)
-        lblAdvApps.TabIndex = 18
-        lblAdvApps.Text = "Button disabled if App not installed"
         ' 
         ' btnRunDatabaseStartLive
         ' 
@@ -3045,8 +2986,6 @@ Partial Class FormMain
         SplitContainer1.ResumeLayout(False)
         tcSTA.ResumeLayout(False)
         tpGeneral.ResumeLayout(False)
-        tblFlavorListHints.ResumeLayout(False)
-        tblFlavorListHints.PerformLayout()
         gbLiveOutput.ResumeLayout(False)
         TableLayoutPanel2.ResumeLayout(False)
         TableLayoutPanel2.PerformLayout()
@@ -3101,7 +3040,6 @@ Partial Class FormMain
         gpCommonApps.ResumeLayout(False)
         tlpButtons2.ResumeLayout(False)
         gbAdvApps.ResumeLayout(False)
-        gbAdvApps.PerformLayout()
         tlpButtons1.ResumeLayout(False)
         flpQuickLaunch.ResumeLayout(False)
         StatusStrip1.ResumeLayout(False)
@@ -3234,7 +3172,6 @@ Partial Class FormMain
     Friend WithEvents lblAdvUpgrade As Label
     Friend WithEvents btnAdvRedeem As Button
     Friend WithEvents btnAdvCardTech As Button
-    Friend WithEvents lblAdvApps As Label
     Friend WithEvents btnRefreshGeneralTab As Button
     Friend WithEvents lstPrograms As ListBox
     Friend WithEvents btnEdit As Button
@@ -3306,9 +3243,6 @@ Partial Class FormMain
     Friend WithEvents miApplySingleFlavor As ToolStripMenuItem
     Friend WithEvents lbFlavorsList As ListBox
     Friend WithEvents gbFlavorsList As GroupBox
-    Friend WithEvents tblFlavorListHints As TableLayoutPanel
-    Friend WithEvents lblFLHints1 As Label
-    Friend WithEvents lblFLHints2 As Label
     Friend WithEvents tlpButtons2 As TableLayoutPanel
     Friend WithEvents tlpButtons1 As TableLayoutPanel
     Friend WithEvents btnManageInstallerVersions As Button
@@ -3343,4 +3277,5 @@ Partial Class FormMain
     Friend WithEvents Button18 As Button
     Friend WithEvents Button19 As Button
     Friend WithEvents Button20 As Button
+    Friend WithEvents ToolTip1 As ToolTip
 End Class
