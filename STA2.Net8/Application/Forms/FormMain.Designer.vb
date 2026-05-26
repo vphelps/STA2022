@@ -350,7 +350,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.Controls.Add(gpCommonApps)
         SplitContainer1.Panel2.Controls.Add(gbAdvApps)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 678
+        SplitContainer1.SplitterDistance = 682
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -368,7 +368,7 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 674)
+        tcSTA.Size = New Size(1190, 678)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -381,7 +381,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 646)
+        tpGeneral.Size = New Size(1182, 650)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -429,7 +429,7 @@ Partial Class FormMain
         ' tbOutputScript
         ' 
         tbOutputScript.Dock = DockStyle.Fill
-        tbOutputScript.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbOutputScript.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbOutputScript.Location = New Point(1, 211)
         tbOutputScript.Margin = New Padding(1)
         tbOutputScript.Name = "tbOutputScript"
@@ -442,8 +442,8 @@ Partial Class FormMain
         TableLayoutPanel2.SetColumnSpan(rtbLiveOutput, 2)
         rtbLiveOutput.DetectUrls = False
         rtbLiveOutput.Dock = DockStyle.Fill
-        rtbLiveOutput.Font = New Font("Consolas", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
-        rtbLiveOutput.ForeColor = Color.FromArgb(0, 192, 0)
+        rtbLiveOutput.Font = New Font("Consolas", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        rtbLiveOutput.ForeColor = Color.FromArgb(CByte(0), CByte(192), CByte(0))
         rtbLiveOutput.Location = New Point(4, 3)
         rtbLiveOutput.Margin = New Padding(4, 3, 4, 3)
         rtbLiveOutput.Name = "rtbLiveOutput"
@@ -495,7 +495,7 @@ Partial Class FormMain
         ' 
         tbServicesButtonsHelpMessage.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
         tbServicesButtonsHelpMessage.Enabled = False
-        tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbServicesButtonsHelpMessage.Location = New Point(115, 511)
         tbServicesButtonsHelpMessage.Margin = New Padding(4, 3, 4, 3)
         tbServicesButtonsHelpMessage.Multiline = True
@@ -556,7 +556,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 645)
+        tpSysInfo.Size = New Size(1182, 649)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -829,7 +829,7 @@ Partial Class FormMain
         gpLicInfo.Controls.Add(tbDbVer)
         gpLicInfo.Controls.Add(lblLocName)
         gpLicInfo.Dock = DockStyle.Fill
-        gpLicInfo.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        gpLicInfo.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         gpLicInfo.Location = New Point(0, 0)
         gpLicInfo.Margin = New Padding(4, 3, 4, 3)
         gpLicInfo.Name = "gpLicInfo"
@@ -841,7 +841,7 @@ Partial Class FormMain
         ' 
         ' tbShiftDate
         ' 
-        tbShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbShiftDate.Location = New Point(118, 144)
         tbShiftDate.Margin = New Padding(4, 3, 4, 3)
         tbShiftDate.Name = "tbShiftDate"
@@ -850,7 +850,7 @@ Partial Class FormMain
         ' 
         ' tbLocName
         ' 
-        tbLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbLocName.Location = New Point(118, 18)
         tbLocName.Margin = New Padding(4, 3, 4, 3)
         tbLocName.Name = "tbLocName"
@@ -860,7 +860,7 @@ Partial Class FormMain
         ' lblCoreSvr
         ' 
         lblCoreSvr.AutoSize = True
-        lblCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblCoreSvr.Location = New Point(8, 73)
         lblCoreSvr.Margin = New Padding(4, 0, 4, 0)
         lblCoreSvr.Name = "lblCoreSvr"
@@ -871,7 +871,7 @@ Partial Class FormMain
         ' lblShiftDate
         ' 
         lblShiftDate.AutoSize = True
-        lblShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblShiftDate.Location = New Point(8, 145)
         lblShiftDate.Margin = New Padding(4, 0, 4, 0)
         lblShiftDate.Name = "lblShiftDate"
@@ -881,7 +881,7 @@ Partial Class FormMain
         ' 
         ' tbCoreSvr
         ' 
-        tbCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbCoreSvr.Location = New Point(118, 68)
         tbCoreSvr.Margin = New Padding(4, 3, 4, 3)
         tbCoreSvr.Name = "tbCoreSvr"
@@ -890,7 +890,7 @@ Partial Class FormMain
         ' 
         ' tbLicSvr
         ' 
-        tbLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbLicSvr.Location = New Point(118, 43)
         tbLicSvr.Margin = New Padding(4, 3, 4, 3)
         tbLicSvr.Name = "tbLicSvr"
@@ -899,7 +899,7 @@ Partial Class FormMain
         ' 
         ' tbWebEnabled
         ' 
-        tbWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbWebEnabled.Location = New Point(118, 119)
         tbWebEnabled.Margin = New Padding(4, 3, 4, 3)
         tbWebEnabled.Name = "tbWebEnabled"
@@ -909,7 +909,7 @@ Partial Class FormMain
         ' lblDbVer
         ' 
         lblDbVer.AutoSize = True
-        lblDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblDbVer.Location = New Point(8, 98)
         lblDbVer.Margin = New Padding(4, 0, 4, 0)
         lblDbVer.Name = "lblDbVer"
@@ -920,7 +920,7 @@ Partial Class FormMain
         ' lblLicSvr
         ' 
         lblLicSvr.AutoSize = True
-        lblLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblLicSvr.Location = New Point(8, 47)
         lblLicSvr.Margin = New Padding(4, 0, 4, 0)
         lblLicSvr.Name = "lblLicSvr"
@@ -931,7 +931,7 @@ Partial Class FormMain
         ' lblWebEnabled
         ' 
         lblWebEnabled.AutoSize = True
-        lblWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblWebEnabled.Location = New Point(8, 123)
         lblWebEnabled.Margin = New Padding(4, 0, 4, 0)
         lblWebEnabled.Name = "lblWebEnabled"
@@ -941,7 +941,7 @@ Partial Class FormMain
         ' 
         ' tbDbVer
         ' 
-        tbDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        tbDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbDbVer.Location = New Point(118, 93)
         tbDbVer.Margin = New Padding(4, 3, 4, 3)
         tbDbVer.Name = "tbDbVer"
@@ -951,7 +951,7 @@ Partial Class FormMain
         ' lblLocName
         ' 
         lblLocName.AutoSize = True
-        lblLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblLocName.Location = New Point(8, 23)
         lblLocName.Margin = New Padding(4, 0, 4, 0)
         lblLocName.Name = "lblLocName"
@@ -973,7 +973,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 645)
+        tpAdvData.Size = New Size(1182, 649)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1012,7 +1012,7 @@ Partial Class FormMain
         ' lblApplicationInfo
         ' 
         lblApplicationInfo.AutoSize = True
-        lblApplicationInfo.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblApplicationInfo.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblApplicationInfo.Location = New Point(7, 16)
         lblApplicationInfo.Margin = New Padding(4, 0, 4, 0)
         lblApplicationInfo.Name = "lblApplicationInfo"
@@ -1068,7 +1068,7 @@ Partial Class FormMain
         ' lblWebOptions
         ' 
         lblWebOptions.AutoSize = True
-        lblWebOptions.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblWebOptions.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblWebOptions.Location = New Point(878, 16)
         lblWebOptions.Margin = New Padding(4, 0, 4, 0)
         lblWebOptions.Name = "lblWebOptions"
@@ -1079,7 +1079,7 @@ Partial Class FormMain
         ' lblAppOptions
         ' 
         lblAppOptions.AutoSize = True
-        lblAppOptions.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblAppOptions.Font = New Font("Microsoft Sans Serif", 9.75F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblAppOptions.Location = New Point(410, 16)
         lblAppOptions.Margin = New Padding(4, 0, 4, 0)
         lblAppOptions.Name = "lblAppOptions"
@@ -1186,7 +1186,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 645)
+        tpDbLogs.Size = New Size(1182, 649)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1205,7 +1205,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 470)
+        tlpLogData.Size = New Size(1161, 474)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1310,7 +1310,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 496)
+        pnlDbLogs.Location = New Point(4, 500)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1483,7 +1483,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 645)
+        tpDbInfo.Size = New Size(1182, 649)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1498,7 +1498,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 610)
+        pnlDbInfoButtons.Location = New Point(4, 614)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1611,7 +1611,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 645)
+        tpStParse.Size = New Size(1182, 649)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1697,7 +1697,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 645)
+        tpOptions.Size = New Size(1182, 649)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
@@ -2431,7 +2431,7 @@ Partial Class FormMain
         btnAdvManager.Name = "btnAdvManager"
         btnAdvManager.Size = New Size(89, 58)
         btnAdvManager.TabIndex = 15
-        btnAdvManager.Text = "Manager " + vbCrLf + "Console"
+        btnAdvManager.Text = "Manager " & vbCrLf & "Console"
         btnAdvManager.UseVisualStyleBackColor = True
         ' 
         ' btnRunDatabaseStartLive

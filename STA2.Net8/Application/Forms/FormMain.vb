@@ -1132,9 +1132,9 @@ Public Class FormMain
     '            If dsLog IsNot Nothing AndAlso dsLog.Tables.Count > 0 Then
     '                dgvDbLogData.DataSource = dsLog.Tables(0)
     '                dgvDbLogData.Sort(dgvDbLogData.Columns(0), ListSortDirection.Descending)
-    '            Else
-    '                dgvDbLogData.DataSource = Nothing
+    '            Elseata.DataSource = Nothing
     '            End If
+    '                dgvDbLogD
 
     '        Else
     '            gpDbLogData.Text = ""
@@ -1295,20 +1295,40 @@ Public Class FormMain
 
 
     End Sub
-
     Private Async Sub btnRunDatabaseStartLive_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
+
+        ' ✅ Get default flavors
+        Dim defaultFlavors = _options?.DefaultFlavorNames
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+            MessageBox.Show(
+            "No default flavors are configured.",
+            "No Defaults",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
+            Return
+        End If
+
         Await _scriptController.RunAsync(
-    scriptPath:=tbDatabaseStartDefault.Text,
-    triggerButton:=btnRunDatabaseStartLive,
-    runningStatusText:="Starting database (live output)…"
-)
-        CodeHelper.Refresher()
+        scriptPath:=tbDatabaseStartDefault.Text,
+        triggerButton:=btnRunDatabaseStartLive,
+        runningStatusText:="Starting database (live output)…",
+        flavorNames:=defaultFlavors
+    )
+
+        ' ✅ Step 6.5 cleanup (optional depending on where you are)
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+        form:=Me,
+        connectionString:=ConfigValues.ConnectionString,
+        configuredContainerName:=_options?.SqlContainerName
+    )
         _uiStateController.Refresh()
 
     End Sub
+
 
     Private Sub btnBrowseStartScript_Click(sender As Object, e As EventArgs) Handles btnBrowseStartScript.Click
 
