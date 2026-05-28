@@ -55,26 +55,47 @@
             Await Task.Yield()
             _liveOutputManager.ForceRedraw()
 
-            ' ✅ Build args via model
-            Dim commandLine As String = BuildCommandLine(options)
+            ' ✅ Build args
+            Dim scriptArgs As String = BuildScriptArgs(options)
 
-            ' Extract scriptArgs (temporary for your existing runner)
-            Dim scriptArgsStart =
-            commandLine.IndexOf("""", commandLine.IndexOf("""") + 1) + 1
+            ' ✅ Build full command (for logging)
+            Dim fullCommandLine As String = BuildCommandLine(options)
 
-            Dim scriptArgs As String =
-            commandLine.Substring(scriptArgsStart).Trim()
+            Try
+                ' ✅ Execute script
+                Await PowerShellRunner.RunLiveScriptAsync(
+                options:=_options,
+                liveOutputManager:=_liveOutputManager,
+                setStatus:=Sub(text)
+                               _form.SetExecutionStatusProxy(text, force:=True)
+                           End Sub,
+                scriptRelativePath:=options.ScriptPath,
+                scriptArgs:=scriptArgs,
+                runningStatusText:=runningStatusText
+            )
 
-            Await PowerShellRunner.RunLiveScriptAsync(
-            options:=_options,
-            liveOutputManager:=_liveOutputManager,
-            setStatus:=Sub(text)
-                           _form.SetExecutionStatusProxy(text, force:=True)
-                       End Sub,
-            scriptRelativePath:=options.ScriptPath,
-            scriptArgs:=scriptArgs,
-            runningStatusText:=runningStatusText
-        )
+                ' ✅ SUCCESS LOG
+                STA2.Net8.GlobalErrorHandler.LogScriptResult(
+                commandLine:=fullCommandLine,
+                scriptPath:=options.ScriptPath,
+                scriptArgs:=scriptArgs,
+                success:=True
+            )
+
+            Catch ex As Exception
+
+                ' ✅ FAILURE LOG
+                GlobalErrorHandler.LogScriptResult(
+                commandLine:=fullCommandLine,
+                scriptPath:=options.ScriptPath,
+                scriptArgs:=scriptArgs,
+                success:=False,
+                ex:=ex
+            )
+
+                Throw
+
+            End Try
 
         Finally
             _scriptRunning = False
@@ -86,41 +107,50 @@
 
             _form.SetExecutionStatusProxy(String.Empty, force:=True)
             _form.RefreshUIProxy()
+
         End Try
 
     End Function
     Public Function BuildCommandLine(options As ScriptCommandOptions) As String
+        Dim args = BuildScriptArgs(options)
+        Return $"powershell -ExecutionPolicy Bypass -File ""{options.ScriptPath}"" {args}".Trim()
+    End Function
 
-        If options Is Nothing OrElse
-           String.IsNullOrWhiteSpace(options.ScriptPath) Then
-            Return String.Empty
+    Public Function BuildScriptArgs(options As ScriptCommandOptions) As String
+
+        If options Is Nothing Then Return String.Empty
+
+        Dim args As New List(Of ScriptArgument)
+
+        ' ✅ Always include -Force
+        args.Add(New ScriptArgument("-Force"))
+
+        ' ✅ Override takes priority
+        If Not String.IsNullOrWhiteSpace(options.OverrideArgs) Then
+            ' fallback: raw append if needed
+            Return $"{String.Join(" ", args)} {options.OverrideArgs}".Trim()
         End If
 
-        Dim scriptArgs As String = "-Force"
+        ' ✅ Flavors
+        If options.FlavorNames IsNot Nothing Then
+            Dim flavorCsv = String.Join(",", options.FlavorNames)
 
-        If Not String.IsNullOrWhiteSpace(options.OverrideArgs) Then
-            scriptArgs &= " " & options.OverrideArgs
-
-        Else
-            If options.FlavorNames IsNot Nothing Then
-                Dim flavorArgs = CodeHelper.BuildFlavorsArgument(options.FlavorNames)
-                If Not String.IsNullOrWhiteSpace(flavorArgs) Then
-                    scriptArgs &= " " & flavorArgs
-                End If
+            If Not String.IsNullOrWhiteSpace(flavorCsv) Then
+                args.Add(New ScriptArgument("-Flavors", flavorCsv))
             End If
         End If
 
+        ' ✅ Version
         If options.UseVersion Then
             Dim versionText = options.VersionText?.Trim()
+
             If Not String.IsNullOrWhiteSpace(versionText) Then
-                scriptArgs &= $" -Version ""{versionText}"""
+                args.Add(New ScriptArgument("-Version", versionText))
             End If
         End If
 
-        Dim cmd =
-            $"powershell -ExecutionPolicy Bypass -File ""{options.ScriptPath}"" {scriptArgs}"
-
-        Return cmd.Trim()
+        ' ✅ Convert to string safely
+        Return String.Join(" ", args.Select(Function(a) a.ToString()))
 
     End Function
 End Class

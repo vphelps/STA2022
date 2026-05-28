@@ -5,7 +5,6 @@ Imports System.ServiceProcess
 Imports System.Threading.Tasks
 'Imports STA2.AppData
 
-
 Public Class FormMain
     Private _options As AppOptions
     Private _launcherConfig As LauncherConfig
@@ -2140,12 +2139,75 @@ e As System.ComponentModel.CancelEventArgs
             .VersionText = tbDbUseVersion.Text
         }
 
-        Dim cmd = _scriptController.BuildCommandLine(cmdOptions)
+        ' ✅ NEW: get structured args
+        Dim args As String = _scriptController.BuildScriptArgs(cmdOptions)
+
+        ' ✅ Show BOTH for clarity
+        Dim output As String =
+            "Args:" & Environment.NewLine &
+            args
 
         UIHelpers.TimedInfoPrompt(
-            "CommandLine:  " & cmd,
+            output,
             "Start Database Command Line Test",
             timeoutSeconds:=10)
 
     End Sub
+
+
+    Private Sub btnOpenLogs_Click(sender As Object, e As EventArgs) Handles btnOpenLogs.Click
+
+        Dim logFolder As String =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+
+        If Not Directory.Exists(logFolder) Then
+            MessageBox.Show(
+                "Log folder does not exist yet.",
+                "Logs",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+            Return
+        End If
+
+        Dim latestFile As String = Nothing
+
+        Try
+            Dim files = Directory.GetFiles(logFolder, "*.log")
+
+            If files.Length = 0 Then
+                MessageBox.Show(
+                    "No log files found yet.",
+                    "Logs",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information)
+                Return
+            End If
+
+            latestFile = files _
+                .Select(Function(f) New FileInfo(f)) _
+                .OrderByDescending(Function(fi) fi.LastWriteTime) _
+                .First() _
+                .FullName
+
+        Catch ex As Exception
+            MessageBox.Show(
+                "Unable to locate log files." & Environment.NewLine & ex.Message,
+                "Logs",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+            Return
+        End Try
+
+        Try
+            ' ✅ THIS is the IMPORTANT FIX
+            Dim argument As String = "/select,""" & latestFile & """"
+            Process.Start("explorer.exe", argument)
+
+        Catch ex As Exception
+            ' fallback: just open folder
+            Process.Start("explorer.exe", logFolder)
+        End Try
+
+    End Sub
+
 End Class

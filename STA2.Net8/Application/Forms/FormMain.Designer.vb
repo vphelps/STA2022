@@ -264,6 +264,7 @@ Partial Class FormMain
         btnLaunchLatestInstaller = New Button()
         btnRepoDiscardChanges = New Button()
         btnManageInstallerVersions = New Button()
+        btnOpenLogs = New Button()
         Panel2 = New Panel()
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
@@ -359,7 +360,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.Controls.Add(gpCommonApps)
         SplitContainer1.Panel2.Controls.Add(gbAdvApps)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 697
+        SplitContainer1.SplitterDistance = 706
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -377,7 +378,7 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 693)
+        tcSTA.Size = New Size(1190, 702)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -390,7 +391,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 665)
+        tpGeneral.Size = New Size(1182, 674)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -565,7 +566,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 664)
+        tpSysInfo.Size = New Size(1182, 673)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -982,7 +983,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 664)
+        tpAdvData.Size = New Size(1182, 673)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1195,7 +1196,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 664)
+        tpDbLogs.Size = New Size(1182, 673)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1214,7 +1215,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 489)
+        tlpLogData.Size = New Size(1161, 498)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1226,7 +1227,7 @@ Partial Class FormMain
         gpDbLogCount.Margin = New Padding(4, 3, 4, 3)
         gpDbLogCount.Name = "gpDbLogCount"
         gpDbLogCount.Padding = New Padding(4, 3, 4, 3)
-        gpDbLogCount.Size = New Size(273, 483)
+        gpDbLogCount.Size = New Size(273, 492)
         gpDbLogCount.TabIndex = 3
         gpDbLogCount.TabStop = False
         gpDbLogCount.Text = "Log Count"
@@ -1260,7 +1261,7 @@ Partial Class FormMain
         dgvDbLogCount.Location = New Point(4, 19)
         dgvDbLogCount.Margin = New Padding(4, 3, 4, 3)
         dgvDbLogCount.Name = "dgvDbLogCount"
-        dgvDbLogCount.Size = New Size(265, 461)
+        dgvDbLogCount.Size = New Size(265, 470)
         dgvDbLogCount.TabIndex = 1
         ' 
         ' gpDbLogData
@@ -1272,7 +1273,7 @@ Partial Class FormMain
         gpDbLogData.Margin = New Padding(4, 3, 4, 3)
         gpDbLogData.Name = "gpDbLogData"
         gpDbLogData.Padding = New Padding(4, 3, 4, 3)
-        gpDbLogData.Size = New Size(872, 483)
+        gpDbLogData.Size = New Size(872, 492)
         gpDbLogData.TabIndex = 4
         gpDbLogData.TabStop = False
         gpDbLogData.Text = "Log Data"
@@ -1307,7 +1308,7 @@ Partial Class FormMain
         dgvDbLogData.Margin = New Padding(4, 3, 4, 3)
         dgvDbLogData.Name = "dgvDbLogData"
         dgvDbLogData.ReadOnly = True
-        dgvDbLogData.Size = New Size(864, 461)
+        dgvDbLogData.Size = New Size(864, 470)
         dgvDbLogData.TabIndex = 2
         ' 
         ' pnlDbLogs
@@ -1319,7 +1320,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 515)
+        pnlDbLogs.Location = New Point(4, 524)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1492,7 +1493,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 664)
+        tpDbInfo.Size = New Size(1182, 673)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1507,7 +1508,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 629)
+        pnlDbInfoButtons.Location = New Point(4, 638)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1620,7 +1621,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 664)
+        tpStParse.Size = New Size(1182, 673)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1706,7 +1707,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 664)
+        tpOptions.Size = New Size(1182, 673)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
@@ -2968,6 +2969,7 @@ Partial Class FormMain
         tlpButtons3.Controls.Add(btnRepoDiscardChanges, 1, 2)
         tlpButtons3.Controls.Add(btnManageInstallerVersions, 2, 0)
         tlpButtons3.Controls.Add(btnRunDatabaseStartLive, 3, 1)
+        tlpButtons3.Controls.Add(btnOpenLogs, 3, 2)
         tlpButtons3.Dock = DockStyle.Fill
         tlpButtons3.Location = New Point(0, 0)
         tlpButtons3.Margin = New Padding(4, 3, 4, 3)
@@ -3029,6 +3031,16 @@ Partial Class FormMain
         btnManageInstallerVersions.TabIndex = 32
         btnManageInstallerVersions.Text = "Manage Installer Versions"
         btnManageInstallerVersions.UseVisualStyleBackColor = True
+        ' 
+        ' btnOpenLogs
+        ' 
+        btnOpenLogs.Location = New Point(295, 117)
+        btnOpenLogs.Margin = New Padding(4, 3, 4, 3)
+        btnOpenLogs.Name = "btnOpenLogs"
+        btnOpenLogs.Size = New Size(89, 51)
+        btnOpenLogs.TabIndex = 33
+        btnOpenLogs.Text = "Open Logs"
+        btnOpenLogs.UseVisualStyleBackColor = True
         ' 
         ' Panel2
         ' 
@@ -3366,4 +3378,5 @@ Partial Class FormMain
     Friend WithEvents lblDbUseVersion As Label
     Friend WithEvents tbAddition As TextBox
     Friend WithEvents btnDbTest As Button
+    Friend WithEvents btnOpenLogs As Button
 End Class

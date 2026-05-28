@@ -37,6 +37,44 @@ Public Module GlobalErrorHandler
         ShowUserMessage()
     End Sub
 
+    Public Sub LogScriptResult(
+        commandLine As String,
+        scriptPath As String,
+        scriptArgs As String,
+        success As Boolean,
+        Optional ex As Exception = Nothing)
+
+        Try
+            Directory.CreateDirectory(LogFolder)
+
+            Dim logFile As String =
+                Path.Combine(LogFolder,
+                    $"ScriptRun_{DateTime.Now:yyyyMMdd}.log")
+
+            Using sw As New StreamWriter(logFile, True, Encoding.UTF8)
+                sw.WriteLine("----------------------------------------------------")
+                sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                sw.WriteLine("CommandLine: " & If(String.IsNullOrWhiteSpace(commandLine), "(none)", commandLine))
+                sw.WriteLine("ScriptPath: " & If(String.IsNullOrWhiteSpace(scriptPath), "(none)", scriptPath))
+                sw.WriteLine("ScriptArgs: " & If(String.IsNullOrWhiteSpace(scriptArgs), "(none)", scriptArgs))
+                sw.WriteLine("Result: " & If(success, "SUCCESS", "FAILURE"))
+
+                If ex IsNot Nothing Then
+                    sw.WriteLine()
+                    sw.WriteLine("Exception details:")
+                    WriteException(sw, ex)
+                End If
+
+                sw.WriteLine("----------------------------------------------------")
+                sw.WriteLine()
+            End Using
+
+        Catch
+            ' Never allow logging to throw
+        End Try
+
+    End Sub
+
     ' ---------------------------------------
     ' Main logging routine
     ' ---------------------------------------
@@ -104,6 +142,10 @@ Public Module GlobalErrorHandler
         File.AppendAllText(logFile,
             $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} {message}{Environment.NewLine}")
     End Sub
+
+    ' ---------------------------------------
+    ' Script run logging (used by ScriptExecutionController)
+    ' ---------------------------------------
 
     ' ---------------------------------------
     ' User-facing message
