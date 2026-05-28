@@ -209,7 +209,7 @@ Public Module UIHelpers
             If useTimeout Then
                 timer = CreateCountdownTimer(
                     timeoutSeconds,
-                    Function(sec) $"Closing automatically in {sec} seconds...",
+                    Function(sec) $"Message closing automatically in {sec} seconds...",
                     Sub() dlg.Close(),
                     lblCountdown)
             End If

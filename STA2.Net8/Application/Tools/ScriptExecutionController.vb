@@ -22,17 +22,14 @@
     End Function
 
     Public Async Function RunAsync(
-        scriptPath As String,
-        triggerButton As Button,
-        runningStatusText As String,
-        Optional overrideArgs As String = Nothing,
-        Optional flavorNames As IEnumerable(Of String) = Nothing
-    ) As Task
+    options As ScriptCommandOptions,
+    triggerButton As Button,
+    runningStatusText As String
+) As Task
 
         _scriptRunning = True
         _statusLocked = True
 
-        ' ✅ Set initial running status (FORCED)
         _form.SetExecutionStatusProxy(runningStatusText, force:=True)
 
         If triggerButton IsNot Nothing Then
@@ -42,66 +39,88 @@
         _form.RefreshUIProxy()
 
         Try
-            If String.IsNullOrWhiteSpace(scriptPath) Then
+            If options Is Nothing OrElse
+           String.IsNullOrWhiteSpace(options.ScriptPath) Then
+
                 MessageBox.Show(
-                    "Please select a script first.",
-                    "Missing Script",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning)
+                "Please select a script first.",
+                "Missing Script",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
                 Return
             End If
 
-            ' ✅ Always switch to output tab
+            ' ✅ Switch tab
             _form.tcSTA.SelectedTab = _form.tpGeneral
-
-            ' ✅ Let UI settle
             Await Task.Yield()
-
             _liveOutputManager.ForceRedraw()
 
-            Dim flags As String = "-Force"
-            Dim scriptArgs As String
+            ' ✅ Build args via model
+            Dim commandLine As String = BuildCommandLine(options)
 
-            If Not String.IsNullOrWhiteSpace(overrideArgs) Then
-                scriptArgs = $"{flags} {overrideArgs}".Trim()
-            Else
-                Dim flavorArgs As String =
-                    If(flavorNames IsNot Nothing,
-                       CodeHelper.BuildFlavorsArgument(flavorNames),
-                       "")
+            ' Extract scriptArgs (temporary for your existing runner)
+            Dim scriptArgsStart =
+            commandLine.IndexOf("""", commandLine.IndexOf("""") + 1) + 1
 
-                scriptArgs = $"{flags} {flavorArgs}".Trim()
-            End If
+            Dim scriptArgs As String =
+            commandLine.Substring(scriptArgsStart).Trim()
 
             Await PowerShellRunner.RunLiveScriptAsync(
-                options:=_options,
-                liveOutputManager:=_liveOutputManager,
-                setStatus:=Sub(text)
-                               ' ✅ ALWAYS force updates during execution
-                               _form.SetExecutionStatusProxy(text, force:=True)
-                           End Sub,
-                scriptRelativePath:=scriptPath,
-                scriptArgs:=scriptArgs,
-                runningStatusText:=runningStatusText
-            )
+            options:=_options,
+            liveOutputManager:=_liveOutputManager,
+            setStatus:=Sub(text)
+                           _form.SetExecutionStatusProxy(text, force:=True)
+                       End Sub,
+            scriptRelativePath:=options.ScriptPath,
+            scriptArgs:=scriptArgs,
+            runningStatusText:=runningStatusText
+        )
 
         Finally
-
             _scriptRunning = False
             _statusLocked = False
 
-            ' ✅ Re-enable UI trigger
             If triggerButton IsNot Nothing Then
                 triggerButton.Enabled = True
             End If
 
-            ' ✅ CLEAR status explicitly (FORCED)
             _form.SetExecutionStatusProxy(String.Empty, force:=True)
-
             _form.RefreshUIProxy()
-
         End Try
 
     End Function
+    Public Function BuildCommandLine(options As ScriptCommandOptions) As String
 
+        If options Is Nothing OrElse
+           String.IsNullOrWhiteSpace(options.ScriptPath) Then
+            Return String.Empty
+        End If
+
+        Dim scriptArgs As String = "-Force"
+
+        If Not String.IsNullOrWhiteSpace(options.OverrideArgs) Then
+            scriptArgs &= " " & options.OverrideArgs
+
+        Else
+            If options.FlavorNames IsNot Nothing Then
+                Dim flavorArgs = CodeHelper.BuildFlavorsArgument(options.FlavorNames)
+                If Not String.IsNullOrWhiteSpace(flavorArgs) Then
+                    scriptArgs &= " " & flavorArgs
+                End If
+            End If
+        End If
+
+        If options.UseVersion Then
+            Dim versionText = options.VersionText?.Trim()
+            If Not String.IsNullOrWhiteSpace(versionText) Then
+                scriptArgs &= $" -Version ""{versionText}"""
+            End If
+        End If
+
+        Dim cmd =
+            $"powershell -ExecutionPolicy Bypass -File ""{options.ScriptPath}"" {scriptArgs}"
+
+        Return cmd.Trim()
+
+    End Function
 End Class

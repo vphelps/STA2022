@@ -6,7 +6,8 @@
 		<UseWindowsForms>true</UseWindowsForms>
 
 		<!-- ✅ Correct Startup binding -->
-		<StartupObject>STA2.Net8.Startup</StartupObject>	
+		<StartupObject>STA2.Net8.Startup</StartupObject>
+		<ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>	
 	</PropertyGroup>
 
 	<!-- ✅ ADD THIS: ensures Startup.vb is compiled -->
@@ -37,6 +38,9 @@
 	  <None Remove="Application\Images\imgUnavailableBlack64.png" />
 	  <None Remove="Application\Images\imgWarning16.png" />
 	  <None Remove="Application\Images\imgWarning96.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="vernware_logo_XUD_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Application\Images\imgCheckMark16.png" />

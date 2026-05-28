@@ -352,7 +352,7 @@ Public Class FormMain
         _hoverHints.Add(lbFlavorsList, "🖱 Right-click → Apply selected flavors" & vbCrLf & "⚡ Double-click → Apply highlighted")
         _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with live output")
         _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
-
+        _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
     End Sub
     Private Sub InitializeFlavors()
 
@@ -542,29 +542,32 @@ Public Class FormMain
         Dim selectedFlavors As New List(Of String)
 
         For Each item As FlavorSelectionManager.SqlFileItem In
-            lbFlavorsList.SelectedItems.OfType(Of FlavorSelectionManager.SqlFileItem)()
+        lbFlavorsList.SelectedItems.OfType(Of FlavorSelectionManager.SqlFileItem)()
 
             selectedFlavors.Add(item.FlavorName)
         Next
 
         If selectedFlavors.Count = 0 Then Return
 
-        Dim flavorArgs As String =
-            CodeHelper.BuildFlavorsArgument(selectedFlavors)
-
         Dim description As String =
-            If(selectedFlavors.Count = 1,
-               $"Applying flavor '{selectedFlavors(0)}'",
-               $"Applying {selectedFlavors.Count} flavors")
+        If(selectedFlavors.Count = 1,
+           $"Applying flavor '{selectedFlavors(0)}'",
+           $"Applying {selectedFlavors.Count} flavors")
+
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = tbApplyFlavorDefault.Text,
+        .FlavorNames = selectedFlavors,
+        .UseVersion = cbDbUseVersion.Checked,
+        .VersionText = tbDbUseVersion.Text
+    }
 
         Await _scriptController.RunAsync(
-            scriptPath:=tbApplyFlavorDefault.Text,
-            triggerButton:=btnRunApplyFlavorLive,
-            runningStatusText:="Applying flavors (live output)…"
-        )
+        options:=cmdOptions,
+        triggerButton:=btnRunApplyFlavorLive,
+        runningStatusText:=description & " (live output)…"
+    )
 
     End Function
-
     Private Sub AppendColoredOutput(text As String, color As Color)
         If rtbLiveOutput.InvokeRequired Then
             rtbLiveOutput.Invoke(Sub() AppendColoredOutput(text, color))
@@ -1287,14 +1290,34 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
-        Await _scriptController.RunAsync(
-            scriptPath:=tbApplyFlavorDefault.Text,
-            triggerButton:=btnRunApplyFlavorLive,
-            runningStatusText:="Applying flavors (live output)…"
-        )
 
+        Dim defaultFlavors = _options?.DefaultFlavorNames
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+            MessageBox.Show(
+            "No default flavors are configured.",
+            "No Defaults",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
+            Return
+        End If
+
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = tbApplyFlavorDefault.Text,
+        .FlavorNames = defaultFlavors,
+        .UseVersion = cbDbUseVersion.Checked,
+        .VersionText = tbDbUseVersion.Text
+    }
+
+        Await _scriptController.RunAsync(
+        options:=cmdOptions,
+        triggerButton:=btnRunApplyFlavorLive,
+        runningStatusText:="Applying default flavors (live output)…"
+    )
 
     End Sub
+
+
     Private Async Sub btnRunDatabaseStartLive_Click(
     sender As Object,
     e As EventArgs
@@ -1312,23 +1335,29 @@ Public Class FormMain
             Return
         End If
 
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = tbDatabaseStartDefault.Text,
+        .FlavorNames = defaultFlavors,
+        .UseVersion = cbDbUseVersion.Checked,
+        .VersionText = tbDbUseVersion.Text
+    }
+
         Await _scriptController.RunAsync(
-        scriptPath:=tbDatabaseStartDefault.Text,
+        options:=cmdOptions,
         triggerButton:=btnRunDatabaseStartLive,
-        runningStatusText:="Starting database (live output)…",
-        flavorNames:=defaultFlavors
+        runningStatusText:="Starting database (live output)…"
     )
 
-        ' ✅ Step 6.5 cleanup (optional depending on where you are)
+        ' ✅ Refresh DB state after run
         DatabaseCoordinator.EvaluateDatabaseAvailability(
         form:=Me,
         connectionString:=ConfigValues.ConnectionString,
         configuredContainerName:=_options?.SqlContainerName
     )
+
         _uiStateController.Refresh()
 
     End Sub
-
 
     Private Sub btnBrowseStartScript_Click(sender As Object, e As EventArgs) Handles btnBrowseStartScript.Click
 
@@ -1719,8 +1748,8 @@ Public Class FormMain
     End Sub
     Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
 
-        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
-        Dim Executable As String = caller.Name.Replace("btn", "")
+        Dim caller = DirectCast(sender, Button)
+        Dim Executable = caller.Name.Replace("btn", "")
         If Executable = "AppWiz" Then
             Process.Start("control.exe", "appwiz.cpl")
         ElseIf Executable = "Services" Then
@@ -1733,7 +1762,7 @@ Public Class FormMain
         ElseIf Executable = "EventViewer" Then
             Process.Start("eventvwr.msc")
         Else
-            Diagnostics.Process.Start(Executable)
+            Process.Start(Executable)
         End If
     End Sub
     Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click
@@ -1935,17 +1964,17 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Async Sub tsmiApplyDefaultFlavors_Click(
-   sender As Object,
-   e As EventArgs
+    sender As Object,
+    e As EventArgs
 ) Handles tsmiApplyDefaultFlavors.Click
 
         ' ✅ Validate script path
         If String.IsNullOrWhiteSpace(tbApplyFlavorDefault.Text) Then
             MessageBox.Show(
-                "Please select an Apply Flavors script first.",
-                "Missing Script",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
+            "Please select an Apply Flavors script first.",
+            "Missing Script",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1954,27 +1983,32 @@ e As System.ComponentModel.CancelEventArgs
 
         If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
             MessageBox.Show(
-                "No default flavors are configured.",
-                "No Defaults",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            "No default flavors are configured.",
+            "No Defaults",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
             Return
         End If
 
-        ' ✅ Build argument string
-        Dim flavorCsv As String = String.Join(",", defaultFlavors)
-        Dim flavorArgs As String = $"-Flavors {flavorCsv}"
+        ' ✅ Build command options (NEW model-based approach)
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = tbApplyFlavorDefault.Text,
+        .FlavorNames = defaultFlavors,
+        .UseVersion = cbDbUseVersion.Checked,
+        .VersionText = tbDbUseVersion.Text
+    }
 
-        ' ✅ Call shared runner (includes -Force automatically)
+        ' ✅ Run script
         Await _scriptController.RunAsync(
-    scriptPath:=tbApplyFlavorDefault.Text,
-    triggerButton:=btnRunApplyFlavorLive,
-    runningStatusText:="Applying flavors (live output)…"
-)
+        options:=cmdOptions,
+        triggerButton:=btnRunApplyFlavorLive,
+        runningStatusText:="Applying default flavors (live output)…"
+    )
+
+        ' ✅ Clear selection after run
         lbFlavorsList.ClearSelected()
 
     End Sub
-
     Private Sub btnSTParse_Click(sender As Object, e As EventArgs) Handles btnStParse.Click, btnSTClear.Click
         If sender.Equals(btnSTClear) Then
             tbSTParse.Text = ""
@@ -2090,4 +2124,28 @@ e As System.ComponentModel.CancelEventArgs
             Not String.IsNullOrWhiteSpace(tslblExecutionStatus.Text)
     End Sub
 
+    Private Sub btnDbUseAdvVersion_Click(sender As Object, e As EventArgs) Handles btnDbUseAdvVersion.Click
+        tbDbUseVersion.Text = PCInfo.AdvantageVersion.ToString
+        tbAddition.Text = "USING '-Version " & PCInfo.AdvantageVersion.ToString & "'"
+    End Sub
+
+    Private Sub btnDbTest_Click(sender As Object, e As EventArgs) Handles btnDbTest.Click
+
+        Dim defaultFlavors = _options?.DefaultFlavorNames
+
+        Dim cmdOptions As New ScriptCommandOptions With {
+            .ScriptPath = tbDatabaseStartDefault.Text,
+            .FlavorNames = defaultFlavors,
+            .UseVersion = cbDbUseVersion.Checked,
+            .VersionText = tbDbUseVersion.Text
+        }
+
+        Dim cmd = _scriptController.BuildCommandLine(cmdOptions)
+
+        UIHelpers.TimedInfoPrompt(
+            "CommandLine:  " & cmd,
+            "Start Database Command Line Test",
+            timeoutSeconds:=10)
+
+    End Sub
 End Class
