@@ -4,8 +4,8 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
-
-		<!-- ✅ Correct Startup binding -->
+		<UseAppHost>true</UseAppHost>
+		<!-- optional <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
 		<StartupObject>STA2.Net8.Startup</StartupObject>
 		<ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>	
 	</PropertyGroup>

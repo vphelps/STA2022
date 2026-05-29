@@ -1013,58 +1013,6 @@ Public Class FormMain
 
     End Sub
 
-    'Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
-    '    If Variables.OfflineMode Then Return
-
-    '    If Not (rbDbTableSize.Checked Or rbDbFragmentation.Checked Or rbDbSizeByDay.Checked Or rbDbDeadlocks.Checked) Then
-    '        Return
-    '    End If
-
-    '    btnDbInfoRefresh.Enabled = False
-    '    Cursor.Current = Cursors.WaitCursor
-
-    '    Try
-    '        Dim query As String = String.Empty
-
-    '        If rbDbTableSize.Checked Then
-    '            query = DbInfo.DbSizeByTable
-    '        ElseIf rbDbFragmentation.Checked Then
-    '            query = DbInfo.DbFragmentation
-    '        ElseIf rbDbSizeByDay.Checked Then
-    '            query = String.Format(DbInfo.DbSizeByDay, ConfigValues.Database)
-    '        ElseIf rbDbDeadlocks.Checked Then
-    '            query = DbInfo.DbDeadlocks
-    '        End If
-
-    '        ' ---- SafeDb wrapper ----
-    '        Dim ds As DataSet = SafeDb.TryQuery(query)
-
-    '        If ds IsNot Nothing AndAlso ds.Tables.Count > 0 Then
-    '            dgvDbTableSize.DataSource = ds.Tables(0)
-    '        Else
-    '            dgvDbTableSize.DataSource = Nothing
-    '        End If
-
-    '        dgvDbTableSize.Refresh()
-
-    '    Catch ex As SafeDb.DatabaseOfflineException
-    '        DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbInfoRefresh")
-    '        dgvDbTableSize.DataSource = Nothing
-
-    '    Catch ex As Exception
-    '        MessageBox.Show(
-    '        $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
-    '        "Database Error",
-    '        MessageBoxButtons.OK,
-    '        MessageBoxIcon.Error
-    '    )
-    '        dgvDbTableSize.DataSource = Nothing
-
-    '    Finally
-    '        Cursor.Current = Cursors.Default
-    '        btnDbInfoRefresh.Enabled = True
-    '    End Try
-    'End Sub
     Private Sub btnDbInfoRefresh_Click(sender As Object, e As EventArgs) Handles btnDbInfoRefresh.Click
         If _databaseController Is Nothing Then Return
         _databaseController.RefreshInfo()
@@ -1083,83 +1031,6 @@ Public Class FormMain
         _databaseController.RefreshLogs()
     End Sub
 
-    'Private Sub btnDbLogRefresh_Click(sender As Object, e As EventArgs) Handles btnDbLogRefresh.Click, rbWebCloudUpdates.Click, rbMessageLog.Click
-    '    If Variables.OfflineMode Then Return
-
-    '    Try
-    '        If rbWebCloudUpdates.Checked Then
-
-    '            gpDbLogCount.Text = "Count per table"
-    '            gpDbLogData.Text = "All WebCloudUpdates Entries"
-
-    '            ' ---- SafeDb ----
-    '            Dim dsCount As DataSet = SafeDb.TryQuery(LogQueries.WebCloudTotalCount)
-
-    '            If dsCount IsNot Nothing AndAlso dsCount.Tables.Count > 0 Then
-    '                dgvDbLogCount.DataSource = dsCount.Tables(0)
-    '                dgvDbLogCount.Columns(0).Visible = False
-    '                dgvDbLogCount.Columns(1).HeaderText = "Table"
-    '                dgvDbLogCount.Columns(2).HeaderText = "Count"
-    '            Else
-    '                dgvDbLogCount.DataSource = Nothing
-    '            End If
-
-    '            Dim dsData As DataSet = SafeDb.TryQuery(LogQueries.WebCloudUpdates)
-
-    '            If dsData IsNot Nothing AndAlso dsData.Tables.Count > 0 Then
-    '                dgvDbLogData.DataSource = dsData.Tables(0)
-    '            Else
-    '                dgvDbLogData.DataSource = Nothing
-    '            End If
-
-    '        ElseIf rbMessageLog.Checked Then
-    '            CodeHelper.MsgLogBuilder(MessageLogFilters.Errors, MessageLogFilters.Limit, MessageLogFilters.DateRange)
-
-    '            gpDbLogCount.Text = "Errors per day"
-    '            gpDbLogData.Text = "MessageLog"
-
-    '            ' ---- SafeDb ----
-    '            Dim dsErrCount As DataSet = SafeDb.TryQuery(LogQueries.MessageLogErrorCount)
-
-    '            If dsErrCount IsNot Nothing AndAlso dsErrCount.Tables.Count > 0 Then
-    '                dgvDbLogCount.DataSource = dsErrCount.Tables(0)
-    '                dgvDbLogCount.Columns(0).Visible = True
-    '                dgvDbLogCount.Columns(0).HeaderText = "Date"
-    '                dgvDbLogCount.Columns(1).HeaderText = "Program"
-    '                dgvDbLogCount.Columns(2).HeaderText = "Count"
-    '            Else
-    '                dgvDbLogCount.DataSource = Nothing
-    '            End If
-
-    '            Dim dsLog As DataSet = SafeDb.TryQuery(LogQueries.MessageLog)
-
-    '            If dsLog IsNot Nothing AndAlso dsLog.Tables.Count > 0 Then
-    '                dgvDbLogData.DataSource = dsLog.Tables(0)
-    '                dgvDbLogData.Sort(dgvDbLogData.Columns(0), ListSortDirection.Descending)
-    '            Elseata.DataSource = Nothing
-    '            End If
-    '                dgvDbLogD
-
-    '        Else
-    '            gpDbLogData.Text = ""
-    '            gpDbLogCount.Text = ""
-    '            Return
-    '        End If
-
-    '        dgvDbLogData.Refresh()
-
-    '    Catch ex As SafeDb.DatabaseOfflineException
-    '        DatabaseCoordinator.GoOffline(Me, "Lost DB connection during DbLogRefresh")
-    '        dgvDbLogCount.DataSource = Nothing
-    '        dgvDbLogData.DataSource = Nothing
-
-    '    Catch ex As Exception
-    '        MessageBox.Show($"Database log refresh failed:{Environment.NewLine}{ex.Message}",
-    '                    "Database Error",
-    '                    MessageBoxButtons.OK,
-    '                    MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
     Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
 
         Cursor.Current = Cursors.WaitCursor
@@ -1173,22 +1044,11 @@ Public Class FormMain
         )
 
             If Not Variables.OfflineMode Then
-                'MessageBox.Show(
-                '"Reconnected to the database.",
-                '"Database",
-                'MessageBoxButtons.OK,
-                'MessageBoxIcon.Information)
-
                 UIHelpers.TimedInfoPrompt(message:="Reconnected to the database.", timeoutSeconds:=30, title:="Database")
 
             End If
 
         Catch ex As Exception
-            '    MessageBox.Show(
-            '    $"Reconnect failed: {ex.Message}",
-            '    "Database",
-            '    MessageBoxButtons.OK,
-            '    MessageBoxIcon.Error)
 
             UIHelpers.TimedErrorPrompt(message:=$"Reconnect failed: {ex.Message}", timeoutSeconds:=0, title:="Database")
         Finally
@@ -2369,4 +2229,24 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+
+        Try
+            Throw New InvalidOperationException("Inner test exception")
+        Catch ex As Exception
+            Throw New Exception("TEST: Error handling validation", ex)
+        End Try
+
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+
+        Try
+            Throw New InvalidOperationException("Inner failure")
+        Catch ex As Exception
+            Throw New Exception("TEST: Wrapped exception", ex)
+        End Try
+
+    End Sub
 End Class
