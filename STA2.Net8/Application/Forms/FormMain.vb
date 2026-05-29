@@ -352,6 +352,8 @@ Public Class FormMain
         _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with live output")
         _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
         _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
+        _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
+
     End Sub
     Private Sub InitializeFlavors()
 
@@ -2154,58 +2156,215 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-
-    Private Sub btnOpenLogs_Click(sender As Object, e As EventArgs) Handles btnOpenLogs.Click
+    Private Sub ShowSelectedLogFileInUI()
 
         Dim logFolder As String =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+
+        Using ofd As New OpenFileDialog()
+
+            With ofd
+                .Title = "Select a log file"
+                .Filter = "Log Files (*.log)|*.log|All Files (*.*)|*.*"
+                .InitialDirectory =
+                If(Directory.Exists(logFolder),
+                   logFolder,
+                   AppDomain.CurrentDomain.BaseDirectory)
+                .Multiselect = False
+            End With
+
+            If ofd.ShowDialog() <> DialogResult.OK Then Return
+
+            ' ✅ Use shared method
+            LoadLogFileIntoUI(ofd.FileName)
+
+        End Using
+
+    End Sub
+
+    Private Sub ShowLatestLogInUI()
+
+        Dim logFolder As String =
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
 
         If Not Directory.Exists(logFolder) Then
-            MessageBox.Show(
-                "Log folder does not exist yet.",
-                "Logs",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            MessageBox.Show("Log folder does not exist yet.")
             Return
         End If
 
-        Dim latestFile As String = Nothing
-
         Try
-            Dim files = Directory.GetFiles(logFolder, "*.log")
+            Dim latestFile =
+            Directory.GetFiles(logFolder, "*.log") _
+            .Select(Function(f) New FileInfo(f)) _
+            .OrderByDescending(Function(fi) fi.LastWriteTime) _
+            .FirstOrDefault()
 
-            If files.Length = 0 Then
-                MessageBox.Show(
-                    "No log files found yet.",
-                    "Logs",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information)
+            If latestFile Is Nothing Then
+                MessageBox.Show("No log files found.")
                 Return
             End If
 
-            latestFile = files _
-                .Select(Function(f) New FileInfo(f)) _
-                .OrderByDescending(Function(fi) fi.LastWriteTime) _
-                .First() _
-                .FullName
+            ' ✅ Use shared method
+            LoadLogFileIntoUI(latestFile.FullName)
+
+        Catch ex As Exception
+            MessageBox.Show("Error finding logs: " & ex.Message)
+        End Try
+
+    End Sub
+    Private Sub LoadLogFileIntoUI(filePath As String)
+
+        If String.IsNullOrWhiteSpace(filePath) OrElse Not File.Exists(filePath) Then
+            MessageBox.Show("Log file not found.")
+            Return
+        End If
+
+        Try
+            Dim content As String = File.ReadAllText(filePath)
+
+            tpLogs.Text = "Logs: " & Path.GetFileName(filePath)
+
+            ' ✅ Switch tab
+            tcSTA.SelectedTab = tpLogs
+
+            ' ✅ Fill viewer
+            rtbLogs.Clear()
+            rtbLogs.Text = content
+
+            rtbLogs.SelectionStart = rtbLogs.Text.Length
+            rtbLogs.ScrollToCaret()
 
         Catch ex As Exception
             MessageBox.Show(
-                "Unable to locate log files." & Environment.NewLine & ex.Message,
-                "Logs",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-            Return
+            "Error opening log file: " & ex.Message,
+            "Log Viewer",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
         End Try
 
+    End Sub
+    Private Sub btnViewLatestLog_Click(sender As Object, e As EventArgs) Handles btnViewLatestLog.Click
+        ShowLatestLogInUI()
+    End Sub
+
+    Private Sub btnOpenLogFile_Click(sender As Object, e As EventArgs) Handles btnOpenLogFile.Click
+        ShowSelectedLogFileInUI()
+    End Sub
+
+    Private Sub btnLastLogBlock_Click(sender As Object, e As EventArgs) Handles btnLastLogBlock.Click
+
+        Dim logFolder As String =
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+
+        If Not Directory.Exists(logFolder) Then
+            MessageBox.Show("Log folder does not exist yet.")
+            Return
+        End If
+
         Try
-            ' ✅ THIS is the IMPORTANT FIX
-            Dim argument As String = "/select,""" & latestFile & """"
-            Process.Start("explorer.exe", argument)
+            Dim latestFile =
+            Directory.GetFiles(logFolder, "*.log") _
+            .Select(Function(f) New FileInfo(f)) _
+            .OrderByDescending(Function(fi) fi.LastWriteTime) _
+            .FirstOrDefault()
+
+            If latestFile Is Nothing Then
+                MessageBox.Show("No log files found.")
+                Return
+            End If
+
+            ' ✅ Read file
+            Dim content As String = File.ReadAllText(latestFile.FullName)
+
+            ' ✅ Extract last execution block
+            Dim lastBlock As String = GetLastLogBlock(content)
+
+            ' ✅ Optional: truncate (important for prompt UI)
+            If lastBlock.Length > 2000 Then
+                lastBlock = lastBlock.Substring(0, 2000) &
+                        Environment.NewLine &
+                        "...(truncated)"
+            End If
+
+            ' ✅ Optional: dynamic title
+            Dim title As String = "Last Execution"
+
+            If lastBlock.Contains("FAILURE") Then
+                title &= " (FAILED)"
+            ElseIf lastBlock.Contains("SUCCESS") Then
+                title &= " (SUCCESS)"
+            End If
+
+            ' ✅ Show in prompt
+            UIHelpers.TimedInfoPrompt(
+            message:=lastBlock,
+            title:=title,
+            timeoutSeconds:=15)
 
         Catch ex As Exception
-            ' fallback: just open folder
-            Process.Start("explorer.exe", logFolder)
+            MessageBox.Show(
+            "Error loading log: " & ex.Message,
+            "Log Viewer",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+        End Try
+
+    End Sub
+    Private Function GetLastLogBlock(content As String) As String
+
+        If String.IsNullOrWhiteSpace(content) Then Return String.Empty
+
+        Dim separator As String = "----------------------------------------------------"
+
+        Dim parts = content.Split(
+        New String() {separator},
+        StringSplitOptions.RemoveEmptyEntries)
+
+        ' ✅ Find last NON-empty block
+        Dim lastBlock As String = parts _
+        .Select(Function(p) p.Trim()) _
+        .Where(Function(p) Not String.IsNullOrWhiteSpace(p)) _
+        .LastOrDefault()
+
+        If String.IsNullOrWhiteSpace(lastBlock) Then
+            Return content ' fallback
+        End If
+
+        Return separator & Environment.NewLine &
+           lastBlock & Environment.NewLine &
+           separator
+
+    End Function
+    Private Sub ShowLastLogBlockPrompt(filePath As String)
+
+        If String.IsNullOrWhiteSpace(filePath) OrElse Not File.Exists(filePath) Then
+            MessageBox.Show("Log file not found.")
+            Return
+        End If
+
+        Try
+            Dim content As String = File.ReadAllText(filePath)
+
+            ' ✅ Extract only last execution block
+            Dim lastBlock As String = GetLastLogBlock(content)
+
+            ' ✅ Optional: truncate if too long (UI prompt limitation)
+            If lastBlock.Length > 2000 Then
+                lastBlock = lastBlock.Substring(0, 2000) & Environment.NewLine & "...(truncated)"
+            End If
+
+            ' ✅ Show in prompt
+            UIHelpers.TimedInfoPrompt(
+                message:=lastBlock,
+                title:="Last Script Execution",
+                timeoutSeconds:=15)
+
+        Catch ex As Exception
+            MessageBox.Show(
+                "Error reading log file: " & ex.Message,
+                "Log Viewer",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
         End Try
 
     End Sub
