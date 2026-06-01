@@ -8,6 +8,8 @@ Public Module GlobalErrorHandler
     Private ReadOnly LogFolder As String =
         Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
 
+    Public Event OnErrorLogged(ex As Exception, source As String)
+
     ' ---------------------------------------
     ' UI thread exceptions
     ' ---------------------------------------
@@ -16,7 +18,7 @@ Public Module GlobalErrorHandler
         e As ThreadExceptionEventArgs)
 
         LogException("UI Thread Exception", e.Exception)
-        ShowUserMessage()
+        RaiseEvent OnErrorLogged(e.Exception, "UI Thread Exception")
     End Sub
 
     ' ---------------------------------------
@@ -30,11 +32,11 @@ Public Module GlobalErrorHandler
 
         If ex IsNot Nothing Then
             LogException("Unhandled Domain Exception", ex)
+            RaiseEvent OnErrorLogged(ex, "Unhandled Domain Exception")
         Else
             LogText("Unhandled non‑Exception object thrown.")
         End If
 
-        ShowUserMessage()
     End Sub
 
     Public Sub LogScriptResult(

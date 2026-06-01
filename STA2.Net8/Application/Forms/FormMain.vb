@@ -69,7 +69,36 @@ Public Class FormMain
         End If
 
     End Sub
+    Private Sub ShowErrorPopup(ex As Exception, source As String)
+        If ex Is Nothing Then Return
+
+        Dim sb As New Text.StringBuilder()
+        sb.AppendLine("Message:")
+        sb.AppendLine(ex.Message)
+        sb.AppendLine()
+        sb.AppendLine("Source:")
+        sb.AppendLine(source)
+        sb.AppendLine()
+        sb.AppendLine("Time:")
+        sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+
+        Dim summary As String = sb.ToString()
+
+        Dim result As DialogResult = UIHelpers.TimedYesNoPrompt(
+        owner:=Me,
+        message:=summary,
+        title:="Application Error",
+        timeoutSeconds:=15,
+        defaultChoice:=DialogResult.No
+    )
+
+        If result = DialogResult.Yes Then
+            ShowLatestLogInUI()
+        End If
+    End Sub
+
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf ShowErrorPopup
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
@@ -2231,22 +2260,19 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
 
-
-        Try
-            Throw New InvalidOperationException("Inner test exception")
-        Catch ex As Exception
-            Throw New Exception("TEST: Error handling validation", ex)
-        End Try
+        ' ✅ Force a test exception
+        Throw New Exception("TEST: Popup + Logging validation")
 
     End Sub
 
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
 
         Try
-            Throw New InvalidOperationException("Inner failure")
+            Throw New InvalidOperationException("Inner test failure")
         Catch ex As Exception
-            Throw New Exception("TEST: Wrapped exception", ex)
+            Throw New Exception("TEST: Nested exception popup", ex)
         End Try
+
 
     End Sub
 End Class

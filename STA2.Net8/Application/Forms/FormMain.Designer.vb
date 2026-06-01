@@ -142,6 +142,13 @@ Partial Class FormMain
         btnStParse = New Button()
         btnSTClear = New Button()
         tbSTParse = New TextBox()
+        tpLogs = New TabPage()
+        tlpApplicationLogs = New TableLayoutPanel()
+        rtbLogs = New RichTextBox()
+        flpAppLogsButtons = New FlowLayoutPanel()
+        btnViewLatestLog = New Button()
+        btnOpenLogFile = New Button()
+        btnLastLogBlock = New Button()
         tpOptions = New TabPage()
         tbMLTest1 = New TextBox()
         btnTest2 = New Button()
@@ -187,13 +194,6 @@ Partial Class FormMain
         tbTest1 = New TextBox()
         tbTest2 = New TextBox()
         tbTest3 = New TextBox()
-        tpLogs = New TabPage()
-        tlpApplicationLogs = New TableLayoutPanel()
-        rtbLogs = New RichTextBox()
-        flpAppLogsButtons = New FlowLayoutPanel()
-        btnViewLatestLog = New Button()
-        btnOpenLogFile = New Button()
-        btnLastLogBlock = New Button()
         gpDBStartVersion = New GroupBox()
         btnDbTest = New Button()
         tbAddition = New TextBox()
@@ -310,6 +310,9 @@ Partial Class FormMain
         CType(dgvDbTableSize, ComponentModel.ISupportInitialize).BeginInit()
         tpStParse.SuspendLayout()
         Panel1.SuspendLayout()
+        tpLogs.SuspendLayout()
+        tlpApplicationLogs.SuspendLayout()
+        flpAppLogsButtons.SuspendLayout()
         tpOptions.SuspendLayout()
         gpFlavorsSettings.SuspendLayout()
         gbAppLaunchSettings.SuspendLayout()
@@ -318,9 +321,6 @@ Partial Class FormMain
         gbAppOptions.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         gpAdvUpgrade.SuspendLayout()
-        tpLogs.SuspendLayout()
-        tlpApplicationLogs.SuspendLayout()
-        flpAppLogsButtons.SuspendLayout()
         gpDBStartVersion.SuspendLayout()
         gpCommonApps.SuspendLayout()
         tlpButtons2.SuspendLayout()
@@ -369,7 +369,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.Controls.Add(gpCommonApps)
         SplitContainer1.Panel2.Controls.Add(gbAdvApps)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 692
+        SplitContainer1.SplitterDistance = 698
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -381,14 +381,14 @@ Partial Class FormMain
         tcSTA.Controls.Add(tpDbLogs)
         tcSTA.Controls.Add(tpDbInfo)
         tcSTA.Controls.Add(tpStParse)
-        tcSTA.Controls.Add(tpOptions)
         tcSTA.Controls.Add(tpLogs)
+        tcSTA.Controls.Add(tpOptions)
         tcSTA.Dock = DockStyle.Fill
         tcSTA.Location = New Point(0, 0)
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 688)
+        tcSTA.Size = New Size(1190, 694)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -401,7 +401,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 660)
+        tpGeneral.Size = New Size(1182, 666)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -576,7 +576,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 659)
+        tpSysInfo.Size = New Size(1182, 665)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -993,7 +993,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 659)
+        tpAdvData.Size = New Size(1182, 665)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1206,7 +1206,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 659)
+        tpDbLogs.Size = New Size(1182, 665)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1225,7 +1225,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 484)
+        tlpLogData.Size = New Size(1161, 490)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1328,7 +1328,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 510)
+        pnlDbLogs.Location = New Point(4, 516)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1501,7 +1501,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 659)
+        tpDbInfo.Size = New Size(1182, 665)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1516,7 +1516,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 624)
+        pnlDbInfoButtons.Location = New Point(4, 630)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1629,7 +1629,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 659)
+        tpStParse.Size = New Size(1182, 665)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1698,6 +1698,83 @@ Partial Class FormMain
         tbSTParse.Size = New Size(975, 501)
         tbSTParse.TabIndex = 2
         ' 
+        ' tpLogs
+        ' 
+        tpLogs.Controls.Add(tlpApplicationLogs)
+        tpLogs.Location = New Point(4, 24)
+        tpLogs.Name = "tpLogs"
+        tpLogs.Size = New Size(1182, 665)
+        tpLogs.TabIndex = 9
+        tpLogs.Text = "Application Logs"
+        tpLogs.UseVisualStyleBackColor = True
+        ' 
+        ' tlpApplicationLogs
+        ' 
+        tlpApplicationLogs.ColumnCount = 1
+        tlpApplicationLogs.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
+        tlpApplicationLogs.Controls.Add(rtbLogs, 0, 0)
+        tlpApplicationLogs.Controls.Add(flpAppLogsButtons, 0, 1)
+        tlpApplicationLogs.Dock = DockStyle.Fill
+        tlpApplicationLogs.Location = New Point(0, 0)
+        tlpApplicationLogs.Name = "tlpApplicationLogs"
+        tlpApplicationLogs.RowCount = 2
+        tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 89.6124039F))
+        tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 10.3875971F))
+        tlpApplicationLogs.Size = New Size(1182, 665)
+        tlpApplicationLogs.TabIndex = 1
+        ' 
+        ' rtbLogs
+        ' 
+        rtbLogs.Dock = DockStyle.Fill
+        rtbLogs.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        rtbLogs.Location = New Point(3, 3)
+        rtbLogs.Name = "rtbLogs"
+        rtbLogs.ReadOnly = True
+        rtbLogs.Size = New Size(1176, 589)
+        rtbLogs.TabIndex = 0
+        rtbLogs.Text = ""
+        ' 
+        ' flpAppLogsButtons
+        ' 
+        flpAppLogsButtons.Controls.Add(btnViewLatestLog)
+        flpAppLogsButtons.Controls.Add(btnOpenLogFile)
+        flpAppLogsButtons.Controls.Add(btnLastLogBlock)
+        flpAppLogsButtons.Dock = DockStyle.Fill
+        flpAppLogsButtons.Location = New Point(3, 598)
+        flpAppLogsButtons.Name = "flpAppLogsButtons"
+        flpAppLogsButtons.Size = New Size(1176, 64)
+        flpAppLogsButtons.TabIndex = 1
+        ' 
+        ' btnViewLatestLog
+        ' 
+        btnViewLatestLog.Location = New Point(4, 3)
+        btnViewLatestLog.Margin = New Padding(4, 3, 4, 3)
+        btnViewLatestLog.Name = "btnViewLatestLog"
+        btnViewLatestLog.Size = New Size(89, 51)
+        btnViewLatestLog.TabIndex = 34
+        btnViewLatestLog.Text = "Open Latest Log"
+        btnViewLatestLog.UseVisualStyleBackColor = True
+        ' 
+        ' btnOpenLogFile
+        ' 
+        btnOpenLogFile.Location = New Point(101, 3)
+        btnOpenLogFile.Margin = New Padding(4, 3, 4, 3)
+        btnOpenLogFile.Name = "btnOpenLogFile"
+        btnOpenLogFile.Size = New Size(89, 51)
+        btnOpenLogFile.TabIndex = 33
+        btnOpenLogFile.Text = "Open Log File"
+        btnOpenLogFile.UseVisualStyleBackColor = True
+        ' 
+        ' btnLastLogBlock
+        ' 
+        btnLastLogBlock.Location = New Point(198, 3)
+        btnLastLogBlock.Margin = New Padding(4, 3, 4, 3)
+        btnLastLogBlock.Name = "btnLastLogBlock"
+        btnLastLogBlock.Size = New Size(89, 51)
+        btnLastLogBlock.TabIndex = 35
+        btnLastLogBlock.Text = "Last Execution"
+        btnLastLogBlock.UseVisualStyleBackColor = True
+        ' 
         ' tpOptions
         ' 
         tpOptions.BackColor = Color.Gray
@@ -1715,7 +1792,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 660)
+        tpOptions.Size = New Size(1182, 666)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
@@ -2204,83 +2281,6 @@ Partial Class FormMain
         tbTest3.Size = New Size(271, 23)
         tbTest3.TabIndex = 21
         tbTest3.Text = "tbTest3"
-        ' 
-        ' tpLogs
-        ' 
-        tpLogs.Controls.Add(tlpApplicationLogs)
-        tpLogs.Location = New Point(4, 24)
-        tpLogs.Name = "tpLogs"
-        tpLogs.Size = New Size(1182, 659)
-        tpLogs.TabIndex = 9
-        tpLogs.Text = "Application Logs"
-        tpLogs.UseVisualStyleBackColor = True
-        ' 
-        ' tlpApplicationLogs
-        ' 
-        tlpApplicationLogs.ColumnCount = 1
-        tlpApplicationLogs.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
-        tlpApplicationLogs.Controls.Add(rtbLogs, 0, 0)
-        tlpApplicationLogs.Controls.Add(flpAppLogsButtons, 0, 1)
-        tlpApplicationLogs.Dock = DockStyle.Fill
-        tlpApplicationLogs.Location = New Point(0, 0)
-        tlpApplicationLogs.Name = "tlpApplicationLogs"
-        tlpApplicationLogs.RowCount = 2
-        tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 89.6124039F))
-        tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 10.3875971F))
-        tlpApplicationLogs.Size = New Size(1182, 659)
-        tlpApplicationLogs.TabIndex = 1
-        ' 
-        ' rtbLogs
-        ' 
-        rtbLogs.Dock = DockStyle.Fill
-        rtbLogs.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        rtbLogs.Location = New Point(3, 3)
-        rtbLogs.Name = "rtbLogs"
-        rtbLogs.ReadOnly = True
-        rtbLogs.Size = New Size(1176, 584)
-        rtbLogs.TabIndex = 0
-        rtbLogs.Text = ""
-        ' 
-        ' flpAppLogsButtons
-        ' 
-        flpAppLogsButtons.Controls.Add(btnViewLatestLog)
-        flpAppLogsButtons.Controls.Add(btnOpenLogFile)
-        flpAppLogsButtons.Controls.Add(btnLastLogBlock)
-        flpAppLogsButtons.Dock = DockStyle.Fill
-        flpAppLogsButtons.Location = New Point(3, 593)
-        flpAppLogsButtons.Name = "flpAppLogsButtons"
-        flpAppLogsButtons.Size = New Size(1176, 63)
-        flpAppLogsButtons.TabIndex = 1
-        ' 
-        ' btnViewLatestLog
-        ' 
-        btnViewLatestLog.Location = New Point(4, 3)
-        btnViewLatestLog.Margin = New Padding(4, 3, 4, 3)
-        btnViewLatestLog.Name = "btnViewLatestLog"
-        btnViewLatestLog.Size = New Size(89, 51)
-        btnViewLatestLog.TabIndex = 34
-        btnViewLatestLog.Text = "Open Latest Log"
-        btnViewLatestLog.UseVisualStyleBackColor = True
-        ' 
-        ' btnOpenLogFile
-        ' 
-        btnOpenLogFile.Location = New Point(101, 3)
-        btnOpenLogFile.Margin = New Padding(4, 3, 4, 3)
-        btnOpenLogFile.Name = "btnOpenLogFile"
-        btnOpenLogFile.Size = New Size(89, 51)
-        btnOpenLogFile.TabIndex = 33
-        btnOpenLogFile.Text = "Open Log File"
-        btnOpenLogFile.UseVisualStyleBackColor = True
-        ' 
-        ' btnLastLogBlock
-        ' 
-        btnLastLogBlock.Location = New Point(198, 3)
-        btnLastLogBlock.Margin = New Padding(4, 3, 4, 3)
-        btnLastLogBlock.Name = "btnLastLogBlock"
-        btnLastLogBlock.Size = New Size(89, 51)
-        btnLastLogBlock.TabIndex = 35
-        btnLastLogBlock.Text = "Last Execution"
-        btnLastLogBlock.UseVisualStyleBackColor = True
         ' 
         ' gpDBStartVersion
         ' 
@@ -3190,6 +3190,9 @@ Partial Class FormMain
         tpStParse.ResumeLayout(False)
         tpStParse.PerformLayout()
         Panel1.ResumeLayout(False)
+        tpLogs.ResumeLayout(False)
+        tlpApplicationLogs.ResumeLayout(False)
+        flpAppLogsButtons.ResumeLayout(False)
         tpOptions.ResumeLayout(False)
         tpOptions.PerformLayout()
         gpFlavorsSettings.ResumeLayout(False)
@@ -3202,9 +3205,6 @@ Partial Class FormMain
         TableLayoutPanel1.PerformLayout()
         gpAdvUpgrade.ResumeLayout(False)
         gpAdvUpgrade.PerformLayout()
-        tpLogs.ResumeLayout(False)
-        tlpApplicationLogs.ResumeLayout(False)
-        flpAppLogsButtons.ResumeLayout(False)
         gpDBStartVersion.ResumeLayout(False)
         gpDBStartVersion.PerformLayout()
         gpCommonApps.ResumeLayout(False)
