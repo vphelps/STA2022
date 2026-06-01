@@ -191,6 +191,7 @@ Public Class FormMain
         '_databaseController.RefreshInfo()
         gpMessageLogFilters.Enabled = rbMessageLog.Checked
         '_databaseController.RefreshLogs()
+        UpdateDbVersionState()
 
         DatabaseCoordinator.EvaluateDatabaseAvailability(
         form:=Me,
@@ -242,7 +243,7 @@ Public Class FormMain
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        tcSTA.SelectedTab = tpOptions
+        'tcSTA.SelectedTab = tpOptions
 #End If
 
         BuildServicesUI()
@@ -2047,11 +2048,11 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub btnDbUseAdvVersion_Click(sender As Object, e As EventArgs) Handles btnDbUseAdvVersion.Click
+        cbDbUseVersion.Checked = True
         tbDbUseVersion.Text = PCInfo.AdvantageVersion.ToString
-        tbAddition.Text = "USING '-Version " & PCInfo.AdvantageVersion.ToString & "'"
     End Sub
 
-    Private Sub btnDbTest_Click(sender As Object, e As EventArgs) Handles btnDbTest.Click
+    Private Sub btnDbTest_Click(sender As Object, e As EventArgs)
 
         Dim defaultFlavors = _options?.DefaultFlavorNames
 
@@ -2063,14 +2064,14 @@ e As System.ComponentModel.CancelEventArgs
         }
 
         ' ✅ NEW: get structured args
-        Dim args As String = _scriptController.BuildScriptArgs(cmdOptions)
+        Dim args = _scriptController.BuildScriptArgs(cmdOptions)
 
         ' ✅ Show BOTH for clarity
-        Dim output As String =
+        Dim output =
             "Args:" & Environment.NewLine &
             args
 
-        UIHelpers.TimedInfoPrompt(
+        TimedInfoPrompt(
             output,
             "Start Database Command Line Test",
             timeoutSeconds:=10)
@@ -2412,4 +2413,27 @@ e As System.ComponentModel.CancelEventArgs
         End Try
 
     End Sub
+
+
+    Private Sub cbDbUseVersion_CheckedChanged(sender As Object, e As EventArgs) Handles cbDbUseVersion.CheckedChanged
+
+        UpdateDbVersionState()
+
+    End Sub
+    Private Sub UpdateDbVersionState()
+
+        Dim isEnabled = cbDbUseVersion.Checked
+
+        tbDbUseVersion.Enabled = isEnabled
+        tbDbUseVersion.BackColor = If(isEnabled, SystemColors.Window, SystemColors.Control)
+
+        If Not isEnabled Then
+            tbDbUseVersion.Text = String.Empty
+        Else
+            tbDbUseVersion.Select()
+        End If
+
+
+    End Sub
+
 End Class
