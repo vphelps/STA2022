@@ -84,18 +84,8 @@ Public Class FormMain
 
         Dim summary As String = sb.ToString()
 
-        If cbTest.Checked Then
-            UIHelpers.TimedErrorPrompt(
-            owner:=Me,
-            message:=summary,
-            title:="Application Error",
-            timeoutSeconds:=15
-            )
 
-
-        Else
-
-            Dim result = UIHelpers.TimedErrorPrompt(
+        Dim result = UIHelpers.TimedErrorPrompt(
     owner:=Me,
     message:=summary,
     title:="Application Error",
@@ -106,13 +96,38 @@ Public Class FormMain
     button2Result:=DialogResult.Yes
 )
 
-            If result = DialogResult.Yes Then
-                ShowLatestLogInUI()
-            End If
-
+        If result = DialogResult.Yes Then
+            ShowLatestLogInUI()
         End If
 
+
     End Sub
+    Private Function GetLastFailedLogBlock(content As String) As String
+
+        If String.IsNullOrWhiteSpace(content) Then Return String.Empty
+
+        Dim separator As String = "----------------------------------------------------"
+
+        Dim parts = content.Split(
+        New String() {separator},
+        StringSplitOptions.RemoveEmptyEntries)
+
+        ' ✅ Find last block containing FAILURE
+        Dim failedBlock As String =
+        parts _
+        .Select(Function(p) p.Trim()) _
+        .Where(Function(p) Not String.IsNullOrWhiteSpace(p) AndAlso p.Contains("FAILURE")) _
+        .LastOrDefault()
+
+        If String.IsNullOrWhiteSpace(failedBlock) Then
+            Return Nothing ' no failures found
+        End If
+
+        Return separator & Environment.NewLine &
+           failedBlock & Environment.NewLine &
+           separator
+
+    End Function
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf ShowErrorPopup
@@ -2277,49 +2292,124 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
 
-        Dim result = UIHelpers.TimedErrorPrompt(
-        owner:=Me,
-        message:="Simulated script failure. What would you like to do?",
-        title:="Test: Decision Prompt",
-        timeoutSeconds:=20,
-        button1Text:="Retry",
-        button1Result:=DialogResult.Retry,
-        button2Text:="View Logs",
-        button2Result:=DialogResult.Yes,
-        button3Text:="Cancel",
-        button3Result:=DialogResult.Cancel,
-        defaultButtonIndex:=1,   ' ✅ Enter = Retry
-        cancelButtonIndex:=3     ' ✅ Esc = Cancel
-    )
 
-        Select Case result
-            Case DialogResult.Retry
-                MessageBox.Show("Retry selected")
+        Try
+            Try
+                ' Simulate root cause (file not found)
+                IO.File.ReadAllText("Z:\missing\file.txt")
 
-            Case DialogResult.Yes
-                MessageBox.Show("View Logs selected")
-                ShowLatestLogInUI()
+            Catch innerEx As Exception
+                Throw New InvalidOperationException("Failed during script execution stage", innerEx)
+            End Try
 
-            Case DialogResult.Cancel
-                MessageBox.Show("Cancelled")
+        Catch ex As Exception
 
-        End Select
+            GlobalErrorHandler.LogScriptResult(
+            commandLine:="script.cmd /run",
+            scriptPath:="script.cmd",
+            scriptArgs:="/run",
+            success:=False,
+            ex:=ex)
 
+            MessageBox.Show("Nested failure logged.")
+
+        End Try
     End Sub
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
 
-        Dim result = UIHelpers.TimedErrorPrompt(
-    Me,
-    "Test message",
-    "Test",
-    10,
-    "Retry", DialogResult.Retry,
-    "Logs", DialogResult.Yes,
-    "Cancel", DialogResult.Cancel,
-    defaultButtonIndex:=1,
-    cancelButtonIndex:=3
-)
+        Try
+            ' ✅ Simulate script execution failure
+            Dim scriptPath As String = "C:\Scripts\TestScript.ps1"
+            Dim scriptArgs As String = "-TestMode"
+            Dim commandLine As String = $"{scriptPath} {scriptArgs}"
+
+            ' ✅ Simulate something going wrong
+            Throw New Exception("TEST: Simulated script execution failure")
+
+        Catch ex As Exception
+
+            ' ✅ Log the failure using your existing system
+            GlobalErrorHandler.LogScriptResult(
+            commandLine:="C:\Scripts\TestScript.ps1 -TestMode",
+            scriptPath:="C:\Scripts\TestScript.ps1",
+            scriptArgs:="-TestMode",
+            success:=False,
+            ex:=ex)
+
+            ' ✅ Optional: notify user
+            MessageBox.Show("Simulated failure logged. Use 'Last Failed' to verify.")
+
+        End Try
 
     End Sub
 
+    Private Sub btnLastFailed_Click(sender As Object, e As EventArgs) Handles btnLastFailed.Click
+
+        Dim logFolder As String =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+
+        If Not Directory.Exists(logFolder) Then
+            MessageBox.Show("Log folder does not exist yet.")
+            Return
+        End If
+
+        Try
+            ' ✅ Get latest log file
+            Dim latestFile =
+                Directory.GetFiles(logFolder, "*.log") _
+                .Select(Function(f) New FileInfo(f)) _
+                .OrderByDescending(Function(fi) fi.LastWriteTime) _
+                .FirstOrDefault()
+
+            If latestFile Is Nothing Then
+                MessageBox.Show("No log files found.")
+                Return
+            End If
+
+            Dim content As String = File.ReadAllText(latestFile.FullName)
+
+            ' ✅ Extract LAST FAILED block
+            Dim failedBlock As String = GetLastFailedLogBlock(content)
+            failedBlock = "Open full log file for full details and to copy failure data." & Environment.NewLine & Environment.NewLine & failedBlock
+
+
+
+            If String.IsNullOrWhiteSpace(failedBlock) Then
+                UIHelpers.TimedInfoPrompt(
+                    Me,
+                    "No failed executions found in this log.",
+                    "Last Failed",
+                    5)
+                Return
+            End If
+
+            ' ✅ Optional: truncate for dialog
+            If failedBlock.Length > 1500 Then
+                failedBlock = failedBlock.Substring(0, 1500) &
+                              Environment.NewLine & "...(truncated)"
+            End If
+
+            ' ✅ Show using your new multi-button system
+            Dim result = UIHelpers.TimedErrorPrompt(
+                owner:=Me,
+                message:=failedBlock,
+                title:="Last FAILED Execution",
+                timeoutSeconds:=20,
+                button1Text:="Dismiss",
+                button1Result:=DialogResult.No,
+                button2Text:="View Full Log",
+                button2Result:=DialogResult.Yes,
+                defaultButtonIndex:=1,
+                cancelButtonIndex:=1
+            )
+
+            If result = DialogResult.Yes Then
+                ShowLatestLogInUI()
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("Error retrieving failed execution: " & ex.Message)
+        End Try
+
+    End Sub
 End Class
