@@ -84,17 +84,34 @@ Public Class FormMain
 
         Dim summary As String = sb.ToString()
 
-        Dim result As DialogResult = UIHelpers.TimedYesNoPrompt(
-        owner:=Me,
-        message:=summary,
-        title:="Application Error",
-        timeoutSeconds:=15,
-        defaultChoice:=DialogResult.No
-    )
+        If cbTest.Checked Then
+            UIHelpers.TimedErrorPrompt(
+            owner:=Me,
+            message:=summary,
+            title:="Application Error",
+            timeoutSeconds:=15
+            )
 
-        If result = DialogResult.Yes Then
-            ShowLatestLogInUI()
+
+        Else
+
+            Dim result = UIHelpers.TimedErrorPrompt(
+    owner:=Me,
+    message:=summary,
+    title:="Application Error",
+    timeoutSeconds:=15,
+    button1Text:="Dismiss",
+    button1Result:=DialogResult.No,
+    button2Text:="View Logs",
+    button2Result:=DialogResult.Yes
+)
+
+            If result = DialogResult.Yes Then
+                ShowLatestLogInUI()
+            End If
+
         End If
+
     End Sub
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -210,7 +227,7 @@ Public Class FormMain
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
 #If DEBUG Then
-        'tcSTA.SelectedTab = tpOptions
+        tcSTA.SelectedTab = tpOptions
 #End If
 
         BuildServicesUI()
@@ -2260,19 +2277,49 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
 
-        ' ✅ Force a test exception
-        Throw New Exception("TEST: Popup + Logging validation")
+        Dim result = UIHelpers.TimedErrorPrompt(
+        owner:=Me,
+        message:="Simulated script failure. What would you like to do?",
+        title:="Test: Decision Prompt",
+        timeoutSeconds:=20,
+        button1Text:="Retry",
+        button1Result:=DialogResult.Retry,
+        button2Text:="View Logs",
+        button2Result:=DialogResult.Yes,
+        button3Text:="Cancel",
+        button3Result:=DialogResult.Cancel,
+        defaultButtonIndex:=1,   ' ✅ Enter = Retry
+        cancelButtonIndex:=3     ' ✅ Esc = Cancel
+    )
+
+        Select Case result
+            Case DialogResult.Retry
+                MessageBox.Show("Retry selected")
+
+            Case DialogResult.Yes
+                MessageBox.Show("View Logs selected")
+                ShowLatestLogInUI()
+
+            Case DialogResult.Cancel
+                MessageBox.Show("Cancelled")
+
+        End Select
 
     End Sub
-
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
 
-        Try
-            Throw New InvalidOperationException("Inner test failure")
-        Catch ex As Exception
-            Throw New Exception("TEST: Nested exception popup", ex)
-        End Try
-
+        Dim result = UIHelpers.TimedErrorPrompt(
+    Me,
+    "Test message",
+    "Test",
+    10,
+    "Retry", DialogResult.Retry,
+    "Logs", DialogResult.Yes,
+    "Cancel", DialogResult.Cancel,
+    defaultButtonIndex:=1,
+    cancelButtonIndex:=3
+)
 
     End Sub
+
 End Class
