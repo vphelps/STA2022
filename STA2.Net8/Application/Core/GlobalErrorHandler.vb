@@ -8,6 +8,8 @@ Public Module GlobalErrorHandler
     Private ReadOnly LogFolder As String =
         Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
 
+    Public Event OnErrorLogged(ex As Exception, source As String)
+
     ' ---------------------------------------
     ' UI thread exceptions
     ' ---------------------------------------
@@ -16,7 +18,7 @@ Public Module GlobalErrorHandler
         e As ThreadExceptionEventArgs)
 
         LogException("UI Thread Exception", e.Exception)
-        ShowUserMessage()
+        RaiseEvent OnErrorLogged(e.Exception, "UI Thread Exception")
     End Sub
 
     ' ---------------------------------------
@@ -30,11 +32,51 @@ Public Module GlobalErrorHandler
 
         If ex IsNot Nothing Then
             LogException("Unhandled Domain Exception", ex)
+            RaiseEvent OnErrorLogged(ex, "Unhandled Domain Exception")
         Else
             LogText("Unhandled non‑Exception object thrown.")
         End If
 
-        ShowUserMessage()
+    End Sub
+
+    Public Sub LogScriptResult(
+        commandLine As String,
+        scriptPath As String,
+        scriptArgs As String,
+        success As Boolean,
+        Optional ex As Exception = Nothing)
+
+        Try
+            Directory.CreateDirectory(LogFolder)
+
+            Dim logFile As String =
+                Path.Combine(LogFolder,
+                    $"ScriptRun_{DateTime.Now:yyyyMMdd}.log")
+
+            Using sw As New StreamWriter(logFile, True, Encoding.UTF8)
+                sw.WriteLine("----------------------------------------------------")
+                sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                sw.WriteLine("CommandLine: " & If(String.IsNullOrWhiteSpace(commandLine), "(none)", commandLine))
+                sw.WriteLine("ScriptPath: " & If(String.IsNullOrWhiteSpace(scriptPath), "(none)", scriptPath))
+                sw.WriteLine("ScriptArgs: " & If(String.IsNullOrWhiteSpace(scriptArgs), "(none)", scriptArgs))
+                sw.WriteLine("Result: " & If(success, "SUCCESS", "FAILURE"))
+                sw.WriteLine()
+
+
+                If ex IsNot Nothing Then
+                    sw.WriteLine()
+                    sw.WriteLine("Exception details:")
+                    WriteException(sw, ex)
+                End If
+
+                sw.WriteLine("----------------------------------------------------")
+                sw.WriteLine()
+            End Using
+
+        Catch
+            ' Never allow logging to throw
+        End Try
+
     End Sub
 
     ' ---------------------------------------
@@ -106,15 +148,19 @@ Public Module GlobalErrorHandler
     End Sub
 
     ' ---------------------------------------
+    ' Script run logging (used by ScriptExecutionController)
+    ' ---------------------------------------
+
+    ' ---------------------------------------
     ' User-facing message
     ' ---------------------------------------
     Private Sub ShowUserMessage()
         MessageBox.Show(
-            "An unexpected error occurred." & Environment.NewLine &
-            "The error has been logged so it can be reviewed.",
-            "Application Error",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error)
+    "An unexpected error occurred." & Environment.NewLine &
+    "The error has been logged so it can be reviewed.",
+    "Application Error",
+    MessageBoxButtons.OK,
+    MessageBoxIcon.Error)
     End Sub
 
 End Module

@@ -23,6 +23,8 @@ Namespace My
     '   e.MinimumSplashScreenDisplayTime = 4000
     ' End Sub
 
+
+
     Partial Friend Class MyApplication
 
     End Class

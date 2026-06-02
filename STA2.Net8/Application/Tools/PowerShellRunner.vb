@@ -54,7 +54,8 @@ Public Module PowerShellRunner
             proc.BeginErrorReadLine()
 
             ' Wait for completion asynchronously
-            Await Task.Run(Sub() proc.WaitForExit())
+
+            Await proc.WaitForExitAsync()
             proc.WaitForExit() ' ensure async streams are flushed
 
             Return proc.ExitCode
@@ -72,8 +73,7 @@ Public Module PowerShellRunner
     setStatus As Action(Of String),
     scriptRelativePath As String,
     scriptArgs As String,
-    runningStatusText As String,
-    Optional triggerButton As Button = Nothing
+    runningStatusText As String
 ) As Task
 
         If setStatus Is Nothing Then
@@ -82,10 +82,6 @@ Public Module PowerShellRunner
 
         If liveOutputManager Is Nothing Then
             Throw New ArgumentNullException(NameOf(liveOutputManager))
-        End If
-
-        If triggerButton IsNot Nothing Then
-            triggerButton.Enabled = False
         End If
 
         Try
@@ -113,9 +109,7 @@ Public Module PowerShellRunner
             Throw   ' ✅ rethrow for debugging (optional but recommended)
 
         Finally
-            If triggerButton IsNot Nothing Then
-                triggerButton.Enabled = True
-            End If
+
         End Try
     End Function
 

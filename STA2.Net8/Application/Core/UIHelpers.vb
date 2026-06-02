@@ -1,4 +1,5 @@
-﻿Imports System.Drawing
+﻿
+Imports System.Drawing
 Imports System.IO
 Imports System.Windows.Forms
 
@@ -159,13 +160,205 @@ Public Module UIHelpers
         ShowSingleButtonPrompt(ResolveOwner(owner), message, title, timeoutSeconds, SystemIcons.Warning)
     End Sub
 
+
+    ' =======================================================
+    ' ERROR PROMPTS (UPDATED - NO ICON SUPPORT)
+    ' =======================================================
+
+    ' ✅ Legacy overload (no return value)
     Public Sub TimedErrorPrompt(message As String, title As String, Optional timeoutSeconds As Integer = 0)
-        TimedErrorPrompt(Nothing, message, title, timeoutSeconds)
+
+        TimedErrorPrompt(
+        owner:=Nothing,
+        message:=message,
+        title:=title,
+        timeoutSeconds:=timeoutSeconds,
+        button1Text:="OK",
+        button1Result:=DialogResult.OK)
+
     End Sub
 
     Public Sub TimedErrorPrompt(owner As IWin32Window, message As String, title As String, Optional timeoutSeconds As Integer = 0)
-        ShowSingleButtonPrompt(ResolveOwner(owner), message, title, timeoutSeconds, SystemIcons.Error)
+
+        TimedErrorPrompt(
+        owner:=owner,
+        message:=message,
+        title:=title,
+        timeoutSeconds:=timeoutSeconds,
+        button1Text:="OK",
+        button1Result:=DialogResult.OK)
+
     End Sub
+
+
+    ' ✅ Overload with configurable buttons (no icons)
+    Public Function TimedErrorPrompt(
+    message As String,
+    title As String,
+    timeoutSeconds As Integer,
+    button1Text As String,
+    button1Result As DialogResult,
+    Optional button2Text As String = Nothing,
+    Optional button2Result As DialogResult = DialogResult.None,
+    Optional button3Text As String = Nothing,
+    Optional button3Result As DialogResult = DialogResult.None,
+    Optional defaultButtonIndex As Integer = 1,
+    Optional cancelButtonIndex As Integer = 2
+) As DialogResult
+
+        Return TimedErrorPrompt(
+        Nothing,
+        message,
+        title,
+        timeoutSeconds,
+        button1Text,
+        button1Result,
+        button2Text,
+        button2Result,
+        button3Text,
+        button3Result,
+        defaultButtonIndex,
+        cancelButtonIndex)
+
+    End Function
+
+
+    ' ✅ CORE IMPLEMENTATION (NO ICON SUPPORT)
+    Public Function TimedErrorPrompt(
+    owner As IWin32Window,
+    message As String,
+    title As String,
+    timeoutSeconds As Integer,
+    button1Text As String,
+    button1Result As DialogResult,
+    Optional button2Text As String = Nothing,
+    Optional button2Result As DialogResult = DialogResult.None,
+    Optional button3Text As String = Nothing,
+    Optional button3Result As DialogResult = DialogResult.None,
+    Optional defaultButtonIndex As Integer = 1,
+    Optional cancelButtonIndex As Integer = 2
+) As DialogResult
+
+        Dim result As DialogResult = button1Result
+        Dim useTimeout As Boolean = (timeoutSeconds > 0)
+
+        Using dlg As New Form()
+
+            ConfigureBaseDialog(dlg, title, 420)
+
+            ' ✅ Icon (dialog icon only)
+            Dim picIcon As New PictureBox() With {
+            .Image = SystemIcons.Error.ToBitmap(),
+            .Left = 20,
+            .Top = 20,
+            .SizeMode = PictureBoxSizeMode.AutoSize
+        }
+            dlg.Controls.Add(picIcon)
+
+            ' ✅ Message
+            Dim lblMessage = CreateMessageLabel(message, 60, 20, 340)
+            dlg.Controls.Add(lblMessage)
+
+            ' ✅ Countdown
+            Dim lblCountdown = CreateCountdownLabel(lblMessage.Bottom + 10, useTimeout)
+            lblCountdown.Left = 60
+            lblCountdown.Width = 340
+            dlg.Controls.Add(lblCountdown)
+
+            Dim btnTop = If(useTimeout, lblCountdown.Bottom, lblMessage.Bottom) + 15
+
+            ' ✅ Build buttons
+            Dim buttons As New List(Of Button)
+
+            If Not String.IsNullOrWhiteSpace(button1Text) Then
+                Dim btn1 = CreateButton(button1Text, 0, btnTop)
+                AddHandler btn1.Click, Sub()
+                                           result = button1Result
+                                           dlg.Close()
+                                       End Sub
+                buttons.Add(btn1)
+            End If
+
+            If Not String.IsNullOrWhiteSpace(button2Text) Then
+                Dim btn2 = CreateButton(button2Text, 0, btnTop)
+                AddHandler btn2.Click, Sub()
+                                           result = button2Result
+                                           dlg.Close()
+                                       End Sub
+                buttons.Add(btn2)
+            End If
+
+            If Not String.IsNullOrWhiteSpace(button3Text) Then
+                Dim btn3 = CreateButton(button3Text, 0, btnTop)
+                AddHandler btn3.Click, Sub()
+                                           result = button3Result
+                                           dlg.Close()
+                                       End Sub
+                buttons.Add(btn3)
+            End If
+
+            ' ✅ Layout buttons centered
+            Dim totalWidth As Integer = (buttons.Count * 100) + ((buttons.Count - 1) * 10)
+            Dim startLeft As Integer = (dlg.ClientSize.Width - totalWidth) \ 2
+
+            For i = 0 To buttons.Count - 1
+                buttons(i).Left = startLeft + (i * 110)
+                dlg.Controls.Add(buttons(i))
+            Next
+
+            ' ✅ DEFAULT BUTTON (highlight)
+            If defaultButtonIndex >= 1 AndAlso defaultButtonIndex <= buttons.Count Then
+
+                Dim defaultBtn = buttons(defaultButtonIndex - 1)
+
+                dlg.AcceptButton = defaultBtn
+                defaultBtn.Select()
+
+                defaultBtn.Font = New Font(defaultBtn.Font, FontStyle.Bold)
+                defaultBtn.BackColor = Color.FromArgb(0, 120, 215)
+                defaultBtn.ForeColor = Color.White
+
+            End If
+
+            ' ✅ CANCEL BUTTON (Esc)
+            If cancelButtonIndex >= 1 AndAlso cancelButtonIndex <= buttons.Count Then
+                dlg.CancelButton = buttons(cancelButtonIndex - 1)
+            End If
+
+            ' ✅ Normalize other buttons
+            For Each btn In buttons
+                If btn IsNot dlg.AcceptButton Then
+                    btn.BackColor = SystemColors.Control
+                    btn.ForeColor = SystemColors.ControlText
+                    btn.FlatStyle = FlatStyle.System
+                End If
+            Next
+
+            ' ✅ Timer
+            Dim timer As Timer = Nothing
+
+            If useTimeout Then
+                timer = CreateCountdownTimer(
+                timeoutSeconds,
+                Function(sec) $"Closing in {sec} seconds...",
+                Sub()
+                    result = button1Result
+                    dlg.Close()
+                End Sub,
+                lblCountdown)
+            End If
+
+            AutoSizeDialog(dlg, buttons.Last(), 20)
+            dlg.ShowDialog(ResolveOwner(owner))
+            DisposeTimer(timer)
+
+        End Using
+
+        Return result
+
+    End Function
+
+
 
     ' =======================================================
     ' INTERNAL SINGLE-BUTTON PROMPT (UNCHANGED)
@@ -209,7 +402,7 @@ Public Module UIHelpers
             If useTimeout Then
                 timer = CreateCountdownTimer(
                     timeoutSeconds,
-                    Function(sec) $"Closing automatically in {sec} seconds...",
+                    Function(sec) $"Message closing automatically in {sec} seconds...",
                     Sub() dlg.Close(),
                     lblCountdown)
             End If
@@ -319,5 +512,6 @@ Public Module UIHelpers
             Return Nothing
         End Try
     End Function
+
 
 End Module

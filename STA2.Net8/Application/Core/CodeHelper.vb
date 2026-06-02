@@ -142,6 +142,7 @@ Public Module CodeHelper
                     frm.tbDbVer.Text = r("Version").ToString()
                     frm.tbWebEnabled.Text = r("EnableWeb").ToString()
                     frm.tbShiftDate.Text = r("ShiftDate").ToString()
+                    PCInfo.DatabaseVersion = r("Version").ToString()
 
                 Else
                     Throw New Exception("LicenseData returned no rows.")
@@ -169,7 +170,6 @@ Public Module CodeHelper
         ' 2) Timers / UI updates
         ' ============================================================
         frm.tmr10Seconds.Start()
-        frm.tslblNetVersion.Text = PCInfo.FrameworkVersion
 
         frm.dtpMsgLogDateFrom.Enabled = frm.cbMsgLogDateRange.Checked
         frm.dtpMsgLogTimeFrom.Enabled = frm.cbMsgLogDateRange.Checked
@@ -177,11 +177,6 @@ Public Module CodeHelper
         frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        frm.tslblCeVersion.Text = "Version:  " & info.Version
-
-        frm.tslblTime.Text =
-        DateTime.Now.ToShortDateString() & " " &
-        DateTime.Now.ToShortTimeString()
 
         ' PC info
         frm.tbPcName.Text = PCInfo.Name

@@ -4,9 +4,10 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
-
-		<!-- ✅ Correct Startup binding -->
-		<StartupObject>STA2.Net8.Startup</StartupObject>	
+		<UseAppHost>true</UseAppHost>
+		<!-- optional <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
+		<StartupObject>STA2.Net8.Startup</StartupObject>
+		<ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>	
 	</PropertyGroup>
 
 	<!-- ✅ ADD THIS: ensures Startup.vb is compiled -->
@@ -37,6 +38,9 @@
 	  <None Remove="Application\Images\imgUnavailableBlack64.png" />
 	  <None Remove="Application\Images\imgWarning16.png" />
 	  <None Remove="Application\Images\imgWarning96.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="vernware_logo_XUD_icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="Application\Images\imgCheckMark16.png" />
@@ -83,9 +87,7 @@
 		<Compile Update="Application\Forms\FormMain.Designer.vb">
 			<SubType>Form</SubType>
 		</Compile>
-		<Compile Update="Application\Forms\FormMain.vb">
-			<SubType>Form</SubType>
-		</Compile>
+		<Compile Update="Application\Forms\FormMain.vb" />
 		<Compile Update="Application\Forms\ManageInstallerVersionsForm.vb">
 			<SubType>Form</SubType>
 		</Compile>
