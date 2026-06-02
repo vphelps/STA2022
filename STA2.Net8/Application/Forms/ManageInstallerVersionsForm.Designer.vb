@@ -22,112 +22,143 @@ Partial Class ManageInstallerVersionsForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
-        Me.lblPath = New System.Windows.Forms.Label()
-        Me.lblExplanation = New System.Windows.Forms.Label()
-        Me.lblSummary = New System.Windows.Forms.Label()
-        Me.clbVersions = New System.Windows.Forms.CheckedListBox()
-        Me.btnCleanup = New System.Windows.Forms.Button()
-        Me.btnCancel = New System.Windows.Forms.Button()
-        Me.managefrmToolTip = New System.Windows.Forms.ToolTip(Me.components)
-        Me.btnSelectAllDeletable = New System.Windows.Forms.Button()
-        Me.btnUnselectAll = New System.Windows.Forms.Button()
-        Me.SuspendLayout()
-        '
-        'lblPath
-        '
-        Me.lblPath.AutoSize = True
-        Me.lblPath.Location = New System.Drawing.Point(12, 19)
-        Me.lblPath.Name = "lblPath"
-        Me.lblPath.Size = New System.Drawing.Size(39, 13)
-        Me.lblPath.TabIndex = 0
-        Me.lblPath.Text = "lblPath"
-        '
-        'lblExplanation
-        '
-        Me.lblExplanation.AutoSize = True
-        Me.lblExplanation.Location = New System.Drawing.Point(12, 63)
-        Me.lblExplanation.Name = "lblExplanation"
-        Me.lblExplanation.Size = New System.Drawing.Size(72, 13)
-        Me.lblExplanation.TabIndex = 1
-        Me.lblExplanation.Text = "lblExplanation"
-        '
-        'lblSummary
-        '
-        Me.lblSummary.AutoSize = True
-        Me.lblSummary.Location = New System.Drawing.Point(12, 369)
-        Me.lblSummary.Name = "lblSummary"
-        Me.lblSummary.Size = New System.Drawing.Size(60, 13)
-        Me.lblSummary.TabIndex = 2
-        Me.lblSummary.Text = "lblSummary"
-        '
-        'clbVersions
-        '
-        Me.clbVersions.CheckOnClick = True
-        Me.clbVersions.Font = New System.Drawing.Font("Consolas", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.clbVersions.FormattingEnabled = True
-        Me.clbVersions.Location = New System.Drawing.Point(12, 116)
-        Me.clbVersions.Name = "clbVersions"
-        Me.clbVersions.Size = New System.Drawing.Size(498, 242)
-        Me.clbVersions.TabIndex = 3
-        '
-        'btnCleanup
-        '
-        Me.btnCleanup.Location = New System.Drawing.Point(516, 251)
-        Me.btnCleanup.Name = "btnCleanup"
-        Me.btnCleanup.Size = New System.Drawing.Size(80, 50)
-        Me.btnCleanup.TabIndex = 4
-        Me.btnCleanup.Text = "Clean"
-        Me.btnCleanup.UseVisualStyleBackColor = True
-        '
-        'btnCancel
-        '
-        Me.btnCancel.Location = New System.Drawing.Point(516, 308)
-        Me.btnCancel.Name = "btnCancel"
-        Me.btnCancel.Size = New System.Drawing.Size(80, 50)
-        Me.btnCancel.TabIndex = 5
-        Me.btnCancel.Text = "Cancel"
-        Me.btnCancel.UseVisualStyleBackColor = True
-        '
-        'btnSelectAllDeletable
-        '
-        Me.btnSelectAllDeletable.Location = New System.Drawing.Point(516, 116)
-        Me.btnSelectAllDeletable.Name = "btnSelectAllDeletable"
-        Me.btnSelectAllDeletable.Size = New System.Drawing.Size(80, 50)
-        Me.btnSelectAllDeletable.TabIndex = 6
-        Me.btnSelectAllDeletable.Text = "Select All Removable Items"
-        Me.btnSelectAllDeletable.UseVisualStyleBackColor = True
-        '
-        'btnUnselectAll
-        '
-        Me.btnUnselectAll.Location = New System.Drawing.Point(518, 172)
-        Me.btnUnselectAll.Name = "btnUnselectAll"
-        Me.btnUnselectAll.Size = New System.Drawing.Size(80, 50)
-        Me.btnUnselectAll.TabIndex = 7
-        Me.btnUnselectAll.Text = "Unselect All"
-        Me.btnUnselectAll.UseVisualStyleBackColor = True
-        '
-        'ManageInstallerVersionsForm
-        '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(610, 450)
-        Me.Controls.Add(Me.btnUnselectAll)
-        Me.Controls.Add(Me.btnSelectAllDeletable)
-        Me.Controls.Add(Me.btnCancel)
-        Me.Controls.Add(Me.btnCleanup)
-        Me.Controls.Add(Me.clbVersions)
-        Me.Controls.Add(Me.lblSummary)
-        Me.Controls.Add(Me.lblExplanation)
-        Me.Controls.Add(Me.lblPath)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.MaximizeBox = False
-        Me.MinimizeBox = False
-        Me.Name = "ManageInstallerVersionsForm"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Advantage Installer Versions Management"
-        Me.ResumeLayout(False)
-        Me.PerformLayout()
+        components = New ComponentModel.Container()
+        lblPath = New Label()
+        lblExplanation = New Label()
+        lblSummary = New Label()
+        clbVersions = New CheckedListBox()
+        btnCleanup = New Button()
+        btnCancel = New Button()
+        managefrmToolTip = New ToolTip(components)
+        btnSelectAllDeletable = New Button()
+        btnUnselectAll = New Button()
+        lblDblClickHint = New Label()
+        tbCommandPreview = New TextBox()
+        SuspendLayout()
+        ' 
+        ' lblPath
+        ' 
+        lblPath.AutoSize = True
+        lblPath.Location = New Point(14, 22)
+        lblPath.Margin = New Padding(4, 0, 4, 0)
+        lblPath.Name = "lblPath"
+        lblPath.Size = New Size(44, 15)
+        lblPath.TabIndex = 0
+        lblPath.Text = "lblPath"
+        ' 
+        ' lblExplanation
+        ' 
+        lblExplanation.AutoSize = True
+        lblExplanation.Location = New Point(14, 73)
+        lblExplanation.Margin = New Padding(4, 0, 4, 0)
+        lblExplanation.Name = "lblExplanation"
+        lblExplanation.Size = New Size(81, 15)
+        lblExplanation.TabIndex = 1
+        lblExplanation.Text = "lblExplanation"
+        ' 
+        ' lblSummary
+        ' 
+        lblSummary.AutoSize = True
+        lblSummary.Location = New Point(14, 426)
+        lblSummary.Margin = New Padding(4, 0, 4, 0)
+        lblSummary.Name = "lblSummary"
+        lblSummary.Size = New Size(71, 15)
+        lblSummary.TabIndex = 2
+        lblSummary.Text = "lblSummary"
+        ' 
+        ' clbVersions
+        ' 
+        clbVersions.CheckOnClick = True
+        clbVersions.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        clbVersions.FormattingEnabled = True
+        clbVersions.Location = New Point(14, 134)
+        clbVersions.Margin = New Padding(4, 3, 4, 3)
+        clbVersions.Name = "clbVersions"
+        clbVersions.Size = New Size(580, 276)
+        clbVersions.TabIndex = 3
+        ' 
+        ' btnCleanup
+        ' 
+        btnCleanup.Location = New Point(602, 290)
+        btnCleanup.Margin = New Padding(4, 3, 4, 3)
+        btnCleanup.Name = "btnCleanup"
+        btnCleanup.Size = New Size(93, 58)
+        btnCleanup.TabIndex = 4
+        btnCleanup.Text = "Clean"
+        btnCleanup.UseVisualStyleBackColor = True
+        ' 
+        ' btnCancel
+        ' 
+        btnCancel.Location = New Point(602, 355)
+        btnCancel.Margin = New Padding(4, 3, 4, 3)
+        btnCancel.Name = "btnCancel"
+        btnCancel.Size = New Size(93, 58)
+        btnCancel.TabIndex = 5
+        btnCancel.Text = "Cancel"
+        btnCancel.UseVisualStyleBackColor = True
+        ' 
+        ' btnSelectAllDeletable
+        ' 
+        btnSelectAllDeletable.Location = New Point(602, 134)
+        btnSelectAllDeletable.Margin = New Padding(4, 3, 4, 3)
+        btnSelectAllDeletable.Name = "btnSelectAllDeletable"
+        btnSelectAllDeletable.Size = New Size(93, 58)
+        btnSelectAllDeletable.TabIndex = 6
+        btnSelectAllDeletable.Text = "Select All Removable Items"
+        btnSelectAllDeletable.UseVisualStyleBackColor = True
+        ' 
+        ' btnUnselectAll
+        ' 
+        btnUnselectAll.Location = New Point(604, 198)
+        btnUnselectAll.Margin = New Padding(4, 3, 4, 3)
+        btnUnselectAll.Name = "btnUnselectAll"
+        btnUnselectAll.Size = New Size(93, 58)
+        btnUnselectAll.TabIndex = 7
+        btnUnselectAll.Text = "Unselect All"
+        btnUnselectAll.UseVisualStyleBackColor = True
+        ' 
+        ' lblDblClickHint
+        ' 
+        lblDblClickHint.AutoSize = True
+        lblDblClickHint.Location = New Point(411, 495)
+        lblDblClickHint.Margin = New Padding(4, 0, 4, 0)
+        lblDblClickHint.Name = "lblDblClickHint"
+        lblDblClickHint.Size = New Size(288, 15)
+        lblDblClickHint.TabIndex = 8
+        lblDblClickHint.Text = "Double Click an installer in the list to run that installer"
+        ' 
+        ' tbCommandPreview
+        ' 
+        tbCommandPreview.Location = New Point(73, 456)
+        tbCommandPreview.Name = "tbCommandPreview"
+        tbCommandPreview.Size = New Size(622, 23)
+        tbCommandPreview.TabIndex = 9
+        tbCommandPreview.Text = "tbCommandPreview"
+        ' 
+        ' ManageInstallerVersionsForm
+        ' 
+        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleMode = AutoScaleMode.Font
+        ClientSize = New Size(712, 519)
+        Controls.Add(tbCommandPreview)
+        Controls.Add(lblDblClickHint)
+        Controls.Add(btnUnselectAll)
+        Controls.Add(btnSelectAllDeletable)
+        Controls.Add(btnCancel)
+        Controls.Add(btnCleanup)
+        Controls.Add(clbVersions)
+        Controls.Add(lblSummary)
+        Controls.Add(lblExplanation)
+        Controls.Add(lblPath)
+        FormBorderStyle = FormBorderStyle.FixedDialog
+        Margin = New Padding(4, 3, 4, 3)
+        MaximizeBox = False
+        MinimizeBox = False
+        Name = "ManageInstallerVersionsForm"
+        StartPosition = FormStartPosition.CenterParent
+        Text = "Advantage Installer Versions Management"
+        ResumeLayout(False)
+        PerformLayout()
 
     End Sub
 
@@ -140,4 +171,6 @@ Partial Class ManageInstallerVersionsForm
     Friend WithEvents managefrmToolTip As ToolTip
     Friend WithEvents btnSelectAllDeletable As Button
     Friend WithEvents btnUnselectAll As Button
+    Friend WithEvents lblDblClickHint As Label
+    Friend WithEvents tbCommandPreview As TextBox
 End Class
