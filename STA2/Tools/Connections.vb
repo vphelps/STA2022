@@ -1,5 +1,5 @@
 ﻿
-Imports System.Data.SqlClient
+Imports Microsoft.Data.SqlClient
 Imports System.Security.Cryptography
 Imports System.Text
 

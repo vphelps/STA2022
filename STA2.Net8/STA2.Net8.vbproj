@@ -1,0 +1,147 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<UseAppHost>true</UseAppHost>
+		<!-- optional <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
+		<StartupObject>STA2.Net8.Startup</StartupObject>
+		<ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>	
+	</PropertyGroup>
+
+	<!-- ✅ ADD THIS: ensures Startup.vb is compiled -->
+	<ItemGroup>
+	  <None Remove="Application\Images\imgCheckMark16.png" />
+	  <None Remove="Application\Images\imgCheckMark96.png" />
+	  <None Remove="Application\Images\imgCheckMarkButton16.png" />
+	  <None Remove="Application\Images\imgCheckMarkButton96.png" />
+	  <None Remove="Application\Images\imgCopy16.png" />
+	  <None Remove="Application\Images\imgCopy48.png" />
+	  <None Remove="Application\Images\imgCrossMark16.png" />
+	  <None Remove="Application\Images\imgCrossMark96.png" />
+	  <None Remove="Application\Images\imgGreenPlay16.png" />
+	  <None Remove="Application\Images\imgGreenPlay96.png" />
+	  <None Remove="Application\Images\imgOpenFolder16.png" />
+	  <None Remove="Application\Images\imgOpenFolder96.png" />
+	  <None Remove="Application\Images\imgPlay16.png" />
+	  <None Remove="Application\Images\imgPlay96.png" />
+	  <None Remove="Application\Images\imgQuestionMark16.png" />
+	  <None Remove="Application\Images\imgQuestionMark96.png" />
+	  <None Remove="Application\Images\imgRedStop16.png" />
+	  <None Remove="Application\Images\imgRedStop96.png" />
+	  <None Remove="Application\Images\imgRefresh16.png" />
+	  <None Remove="Application\Images\imgRefresh96.png" />
+	  <None Remove="Application\Images\imgUnavailable16.png" />
+	  <None Remove="Application\Images\imgUnavailable96.png" />
+	  <None Remove="Application\Images\imgUnavailableBlack16.png" />
+	  <None Remove="Application\Images\imgUnavailableBlack64.png" />
+	  <None Remove="Application\Images\imgWarning16.png" />
+	  <None Remove="Application\Images\imgWarning96.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="vernware_logo_XUD_icon.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Application\Images\imgCheckMark16.png" />
+	  <EmbeddedResource Include="Application\Images\imgCheckMark96.png" />
+	  <EmbeddedResource Include="Application\Images\imgCheckMarkButton16.png" />
+	  <EmbeddedResource Include="Application\Images\imgCheckMarkButton96.png" />
+	  <EmbeddedResource Include="Application\Images\imgCopy16.png" />
+	  <EmbeddedResource Include="Application\Images\imgCopy48.png" />
+	  <EmbeddedResource Include="Application\Images\imgCrossMark16.png" />
+	  <EmbeddedResource Include="Application\Images\imgCrossMark96.png" />
+	  <EmbeddedResource Include="Application\Images\imgGreenPlay16.png" />
+	  <EmbeddedResource Include="Application\Images\imgGreenPlay96.png" />
+	  <EmbeddedResource Include="Application\Images\imgOpenFolder16.png" />
+	  <EmbeddedResource Include="Application\Images\imgOpenFolder96.png" />
+	  <EmbeddedResource Include="Application\Images\imgPlay16.png" />
+	  <EmbeddedResource Include="Application\Images\imgPlay96.png" />
+	  <EmbeddedResource Include="Application\Images\imgQuestionMark16.png" />
+	  <EmbeddedResource Include="Application\Images\imgQuestionMark96.png" />
+	  <EmbeddedResource Include="Application\Images\imgRedStop16.png" />
+	  <EmbeddedResource Include="Application\Images\imgRedStop96.png" />
+	  <EmbeddedResource Include="Application\Images\imgRefresh16.png" />
+	  <EmbeddedResource Include="Application\Images\imgRefresh96.png" />
+	  <EmbeddedResource Include="Application\Images\imgUnavailable16.png" />
+	  <EmbeddedResource Include="Application\Images\imgUnavailable96.png" />
+	  <EmbeddedResource Include="Application\Images\imgUnavailableBlack16.png" />
+	  <EmbeddedResource Include="Application\Images\imgUnavailableBlack64.png" />
+	  <EmbeddedResource Include="Application\Images\imgWarning16.png" />
+	  <EmbeddedResource Include="Application\Images\imgWarning96.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Import Include="System.Data" />
+		<Import Include="System.Drawing" />
+		<Import Include="System.Windows.Forms" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Application\Forms\ConfirmInstallerVersionCleanupForm.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\EditProgramForm .vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\FormMain.Designer.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\FormMain.vb" />
+		<Compile Update="Application\Forms\ManageInstallerVersionsForm.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Forms\ProgressOverlayForm.vb">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Application\Services\ServiceRowControl.vb">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="My Project\Resources.Designer.vb">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="My Project\Settings.Designer.vb">
+		  <DesignTimeSharedInput>True</DesignTimeSharedInput>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Application\Docs\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
+		<PackageReference Include="System.Management" Version="10.0.8" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Application\Forms\ConfirmInstallerVersionCleanupForm.resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Application\Forms\EditProgramForm .resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Application\Forms\FormMain.resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+		<EmbeddedResource Update="My Project\Resources.resx">
+		  <CustomToolNamespace>My.Resources</CustomToolNamespace>
+		  <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+		  <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="My Project\Settings.settings">
+	    <CustomToolNamespace>My</CustomToolNamespace>
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+	  </None>
+	</ItemGroup>
+
+</Project>
