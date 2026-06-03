@@ -1,9 +1,11 @@
 ﻿Imports System.IO
+Imports System.Windows.Forms.Design.AxImporter
 
 Public Class ManageInstallerVersionsForm
 
     Private ReadOnly _versions As List(Of InstallerVersionInfo)
     Private _suppressSelection As Boolean
+    Private _options As AppOptions
 
     Public ReadOnly Property SelectedForCleanup As List(Of InstallerVersionInfo)
         Get
@@ -18,6 +20,8 @@ Public Class ManageInstallerVersionsForm
         upgradePath As String
     )
         InitializeComponent()
+        _options = OptionsManager.LoadOrCreate()
+
         managefrmToolTip.IsBalloon = True
         managefrmToolTip.ToolTipIcon = ToolTipIcon.Info
         managefrmToolTip.ToolTipTitle = "Installer Version"
@@ -178,7 +182,6 @@ Public Class ManageInstallerVersionsForm
             clbVersions.ClearSelected()
             _suppressSelection = False
         End If
-
     End Sub
     Private Sub btnSelectAllDeletable_Click(
     sender As Object,
@@ -308,5 +311,53 @@ Public Class ManageInstallerVersionsForm
         Next
         UpdateSummary()
     End Sub
+
+    Private Sub clbVersions_MouseDoubleClick(
+    sender As Object,
+    e As MouseEventArgs
+) Handles clbVersions.MouseDoubleClick
+
+        Dim index As Integer = clbVersions.IndexFromPoint(e.Location)
+        If index < 0 Then Return
+
+        Dim info = TryCast(clbVersions.Items(index), InstallerVersionInfo)
+        If info Is Nothing Then Return
+
+        LaunchInstaller(info)
+
+    End Sub
+    Private Function BuildCommandPreview(psi As ProcessStartInfo) As String
+        Return $"""{psi.FileName}"" {psi.Arguments}"
+    End Function
+
+
+    Private Sub LaunchInstaller(info As InstallerVersionInfo)
+
+        If info Is Nothing Then Return
+
+        Try
+            Dim exePath As String =
+            Path.Combine(info.FolderPath, "AdvantageSetup-x64.exe")
+
+            If String.IsNullOrWhiteSpace(exePath) OrElse Not File.Exists(exePath) Then
+                MessageBox.Show("Installer file not found.")
+                Return
+            End If
+
+            Dim args As String = _options.SetupSwitches
+
+            Dim psi As New ProcessStartInfo With {
+            .FileName = exePath,
+            .Arguments = args,
+            .UseShellExecute = True
+        }
+            Process.Start(psi)
+
+        Catch ex As Exception
+            MessageBox.Show("Failed to launch installer: " & ex.Message)
+        End Try
+
+    End Sub
+
 
 End Class
