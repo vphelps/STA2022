@@ -33,7 +33,6 @@ Partial Class ManageInstallerVersionsForm
         btnSelectAllDeletable = New Button()
         btnUnselectAll = New Button()
         lblDblClickHint = New Label()
-        tbCommandPreview = New TextBox()
         SuspendLayout()
         ' 
         ' lblPath
@@ -127,20 +126,11 @@ Partial Class ManageInstallerVersionsForm
         lblDblClickHint.TabIndex = 8
         lblDblClickHint.Text = "Double Click an installer in the list to run that installer"
         ' 
-        ' tbCommandPreview
-        ' 
-        tbCommandPreview.Location = New Point(73, 456)
-        tbCommandPreview.Name = "tbCommandPreview"
-        tbCommandPreview.Size = New Size(622, 23)
-        tbCommandPreview.TabIndex = 9
-        tbCommandPreview.Text = "tbCommandPreview"
-        ' 
         ' ManageInstallerVersionsForm
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(712, 519)
-        Controls.Add(tbCommandPreview)
         Controls.Add(lblDblClickHint)
         Controls.Add(btnUnselectAll)
         Controls.Add(btnSelectAllDeletable)
@@ -172,5 +162,4 @@ Partial Class ManageInstallerVersionsForm
     Friend WithEvents btnSelectAllDeletable As Button
     Friend WithEvents btnUnselectAll As Button
     Friend WithEvents lblDblClickHint As Label
-    Friend WithEvents tbCommandPreview As TextBox
 End Class

@@ -351,12 +351,7 @@ Public Class ManageInstallerVersionsForm
             .Arguments = args,
             .UseShellExecute = True
         }
-            MessageBox.Show(
-                $"Command Line:{Environment.NewLine}" &
-                $"""{psi.FileName}"" {psi.Arguments}",
-                "Command to Execute")
-            tbCommandPreview.Text = BuildCommandPreview(psi)
-            'Process.Start(psi)
+            Process.Start(psi)
 
         Catch ex As Exception
             MessageBox.Show("Failed to launch installer: " & ex.Message)

@@ -23,18 +23,18 @@ Partial Class FormMain
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         components = New ComponentModel.Container()
-        Dim DataGridViewCellStyle13 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle15 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle16 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle17 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle18 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle19 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle20 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle21 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle22 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle23 As DataGridViewCellStyle = New DataGridViewCellStyle()
-        Dim DataGridViewCellStyle24 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle8 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As DataGridViewCellStyle = New DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As DataGridViewCellStyle = New DataGridViewCellStyle()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormMain))
         btnExit = New Button()
         SplitContainer1 = New SplitContainer()
@@ -368,7 +368,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.BackColor = Color.Gray
         SplitContainer1.Panel2.Controls.Add(pnlButtonCollection)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 672
+        SplitContainer1.SplitterDistance = 683
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -387,7 +387,7 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 668)
+        tcSTA.Size = New Size(1190, 679)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -400,7 +400,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 640)
+        tpGeneral.Size = New Size(1182, 651)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -575,7 +575,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 639)
+        tpSysInfo.Size = New Size(1182, 650)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -992,7 +992,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 639)
+        tpAdvData.Size = New Size(1182, 650)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1046,24 +1046,24 @@ Partial Class FormMain
         dgvApplicationInfo.AllowUserToResizeColumns = False
         dgvApplicationInfo.AllowUserToResizeRows = False
         dgvApplicationInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-        DataGridViewCellStyle13.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle13.BackColor = SystemColors.Control
-        DataGridViewCellStyle13.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle13.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle13.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle13.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle13.WrapMode = DataGridViewTriState.True
-        dgvApplicationInfo.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle13
+        DataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle1.BackColor = SystemColors.Control
+        DataGridViewCellStyle1.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle1.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle1.WrapMode = DataGridViewTriState.True
+        dgvApplicationInfo.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
         dgvApplicationInfo.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         dgvApplicationInfo.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn3, DataGridViewTextBoxColumn4})
-        DataGridViewCellStyle14.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle14.BackColor = SystemColors.Window
-        DataGridViewCellStyle14.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle14.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle14.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle14.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle14.WrapMode = DataGridViewTriState.False
-        dgvApplicationInfo.DefaultCellStyle = DataGridViewCellStyle14
+        DataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle2.BackColor = SystemColors.Window
+        DataGridViewCellStyle2.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle2.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle2.WrapMode = DataGridViewTriState.False
+        dgvApplicationInfo.DefaultCellStyle = DataGridViewCellStyle2
         dgvApplicationInfo.Location = New Point(5, 38)
         dgvApplicationInfo.Margin = New Padding(4, 3, 4, 3)
         dgvApplicationInfo.Name = "dgvApplicationInfo"
@@ -1113,24 +1113,24 @@ Partial Class FormMain
         dgvWebOptions.AllowUserToResizeColumns = False
         dgvWebOptions.AllowUserToResizeRows = False
         dgvWebOptions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-        DataGridViewCellStyle15.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle15.BackColor = SystemColors.Control
-        DataGridViewCellStyle15.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle15.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle15.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle15.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle15.WrapMode = DataGridViewTriState.True
-        dgvWebOptions.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle15
+        DataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle3.BackColor = SystemColors.Control
+        DataGridViewCellStyle3.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle3.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle3.WrapMode = DataGridViewTriState.True
+        dgvWebOptions.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle3
         dgvWebOptions.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         dgvWebOptions.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn1, DataGridViewTextBoxColumn2})
-        DataGridViewCellStyle16.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle16.BackColor = SystemColors.Window
-        DataGridViewCellStyle16.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle16.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle16.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle16.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle16.WrapMode = DataGridViewTriState.False
-        dgvWebOptions.DefaultCellStyle = DataGridViewCellStyle16
+        DataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle4.BackColor = SystemColors.Window
+        DataGridViewCellStyle4.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle4.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle4.WrapMode = DataGridViewTriState.False
+        dgvWebOptions.DefaultCellStyle = DataGridViewCellStyle4
         dgvWebOptions.Location = New Point(825, 38)
         dgvWebOptions.Margin = New Padding(4, 3, 4, 3)
         dgvWebOptions.Name = "dgvWebOptions"
@@ -1158,24 +1158,24 @@ Partial Class FormMain
         dgvAppOptions.AllowUserToResizeColumns = False
         dgvAppOptions.AllowUserToResizeRows = False
         dgvAppOptions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
-        DataGridViewCellStyle17.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle17.BackColor = SystemColors.Control
-        DataGridViewCellStyle17.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle17.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle17.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle17.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle17.WrapMode = DataGridViewTriState.True
-        dgvAppOptions.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle17
+        DataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle5.BackColor = SystemColors.Control
+        DataGridViewCellStyle5.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle5.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle5.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle5.WrapMode = DataGridViewTriState.True
+        dgvAppOptions.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle5
         dgvAppOptions.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         dgvAppOptions.Columns.AddRange(New DataGridViewColumn() {OptionName, OptionValue})
-        DataGridViewCellStyle18.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle18.BackColor = SystemColors.Window
-        DataGridViewCellStyle18.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle18.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle18.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle18.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle18.WrapMode = DataGridViewTriState.False
-        dgvAppOptions.DefaultCellStyle = DataGridViewCellStyle18
+        DataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle6.BackColor = SystemColors.Window
+        DataGridViewCellStyle6.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle6.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle6.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle6.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle6.WrapMode = DataGridViewTriState.False
+        dgvAppOptions.DefaultCellStyle = DataGridViewCellStyle6
         dgvAppOptions.Location = New Point(323, 38)
         dgvAppOptions.Margin = New Padding(4, 3, 4, 3)
         dgvAppOptions.Name = "dgvAppOptions"
@@ -1205,7 +1205,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 639)
+        tpDbLogs.Size = New Size(1182, 650)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1224,7 +1224,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 464)
+        tlpLogData.Size = New Size(1161, 475)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1247,23 +1247,23 @@ Partial Class FormMain
         dgvDbLogCount.AllowUserToResizeRows = False
         dgvDbLogCount.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         dgvDbLogCount.BorderStyle = BorderStyle.Fixed3D
-        DataGridViewCellStyle19.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle19.BackColor = SystemColors.Control
-        DataGridViewCellStyle19.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle19.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle19.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle19.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle19.WrapMode = DataGridViewTriState.True
-        dgvDbLogCount.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle19
+        DataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle7.BackColor = SystemColors.Control
+        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle7.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle7.WrapMode = DataGridViewTriState.True
+        dgvDbLogCount.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle7
         dgvDbLogCount.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle20.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle20.BackColor = SystemColors.Window
-        DataGridViewCellStyle20.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle20.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle20.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle20.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle20.WrapMode = DataGridViewTriState.False
-        dgvDbLogCount.DefaultCellStyle = DataGridViewCellStyle20
+        DataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle8.BackColor = SystemColors.Window
+        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle8.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle8.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle8.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle8.WrapMode = DataGridViewTriState.False
+        dgvDbLogCount.DefaultCellStyle = DataGridViewCellStyle8
         dgvDbLogCount.Dock = DockStyle.Fill
         dgvDbLogCount.EditMode = DataGridViewEditMode.EditProgrammatically
         dgvDbLogCount.Location = New Point(4, 19)
@@ -1292,23 +1292,23 @@ Partial Class FormMain
         dgvDbLogData.AllowUserToResizeRows = False
         dgvDbLogData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         dgvDbLogData.BorderStyle = BorderStyle.Fixed3D
-        DataGridViewCellStyle21.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle21.BackColor = SystemColors.Control
-        DataGridViewCellStyle21.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle21.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle21.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle21.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle21.WrapMode = DataGridViewTriState.True
-        dgvDbLogData.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle21
+        DataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle9.BackColor = SystemColors.Control
+        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle9.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle9.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle9.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle9.WrapMode = DataGridViewTriState.True
+        dgvDbLogData.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle9
         dgvDbLogData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle22.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle22.BackColor = SystemColors.Window
-        DataGridViewCellStyle22.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle22.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle22.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle22.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle22.WrapMode = DataGridViewTriState.False
-        dgvDbLogData.DefaultCellStyle = DataGridViewCellStyle22
+        DataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle10.BackColor = SystemColors.Window
+        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle10.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle10.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle10.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle10.WrapMode = DataGridViewTriState.False
+        dgvDbLogData.DefaultCellStyle = DataGridViewCellStyle10
         dgvDbLogData.Dock = DockStyle.Fill
         dgvDbLogData.EditMode = DataGridViewEditMode.EditProgrammatically
         dgvDbLogData.Location = New Point(4, 19)
@@ -1327,7 +1327,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 490)
+        pnlDbLogs.Location = New Point(4, 501)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1500,7 +1500,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 639)
+        tpDbInfo.Size = New Size(1182, 650)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1515,7 +1515,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 604)
+        pnlDbInfoButtons.Location = New Point(4, 615)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1595,23 +1595,23 @@ Partial Class FormMain
         dgvDbTableSize.AllowUserToDeleteRows = False
         dgvDbTableSize.AllowUserToOrderColumns = True
         dgvDbTableSize.BorderStyle = BorderStyle.Fixed3D
-        DataGridViewCellStyle23.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle23.BackColor = SystemColors.Control
-        DataGridViewCellStyle23.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle23.ForeColor = SystemColors.WindowText
-        DataGridViewCellStyle23.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle23.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle23.WrapMode = DataGridViewTriState.True
-        dgvDbTableSize.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle23
+        DataGridViewCellStyle11.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle11.BackColor = SystemColors.Control
+        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle11.ForeColor = SystemColors.WindowText
+        DataGridViewCellStyle11.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle11.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle11.WrapMode = DataGridViewTriState.True
+        dgvDbTableSize.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle11
         dgvDbTableSize.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        DataGridViewCellStyle24.Alignment = DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle24.BackColor = SystemColors.Window
-        DataGridViewCellStyle24.Font = New Font("Segoe UI", 9F)
-        DataGridViewCellStyle24.ForeColor = SystemColors.ControlText
-        DataGridViewCellStyle24.SelectionBackColor = SystemColors.Highlight
-        DataGridViewCellStyle24.SelectionForeColor = SystemColors.HighlightText
-        DataGridViewCellStyle24.WrapMode = DataGridViewTriState.False
-        dgvDbTableSize.DefaultCellStyle = DataGridViewCellStyle24
+        DataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle12.BackColor = SystemColors.Window
+        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle12.ForeColor = SystemColors.ControlText
+        DataGridViewCellStyle12.SelectionBackColor = SystemColors.Highlight
+        DataGridViewCellStyle12.SelectionForeColor = SystemColors.HighlightText
+        DataGridViewCellStyle12.WrapMode = DataGridViewTriState.False
+        dgvDbTableSize.DefaultCellStyle = DataGridViewCellStyle12
         dgvDbTableSize.Dock = DockStyle.Fill
         dgvDbTableSize.Location = New Point(0, 0)
         dgvDbTableSize.Margin = New Padding(4, 3, 4, 3)
@@ -1628,7 +1628,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 639)
+        tpStParse.Size = New Size(1182, 650)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1702,7 +1702,7 @@ Partial Class FormMain
         tpLogs.Controls.Add(tlpApplicationLogs)
         tpLogs.Location = New Point(4, 24)
         tpLogs.Name = "tpLogs"
-        tpLogs.Size = New Size(1182, 639)
+        tpLogs.Size = New Size(1182, 650)
         tpLogs.TabIndex = 9
         tpLogs.Text = "Application Logs"
         tpLogs.UseVisualStyleBackColor = True
@@ -1719,7 +1719,7 @@ Partial Class FormMain
         tlpApplicationLogs.RowCount = 2
         tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 89.6124039F))
         tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 10.3875971F))
-        tlpApplicationLogs.Size = New Size(1182, 639)
+        tlpApplicationLogs.Size = New Size(1182, 650)
         tlpApplicationLogs.TabIndex = 1
         ' 
         ' rtbLogs
@@ -1729,7 +1729,7 @@ Partial Class FormMain
         rtbLogs.Location = New Point(3, 3)
         rtbLogs.Name = "rtbLogs"
         rtbLogs.ReadOnly = True
-        rtbLogs.Size = New Size(1176, 566)
+        rtbLogs.Size = New Size(1176, 576)
         rtbLogs.TabIndex = 0
         rtbLogs.Text = ""
         ' 
@@ -1740,9 +1740,9 @@ Partial Class FormMain
         flpAppLogsButtons.Controls.Add(btnLastLogBlock)
         flpAppLogsButtons.Controls.Add(btnLastFailed)
         flpAppLogsButtons.Dock = DockStyle.Fill
-        flpAppLogsButtons.Location = New Point(3, 575)
+        flpAppLogsButtons.Location = New Point(3, 585)
         flpAppLogsButtons.Name = "flpAppLogsButtons"
-        flpAppLogsButtons.Size = New Size(1176, 61)
+        flpAppLogsButtons.Size = New Size(1176, 62)
         flpAppLogsButtons.TabIndex = 1
         ' 
         ' btnViewLatestLog
@@ -1802,7 +1802,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 639)
+        tpOptions.Size = New Size(1182, 650)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
