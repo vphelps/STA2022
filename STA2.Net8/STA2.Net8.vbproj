@@ -5,10 +5,23 @@
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<UseAppHost>true</UseAppHost>
-		<!-- optional <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
 		<StartupObject>STA2.Net8.Startup</StartupObject>
-		<ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>	
+		<ApplicationIcon>vernware_logo_XUD_icon.ico</ApplicationIcon>
+
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>true</SelfContained>
+		<PublishSingleFile>true</PublishSingleFile>
+		<PublishTrimmed>false</PublishTrimmed>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	</PropertyGroup>
+
+
+	<Target Name="CustomPublish">
+
+		<Exec Command="dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o E:\STAPublish\" />
+
+	</Target>
+
 
 	<!-- ✅ ADD THIS: ensures Startup.vb is compiled -->
 	<ItemGroup>
