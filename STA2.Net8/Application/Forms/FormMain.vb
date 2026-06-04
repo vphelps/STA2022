@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Runtime.Intrinsics
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
+Imports Microsoft.Data.SqlClient
 'Imports STA2.AppData
 
 Public Class FormMain
@@ -116,6 +117,8 @@ Public Class FormMain
         _hoverHints.Add(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
         _hoverHints.Add(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
         _hoverHints.Add(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
+
+        ' ✅ Hover hints for Options Tab
         _hoverHints.Add(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
         _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
         _hoverHints.Add(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
@@ -137,6 +140,12 @@ Public Class FormMain
         _hoverHints.Add(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
         _hoverHints.Add(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
         _hoverHints.Add(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
+
+
+        _hoverHints.Add(btnOpenLogFile, "Opens the folder containing the log files in a Open File box to select a log file")
+        _hoverHints.Add(btnViewLatestLog, "Opens the log file for today to see the latest log entries ")
+        _hoverHints.Add(btnLastLogBlock, "Displays the very last script execution log in a message box")
+        _hoverHints.Add(btnLastFailed, "Displays the last error encountered in a message box")
 
         ' Hoverhint line template
         '_hoverHints.Add(ControlName, "DESCRIPTION")
@@ -177,23 +186,30 @@ Public Class FormMain
     End Sub
     Private Function GetLastFailedLogBlock(content As String) As String
 
-        If String.IsNullOrWhiteSpace(content) Then Return String.Empty
+        If String.IsNullOrWhiteSpace(content) Then Return Nothing
 
-        Dim separator As String = "----------------------------------------------------"
+        Dim separator As String = "===================================================="
 
-        Dim parts = content.Split(
-        New String() {separator},
-        StringSplitOptions.RemoveEmptyEntries)
+        ' ✅ Split based on your REAL separator
+        Dim parts As String() =
+        content.Split(New String() {separator}, StringSplitOptions.None)
 
-        ' ✅ Find last block containing FAILURE
-        Dim failedBlock As String =
-        parts _
-        .Select(Function(p) p.Trim()) _
-        .Where(Function(p) Not String.IsNullOrWhiteSpace(p) AndAlso p.Contains("FAILURE")) _
-        .LastOrDefault()
+        Dim failedBlock As String = Nothing
+
+        For Each part As String In parts
+
+            If String.IsNullOrWhiteSpace(part) Then Continue For
+
+            ' ✅ Detect failure via exception presence
+            If part.Contains("Exception Type:", StringComparison.OrdinalIgnoreCase) OrElse
+   part.Contains("StackTrace:", StringComparison.OrdinalIgnoreCase) Then
+                failedBlock = part.Trim()
+            End If
+
+        Next
 
         If String.IsNullOrWhiteSpace(failedBlock) Then
-            Return Nothing ' no failures found
+            Return Nothing
         End If
 
         Return separator & Environment.NewLine &
@@ -1748,7 +1764,7 @@ Public Class FormMain
         If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
         If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
 
-        Diagnostics.Process.Start(Executable)
+        System.Diagnostics.Process.Start(Executable)
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
@@ -2345,56 +2361,10 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
 
-
-        Try
-            Try
-                ' Simulate root cause (file not found)
-                IO.File.ReadAllText("Z:\missing\file.txt")
-
-            Catch innerEx As Exception
-                Throw New InvalidOperationException("Failed during script execution stage", innerEx)
-            End Try
-
-        Catch ex As Exception
-
-            GlobalErrorHandler.LogScriptResult(
-            commandLine:="script.cmd /run",
-            scriptPath:="script.cmd",
-            scriptArgs:="/run",
-            success:=False,
-            ex:=ex)
-
-            MessageBox.Show("Nested failure logged.")
-
-        End Try
-    End Sub
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-
-        Try
-            ' ✅ Simulate script execution failure
-            Dim scriptPath As String = "C:\Scripts\TestScript.ps1"
-            Dim scriptArgs As String = "-TestMode"
-            Dim commandLine As String = $"{scriptPath} {scriptArgs}"
-
-            ' ✅ Simulate something going wrong
-            Throw New Exception("TEST: Simulated script execution failure")
-
-        Catch ex As Exception
-
-            ' ✅ Log the failure using your existing system
-            GlobalErrorHandler.LogScriptResult(
-            commandLine:="C:\Scripts\TestScript.ps1 -TestMode",
-            scriptPath:="C:\Scripts\TestScript.ps1",
-            scriptArgs:="-TestMode",
-            success:=False,
-            ex:=ex)
-
-            ' ✅ Optional: notify user
-            MessageBox.Show("Simulated failure logged. Use 'Last Failed' to verify.")
-
-        End Try
+        tbTest1.Text = btnExit.Size.ToString
 
     End Sub
+
 
     Private Sub btnLastFailed_Click(sender As Object, e As EventArgs) Handles btnLastFailed.Click
 
@@ -2409,10 +2379,11 @@ e As System.ComponentModel.CancelEventArgs
         Try
             ' ✅ Get latest log file
             Dim latestFile =
-                Directory.GetFiles(logFolder, "*.log") _
-                .Select(Function(f) New FileInfo(f)) _
-                .OrderByDescending(Function(fi) fi.LastWriteTime) _
-                .FirstOrDefault()
+    Directory.GetFiles(logFolder, "Error_*.log") _
+    .Select(Function(f) New FileInfo(f)) _
+    .OrderByDescending(Function(fi) fi.LastWriteTime) _
+    .FirstOrDefault()
+
 
             If latestFile Is Nothing Then
                 MessageBox.Show("No log files found.")
@@ -2423,18 +2394,21 @@ e As System.ComponentModel.CancelEventArgs
 
             ' ✅ Extract LAST FAILED block
             Dim failedBlock As String = GetLastFailedLogBlock(content)
-            failedBlock = "Open full log file for full details and to copy failure data." & Environment.NewLine & Environment.NewLine & failedBlock
 
-
-
+            ' ✅ FIRST: check if anything was found
             If String.IsNullOrWhiteSpace(failedBlock) Then
                 UIHelpers.TimedInfoPrompt(
-                    Me,
-                    "No failed executions found in this log.",
-                    "Last Failed",
-                    5)
+        Me,
+                "No failed executions found in this log.",
+        "Last Failed - " & latestFile.Name,
+        5)
                 Return
             End If
+
+            ' ✅ NOW: prepend your message AFTER the check
+            failedBlock = "Open full log file for full details and to copy failure data." &
+              Environment.NewLine & Environment.NewLine &
+              failedBlock
 
             ' ✅ Optional: truncate for dialog
             If failedBlock.Length > 1500 Then
@@ -2488,4 +2462,39 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
+    Private Sub btnUpdateShiftDate_Click(sender As Object, e As EventArgs) Handles btnUpdateShiftDate.Click
+
+        Try
+            Dim connectionString = ConfigValues.DockerConnectionString()
+
+            DatabaseCoordinator.ExecuteStoredProcedure(
+            connectionString,
+            "ChangeShiftDate"
+        )
+
+        Catch ex As SqlException
+
+            ' ✅ ONLY handle expected case
+            If ex.Number = 2627 OrElse ex.Number = 2601 Then
+
+                If ex.Message.Contains("PK_InvSnapShot") Then
+                    MessageBox.Show("Conflict in InvSnapShot Table", "Docker Data")
+                Else
+                    MessageBox.Show("Shift date already exists.", "Duplicate")
+                End If
+
+                Return ' ✅ stop propagation ONLY for this case
+
+            End If
+
+            ' ✅ IMPORTANT: let everything else go to GlobalErrorHandler
+            Throw
+
+        End Try
+
+    End Sub
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        _uiStateController.Refresh()
+
+    End Sub
 End Class

@@ -263,4 +263,90 @@ Public Module DatabaseCoordinator
 
     End Sub
 
+    '    Public Sub ExecuteStoredProcedure(
+    '    connectionString As String,
+    '    procedureName As String,
+    '    Optional parameters As Dictionary(Of String, Object) = Nothing
+    ')
+
+    '        Try
+    '            Using cn As New SqlConnection(connectionString)
+    '                cn.Open()
+
+    '                Using cmd As New SqlCommand(procedureName, cn)
+    '                    cmd.CommandType = CommandType.StoredProcedure
+
+    '                    ' ✅ Add parameters if provided
+    '                    If parameters IsNot Nothing Then
+    '                        For Each kvp In parameters
+    '                            cmd.Parameters.AddWithValue(kvp.Key, kvp.Value)
+    '                        Next
+    '                    End If
+
+    '                    cmd.ExecuteNonQuery()
+    '                End Using
+    '            End Using
+
+    '        Catch ex As Exception
+    '            ' ✅ Log it using your existing global handler
+    '            GlobalErrorHandler.HandleUnhandledException(
+    '            Nothing,
+    '            New UnhandledExceptionEventArgs(ex, False)
+    '        )
+
+    '            Throw ' rethrow so UI can react if needed
+    '        End Try
+
+    '    End Sub
+    Public Sub ExecuteStoredProcedure(
+    connectionString As String,
+    procedureName As String,
+    Optional parameters As Dictionary(Of String, Object) = Nothing
+)
+
+        Try
+            Using cn As New SqlConnection(connectionString)
+                cn.Open()
+
+                Using cmd As New SqlCommand(procedureName, cn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    If parameters IsNot Nothing Then
+                        For Each kvp In parameters
+                            cmd.Parameters.AddWithValue(kvp.Key, kvp.Value)
+                        Next
+                    End If
+
+                    cmd.ExecuteNonQuery()
+                End Using
+            End Using
+
+        Catch ex As SqlException
+
+            ' ✅ ✅ ✅ DO NOT log expected duplicate key errors
+            If ex.Number = 2627 OrElse ex.Number = 2601 Then
+                Throw   ' send to UI, but DO NOT log
+            End If
+
+            ' ✅ Log all other SQL errors
+            GlobalErrorHandler.HandleUnhandledException(
+                Nothing,
+                New UnhandledExceptionEventArgs(ex, False)
+            )
+
+            Throw
+
+        Catch ex As Exception
+
+            ' ✅ Log unexpected errors
+            GlobalErrorHandler.HandleUnhandledException(
+                Nothing,
+                New UnhandledExceptionEventArgs(ex, False)
+            )
+
+            Throw
+
+        End Try
+
+    End Sub
 End Module
