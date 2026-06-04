@@ -69,6 +69,79 @@ Public Class FormMain
         End If
 
     End Sub
+    Private Sub InitializeUIEnhancements()
+        _hoverHints = New HoverHintManager(Me)
+
+        ' ✅ Button images
+        SetButtonIcon(btnCopyScriptOutput, "imgCopy16.png")
+        SetButtonIcon(btnRepoFolder, "imgOpenFolder16.png")
+        SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
+        SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
+
+        ' ✅ Hover hints for buttons
+        _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
+        _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
+        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with default flavors and optionally the value from Start DB Version box")
+        _hoverHints.Add(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
+        _hoverHints.Add(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
+        _hoverHints.Add(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
+        _hoverHints.Add(btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
+        _hoverHints.Add(btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
+        _hoverHints.Add(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
+        _hoverHints.Add(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
+        _hoverHints.Add(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
+        _hoverHints.Add(btnExit, "Exit the Assistant")
+        _hoverHints.Add(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
+
+        _hoverHints.Add(btnCalc, "Open the Calculator included with Windows")
+        _hoverHints.Add(btnTaskmgr, "Open the Windows Task Manager")
+        _hoverHints.Add(btnAppWiz, "Open the Control Panel > Programs and Features window")
+        _hoverHints.Add(btnEventViewer, "Open the Windows Event Viewer")
+        _hoverHints.Add(btnDevices, "Open the Control Panel > Devices and Printers window")
+        _hoverHints.Add(btnServices, "Open the Windows Services window")
+
+        _hoverHints.Add(btnAdvManager, "Run Advantage Manager Console")
+        _hoverHints.Add(btnPos, "Run Advantage POS")
+        _hoverHints.Add(btnAdvGroups, "Run Advantage Groups")
+        _hoverHints.Add(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
+        _hoverHints.Add(btnAdvConfig, "Run CenterEdge Configuration")
+        _hoverHints.Add(btnAdvReportEditor, "Run Advantage Report Editor")
+        _hoverHints.Add(btnAdvRedeem, "Run Advantage Redemption")
+        _hoverHints.Add(btnAdvCardTech, "DESCRIPTION")
+        _hoverHints.Add(btnAdvKiosk, "Run Advantage Legacy Kiosk")
+        _hoverHints.Add(btnAdvUpgrade, "Run Advantage Upgrade (AdvUpgrade.exe)")
+
+        ' ✅ Hover hints
+        _hoverHints.Add(lbFlavorsList, "🖱 Right-click → Apply selected flavors" & vbCrLf & "⚡ Double-click → Apply highlighted")
+        _hoverHints.Add(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
+        _hoverHints.Add(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
+        _hoverHints.Add(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
+        _hoverHints.Add(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
+        _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
+        _hoverHints.Add(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
+        _hoverHints.Add(cbShowHiddenServices, "Check this box to show all Advantage services in the Services List even if they are not installed.  Unchecked only the installed services will show")
+        _hoverHints.Add(tbDatabaseStartDefault, "This is the path to the script to start the docker database (Start-Database.ps1)")
+        _hoverHints.Add(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
+        _hoverHints.Add(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
+        _hoverHints.Add(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
+
+
+        _hoverHints.Add(btnAdd, "Add a new application to the Application Launcher Settings")
+        _hoverHints.Add(btnEdit, "Edit the program selected in the Application Launcher Settings")
+        _hoverHints.Add(btnDelete, "Delete the program selected in the Application Launcher Settings")
+        _hoverHints.Add(btnLaunch, "Launch the program selected in the Application Launcher Settings")
+        _hoverHints.Add(btnResetFlavorDefaults, "Resets the list of Default Flavors Selections to the defaults that were previously saved")
+        _hoverHints.Add(btnSaveFlavorDefaults, "Save the currently selected flavors in the Default Flavors Selection list as the new default selections")
+
+        _hoverHints.Add(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
+        _hoverHints.Add(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
+        _hoverHints.Add(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
+        _hoverHints.Add(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
+
+        ' Hoverhint line template
+        '_hoverHints.Add(ControlName, "DESCRIPTION")
+    End Sub
+
     Private Sub ShowErrorPopup(ex As Exception, source As String)
         If ex Is Nothing Then Return
 
@@ -169,7 +242,7 @@ Public Class FormMain
 
         ' Restore persisted "Show hidden services" option
         If _options IsNot Nothing Then
-            chkShowHiddenServices.Checked = _options.ShowHiddenServices
+            cbShowHiddenServices.Checked = _options.ShowHiddenServices
         End If
         ' Attach Quick Launch context menu
         _quickLaunchManager.EnsureContextMenu(
@@ -340,7 +413,7 @@ Public Class FormMain
                                row.IsHidden = True
 
                                ' Respect persisted toggle
-                               row.Visible = chkShowHiddenServices.Checked
+                               row.Visible = cbShowHiddenServices.Checked
 
                            End Sub)
         End Sub
@@ -400,23 +473,6 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Sub InitializeUIEnhancements()
-        _hoverHints = New HoverHintManager(Me)
-
-        ' ✅ Button images
-        SetButtonIcon(btnCopyScriptOutput, "imgCopy16.png")
-        SetButtonIcon(btnRepoFolder, "imgOpenFolder16.png")
-        SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
-        SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
-
-        ' ✅ Hover hints
-        _hoverHints.Add(lbFlavorsList, "🖱 Right-click → Apply selected flavors" & vbCrLf & "⚡ Double-click → Apply highlighted")
-        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with live output")
-        _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
-        _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
-        _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
-
-    End Sub
     Private Sub InitializeFlavors()
 
         If _options Is Nothing Then Return
@@ -945,16 +1001,16 @@ Public Class FormMain
     Private Sub chkShowHiddenServices_CheckedChanged(
        sender As Object,
     e As EventArgs
-) Handles chkShowHiddenServices.CheckedChanged
+) Handles cbShowHiddenServices.CheckedChanged
 
-        UpdateOption(Sub() _options.ShowHiddenServices = chkShowHiddenServices.Checked)
+        UpdateOption(Sub() _options.ShowHiddenServices = cbShowHiddenServices.Checked)
 
         tblServices.SuspendLayout()
 
         ' Toggle visibility
         For Each row In _serviceRows
             If row.IsHidden Then
-                row.Visible = chkShowHiddenServices.Checked
+                row.Visible = cbShowHiddenServices.Checked
             End If
         Next
 
@@ -1665,10 +1721,6 @@ Public Class FormMain
     End Sub
 
 
-    Private Sub btnCenterEdgeConfig_Click(sender As Object, e As EventArgs) Handles btnCenterEdgeConfig.Click
-        Dim Path As String = "C:\Program Files (x86)\CenterEdge Software\AdvConfig.exe"
-        Process.Start(Path)
-    End Sub
     Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
 
         Dim caller = DirectCast(sender, Button)
@@ -1688,7 +1740,7 @@ Public Class FormMain
             Process.Start(Executable)
         End If
     End Sub
-    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click, btnAdvConfig.Click
         Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
         Dim Executable As String = caller.Name.Replace("btn", "")
         Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)

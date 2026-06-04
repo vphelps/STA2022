@@ -55,8 +55,15 @@
             Await Task.Yield()
             _liveOutputManager.ForceRedraw()
 
+            Dim scriptArgs As String
             ' ✅ Build args
-            Dim scriptArgs As String = BuildScriptArgs(options)
+            If triggerButton.Equals(_form.btnRunDatabaseStartLive) Then
+                scriptArgs = BuildScriptArgs(options, True)
+            Else
+                scriptArgs = BuildScriptArgs(options, False)
+            End If
+
+
 
             ' ✅ Build full command (for logging)
             Dim fullCommandLine As String = BuildCommandLine(options)
@@ -111,18 +118,18 @@
         End Try
 
     End Function
-    Public Function BuildCommandLine(options As ScriptCommandOptions) As String
-        Dim args = BuildScriptArgs(options)
+    Public Function BuildCommandLine(options As ScriptCommandOptions, Optional useVersion As Boolean = False) As String
+        Dim args = BuildScriptArgs(options, useVersion)
         Return $"powershell -ExecutionPolicy Bypass -File ""{options.ScriptPath}"" {args}".Trim()
     End Function
 
-    Public Function BuildScriptArgs(options As ScriptCommandOptions) As String
+    Public Function BuildScriptArgs(options As ScriptCommandOptions, Optional useVersion As Boolean = False) As String
 
         If options Is Nothing Then Return String.Empty
 
         Dim args As New List(Of ScriptArgument)
 
-        ' ✅ Always include -Force
+        ' ✅ Always include -Force 
         args.Add(New ScriptArgument("-Force"))
 
         ' ✅ Override takes priority
@@ -141,7 +148,7 @@
         End If
 
         ' ✅ Version
-        If options.UseVersion Then
+        If options.UseVersion And useVersion Then
             Dim versionText = options.VersionText?.Trim()
 
             If Not String.IsNullOrWhiteSpace(versionText) Then

@@ -184,7 +184,7 @@ Partial Class FormMain
         lblSetupSwitches = New Label()
         tbSetupSwitches = New TextBox()
         lblWindowTitle = New Label()
-        chkShowHiddenServices = New CheckBox()
+        cbShowHiddenServices = New CheckBox()
         lblShowHiddenServices = New Label()
         gpAdvUpgrade = New GroupBox()
         lblAdvUpgrade = New Label()
@@ -207,7 +207,7 @@ Partial Class FormMain
         btnAdvCardTech = New Button()
         btnAdvRedeem = New Button()
         btnAdvReportEditor = New Button()
-        btnCenterEdgeConfig = New Button()
+        btnAdvConfig = New Button()
         btnAdvKioskSetup = New Button()
         btnAdvGroups = New Button()
         btnPos = New Button()
@@ -368,7 +368,7 @@ Partial Class FormMain
         SplitContainer1.Panel2.BackColor = Color.Gray
         SplitContainer1.Panel2.Controls.Add(pnlButtonCollection)
         SplitContainer1.Size = New Size(1194, 884)
-        SplitContainer1.SplitterDistance = 692
+        SplitContainer1.SplitterDistance = 720
         SplitContainer1.SplitterWidth = 3
         SplitContainer1.TabIndex = 10
         ' 
@@ -387,7 +387,7 @@ Partial Class FormMain
         tcSTA.Margin = New Padding(4, 3, 4, 3)
         tcSTA.Name = "tcSTA"
         tcSTA.SelectedIndex = 0
-        tcSTA.Size = New Size(1190, 688)
+        tcSTA.Size = New Size(1190, 716)
         tcSTA.TabIndex = 11
         ' 
         ' tpGeneral
@@ -400,7 +400,7 @@ Partial Class FormMain
         tpGeneral.Margin = New Padding(4, 3, 4, 3)
         tpGeneral.Name = "tpGeneral"
         tpGeneral.Padding = New Padding(4, 3, 4, 3)
-        tpGeneral.Size = New Size(1182, 660)
+        tpGeneral.Size = New Size(1182, 688)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
         ' 
@@ -575,7 +575,7 @@ Partial Class FormMain
         tpSysInfo.Controls.Add(pnlLicInfo)
         tpSysInfo.Location = New Point(4, 24)
         tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 659)
+        tpSysInfo.Size = New Size(1182, 687)
         tpSysInfo.TabIndex = 8
         tpSysInfo.Text = "SysInfo"
         ' 
@@ -992,7 +992,7 @@ Partial Class FormMain
         tpAdvData.Location = New Point(4, 24)
         tpAdvData.Margin = New Padding(4, 3, 4, 3)
         tpAdvData.Name = "tpAdvData"
-        tpAdvData.Size = New Size(1182, 659)
+        tpAdvData.Size = New Size(1182, 687)
         tpAdvData.TabIndex = 4
         tpAdvData.Text = "Advantage Data"
         tpAdvData.ToolTipText = "Information from the Database Tables"
@@ -1205,7 +1205,7 @@ Partial Class FormMain
         tpDbLogs.Margin = New Padding(4, 3, 4, 3)
         tpDbLogs.Name = "tpDbLogs"
         tpDbLogs.Padding = New Padding(4, 3, 4, 3)
-        tpDbLogs.Size = New Size(1182, 659)
+        tpDbLogs.Size = New Size(1182, 687)
         tpDbLogs.TabIndex = 2
         tpDbLogs.Text = "CE DB Logs"
         tpDbLogs.ToolTipText = "Access to MessageLog and WebCloudUpdates tables"
@@ -1224,7 +1224,7 @@ Partial Class FormMain
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
         tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
-        tlpLogData.Size = New Size(1161, 484)
+        tlpLogData.Size = New Size(1161, 512)
         tlpLogData.TabIndex = 5
         ' 
         ' gpDbLogCount
@@ -1327,7 +1327,7 @@ Partial Class FormMain
         pnlDbLogs.Controls.Add(rbMessageLog)
         pnlDbLogs.Controls.Add(rbWebCloudUpdates)
         pnlDbLogs.Dock = DockStyle.Bottom
-        pnlDbLogs.Location = New Point(4, 510)
+        pnlDbLogs.Location = New Point(4, 538)
         pnlDbLogs.Margin = New Padding(4, 3, 4, 3)
         pnlDbLogs.Name = "pnlDbLogs"
         pnlDbLogs.Size = New Size(1174, 146)
@@ -1500,7 +1500,7 @@ Partial Class FormMain
         tpDbInfo.Margin = New Padding(4, 3, 4, 3)
         tpDbInfo.Name = "tpDbInfo"
         tpDbInfo.Padding = New Padding(4, 3, 4, 3)
-        tpDbInfo.Size = New Size(1182, 659)
+        tpDbInfo.Size = New Size(1182, 687)
         tpDbInfo.TabIndex = 1
         tpDbInfo.Text = "DB Information"
         tpDbInfo.ToolTipText = "Queries for Database Troubleshooting"
@@ -1515,7 +1515,7 @@ Partial Class FormMain
         pnlDbInfoButtons.Controls.Add(rbDbFragmentation)
         pnlDbInfoButtons.Controls.Add(rbDbTableSize)
         pnlDbInfoButtons.Dock = DockStyle.Bottom
-        pnlDbInfoButtons.Location = New Point(4, 624)
+        pnlDbInfoButtons.Location = New Point(4, 652)
         pnlDbInfoButtons.Margin = New Padding(4, 3, 4, 3)
         pnlDbInfoButtons.Name = "pnlDbInfoButtons"
         pnlDbInfoButtons.Size = New Size(1174, 32)
@@ -1628,7 +1628,7 @@ Partial Class FormMain
         tpStParse.Margin = New Padding(4, 3, 4, 3)
         tpStParse.Name = "tpStParse"
         tpStParse.Padding = New Padding(4, 3, 4, 3)
-        tpStParse.Size = New Size(1182, 659)
+        tpStParse.Size = New Size(1182, 687)
         tpStParse.TabIndex = 3
         tpStParse.Text = "Stack Trace Parser"
         tpStParse.UseVisualStyleBackColor = True
@@ -1702,7 +1702,7 @@ Partial Class FormMain
         tpLogs.Controls.Add(tlpApplicationLogs)
         tpLogs.Location = New Point(4, 24)
         tpLogs.Name = "tpLogs"
-        tpLogs.Size = New Size(1182, 659)
+        tpLogs.Size = New Size(1182, 687)
         tpLogs.TabIndex = 9
         tpLogs.Text = "Application Logs"
         tpLogs.UseVisualStyleBackColor = True
@@ -1719,7 +1719,7 @@ Partial Class FormMain
         tlpApplicationLogs.RowCount = 2
         tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 89.6124039F))
         tlpApplicationLogs.RowStyles.Add(New RowStyle(SizeType.Percent, 10.3875971F))
-        tlpApplicationLogs.Size = New Size(1182, 659)
+        tlpApplicationLogs.Size = New Size(1182, 687)
         tlpApplicationLogs.TabIndex = 1
         ' 
         ' rtbLogs
@@ -1729,7 +1729,7 @@ Partial Class FormMain
         rtbLogs.Location = New Point(3, 3)
         rtbLogs.Name = "rtbLogs"
         rtbLogs.ReadOnly = True
-        rtbLogs.Size = New Size(1176, 584)
+        rtbLogs.Size = New Size(1176, 609)
         rtbLogs.TabIndex = 0
         rtbLogs.Text = ""
         ' 
@@ -1740,9 +1740,9 @@ Partial Class FormMain
         flpAppLogsButtons.Controls.Add(btnLastLogBlock)
         flpAppLogsButtons.Controls.Add(btnLastFailed)
         flpAppLogsButtons.Dock = DockStyle.Fill
-        flpAppLogsButtons.Location = New Point(3, 593)
+        flpAppLogsButtons.Location = New Point(3, 618)
         flpAppLogsButtons.Name = "flpAppLogsButtons"
-        flpAppLogsButtons.Size = New Size(1176, 63)
+        flpAppLogsButtons.Size = New Size(1176, 66)
         flpAppLogsButtons.TabIndex = 1
         ' 
         ' btnViewLatestLog
@@ -1802,7 +1802,7 @@ Partial Class FormMain
         tpOptions.Margin = New Padding(4, 3, 4, 3)
         tpOptions.Name = "tpOptions"
         tpOptions.Padding = New Padding(4, 3, 4, 3)
-        tpOptions.Size = New Size(1182, 659)
+        tpOptions.Size = New Size(1182, 688)
         tpOptions.TabIndex = 7
         tpOptions.Text = "Options"
         ' 
@@ -2026,7 +2026,7 @@ Partial Class FormMain
         TableLayoutPanel1.Controls.Add(lblSetupSwitches, 0, 2)
         TableLayoutPanel1.Controls.Add(tbSetupSwitches, 1, 2)
         TableLayoutPanel1.Controls.Add(lblWindowTitle, 0, 0)
-        TableLayoutPanel1.Controls.Add(chkShowHiddenServices, 1, 3)
+        TableLayoutPanel1.Controls.Add(cbShowHiddenServices, 1, 3)
         TableLayoutPanel1.Controls.Add(lblShowHiddenServices, 0, 3)
         TableLayoutPanel1.Location = New Point(7, 22)
         TableLayoutPanel1.Margin = New Padding(4, 3, 4, 3)
@@ -2173,16 +2173,16 @@ Partial Class FormMain
         lblWindowTitle.Text = "Window Title:"
         lblWindowTitle.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' chkShowHiddenServices
+        ' cbShowHiddenServices
         ' 
-        chkShowHiddenServices.AutoSize = True
-        chkShowHiddenServices.Location = New Point(144, 94)
-        chkShowHiddenServices.Margin = New Padding(4, 3, 4, 3)
-        chkShowHiddenServices.Name = "chkShowHiddenServices"
-        chkShowHiddenServices.Size = New Size(244, 19)
-        chkShowHiddenServices.TabIndex = 18
-        chkShowHiddenServices.Text = "Shows uninstalled services when checked"
-        chkShowHiddenServices.UseVisualStyleBackColor = True
+        cbShowHiddenServices.AutoSize = True
+        cbShowHiddenServices.Location = New Point(144, 94)
+        cbShowHiddenServices.Margin = New Padding(4, 3, 4, 3)
+        cbShowHiddenServices.Name = "cbShowHiddenServices"
+        cbShowHiddenServices.Size = New Size(244, 19)
+        cbShowHiddenServices.TabIndex = 18
+        cbShowHiddenServices.Text = "Shows uninstalled services when checked"
+        cbShowHiddenServices.UseVisualStyleBackColor = True
         ' 
         ' lblShowHiddenServices
         ' 
@@ -2372,7 +2372,7 @@ Partial Class FormMain
         tlpButtons1.Controls.Add(btnAdvCardTech, 2, 1)
         tlpButtons1.Controls.Add(btnAdvRedeem, 1, 1)
         tlpButtons1.Controls.Add(btnAdvReportEditor, 0, 1)
-        tlpButtons1.Controls.Add(btnCenterEdgeConfig, 4, 0)
+        tlpButtons1.Controls.Add(btnAdvConfig, 4, 0)
         tlpButtons1.Controls.Add(btnAdvKioskSetup, 3, 0)
         tlpButtons1.Controls.Add(btnAdvGroups, 2, 0)
         tlpButtons1.Controls.Add(btnPos, 1, 0)
@@ -2389,11 +2389,10 @@ Partial Class FormMain
         ' 
         ' btnAdvUpgrade
         ' 
-        btnAdvUpgrade.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnAdvUpgrade.Location = New Point(401, 76)
+        btnAdvUpgrade.Location = New Point(400, 71)
         btnAdvUpgrade.Margin = New Padding(4, 3, 4, 3)
         btnAdvUpgrade.Name = "btnAdvUpgrade"
-        btnAdvUpgrade.Size = New Size(93, 58)
+        btnAdvUpgrade.Size = New Size(89, 58)
         btnAdvUpgrade.TabIndex = 18
         btnAdvUpgrade.Text = "Advantage Upgrade"
         btnAdvUpgrade.UseVisualStyleBackColor = True
@@ -2442,16 +2441,15 @@ Partial Class FormMain
         btnAdvReportEditor.Text = "Report Editor"
         btnAdvReportEditor.UseVisualStyleBackColor = True
         ' 
-        ' btnCenterEdgeConfig
+        ' btnAdvConfig
         ' 
-        btnCenterEdgeConfig.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnCenterEdgeConfig.Location = New Point(401, 7)
-        btnCenterEdgeConfig.Margin = New Padding(4, 3, 4, 3)
-        btnCenterEdgeConfig.Name = "btnCenterEdgeConfig"
-        btnCenterEdgeConfig.Size = New Size(93, 58)
-        btnCenterEdgeConfig.TabIndex = 12
-        btnCenterEdgeConfig.Text = "CenterEdge Configuration"
-        btnCenterEdgeConfig.UseVisualStyleBackColor = True
+        btnAdvConfig.Location = New Point(400, 3)
+        btnAdvConfig.Margin = New Padding(4, 3, 4, 3)
+        btnAdvConfig.Name = "btnAdvConfig"
+        btnAdvConfig.Size = New Size(89, 58)
+        btnAdvConfig.TabIndex = 12
+        btnAdvConfig.Text = "CenterEdge Configuration"
+        btnAdvConfig.UseVisualStyleBackColor = True
         ' 
         ' btnAdvKioskSetup
         ' 
@@ -3254,7 +3252,7 @@ Partial Class FormMain
     Friend WithEvents rbDbTableSize As RadioButton
     Friend WithEvents rbDbSizeByDay As RadioButton
     Friend WithEvents rbDbDeadlocks As RadioButton
-    Friend WithEvents btnCenterEdgeConfig As Button
+    Friend WithEvents btnAdvConfig As Button
     Friend WithEvents tpDbLogs As TabPage
     Friend WithEvents pnlDbLogs As Panel
     Friend WithEvents dgvDbLogCount As DataGridView
@@ -3394,7 +3392,7 @@ Partial Class FormMain
     Friend WithEvents btnRepoDiscardChanges As Button
     Friend WithEvents btnSetupInstall As Button
     Friend WithEvents btnRepoMain As Button
-    Friend WithEvents chkShowHiddenServices As CheckBox
+    Friend WithEvents cbShowHiddenServices As CheckBox
     Friend WithEvents pnlServicesContainer As Panel
     Friend WithEvents tblServices As TableLayoutPanel
     Friend WithEvents gpFlavorsSettings As GroupBox
