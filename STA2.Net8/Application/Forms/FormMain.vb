@@ -2359,13 +2359,6 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
-
-        tbTest1.Text = btnExit.Size.ToString
-
-    End Sub
-
-
     Private Sub btnLastFailed_Click(sender As Object, e As EventArgs) Handles btnLastFailed.Click
 
         Dim logFolder As String =
@@ -2491,10 +2484,6 @@ e As System.ComponentModel.CancelEventArgs
             Throw
 
         End Try
-
-    End Sub
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        _uiStateController.Refresh()
 
     End Sub
 End Class

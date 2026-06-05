@@ -99,12 +99,10 @@
 
         Dim now As DateTime = DateTime.Now.Date
         Dim shiftDate As DateTime
-        _form.tbTest3.Text = DateTime.TryParse(_form.tbShiftDate.Text, shiftDate).ToString
+
         ' ✅ Validate input first
         If DateTime.TryParse(_form.tbShiftDate.Text, shiftDate) Then
 
-            _form.tbTest1.Text = now.ToString
-            _form.tbTest2.Text = shiftDate.ToString
             If now.Date <> shiftDate.Date Then
                 _form.tbShiftDate.BackColor = TextboxColors.Red
                 _form.tbShiftDate.ForeColor = TextboxColors.White
