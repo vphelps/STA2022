@@ -61,45 +61,58 @@
         AddHandler _target.MouseDown, AddressOf OnMouseDown
     End Sub
 
+    Private _hoverId As Integer = 0
+
     Private Async Sub OnMouseMove(sender As Object, e As MouseEventArgs)
 
+        ' Prevent repeated triggers
         If _visible Then Return
 
         _visible = True
 
+        ' ✅ Track this hover instance (prevents async overlap bugs)
+        _hoverId += 1
+        Dim currentId = _hoverId
+
         Await Task.Delay(200)
-        If Not _visible Then Return
+
+        ' ✅ Cancel if mouse left or a newer hover started
+        If Not _visible OrElse currentId <> _hoverId Then Return
 
         Dim screenPos = _target.PointToScreen(New Point(e.X, e.Y))
         Dim parentPos = _parent.PointToClient(screenPos)
 
-        _panel.Visible = True
+        ' ✅ Layout BEFORE showing
+        _panel.SuspendLayout()
         _panel.PerformLayout()
 
-        ' ✅ Best practice placement (top-left anchored near cursor)
+        ' ✅ Position calculation
         Dim offsetX As Integer = 10
         Dim offsetY As Integer = 12
 
         Dim x = parentPos.X + offsetX
         Dim y = parentPos.Y + offsetY
 
-        ' Keep inside bounds
+        ' ✅ Keep inside parent bounds
         x = Math.Max(5, Math.Min(x, _parent.ClientSize.Width - _panel.Width - 5))
         y = Math.Max(5, Math.Min(y, _parent.ClientSize.Height - _panel.Height - 5))
 
         _panel.Location = New Point(x, y)
 
         _shadow.Bounds = New Rectangle(
-            x + 4,
-            y + 4,
-            _panel.Width,
-            _panel.Height
-        )
+        x + 4,
+        y + 4,
+        _panel.Width,
+        _panel.Height
+    )
 
+        _panel.ResumeLayout()
+
+        ' ✅ SHOW LAST (prevents flicker at top-left)
+        _panel.Visible = True
         _shadow.Visible = True
 
     End Sub
-
     Private Sub OnMouseDown(sender As Object, e As MouseEventArgs)
         Hide()
     End Sub
