@@ -48,6 +48,7 @@ Partial Class FormMain
         lblPcDbInfo = New Label()
         lblShiftDate = New Label()
         tbCoreSvr = New TextBox()
+        lblPcSqlVersion = New Label()
         tbLicSvr = New TextBox()
         tbWebEnabled = New TextBox()
         lblDbVer = New Label()
@@ -65,6 +66,22 @@ Partial Class FormMain
         tbServicesButtonsHelpMessage = New TextBox()
         gbFlavorsList = New GroupBox()
         lbFlavorsList = New ListBox()
+        cmsApplySingleFlavor = New ContextMenuStrip(components)
+        miApplySingleFlavor = New ToolStripMenuItem()
+        tsmiApplyDefaultFlavors = New ToolStripMenuItem()
+        tpSysInfo = New TabPage()
+        pnlGpInfo = New Panel()
+        gpPcInfo = New GroupBox()
+        tlpPcInfo = New TableLayoutPanel()
+        lblPcAdvVersion = New Label()
+        lblPcNetVersion = New Label()
+        lblPcDbSize = New Label()
+        tbPcDbSize = New TextBox()
+        lblPcArch = New Label()
+        lblPcHardDrive = New Label()
+        lblPcRam = New Label()
+        lblPcOsInfo = New Label()
+        lblPcName = New Label()
         tpAdvData = New TabPage()
         btnSaveWebOptionsCSV = New Button()
         btnSaveAppotionsCSV = New Button()
@@ -376,6 +393,7 @@ Partial Class FormMain
         gpLicInfo.Controls.Add(lblPcDbInfo)
         gpLicInfo.Controls.Add(lblShiftDate)
         gpLicInfo.Controls.Add(tbCoreSvr)
+        gpLicInfo.Controls.Add(lblPcSqlVersion)
         gpLicInfo.Controls.Add(tbLicSvr)
         gpLicInfo.Controls.Add(tbWebEnabled)
         gpLicInfo.Controls.Add(lblDbVer)
@@ -384,11 +402,11 @@ Partial Class FormMain
         gpLicInfo.Controls.Add(tbDbVer)
         gpLicInfo.Controls.Add(lblLocName)
         gpLicInfo.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        gpLicInfo.Location = New Point(248, 6)
+        gpLicInfo.Location = New Point(252, 6)
         gpLicInfo.Margin = New Padding(4, 3, 4, 3)
         gpLicInfo.Name = "gpLicInfo"
         gpLicInfo.Padding = New Padding(4, 3, 4, 3)
-        gpLicInfo.Size = New Size(435, 197)
+        gpLicInfo.Size = New Size(431, 197)
         gpLicInfo.TabIndex = 10
         gpLicInfo.TabStop = False
         gpLicInfo.Text = "License Info"
@@ -413,7 +431,7 @@ Partial Class FormMain
         ' 
         ' tbPcDbInfo
         ' 
-        tbPcDbInfo.Location = New Point(118, 170)
+        tbPcDbInfo.Location = New Point(118, 168)
         tbPcDbInfo.Margin = New Padding(4, 3, 4, 3)
         tbPcDbInfo.Name = "tbPcDbInfo"
         tbPcDbInfo.Size = New Size(300, 20)
@@ -460,6 +478,17 @@ Partial Class FormMain
         tbCoreSvr.Name = "tbCoreSvr"
         tbCoreSvr.Size = New Size(300, 20)
         tbCoreSvr.TabIndex = 5
+        ' 
+        ' lblPcSqlVersion
+        ' 
+        lblPcSqlVersion.AutoSize = True
+        lblPcSqlVersion.Location = New Point(8, 175)
+        lblPcSqlVersion.Margin = New Padding(4, 0, 4, 0)
+        lblPcSqlVersion.Name = "lblPcSqlVersion"
+        lblPcSqlVersion.Size = New Size(66, 13)
+        lblPcSqlVersion.TabIndex = 15
+        lblPcSqlVersion.Text = "SQL Version"
+        lblPcSqlVersion.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' tbLicSvr
         ' 
@@ -676,6 +705,191 @@ Partial Class FormMain
         lbFlavorsList.SelectionMode = SelectionMode.MultiExtended
         lbFlavorsList.Size = New Size(225, 323)
         lbFlavorsList.TabIndex = 35
+        ' 
+        ' cmsApplySingleFlavor
+        ' 
+        cmsApplySingleFlavor.Items.AddRange(New ToolStripItem() {miApplySingleFlavor, tsmiApplyDefaultFlavors})
+        cmsApplySingleFlavor.Name = "cmsApplySingleFlavor"
+        cmsApplySingleFlavor.Size = New Size(187, 48)
+        ' 
+        ' miApplySingleFlavor
+        ' 
+        miApplySingleFlavor.Name = "miApplySingleFlavor"
+        miApplySingleFlavor.Size = New Size(186, 22)
+        miApplySingleFlavor.Text = "Apply this flavor"
+        ' 
+        ' tsmiApplyDefaultFlavors
+        ' 
+        tsmiApplyDefaultFlavors.Name = "tsmiApplyDefaultFlavors"
+        tsmiApplyDefaultFlavors.Size = New Size(186, 22)
+        tsmiApplyDefaultFlavors.Text = "Apply Default Flavors"
+        ' 
+        ' tpSysInfo
+        ' 
+        tpSysInfo.BackColor = Color.Gray
+        tpSysInfo.Controls.Add(pnlGpInfo)
+        tpSysInfo.Location = New Point(4, 24)
+        tpSysInfo.Name = "tpSysInfo"
+        tpSysInfo.Size = New Size(1182, 629)
+        tpSysInfo.TabIndex = 8
+        tpSysInfo.Text = "SysInfo"
+        ' 
+        ' pnlGpInfo
+        ' 
+        pnlGpInfo.BackColor = Color.LightGray
+        pnlGpInfo.BorderStyle = BorderStyle.Fixed3D
+        pnlGpInfo.Controls.Add(gpPcInfo)
+        pnlGpInfo.Location = New Point(483, 5)
+        pnlGpInfo.Name = "pnlGpInfo"
+        pnlGpInfo.Size = New Size(474, 299)
+        pnlGpInfo.TabIndex = 17
+        ' 
+        ' gpPcInfo
+        ' 
+        gpPcInfo.BackColor = Color.LightGray
+        gpPcInfo.Controls.Add(tlpPcInfo)
+        gpPcInfo.Dock = DockStyle.Fill
+        gpPcInfo.Location = New Point(0, 0)
+        gpPcInfo.Margin = New Padding(4, 3, 4, 3)
+        gpPcInfo.Name = "gpPcInfo"
+        gpPcInfo.Padding = New Padding(4, 3, 4, 3)
+        gpPcInfo.Size = New Size(470, 295)
+        gpPcInfo.TabIndex = 15
+        gpPcInfo.TabStop = False
+        gpPcInfo.Text = "Computer Info"
+        ' 
+        ' tlpPcInfo
+        ' 
+        tlpPcInfo.ColumnCount = 2
+        tlpPcInfo.ColumnStyles.Add(New ColumnStyle())
+        tlpPcInfo.ColumnStyles.Add(New ColumnStyle())
+        tlpPcInfo.Controls.Add(lblPcAdvVersion, 0, 8)
+        tlpPcInfo.Controls.Add(lblPcNetVersion, 0, 7)
+        tlpPcInfo.Controls.Add(lblPcDbSize, 0, 5)
+        tlpPcInfo.Controls.Add(tbPcDbSize, 1, 5)
+        tlpPcInfo.Controls.Add(lblPcArch, 0, 4)
+        tlpPcInfo.Controls.Add(lblPcHardDrive, 0, 3)
+        tlpPcInfo.Controls.Add(lblPcRam, 0, 2)
+        tlpPcInfo.Controls.Add(lblPcOsInfo, 0, 1)
+        tlpPcInfo.Controls.Add(lblPcName, 0, 0)
+        tlpPcInfo.Location = New Point(7, 14)
+        tlpPcInfo.Margin = New Padding(4, 3, 4, 3)
+        tlpPcInfo.Name = "tlpPcInfo"
+        tlpPcInfo.RowCount = 9
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.RowStyles.Add(New RowStyle())
+        tlpPcInfo.Size = New Size(453, 272)
+        tlpPcInfo.TabIndex = 14
+        ' 
+        ' lblPcAdvVersion
+        ' 
+        lblPcAdvVersion.AutoSize = True
+        lblPcAdvVersion.Dock = DockStyle.Fill
+        lblPcAdvVersion.Location = New Point(4, 119)
+        lblPcAdvVersion.Margin = New Padding(4, 0, 4, 0)
+        lblPcAdvVersion.Name = "lblPcAdvVersion"
+        lblPcAdvVersion.Size = New Size(129, 153)
+        lblPcAdvVersion.TabIndex = 19
+        lblPcAdvVersion.Text = "Advantage Version"
+        lblPcAdvVersion.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblPcNetVersion
+        ' 
+        lblPcNetVersion.AutoSize = True
+        lblPcNetVersion.Dock = DockStyle.Fill
+        lblPcNetVersion.Location = New Point(4, 104)
+        lblPcNetVersion.Margin = New Padding(4, 0, 4, 0)
+        lblPcNetVersion.Name = "lblPcNetVersion"
+        lblPcNetVersion.Size = New Size(129, 15)
+        lblPcNetVersion.TabIndex = 17
+        lblPcNetVersion.Text = "Net Framework Version"
+        lblPcNetVersion.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblPcDbSize
+        ' 
+        lblPcDbSize.AutoSize = True
+        lblPcDbSize.Location = New Point(4, 75)
+        lblPcDbSize.Margin = New Padding(4, 0, 4, 0)
+        lblPcDbSize.Name = "lblPcDbSize"
+        lblPcDbSize.Size = New Size(78, 15)
+        lblPcDbSize.TabIndex = 14
+        lblPcDbSize.Text = "Database Size"
+        lblPcDbSize.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' tbPcDbSize
+        ' 
+        tbPcDbSize.Location = New Point(141, 78)
+        tbPcDbSize.Margin = New Padding(4, 3, 4, 3)
+        tbPcDbSize.Name = "tbPcDbSize"
+        tbPcDbSize.Size = New Size(300, 23)
+        tbPcDbSize.TabIndex = 13
+        ' 
+        ' lblPcArch
+        ' 
+        lblPcArch.AutoSize = True
+        lblPcArch.Dock = DockStyle.Fill
+        lblPcArch.Location = New Point(4, 60)
+        lblPcArch.Margin = New Padding(4, 0, 4, 0)
+        lblPcArch.Name = "lblPcArch"
+        lblPcArch.Size = New Size(129, 15)
+        lblPcArch.TabIndex = 11
+        lblPcArch.Text = "System Architecture"
+        lblPcArch.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblPcHardDrive
+        ' 
+        lblPcHardDrive.AutoSize = True
+        lblPcHardDrive.Dock = DockStyle.Fill
+        lblPcHardDrive.Location = New Point(4, 45)
+        lblPcHardDrive.Margin = New Padding(4, 0, 4, 0)
+        lblPcHardDrive.Name = "lblPcHardDrive"
+        lblPcHardDrive.Size = New Size(129, 15)
+        lblPcHardDrive.TabIndex = 10
+        lblPcHardDrive.Text = "HD Free Space"
+        lblPcHardDrive.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblPcRam
+        ' 
+        lblPcRam.AutoSize = True
+        lblPcRam.Dock = DockStyle.Fill
+        lblPcRam.Location = New Point(4, 30)
+        lblPcRam.Margin = New Padding(4, 0, 4, 0)
+        lblPcRam.Name = "lblPcRam"
+        lblPcRam.Size = New Size(129, 15)
+        lblPcRam.TabIndex = 9
+        lblPcRam.Text = "Memory"
+        lblPcRam.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblPcOsInfo
+        ' 
+        lblPcOsInfo.AutoSize = True
+        lblPcOsInfo.Dock = DockStyle.Fill
+        lblPcOsInfo.Location = New Point(4, 15)
+        lblPcOsInfo.Margin = New Padding(4, 0, 4, 0)
+        lblPcOsInfo.Name = "lblPcOsInfo"
+        lblPcOsInfo.Size = New Size(129, 15)
+        lblPcOsInfo.TabIndex = 8
+        lblPcOsInfo.Text = "Operating System"
+        lblPcOsInfo.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblPcName
+        ' 
+        lblPcName.AutoSize = True
+        lblPcName.Dock = DockStyle.Fill
+        lblPcName.Location = New Point(4, 0)
+        lblPcName.Margin = New Padding(4, 0, 4, 0)
+        lblPcName.Name = "lblPcName"
+        lblPcName.Size = New Size(129, 15)
+        lblPcName.TabIndex = 7
+        lblPcName.Text = "Computer Name"
+        lblPcName.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' tpAdvData
         ' 
@@ -2956,8 +3170,19 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents lblAppOptions As Label
     Friend WithEvents lblWebOptions As Label
+    Friend WithEvents gpPcInfo As GroupBox
+    Friend WithEvents tlpPcInfo As TableLayoutPanel
+    Friend WithEvents lblPcAdvVersion As Label
+    Friend WithEvents lblPcNetVersion As Label
     Friend WithEvents tbPcDbInfo As TextBox
-    Friend WithEvents lblPcDbInfo As Label
+    Friend WithEvents lblPcSqlVersion As Label
+    Friend WithEvents lblPcDbSize As Label
+    Friend WithEvents tbPcDbSize As TextBox
+    Friend WithEvents lblPcArch As Label
+    Friend WithEvents lblPcHardDrive As Label
+    Friend WithEvents lblPcRam As Label
+    Friend WithEvents lblPcOsInfo As Label
+    Friend WithEvents lblPcName As Label
     Friend WithEvents btnAdvManager As Button
     Friend WithEvents btnAdvGroups As Button
     Friend WithEvents btnPos As Button
@@ -3064,6 +3289,8 @@ Partial Class FormMain
     Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
     Friend WithEvents btnCopyScriptOutput As Button
     Friend WithEvents tsmiApplyDefaultFlavors As ToolStripMenuItem
+    Friend WithEvents tpSysInfo As TabPage
+    Friend WithEvents pnlGpInfo As Panel
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button

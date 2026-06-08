@@ -120,7 +120,6 @@ Public Module CodeHelper
 
         Dim PcDbSize As String = ""
         Dim PcSqlVersion As String = ""
-
         Try
             Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
 
@@ -184,13 +183,16 @@ Public Module CodeHelper
             End If
         End If
         frm.tbPcDbInfo.Text = String.Join("/", PcSqlVersion, PcDbSize)
-
         If frm._options IsNot Nothing Then
             Dim uiState = New UIStateController(frm, frm._options)
             uiState.Refresh()
         End If
-
     End Sub
+
+
+    ' =======================================================================
+    ' Unchanged helper functions
+    ' =======================================================================
 
     Private Function IsNumericLike(value As String) As Boolean
         If String.IsNullOrWhiteSpace(value) Then Return False
