@@ -1,5 +1,13 @@
 ﻿<Serializable>
 Public Class AppOptions
+    ' -------------------------------------------------
+    ' AdvUpgrade options
+    ' -------------------------------------------------
+
+    Public Property AdvUpgradeQuiet As Boolean = False
+    Public Property AdvUpgradeNoBackup As Boolean = False
+    Public Property AdvUpgradeNoSetup As Boolean = False
+
 
     ' -------------------------------------------------
     ' General UI / application behavior

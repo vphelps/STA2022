@@ -20,6 +20,7 @@ Public Class FormMain
     Private _uiStateController As UIStateController
     Private _scriptController As ScriptExecutionController
     Private _databaseController As DatabaseViewController
+    Private _isLoadingOptions As Boolean = False
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -244,6 +245,18 @@ Public Class FormMain
         toolTip:=ToolTipForQuickButtons,
         launchCallback:=AddressOf ProgramLauncher.Launch
     )
+
+        _isLoadingOptions = True
+
+        If _options IsNot Nothing Then
+            cbAdvUpgradeQuiet.Checked = _options.AdvUpgradeQuiet
+            cbAdvUpgradeNoBackup.Checked = _options.AdvUpgradeNoBackup
+            cbAdvUpgradeNoSetup.Checked = _options.AdvUpgradeNoSetup
+        End If
+
+        _isLoadingOptions = False
+
+
 
         ' --------------------------------------------------
         ' Flavor selection manager (FIXED AND CORRECT)
@@ -1769,26 +1782,49 @@ Public Class FormMain
         End Using
     End Sub
 
-    Private Sub cbAdvUpgradeQuiet_CheckedChanged(sender As Object, e As EventArgs) Handles cbAdvUpgradeQuiet.CheckedChanged, cbAdvUpgradeNoBackup.CheckedChanged, cbAdvUpgradeNoSetup.CheckedChanged
-        Dim quiet As String
-        Dim nobackup As String
-        Dim nosetup As String
-        If cbAdvUpgradeQuiet.Checked Then
-            quiet = "/q "
-        Else
-            quiet = ""
-        End If
-        If cbAdvUpgradeNoBackup.Checked Then
-            nobackup = "/nobackup "
-        Else
-            nobackup = ""
-        End If
-        If cbAdvUpgradeNoSetup.Checked Then
-            nosetup = "/nosetup "
-        Else
-            nosetup = ""
-        End If
-        tbAdvupgrade.Text = "AdvUpgrade.exe " + quiet + nobackup + nosetup
+    'Private Sub cbAdvUpgradeQuiet_CheckedChanged(sender As Object, e As EventArgs) Handles cbAdvUpgradeQuiet.CheckedChanged, cbAdvUpgradeNoBackup.CheckedChanged, cbAdvUpgradeNoSetup.CheckedChanged
+    '    Dim quiet As String
+    '    Dim nobackup As String
+    '    Dim nosetup As String
+    '    If cbAdvUpgradeQuiet.Checked Then
+    '        quiet = "/q "
+    '    Else
+    '        quiet = ""
+    '    End If
+    '    If cbAdvUpgradeNoBackup.Checked Then
+    '        nobackup = "/nobackup "
+    '    Else
+    '        nobackup = ""
+    '    End If
+    '    If cbAdvUpgradeNoSetup.Checked Then
+    '        nosetup = "/nosetup "
+    '    Else
+    '        nosetup = ""
+    '    End If
+    '    tbAdvupgrade.Text = "AdvUpgrade.exe " + quiet + nobackup + nosetup
+    'End Sub
+    Private Sub cbAdvUpgradeQuiet_CheckedChanged(
+    sender As Object,
+    e As EventArgs
+) Handles cbAdvUpgradeQuiet.CheckedChanged,
+          cbAdvUpgradeNoBackup.CheckedChanged,
+          cbAdvUpgradeNoSetup.CheckedChanged
+
+        ' ✅ Ignore events during initial load
+        If _isLoadingOptions Then Return
+
+        Dim quiet As String = If(cbAdvUpgradeQuiet.Checked, "/q ", "")
+        Dim nobackup As String = If(cbAdvUpgradeNoBackup.Checked, "/nobackup ", "")
+        Dim nosetup As String = If(cbAdvUpgradeNoSetup.Checked, "/nosetup ", "")
+
+        tbAdvupgrade.Text = "AdvUpgrade.exe " & quiet & nobackup & nosetup
+
+        UpdateOption(Sub()
+                         _options.AdvUpgradeQuiet = cbAdvUpgradeQuiet.Checked
+                         _options.AdvUpgradeNoBackup = cbAdvUpgradeNoBackup.Checked
+                         _options.AdvUpgradeNoSetup = cbAdvUpgradeNoSetup.Checked
+                     End Sub)
+
     End Sub
     Private Sub dtpMsgLogDateFrom_ValueChanged(sender As Object, e As EventArgs) Handles dtpMsgLogDateFrom.ValueChanged, dtpMsgLogDateTo.ValueChanged, dtpMsgLogTimeFrom.ValueChanged, dtpMsgLogTimeTo.ValueChanged
         Dim DateFrom As String
