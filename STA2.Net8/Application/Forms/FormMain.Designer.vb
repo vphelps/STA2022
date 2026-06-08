@@ -40,16 +40,12 @@ Partial Class FormMain
         SplitContainer1 = New SplitContainer()
         tcSTA = New TabControl()
         tpGeneral = New TabPage()
-        gbLiveOutput = New GroupBox()
-        TableLayoutPanel2 = New TableLayoutPanel()
-        btnCopyScriptOutput = New Button()
-        tbOutputScript = New TextBox()
-        rtbLiveOutput = New RichTextBox()
-        pnlLicInfo = New Panel()
         gpLicInfo = New GroupBox()
         tbShiftDate = New TextBox()
         tbLocName = New TextBox()
+        tbPcDbInfo = New TextBox()
         lblCoreSvr = New Label()
+        lblPcDbInfo = New Label()
         lblShiftDate = New Label()
         tbCoreSvr = New TextBox()
         tbLicSvr = New TextBox()
@@ -59,36 +55,16 @@ Partial Class FormMain
         lblWebEnabled = New Label()
         tbDbVer = New TextBox()
         lblLocName = New Label()
+        gbLiveOutput = New GroupBox()
+        TableLayoutPanel2 = New TableLayoutPanel()
+        btnCopyScriptOutput = New Button()
+        tbOutputScript = New TextBox()
+        rtbLiveOutput = New RichTextBox()
         pnlServicesContainer = New Panel()
         tblServices = New TableLayoutPanel()
         tbServicesButtonsHelpMessage = New TextBox()
         gbFlavorsList = New GroupBox()
         lbFlavorsList = New ListBox()
-        cmsApplySingleFlavor = New ContextMenuStrip(components)
-        miApplySingleFlavor = New ToolStripMenuItem()
-        tsmiApplyDefaultFlavors = New ToolStripMenuItem()
-        tpSysInfo = New TabPage()
-        pnlGpInfo = New Panel()
-        gpPcInfo = New GroupBox()
-        tlpPcInfo = New TableLayoutPanel()
-        lblPcAdvVersion = New Label()
-        lblPcNetVersion = New Label()
-        tbPcSqlVersion = New TextBox()
-        lblPcSqlVersion = New Label()
-        lblPcDbSize = New Label()
-        tbPcDbSize = New TextBox()
-        lblPcArch = New Label()
-        tbPcRam = New TextBox()
-        lblPcHardDrive = New Label()
-        tbPcName = New TextBox()
-        lblPcRam = New Label()
-        tbPcOsInfo = New TextBox()
-        lblPcOsInfo = New Label()
-        tbPcHardDrive = New TextBox()
-        lblPcName = New Label()
-        tbPcArch = New TextBox()
-        tbPcNetVersion = New TextBox()
-        tbPcAdvVersion = New TextBox()
         tpAdvData = New TabPage()
         btnSaveWebOptionsCSV = New Button()
         btnSaveAppotionsCSV = New Button()
@@ -164,9 +140,6 @@ Partial Class FormMain
         btnLaunch = New Button()
         lblPrgListbox = New Label()
         lstPrograms = New ListBox()
-        cmsQuickLaunch = New ContextMenuStrip(components)
-        cmsQuickLaunchSlot1 = New ToolStripMenuItem()
-        cmsQuickLaunchSlot2 = New ToolStripMenuItem()
         gbAppOptions = New GroupBox()
         TableLayoutPanel1 = New TableLayoutPanel()
         btnBrowseApplyScript = New Button()
@@ -250,11 +223,6 @@ Partial Class FormMain
         btnRefreshGeneralTab = New Button()
         btnBatchLaunch = New Button()
         StatusStrip1 = New StatusStrip()
-        tslblTime = New ToolStripStatusLabel()
-        tslblCeVersion = New ToolStripStatusLabel()
-        tslblNetVersion = New ToolStripStatusLabel()
-        tslblExecutionStatus = New ToolStripStatusLabel()
-        tslblDbState = New ToolStripStatusLabel()
         tmr10Seconds = New Timer(components)
         BottomToolStripPanel = New ToolStripPanel()
         TopToolStripPanel = New ToolStripPanel()
@@ -280,17 +248,11 @@ Partial Class FormMain
         SplitContainer1.SuspendLayout()
         tcSTA.SuspendLayout()
         tpGeneral.SuspendLayout()
+        gpLicInfo.SuspendLayout()
         gbLiveOutput.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
-        pnlLicInfo.SuspendLayout()
-        gpLicInfo.SuspendLayout()
         pnlServicesContainer.SuspendLayout()
         gbFlavorsList.SuspendLayout()
-        cmsApplySingleFlavor.SuspendLayout()
-        tpSysInfo.SuspendLayout()
-        pnlGpInfo.SuspendLayout()
-        gpPcInfo.SuspendLayout()
-        tlpPcInfo.SuspendLayout()
         tpAdvData.SuspendLayout()
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).BeginInit()
         CType(dgvWebOptions, ComponentModel.ISupportInitialize).BeginInit()
@@ -317,7 +279,6 @@ Partial Class FormMain
         gpFlavorsSettings.SuspendLayout()
         gbAppLaunchSettings.SuspendLayout()
         flpAppListButtons.SuspendLayout()
-        cmsQuickLaunch.SuspendLayout()
         gbAppOptions.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         gpAdvUpgrade.SuspendLayout()
@@ -328,7 +289,6 @@ Partial Class FormMain
         gpCommonApps.SuspendLayout()
         tlpButtons2.SuspendLayout()
         flpQuickLaunch.SuspendLayout()
-        StatusStrip1.SuspendLayout()
         CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer2.Panel1.SuspendLayout()
         SplitContainer2.Panel2.SuspendLayout()
@@ -377,7 +337,6 @@ Partial Class FormMain
         ' tcSTA
         ' 
         tcSTA.Controls.Add(tpGeneral)
-        tcSTA.Controls.Add(tpSysInfo)
         tcSTA.Controls.Add(tpAdvData)
         tcSTA.Controls.Add(tpDbLogs)
         tcSTA.Controls.Add(tpDbInfo)
@@ -395,8 +354,8 @@ Partial Class FormMain
         ' tpGeneral
         ' 
         tpGeneral.BackColor = Color.Gray
+        tpGeneral.Controls.Add(gpLicInfo)
         tpGeneral.Controls.Add(gbLiveOutput)
-        tpGeneral.Controls.Add(pnlLicInfo)
         tpGeneral.Controls.Add(pnlServicesContainer)
         tpGeneral.Controls.Add(gbFlavorsList)
         tpGeneral.Location = New Point(4, 24)
@@ -406,6 +365,172 @@ Partial Class FormMain
         tpGeneral.Size = New Size(1182, 629)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
+        ' 
+        ' gpLicInfo
+        ' 
+        gpLicInfo.BackColor = Color.LightGray
+        gpLicInfo.Controls.Add(tbShiftDate)
+        gpLicInfo.Controls.Add(tbLocName)
+        gpLicInfo.Controls.Add(tbPcDbInfo)
+        gpLicInfo.Controls.Add(lblCoreSvr)
+        gpLicInfo.Controls.Add(lblPcDbInfo)
+        gpLicInfo.Controls.Add(lblShiftDate)
+        gpLicInfo.Controls.Add(tbCoreSvr)
+        gpLicInfo.Controls.Add(tbLicSvr)
+        gpLicInfo.Controls.Add(tbWebEnabled)
+        gpLicInfo.Controls.Add(lblDbVer)
+        gpLicInfo.Controls.Add(lblLicSvr)
+        gpLicInfo.Controls.Add(lblWebEnabled)
+        gpLicInfo.Controls.Add(tbDbVer)
+        gpLicInfo.Controls.Add(lblLocName)
+        gpLicInfo.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        gpLicInfo.Location = New Point(248, 6)
+        gpLicInfo.Margin = New Padding(4, 3, 4, 3)
+        gpLicInfo.Name = "gpLicInfo"
+        gpLicInfo.Padding = New Padding(4, 3, 4, 3)
+        gpLicInfo.Size = New Size(435, 197)
+        gpLicInfo.TabIndex = 10
+        gpLicInfo.TabStop = False
+        gpLicInfo.Text = "License Info"
+        ' 
+        ' tbShiftDate
+        ' 
+        tbShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbShiftDate.Location = New Point(118, 144)
+        tbShiftDate.Margin = New Padding(4, 3, 4, 3)
+        tbShiftDate.Name = "tbShiftDate"
+        tbShiftDate.Size = New Size(300, 20)
+        tbShiftDate.TabIndex = 11
+        ' 
+        ' tbLocName
+        ' 
+        tbLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbLocName.Location = New Point(118, 18)
+        tbLocName.Margin = New Padding(4, 3, 4, 3)
+        tbLocName.Name = "tbLocName"
+        tbLocName.Size = New Size(300, 20)
+        tbLocName.TabIndex = 1
+        ' 
+        ' tbPcDbInfo
+        ' 
+        tbPcDbInfo.Location = New Point(118, 170)
+        tbPcDbInfo.Margin = New Padding(4, 3, 4, 3)
+        tbPcDbInfo.Name = "tbPcDbInfo"
+        tbPcDbInfo.Size = New Size(300, 20)
+        tbPcDbInfo.TabIndex = 16
+        ' 
+        ' lblCoreSvr
+        ' 
+        lblCoreSvr.AutoSize = True
+        lblCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblCoreSvr.Location = New Point(8, 73)
+        lblCoreSvr.Margin = New Padding(4, 0, 4, 0)
+        lblCoreSvr.Name = "lblCoreSvr"
+        lblCoreSvr.Size = New Size(66, 13)
+        lblCoreSvr.TabIndex = 4
+        lblCoreSvr.Text = "Core Server:"
+        ' 
+        ' lblPcDbInfo
+        ' 
+        lblPcDbInfo.AutoSize = True
+        lblPcDbInfo.Location = New Point(8, 172)
+        lblPcDbInfo.Margin = New Padding(4, 0, 4, 0)
+        lblPcDbInfo.Name = "lblPcDbInfo"
+        lblPcDbInfo.Size = New Size(108, 13)
+        lblPcDbInfo.TabIndex = 15
+        lblPcDbInfo.Text = "SQL Version/Db Size"
+        lblPcDbInfo.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblShiftDate
+        ' 
+        lblShiftDate.AutoSize = True
+        lblShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblShiftDate.Location = New Point(8, 145)
+        lblShiftDate.Margin = New Padding(4, 0, 4, 0)
+        lblShiftDate.Name = "lblShiftDate"
+        lblShiftDate.Size = New Size(57, 13)
+        lblShiftDate.TabIndex = 10
+        lblShiftDate.Text = "Shift Date:"
+        ' 
+        ' tbCoreSvr
+        ' 
+        tbCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbCoreSvr.Location = New Point(118, 68)
+        tbCoreSvr.Margin = New Padding(4, 3, 4, 3)
+        tbCoreSvr.Name = "tbCoreSvr"
+        tbCoreSvr.Size = New Size(300, 20)
+        tbCoreSvr.TabIndex = 5
+        ' 
+        ' tbLicSvr
+        ' 
+        tbLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbLicSvr.Location = New Point(118, 43)
+        tbLicSvr.Margin = New Padding(4, 3, 4, 3)
+        tbLicSvr.Name = "tbLicSvr"
+        tbLicSvr.Size = New Size(300, 20)
+        tbLicSvr.TabIndex = 3
+        ' 
+        ' tbWebEnabled
+        ' 
+        tbWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbWebEnabled.Location = New Point(118, 119)
+        tbWebEnabled.Margin = New Padding(4, 3, 4, 3)
+        tbWebEnabled.Name = "tbWebEnabled"
+        tbWebEnabled.Size = New Size(300, 20)
+        tbWebEnabled.TabIndex = 9
+        ' 
+        ' lblDbVer
+        ' 
+        lblDbVer.AutoSize = True
+        lblDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblDbVer.Location = New Point(8, 98)
+        lblDbVer.Margin = New Padding(4, 0, 4, 0)
+        lblDbVer.Name = "lblDbVer"
+        lblDbVer.Size = New Size(94, 13)
+        lblDbVer.TabIndex = 6
+        lblDbVer.Text = "Database Version:"
+        ' 
+        ' lblLicSvr
+        ' 
+        lblLicSvr.AutoSize = True
+        lblLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblLicSvr.Location = New Point(8, 47)
+        lblLicSvr.Margin = New Padding(4, 0, 4, 0)
+        lblLicSvr.Name = "lblLicSvr"
+        lblLicSvr.Size = New Size(81, 13)
+        lblLicSvr.TabIndex = 2
+        lblLicSvr.Text = "License Server:"
+        ' 
+        ' lblWebEnabled
+        ' 
+        lblWebEnabled.AutoSize = True
+        lblWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblWebEnabled.Location = New Point(8, 123)
+        lblWebEnabled.Margin = New Padding(4, 0, 4, 0)
+        lblWebEnabled.Name = "lblWebEnabled"
+        lblWebEnabled.Size = New Size(98, 13)
+        lblWebEnabled.TabIndex = 8
+        lblWebEnabled.Text = "Webstore Enabled:"
+        ' 
+        ' tbDbVer
+        ' 
+        tbDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbDbVer.Location = New Point(118, 93)
+        tbDbVer.Margin = New Padding(4, 3, 4, 3)
+        tbDbVer.Name = "tbDbVer"
+        tbDbVer.Size = New Size(300, 20)
+        tbDbVer.TabIndex = 7
+        ' 
+        ' lblLocName
+        ' 
+        lblLocName.AutoSize = True
+        lblLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblLocName.Location = New Point(8, 23)
+        lblLocName.Margin = New Padding(4, 0, 4, 0)
+        lblLocName.Name = "lblLocName"
+        lblLocName.Size = New Size(88, 13)
+        lblLocName.TabIndex = 0
+        lblLocName.Text = "Location Name:  "
         ' 
         ' gbLiveOutput
         ' 
@@ -475,162 +600,6 @@ Partial Class FormMain
         rtbLiveOutput.Text = ""
         rtbLiveOutput.WordWrap = False
         ' 
-        ' pnlLicInfo
-        ' 
-        pnlLicInfo.BackColor = Color.LightGray
-        pnlLicInfo.BorderStyle = BorderStyle.Fixed3D
-        pnlLicInfo.Controls.Add(gpLicInfo)
-        pnlLicInfo.Location = New Point(247, 6)
-        pnlLicInfo.Name = "pnlLicInfo"
-        pnlLicInfo.Size = New Size(362, 174)
-        pnlLicInfo.TabIndex = 16
-        ' 
-        ' gpLicInfo
-        ' 
-        gpLicInfo.BackColor = Color.LightGray
-        gpLicInfo.Controls.Add(tbShiftDate)
-        gpLicInfo.Controls.Add(tbLocName)
-        gpLicInfo.Controls.Add(lblCoreSvr)
-        gpLicInfo.Controls.Add(lblShiftDate)
-        gpLicInfo.Controls.Add(tbCoreSvr)
-        gpLicInfo.Controls.Add(tbLicSvr)
-        gpLicInfo.Controls.Add(tbWebEnabled)
-        gpLicInfo.Controls.Add(lblDbVer)
-        gpLicInfo.Controls.Add(lblLicSvr)
-        gpLicInfo.Controls.Add(lblWebEnabled)
-        gpLicInfo.Controls.Add(tbDbVer)
-        gpLicInfo.Controls.Add(lblLocName)
-        gpLicInfo.Dock = DockStyle.Fill
-        gpLicInfo.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        gpLicInfo.Location = New Point(0, 0)
-        gpLicInfo.Margin = New Padding(4, 3, 4, 3)
-        gpLicInfo.Name = "gpLicInfo"
-        gpLicInfo.Padding = New Padding(4, 3, 4, 3)
-        gpLicInfo.Size = New Size(358, 170)
-        gpLicInfo.TabIndex = 10
-        gpLicInfo.TabStop = False
-        gpLicInfo.Text = "License Info"
-        ' 
-        ' tbShiftDate
-        ' 
-        tbShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbShiftDate.Location = New Point(118, 144)
-        tbShiftDate.Margin = New Padding(4, 3, 4, 3)
-        tbShiftDate.Name = "tbShiftDate"
-        tbShiftDate.Size = New Size(231, 20)
-        tbShiftDate.TabIndex = 11
-        ' 
-        ' tbLocName
-        ' 
-        tbLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbLocName.Location = New Point(118, 18)
-        tbLocName.Margin = New Padding(4, 3, 4, 3)
-        tbLocName.Name = "tbLocName"
-        tbLocName.Size = New Size(231, 20)
-        tbLocName.TabIndex = 1
-        ' 
-        ' lblCoreSvr
-        ' 
-        lblCoreSvr.AutoSize = True
-        lblCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        lblCoreSvr.Location = New Point(8, 73)
-        lblCoreSvr.Margin = New Padding(4, 0, 4, 0)
-        lblCoreSvr.Name = "lblCoreSvr"
-        lblCoreSvr.Size = New Size(66, 13)
-        lblCoreSvr.TabIndex = 4
-        lblCoreSvr.Text = "Core Server:"
-        ' 
-        ' lblShiftDate
-        ' 
-        lblShiftDate.AutoSize = True
-        lblShiftDate.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        lblShiftDate.Location = New Point(8, 145)
-        lblShiftDate.Margin = New Padding(4, 0, 4, 0)
-        lblShiftDate.Name = "lblShiftDate"
-        lblShiftDate.Size = New Size(57, 13)
-        lblShiftDate.TabIndex = 10
-        lblShiftDate.Text = "Shift Date:"
-        ' 
-        ' tbCoreSvr
-        ' 
-        tbCoreSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbCoreSvr.Location = New Point(118, 68)
-        tbCoreSvr.Margin = New Padding(4, 3, 4, 3)
-        tbCoreSvr.Name = "tbCoreSvr"
-        tbCoreSvr.Size = New Size(231, 20)
-        tbCoreSvr.TabIndex = 5
-        ' 
-        ' tbLicSvr
-        ' 
-        tbLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbLicSvr.Location = New Point(118, 43)
-        tbLicSvr.Margin = New Padding(4, 3, 4, 3)
-        tbLicSvr.Name = "tbLicSvr"
-        tbLicSvr.Size = New Size(231, 20)
-        tbLicSvr.TabIndex = 3
-        ' 
-        ' tbWebEnabled
-        ' 
-        tbWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbWebEnabled.Location = New Point(118, 119)
-        tbWebEnabled.Margin = New Padding(4, 3, 4, 3)
-        tbWebEnabled.Name = "tbWebEnabled"
-        tbWebEnabled.Size = New Size(231, 20)
-        tbWebEnabled.TabIndex = 9
-        ' 
-        ' lblDbVer
-        ' 
-        lblDbVer.AutoSize = True
-        lblDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        lblDbVer.Location = New Point(8, 98)
-        lblDbVer.Margin = New Padding(4, 0, 4, 0)
-        lblDbVer.Name = "lblDbVer"
-        lblDbVer.Size = New Size(94, 13)
-        lblDbVer.TabIndex = 6
-        lblDbVer.Text = "Database Version:"
-        ' 
-        ' lblLicSvr
-        ' 
-        lblLicSvr.AutoSize = True
-        lblLicSvr.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        lblLicSvr.Location = New Point(8, 47)
-        lblLicSvr.Margin = New Padding(4, 0, 4, 0)
-        lblLicSvr.Name = "lblLicSvr"
-        lblLicSvr.Size = New Size(81, 13)
-        lblLicSvr.TabIndex = 2
-        lblLicSvr.Text = "License Server:"
-        ' 
-        ' lblWebEnabled
-        ' 
-        lblWebEnabled.AutoSize = True
-        lblWebEnabled.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        lblWebEnabled.Location = New Point(8, 123)
-        lblWebEnabled.Margin = New Padding(4, 0, 4, 0)
-        lblWebEnabled.Name = "lblWebEnabled"
-        lblWebEnabled.Size = New Size(98, 13)
-        lblWebEnabled.TabIndex = 8
-        lblWebEnabled.Text = "Webstore Enabled:"
-        ' 
-        ' tbDbVer
-        ' 
-        tbDbVer.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbDbVer.Location = New Point(118, 93)
-        tbDbVer.Margin = New Padding(4, 3, 4, 3)
-        tbDbVer.Name = "tbDbVer"
-        tbDbVer.Size = New Size(231, 20)
-        tbDbVer.TabIndex = 7
-        ' 
-        ' lblLocName
-        ' 
-        lblLocName.AutoSize = True
-        lblLocName.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        lblLocName.Location = New Point(8, 23)
-        lblLocName.Margin = New Padding(4, 0, 4, 0)
-        lblLocName.Name = "lblLocName"
-        lblLocName.Size = New Size(88, 13)
-        lblLocName.TabIndex = 0
-        lblLocName.Text = "Location Name:  "
-        ' 
         ' pnlServicesContainer
         ' 
         pnlServicesContainer.Controls.Add(tblServices)
@@ -697,7 +666,6 @@ Partial Class FormMain
         ' 
         ' lbFlavorsList
         ' 
-        lbFlavorsList.ContextMenuStrip = cmsApplySingleFlavor
         lbFlavorsList.Dock = DockStyle.Fill
         lbFlavorsList.FormattingEnabled = True
         lbFlavorsList.IntegralHeight = False
@@ -708,277 +676,6 @@ Partial Class FormMain
         lbFlavorsList.SelectionMode = SelectionMode.MultiExtended
         lbFlavorsList.Size = New Size(225, 323)
         lbFlavorsList.TabIndex = 35
-        ' 
-        ' cmsApplySingleFlavor
-        ' 
-        cmsApplySingleFlavor.Items.AddRange(New ToolStripItem() {miApplySingleFlavor, tsmiApplyDefaultFlavors})
-        cmsApplySingleFlavor.Name = "cmsApplySingleFlavor"
-        cmsApplySingleFlavor.Size = New Size(187, 48)
-        ' 
-        ' miApplySingleFlavor
-        ' 
-        miApplySingleFlavor.Name = "miApplySingleFlavor"
-        miApplySingleFlavor.Size = New Size(186, 22)
-        miApplySingleFlavor.Text = "Apply this flavor"
-        ' 
-        ' tsmiApplyDefaultFlavors
-        ' 
-        tsmiApplyDefaultFlavors.Name = "tsmiApplyDefaultFlavors"
-        tsmiApplyDefaultFlavors.Size = New Size(186, 22)
-        tsmiApplyDefaultFlavors.Text = "Apply Default Flavors"
-        ' 
-        ' tpSysInfo
-        ' 
-        tpSysInfo.BackColor = Color.Gray
-        tpSysInfo.Controls.Add(pnlGpInfo)
-        tpSysInfo.Location = New Point(4, 24)
-        tpSysInfo.Name = "tpSysInfo"
-        tpSysInfo.Size = New Size(1182, 629)
-        tpSysInfo.TabIndex = 8
-        tpSysInfo.Text = "SysInfo"
-        ' 
-        ' pnlGpInfo
-        ' 
-        pnlGpInfo.BackColor = Color.LightGray
-        pnlGpInfo.BorderStyle = BorderStyle.Fixed3D
-        pnlGpInfo.Controls.Add(gpPcInfo)
-        pnlGpInfo.Location = New Point(483, 5)
-        pnlGpInfo.Name = "pnlGpInfo"
-        pnlGpInfo.Size = New Size(474, 299)
-        pnlGpInfo.TabIndex = 17
-        ' 
-        ' gpPcInfo
-        ' 
-        gpPcInfo.BackColor = Color.LightGray
-        gpPcInfo.Controls.Add(tlpPcInfo)
-        gpPcInfo.Dock = DockStyle.Fill
-        gpPcInfo.Location = New Point(0, 0)
-        gpPcInfo.Margin = New Padding(4, 3, 4, 3)
-        gpPcInfo.Name = "gpPcInfo"
-        gpPcInfo.Padding = New Padding(4, 3, 4, 3)
-        gpPcInfo.Size = New Size(470, 295)
-        gpPcInfo.TabIndex = 15
-        gpPcInfo.TabStop = False
-        gpPcInfo.Text = "Computer Info"
-        ' 
-        ' tlpPcInfo
-        ' 
-        tlpPcInfo.ColumnCount = 2
-        tlpPcInfo.ColumnStyles.Add(New ColumnStyle())
-        tlpPcInfo.ColumnStyles.Add(New ColumnStyle())
-        tlpPcInfo.Controls.Add(lblPcAdvVersion, 0, 8)
-        tlpPcInfo.Controls.Add(lblPcNetVersion, 0, 7)
-        tlpPcInfo.Controls.Add(tbPcSqlVersion, 1, 6)
-        tlpPcInfo.Controls.Add(lblPcSqlVersion, 0, 6)
-        tlpPcInfo.Controls.Add(lblPcDbSize, 0, 5)
-        tlpPcInfo.Controls.Add(tbPcDbSize, 1, 5)
-        tlpPcInfo.Controls.Add(lblPcArch, 0, 4)
-        tlpPcInfo.Controls.Add(tbPcRam, 1, 2)
-        tlpPcInfo.Controls.Add(lblPcHardDrive, 0, 3)
-        tlpPcInfo.Controls.Add(tbPcName, 1, 0)
-        tlpPcInfo.Controls.Add(lblPcRam, 0, 2)
-        tlpPcInfo.Controls.Add(tbPcOsInfo, 1, 1)
-        tlpPcInfo.Controls.Add(lblPcOsInfo, 0, 1)
-        tlpPcInfo.Controls.Add(tbPcHardDrive, 1, 3)
-        tlpPcInfo.Controls.Add(lblPcName, 0, 0)
-        tlpPcInfo.Controls.Add(tbPcArch, 1, 4)
-        tlpPcInfo.Controls.Add(tbPcNetVersion, 1, 7)
-        tlpPcInfo.Controls.Add(tbPcAdvVersion, 1, 8)
-        tlpPcInfo.Location = New Point(7, 14)
-        tlpPcInfo.Margin = New Padding(4, 3, 4, 3)
-        tlpPcInfo.Name = "tlpPcInfo"
-        tlpPcInfo.RowCount = 9
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.RowStyles.Add(New RowStyle())
-        tlpPcInfo.Size = New Size(453, 272)
-        tlpPcInfo.TabIndex = 14
-        ' 
-        ' lblPcAdvVersion
-        ' 
-        lblPcAdvVersion.AutoSize = True
-        lblPcAdvVersion.Dock = DockStyle.Fill
-        lblPcAdvVersion.Location = New Point(4, 232)
-        lblPcAdvVersion.Margin = New Padding(4, 0, 4, 0)
-        lblPcAdvVersion.Name = "lblPcAdvVersion"
-        lblPcAdvVersion.Size = New Size(129, 40)
-        lblPcAdvVersion.TabIndex = 19
-        lblPcAdvVersion.Text = "Advantage Version"
-        lblPcAdvVersion.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' lblPcNetVersion
-        ' 
-        lblPcNetVersion.AutoSize = True
-        lblPcNetVersion.Dock = DockStyle.Fill
-        lblPcNetVersion.Location = New Point(4, 203)
-        lblPcNetVersion.Margin = New Padding(4, 0, 4, 0)
-        lblPcNetVersion.Name = "lblPcNetVersion"
-        lblPcNetVersion.Size = New Size(129, 29)
-        lblPcNetVersion.TabIndex = 17
-        lblPcNetVersion.Text = "Net Framework Version"
-        lblPcNetVersion.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcSqlVersion
-        ' 
-        tbPcSqlVersion.Location = New Point(141, 177)
-        tbPcSqlVersion.Margin = New Padding(4, 3, 4, 3)
-        tbPcSqlVersion.Name = "tbPcSqlVersion"
-        tbPcSqlVersion.Size = New Size(300, 23)
-        tbPcSqlVersion.TabIndex = 16
-        ' 
-        ' lblPcSqlVersion
-        ' 
-        lblPcSqlVersion.AutoSize = True
-        lblPcSqlVersion.Dock = DockStyle.Fill
-        lblPcSqlVersion.Location = New Point(4, 174)
-        lblPcSqlVersion.Margin = New Padding(4, 0, 4, 0)
-        lblPcSqlVersion.Name = "lblPcSqlVersion"
-        lblPcSqlVersion.Size = New Size(129, 29)
-        lblPcSqlVersion.TabIndex = 15
-        lblPcSqlVersion.Text = "SQL Version"
-        lblPcSqlVersion.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' lblPcDbSize
-        ' 
-        lblPcDbSize.AutoSize = True
-        lblPcDbSize.Dock = DockStyle.Fill
-        lblPcDbSize.Location = New Point(4, 145)
-        lblPcDbSize.Margin = New Padding(4, 0, 4, 0)
-        lblPcDbSize.Name = "lblPcDbSize"
-        lblPcDbSize.Size = New Size(129, 29)
-        lblPcDbSize.TabIndex = 14
-        lblPcDbSize.Text = "Database Size"
-        lblPcDbSize.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcDbSize
-        ' 
-        tbPcDbSize.Location = New Point(141, 148)
-        tbPcDbSize.Margin = New Padding(4, 3, 4, 3)
-        tbPcDbSize.Name = "tbPcDbSize"
-        tbPcDbSize.Size = New Size(300, 23)
-        tbPcDbSize.TabIndex = 13
-        ' 
-        ' lblPcArch
-        ' 
-        lblPcArch.AutoSize = True
-        lblPcArch.Dock = DockStyle.Fill
-        lblPcArch.Location = New Point(4, 116)
-        lblPcArch.Margin = New Padding(4, 0, 4, 0)
-        lblPcArch.Name = "lblPcArch"
-        lblPcArch.Size = New Size(129, 29)
-        lblPcArch.TabIndex = 11
-        lblPcArch.Text = "System Architecture"
-        lblPcArch.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcRam
-        ' 
-        tbPcRam.Location = New Point(141, 61)
-        tbPcRam.Margin = New Padding(4, 3, 4, 3)
-        tbPcRam.Name = "tbPcRam"
-        tbPcRam.Size = New Size(300, 23)
-        tbPcRam.TabIndex = 12
-        ' 
-        ' lblPcHardDrive
-        ' 
-        lblPcHardDrive.AutoSize = True
-        lblPcHardDrive.Dock = DockStyle.Fill
-        lblPcHardDrive.Location = New Point(4, 87)
-        lblPcHardDrive.Margin = New Padding(4, 0, 4, 0)
-        lblPcHardDrive.Name = "lblPcHardDrive"
-        lblPcHardDrive.Size = New Size(129, 29)
-        lblPcHardDrive.TabIndex = 10
-        lblPcHardDrive.Text = "HD Free Space"
-        lblPcHardDrive.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcName
-        ' 
-        tbPcName.Location = New Point(141, 3)
-        tbPcName.Margin = New Padding(4, 3, 4, 3)
-        tbPcName.Name = "tbPcName"
-        tbPcName.Size = New Size(300, 23)
-        tbPcName.TabIndex = 0
-        ' 
-        ' lblPcRam
-        ' 
-        lblPcRam.AutoSize = True
-        lblPcRam.Dock = DockStyle.Fill
-        lblPcRam.Location = New Point(4, 58)
-        lblPcRam.Margin = New Padding(4, 0, 4, 0)
-        lblPcRam.Name = "lblPcRam"
-        lblPcRam.Size = New Size(129, 29)
-        lblPcRam.TabIndex = 9
-        lblPcRam.Text = "Memory"
-        lblPcRam.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcOsInfo
-        ' 
-        tbPcOsInfo.Location = New Point(141, 32)
-        tbPcOsInfo.Margin = New Padding(4, 3, 4, 3)
-        tbPcOsInfo.Name = "tbPcOsInfo"
-        tbPcOsInfo.Size = New Size(300, 23)
-        tbPcOsInfo.TabIndex = 1
-        ' 
-        ' lblPcOsInfo
-        ' 
-        lblPcOsInfo.AutoSize = True
-        lblPcOsInfo.Dock = DockStyle.Fill
-        lblPcOsInfo.Location = New Point(4, 29)
-        lblPcOsInfo.Margin = New Padding(4, 0, 4, 0)
-        lblPcOsInfo.Name = "lblPcOsInfo"
-        lblPcOsInfo.Size = New Size(129, 29)
-        lblPcOsInfo.TabIndex = 8
-        lblPcOsInfo.Text = "Operating System"
-        lblPcOsInfo.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcHardDrive
-        ' 
-        tbPcHardDrive.Location = New Point(141, 90)
-        tbPcHardDrive.Margin = New Padding(4, 3, 4, 3)
-        tbPcHardDrive.Name = "tbPcHardDrive"
-        tbPcHardDrive.Size = New Size(300, 23)
-        tbPcHardDrive.TabIndex = 4
-        ' 
-        ' lblPcName
-        ' 
-        lblPcName.AutoSize = True
-        lblPcName.Dock = DockStyle.Fill
-        lblPcName.Location = New Point(4, 0)
-        lblPcName.Margin = New Padding(4, 0, 4, 0)
-        lblPcName.Name = "lblPcName"
-        lblPcName.Size = New Size(129, 29)
-        lblPcName.TabIndex = 7
-        lblPcName.Text = "Computer Name"
-        lblPcName.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' tbPcArch
-        ' 
-        tbPcArch.Location = New Point(141, 119)
-        tbPcArch.Margin = New Padding(4, 3, 4, 3)
-        tbPcArch.Name = "tbPcArch"
-        tbPcArch.Size = New Size(300, 23)
-        tbPcArch.TabIndex = 5
-        ' 
-        ' tbPcNetVersion
-        ' 
-        tbPcNetVersion.Location = New Point(141, 206)
-        tbPcNetVersion.Margin = New Padding(4, 3, 4, 3)
-        tbPcNetVersion.Name = "tbPcNetVersion"
-        tbPcNetVersion.Size = New Size(300, 23)
-        tbPcNetVersion.TabIndex = 18
-        ' 
-        ' tbPcAdvVersion
-        ' 
-        tbPcAdvVersion.Location = New Point(141, 235)
-        tbPcAdvVersion.Margin = New Padding(4, 3, 4, 3)
-        tbPcAdvVersion.Name = "tbPcAdvVersion"
-        tbPcAdvVersion.Size = New Size(300, 23)
-        tbPcAdvVersion.TabIndex = 20
         ' 
         ' tpAdvData
         ' 
@@ -1941,7 +1638,6 @@ Partial Class FormMain
         ' lstPrograms
         ' 
         lstPrograms.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
-        lstPrograms.ContextMenuStrip = cmsQuickLaunch
         lstPrograms.FormattingEnabled = True
         lstPrograms.ItemHeight = 15
         lstPrograms.Location = New Point(15, 47)
@@ -1950,25 +1646,6 @@ Partial Class FormMain
         lstPrograms.Size = New Size(390, 214)
         lstPrograms.Sorted = True
         lstPrograms.TabIndex = 3
-        ' 
-        ' cmsQuickLaunch
-        ' 
-        cmsQuickLaunch.Items.AddRange(New ToolStripItem() {cmsQuickLaunchSlot1, cmsQuickLaunchSlot2})
-        cmsQuickLaunch.Name = "cmsQuickLaunch"
-        cmsQuickLaunch.Size = New Size(104, 48)
-        cmsQuickLaunch.Text = "Assign to Quick Launch"
-        ' 
-        ' cmsQuickLaunchSlot1
-        ' 
-        cmsQuickLaunchSlot1.Name = "cmsQuickLaunchSlot1"
-        cmsQuickLaunchSlot1.Size = New Size(103, 22)
-        cmsQuickLaunchSlot1.Text = "Slot 1"
-        ' 
-        ' cmsQuickLaunchSlot2
-        ' 
-        cmsQuickLaunchSlot2.Name = "cmsQuickLaunchSlot2"
-        cmsQuickLaunchSlot2.Size = New Size(103, 22)
-        cmsQuickLaunchSlot2.Text = "Slot 2"
         ' 
         ' gbAppOptions
         ' 
@@ -2929,55 +2606,12 @@ Partial Class FormMain
         ' 
         ' StatusStrip1
         ' 
-        StatusStrip1.Items.AddRange(New ToolStripItem() {tslblTime, tslblCeVersion, tslblNetVersion, tslblExecutionStatus, tslblDbState})
-        StatusStrip1.Location = New Point(0, 860)
+        StatusStrip1.Location = New Point(0, 862)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Padding = New Padding(1, 0, 16, 0)
-        StatusStrip1.Size = New Size(1600, 24)
+        StatusStrip1.Size = New Size(1600, 22)
         StatusStrip1.TabIndex = 12
         StatusStrip1.Text = "StatusStrip1"
-        ' 
-        ' tslblTime
-        ' 
-        tslblTime.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblTime.BorderStyle = Border3DStyle.Bump
-        tslblTime.Name = "tslblTime"
-        tslblTime.Size = New Size(60, 19)
-        tslblTime.Text = "tslblTime"
-        ' 
-        ' tslblCeVersion
-        ' 
-        tslblCeVersion.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblCeVersion.BorderStyle = Border3DStyle.Bump
-        tslblCeVersion.Name = "tslblCeVersion"
-        tslblCeVersion.Size = New Size(85, 19)
-        tslblCeVersion.Text = "tslblCeVersion"
-        ' 
-        ' tslblNetVersion
-        ' 
-        tslblNetVersion.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblNetVersion.BorderStyle = Border3DStyle.Bump
-        tslblNetVersion.Name = "tslblNetVersion"
-        tslblNetVersion.Size = New Size(90, 19)
-        tslblNetVersion.Text = "tslblNetVersion"
-        ' 
-        ' tslblExecutionStatus
-        ' 
-        tslblExecutionStatus.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblExecutionStatus.BorderStyle = Border3DStyle.Bump
-        tslblExecutionStatus.DisplayStyle = ToolStripItemDisplayStyle.Text
-        tslblExecutionStatus.Name = "tslblExecutionStatus"
-        tslblExecutionStatus.Size = New Size(116, 19)
-        tslblExecutionStatus.Text = "tslblExecutionStatus"
-        ' 
-        ' tslblDbState
-        ' 
-        tslblDbState.BackColor = Color.DarkGreen
-        tslblDbState.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        tslblDbState.ForeColor = Color.WhiteSmoke
-        tslblDbState.Name = "tslblDbState"
-        tslblDbState.Size = New Size(50, 19)
-        tslblDbState.Text = "ONLINE"
         ' 
         ' tmr10Seconds
         ' 
@@ -3183,21 +2817,14 @@ Partial Class FormMain
         SplitContainer1.ResumeLayout(False)
         tcSTA.ResumeLayout(False)
         tpGeneral.ResumeLayout(False)
+        gpLicInfo.ResumeLayout(False)
+        gpLicInfo.PerformLayout()
         gbLiveOutput.ResumeLayout(False)
         TableLayoutPanel2.ResumeLayout(False)
         TableLayoutPanel2.PerformLayout()
-        pnlLicInfo.ResumeLayout(False)
-        gpLicInfo.ResumeLayout(False)
-        gpLicInfo.PerformLayout()
         pnlServicesContainer.ResumeLayout(False)
         pnlServicesContainer.PerformLayout()
         gbFlavorsList.ResumeLayout(False)
-        cmsApplySingleFlavor.ResumeLayout(False)
-        tpSysInfo.ResumeLayout(False)
-        pnlGpInfo.ResumeLayout(False)
-        gpPcInfo.ResumeLayout(False)
-        tlpPcInfo.ResumeLayout(False)
-        tlpPcInfo.PerformLayout()
         tpAdvData.ResumeLayout(False)
         tpAdvData.PerformLayout()
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).EndInit()
@@ -3231,7 +2858,6 @@ Partial Class FormMain
         gbAppLaunchSettings.ResumeLayout(False)
         gbAppLaunchSettings.PerformLayout()
         flpAppListButtons.ResumeLayout(False)
-        cmsQuickLaunch.ResumeLayout(False)
         gbAppOptions.ResumeLayout(False)
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
@@ -3246,8 +2872,6 @@ Partial Class FormMain
         gpCommonApps.ResumeLayout(False)
         tlpButtons2.ResumeLayout(False)
         flpQuickLaunch.ResumeLayout(False)
-        StatusStrip1.ResumeLayout(False)
-        StatusStrip1.PerformLayout()
         SplitContainer2.Panel1.ResumeLayout(False)
         SplitContainer2.Panel2.ResumeLayout(False)
         CType(SplitContainer2, ComponentModel.ISupportInitialize).EndInit()
@@ -3332,26 +2956,8 @@ Partial Class FormMain
     Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
     Friend WithEvents lblAppOptions As Label
     Friend WithEvents lblWebOptions As Label
-    Friend WithEvents gpPcInfo As GroupBox
-    Friend WithEvents tlpPcInfo As TableLayoutPanel
-    Friend WithEvents lblPcAdvVersion As Label
-    Friend WithEvents lblPcNetVersion As Label
-    Friend WithEvents tbPcSqlVersion As TextBox
-    Friend WithEvents lblPcSqlVersion As Label
-    Friend WithEvents lblPcDbSize As Label
-    Friend WithEvents tbPcDbSize As TextBox
-    Friend WithEvents lblPcArch As Label
-    Friend WithEvents tbPcRam As TextBox
-    Friend WithEvents lblPcHardDrive As Label
-    Friend WithEvents tbPcName As TextBox
-    Friend WithEvents lblPcRam As Label
-    Friend WithEvents tbPcOsInfo As TextBox
-    Friend WithEvents lblPcOsInfo As Label
-    Friend WithEvents tbPcHardDrive As TextBox
-    Friend WithEvents lblPcName As Label
-    Friend WithEvents tbPcArch As TextBox
-    Friend WithEvents tbPcNetVersion As TextBox
-    Friend WithEvents tbPcAdvVersion As TextBox
+    Friend WithEvents tbPcDbInfo As TextBox
+    Friend WithEvents lblPcDbInfo As Label
     Friend WithEvents btnAdvManager As Button
     Friend WithEvents btnAdvGroups As Button
     Friend WithEvents btnPos As Button
@@ -3458,9 +3064,6 @@ Partial Class FormMain
     Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
     Friend WithEvents btnCopyScriptOutput As Button
     Friend WithEvents tsmiApplyDefaultFlavors As ToolStripMenuItem
-    Friend WithEvents tpSysInfo As TabPage
-    Friend WithEvents pnlGpInfo As Panel
-    Friend WithEvents pnlLicInfo As Panel
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
@@ -3496,4 +3099,6 @@ Partial Class FormMain
     Friend WithEvents btnLastFailed As Button
     Friend WithEvents pnlButtonCollection As Panel
     Friend WithEvents btnUpdateShiftDate As Button
+    Friend WithEvents cmsForButton As ContextMenuStrip
+    Friend WithEvents tsmiBtnRClick As ToolStripMenuItem
 End Class

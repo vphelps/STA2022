@@ -7,7 +7,7 @@ Imports Microsoft.Data.SqlClient
 'Imports STA2.AppData
 
 Public Class FormMain
-    Private _options As AppOptions
+    Public Property _options As AppOptions
     Private _launcherConfig As LauncherConfig
     Private _liveOutputManager As LiveOutputManager
     Private _quickLaunchManager As QuickLaunchManager
@@ -91,6 +91,7 @@ Public Class FormMain
         _hoverHints.Add(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
         _hoverHints.Add(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
         _hoverHints.Add(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
+        _hoverHints.Add(btnUpdateShiftDate, "Use to set the Advantage system ShiftDate to today's date")
         _hoverHints.Add(btnExit, "Exit the Assistant")
         _hoverHints.Add(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
 
@@ -800,64 +801,6 @@ Public Class FormMain
             _launcherConfig.Programs = lstPrograms.Items.Cast(Of ProgramEntry)().ToList()
         End If
         OptionsManager.SaveLauncherConfig(_launcherConfig)
-    End Sub
-
-    Private Sub RefreshUI()
-
-        btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
-        btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
-        btnAdvCardTech.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvCardTech"))
-        btnAdvReportEditor.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvReportEditor"))
-        btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
-        btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
-        btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
-        btnAdvKioskSetup.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKioskSetup"))
-        btnAdvKiosk.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKiosk"))
-
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
-            btnRepoMain.Enabled = False
-            btnRepoDiscardChanges.Enabled = False
-        Else
-            btnRepoMain.Enabled = True
-            btnRepoDiscardChanges.Enabled = True
-        End If
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.StartDatabaseDefault) OrElse IsScriptRunning() Then
-            btnRunDatabaseStartLive.Enabled = False
-        Else
-            btnRunDatabaseStartLive.Enabled = True
-        End If
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.ApplyFlavorDefault) OrElse IsScriptRunning() Then
-            btnRunApplyFlavorLive.Enabled = False
-            tsmiApplyDefaultFlavors.Enabled = False
-            gbFlavorsList.Enabled = False
-        Else
-            btnRunApplyFlavorLive.Enabled = True
-            tsmiApplyDefaultFlavors.Enabled = True
-            gbFlavorsList.Enabled = True
-        End If
-        If _options IsNot Nothing AndAlso Not tbSetupSwitches.Focused Then
-            tbSetupSwitches.Text = _options.SetupSwitches
-        End If
-
-        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        tslblCeVersion.Text = "Software Version:  " & info.Version & " | Database Version:  " & PCInfo.DatabaseVersion
-        tslblTime.Text = DateTime.Now.ToShortDateString() & " " & DateTime.Now.ToShortTimeString()
-        tslblNetVersion.Text = PCInfo.FrameworkVersion
-
-        If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
-            tbDbVer.BackColor = TextboxColors.White
-            tbDbVer.ForeColor = TextboxColors.Black
-            tbPcAdvVersion.BackColor = TextboxColors.White
-            tbPcAdvVersion.ForeColor = TextboxColors.Black
-            tslblCeVersion.BackColor = TextboxColors.Control
-        Else
-            tbDbVer.BackColor = TextboxColors.Red
-            tbDbVer.ForeColor = TextboxColors.White
-            tbPcAdvVersion.BackColor = TextboxColors.Red
-            tbPcAdvVersion.ForeColor = TextboxColors.White
-            tslblCeVersion.BackColor = TextboxColors.Red
-        End If
-
     End Sub
 
     Private Sub ForceLiveOutputRedraw()
@@ -1907,8 +1850,8 @@ Public Class FormMain
     End Sub
     Private Sub cmsApplySingleFlavor_Opening(
 sender As Object,
-e As System.ComponentModel.CancelEventArgs
-) Handles cmsApplySingleFlavor.Opening
+e As CancelEventArgs
+)
 
         Dim count = lbFlavorsList.SelectedItems.Count
 
@@ -1948,7 +1891,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Async Sub miApplySingleFlavor_Click(
     sender As Object,
     e As EventArgs
-) Handles miApplySingleFlavor.Click
+)
 
         Await ApplySelectedFlavorsAsync()
         lbFlavorsList.ClearSelected()
@@ -1957,7 +1900,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Async Sub tsmiApplyDefaultFlavors_Click(
     sender As Object,
     e As EventArgs
-) Handles tsmiApplyDefaultFlavors.Click
+)
 
         ' ✅ Validate script path
         If String.IsNullOrWhiteSpace(tbApplyFlavorDefault.Text) Then
@@ -2108,7 +2051,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub tslblExecutionStatus_TextChanged(
         sender As Object,
         e As EventArgs
-    ) Handles tslblExecutionStatus.TextChanged
+    )
 
         ' If there is text, show it; otherwise hide it
         tslblExecutionStatus.Visible =
@@ -2485,5 +2428,19 @@ e As System.ComponentModel.CancelEventArgs
 
         End Try
 
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        _uiStateController.Refresh()
+
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        tcSTA.SelectedTab = tpOptions
+
+    End Sub
+
+    Private Sub tsmiBtnRClick_Click(sender As Object, e As EventArgs)
+        tcSTA.SelectedTab = tpLogs
     End Sub
 End Class
