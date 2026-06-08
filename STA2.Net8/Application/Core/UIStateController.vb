@@ -66,6 +66,7 @@
         ' ----------------------------
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
 
+
         _form.tslblCeVersion.Text =
             "Software Version:  " & info.Version &
             " | Database Version:  " & PCInfo.DatabaseVersion

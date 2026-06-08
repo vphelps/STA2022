@@ -92,6 +92,7 @@ Public Class FormMain
         _hoverHints.Add(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
         _hoverHints.Add(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
         _hoverHints.Add(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
+        _hoverHints.Add(btnUpdateShiftDate, "Use to set the Advantage system ShiftDate to today's date")
         _hoverHints.Add(btnExit, "Exit the Assistant")
         _hoverHints.Add(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
 
@@ -1886,8 +1887,8 @@ Public Class FormMain
     End Sub
     Private Sub cmsApplySingleFlavor_Opening(
 sender As Object,
-e As System.ComponentModel.CancelEventArgs
-) Handles cmsApplySingleFlavor.Opening
+e As CancelEventArgs
+)
 
         Dim count = lbFlavorsList.SelectedItems.Count
 
@@ -1927,7 +1928,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Async Sub miApplySingleFlavor_Click(
     sender As Object,
     e As EventArgs
-) Handles miApplySingleFlavor.Click
+)
 
         Await ApplySelectedFlavorsAsync()
         lbFlavorsList.ClearSelected()
@@ -1936,7 +1937,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Async Sub tsmiApplyDefaultFlavors_Click(
     sender As Object,
     e As EventArgs
-) Handles tsmiApplyDefaultFlavors.Click
+)
 
         ' ✅ Validate script path
         If String.IsNullOrWhiteSpace(tbApplyFlavorDefault.Text) Then
@@ -2087,7 +2088,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub tslblExecutionStatus_TextChanged(
         sender As Object,
         e As EventArgs
-    ) Handles tslblExecutionStatus.TextChanged
+    )
 
         ' If there is text, show it; otherwise hide it
         tslblExecutionStatus.Visible =
@@ -2464,5 +2465,19 @@ e As System.ComponentModel.CancelEventArgs
 
         End Try
 
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        _uiStateController.Refresh()
+
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        tcSTA.SelectedTab = tpOptions
+
+    End Sub
+
+    Private Sub tsmiBtnRClick_Click(sender As Object, e As EventArgs)
+        tcSTA.SelectedTab = tpLogs
     End Sub
 End Class

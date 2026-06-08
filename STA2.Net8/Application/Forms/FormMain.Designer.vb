@@ -45,6 +45,7 @@ Partial Class FormMain
         tbLocName = New TextBox()
         tbPcDbInfo = New TextBox()
         lblCoreSvr = New Label()
+        lblPcDbInfo = New Label()
         lblShiftDate = New Label()
         tbCoreSvr = New TextBox()
         lblPcSqlVersion = New Label()
@@ -156,9 +157,6 @@ Partial Class FormMain
         btnLaunch = New Button()
         lblPrgListbox = New Label()
         lstPrograms = New ListBox()
-        cmsQuickLaunch = New ContextMenuStrip(components)
-        cmsQuickLaunchSlot1 = New ToolStripMenuItem()
-        cmsQuickLaunchSlot2 = New ToolStripMenuItem()
         gbAppOptions = New GroupBox()
         TableLayoutPanel1 = New TableLayoutPanel()
         btnBrowseApplyScript = New Button()
@@ -242,11 +240,6 @@ Partial Class FormMain
         btnRefreshGeneralTab = New Button()
         btnBatchLaunch = New Button()
         StatusStrip1 = New StatusStrip()
-        tslblTime = New ToolStripStatusLabel()
-        tslblCeVersion = New ToolStripStatusLabel()
-        tslblNetVersion = New ToolStripStatusLabel()
-        tslblExecutionStatus = New ToolStripStatusLabel()
-        tslblDbState = New ToolStripStatusLabel()
         tmr10Seconds = New Timer(components)
         BottomToolStripPanel = New ToolStripPanel()
         TopToolStripPanel = New ToolStripPanel()
@@ -277,11 +270,6 @@ Partial Class FormMain
         TableLayoutPanel2.SuspendLayout()
         pnlServicesContainer.SuspendLayout()
         gbFlavorsList.SuspendLayout()
-        cmsApplySingleFlavor.SuspendLayout()
-        tpSysInfo.SuspendLayout()
-        pnlGpInfo.SuspendLayout()
-        gpPcInfo.SuspendLayout()
-        tlpPcInfo.SuspendLayout()
         tpAdvData.SuspendLayout()
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).BeginInit()
         CType(dgvWebOptions, ComponentModel.ISupportInitialize).BeginInit()
@@ -308,7 +296,6 @@ Partial Class FormMain
         gpFlavorsSettings.SuspendLayout()
         gbAppLaunchSettings.SuspendLayout()
         flpAppListButtons.SuspendLayout()
-        cmsQuickLaunch.SuspendLayout()
         gbAppOptions.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         gpAdvUpgrade.SuspendLayout()
@@ -319,7 +306,6 @@ Partial Class FormMain
         gpCommonApps.SuspendLayout()
         tlpButtons2.SuspendLayout()
         flpQuickLaunch.SuspendLayout()
-        StatusStrip1.SuspendLayout()
         CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer2.Panel1.SuspendLayout()
         SplitContainer2.Panel2.SuspendLayout()
@@ -368,7 +354,6 @@ Partial Class FormMain
         ' tcSTA
         ' 
         tcSTA.Controls.Add(tpGeneral)
-        tcSTA.Controls.Add(tpSysInfo)
         tcSTA.Controls.Add(tpAdvData)
         tcSTA.Controls.Add(tpDbLogs)
         tcSTA.Controls.Add(tpDbInfo)
@@ -405,6 +390,7 @@ Partial Class FormMain
         gpLicInfo.Controls.Add(tbLocName)
         gpLicInfo.Controls.Add(tbPcDbInfo)
         gpLicInfo.Controls.Add(lblCoreSvr)
+        gpLicInfo.Controls.Add(lblPcDbInfo)
         gpLicInfo.Controls.Add(lblShiftDate)
         gpLicInfo.Controls.Add(tbCoreSvr)
         gpLicInfo.Controls.Add(lblPcSqlVersion)
@@ -461,6 +447,17 @@ Partial Class FormMain
         lblCoreSvr.Size = New Size(66, 13)
         lblCoreSvr.TabIndex = 4
         lblCoreSvr.Text = "Core Server:"
+        ' 
+        ' lblPcDbInfo
+        ' 
+        lblPcDbInfo.AutoSize = True
+        lblPcDbInfo.Location = New Point(8, 172)
+        lblPcDbInfo.Margin = New Padding(4, 0, 4, 0)
+        lblPcDbInfo.Name = "lblPcDbInfo"
+        lblPcDbInfo.Size = New Size(108, 13)
+        lblPcDbInfo.TabIndex = 15
+        lblPcDbInfo.Text = "SQL Version/Db Size"
+        lblPcDbInfo.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblShiftDate
         ' 
@@ -698,7 +695,6 @@ Partial Class FormMain
         ' 
         ' lbFlavorsList
         ' 
-        lbFlavorsList.ContextMenuStrip = cmsApplySingleFlavor
         lbFlavorsList.Dock = DockStyle.Fill
         lbFlavorsList.FormattingEnabled = True
         lbFlavorsList.IntegralHeight = False
@@ -1856,7 +1852,6 @@ Partial Class FormMain
         ' lstPrograms
         ' 
         lstPrograms.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
-        lstPrograms.ContextMenuStrip = cmsQuickLaunch
         lstPrograms.FormattingEnabled = True
         lstPrograms.ItemHeight = 15
         lstPrograms.Location = New Point(15, 47)
@@ -1865,25 +1860,6 @@ Partial Class FormMain
         lstPrograms.Size = New Size(390, 214)
         lstPrograms.Sorted = True
         lstPrograms.TabIndex = 3
-        ' 
-        ' cmsQuickLaunch
-        ' 
-        cmsQuickLaunch.Items.AddRange(New ToolStripItem() {cmsQuickLaunchSlot1, cmsQuickLaunchSlot2})
-        cmsQuickLaunch.Name = "cmsQuickLaunch"
-        cmsQuickLaunch.Size = New Size(104, 48)
-        cmsQuickLaunch.Text = "Assign to Quick Launch"
-        ' 
-        ' cmsQuickLaunchSlot1
-        ' 
-        cmsQuickLaunchSlot1.Name = "cmsQuickLaunchSlot1"
-        cmsQuickLaunchSlot1.Size = New Size(103, 22)
-        cmsQuickLaunchSlot1.Text = "Slot 1"
-        ' 
-        ' cmsQuickLaunchSlot2
-        ' 
-        cmsQuickLaunchSlot2.Name = "cmsQuickLaunchSlot2"
-        cmsQuickLaunchSlot2.Size = New Size(103, 22)
-        cmsQuickLaunchSlot2.Text = "Slot 2"
         ' 
         ' gbAppOptions
         ' 
@@ -2844,55 +2820,12 @@ Partial Class FormMain
         ' 
         ' StatusStrip1
         ' 
-        StatusStrip1.Items.AddRange(New ToolStripItem() {tslblTime, tslblCeVersion, tslblNetVersion, tslblExecutionStatus, tslblDbState})
-        StatusStrip1.Location = New Point(0, 860)
+        StatusStrip1.Location = New Point(0, 862)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Padding = New Padding(1, 0, 16, 0)
-        StatusStrip1.Size = New Size(1600, 24)
+        StatusStrip1.Size = New Size(1600, 22)
         StatusStrip1.TabIndex = 12
         StatusStrip1.Text = "StatusStrip1"
-        ' 
-        ' tslblTime
-        ' 
-        tslblTime.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblTime.BorderStyle = Border3DStyle.Bump
-        tslblTime.Name = "tslblTime"
-        tslblTime.Size = New Size(60, 19)
-        tslblTime.Text = "tslblTime"
-        ' 
-        ' tslblCeVersion
-        ' 
-        tslblCeVersion.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblCeVersion.BorderStyle = Border3DStyle.Bump
-        tslblCeVersion.Name = "tslblCeVersion"
-        tslblCeVersion.Size = New Size(85, 19)
-        tslblCeVersion.Text = "tslblCeVersion"
-        ' 
-        ' tslblNetVersion
-        ' 
-        tslblNetVersion.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblNetVersion.BorderStyle = Border3DStyle.Bump
-        tslblNetVersion.Name = "tslblNetVersion"
-        tslblNetVersion.Size = New Size(90, 19)
-        tslblNetVersion.Text = "tslblNetVersion"
-        ' 
-        ' tslblExecutionStatus
-        ' 
-        tslblExecutionStatus.BorderSides = ToolStripStatusLabelBorderSides.Left Or ToolStripStatusLabelBorderSides.Top Or ToolStripStatusLabelBorderSides.Right Or ToolStripStatusLabelBorderSides.Bottom
-        tslblExecutionStatus.BorderStyle = Border3DStyle.Bump
-        tslblExecutionStatus.DisplayStyle = ToolStripItemDisplayStyle.Text
-        tslblExecutionStatus.Name = "tslblExecutionStatus"
-        tslblExecutionStatus.Size = New Size(116, 19)
-        tslblExecutionStatus.Text = "tslblExecutionStatus"
-        ' 
-        ' tslblDbState
-        ' 
-        tslblDbState.BackColor = Color.DarkGreen
-        tslblDbState.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        tslblDbState.ForeColor = Color.WhiteSmoke
-        tslblDbState.Name = "tslblDbState"
-        tslblDbState.Size = New Size(50, 19)
-        tslblDbState.Text = "ONLINE"
         ' 
         ' tmr10Seconds
         ' 
@@ -3106,12 +3039,6 @@ Partial Class FormMain
         pnlServicesContainer.ResumeLayout(False)
         pnlServicesContainer.PerformLayout()
         gbFlavorsList.ResumeLayout(False)
-        cmsApplySingleFlavor.ResumeLayout(False)
-        tpSysInfo.ResumeLayout(False)
-        pnlGpInfo.ResumeLayout(False)
-        gpPcInfo.ResumeLayout(False)
-        tlpPcInfo.ResumeLayout(False)
-        tlpPcInfo.PerformLayout()
         tpAdvData.ResumeLayout(False)
         tpAdvData.PerformLayout()
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).EndInit()
@@ -3145,7 +3072,6 @@ Partial Class FormMain
         gbAppLaunchSettings.ResumeLayout(False)
         gbAppLaunchSettings.PerformLayout()
         flpAppListButtons.ResumeLayout(False)
-        cmsQuickLaunch.ResumeLayout(False)
         gbAppOptions.ResumeLayout(False)
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
@@ -3160,8 +3086,6 @@ Partial Class FormMain
         gpCommonApps.ResumeLayout(False)
         tlpButtons2.ResumeLayout(False)
         flpQuickLaunch.ResumeLayout(False)
-        StatusStrip1.ResumeLayout(False)
-        StatusStrip1.PerformLayout()
         SplitContainer2.Panel1.ResumeLayout(False)
         SplitContainer2.Panel2.ResumeLayout(False)
         CType(SplitContainer2, ComponentModel.ISupportInitialize).EndInit()
@@ -3402,4 +3326,6 @@ Partial Class FormMain
     Friend WithEvents btnLastFailed As Button
     Friend WithEvents pnlButtonCollection As Panel
     Friend WithEvents btnUpdateShiftDate As Button
+    Friend WithEvents cmsForButton As ContextMenuStrip
+    Friend WithEvents tsmiBtnRClick As ToolStripMenuItem
 End Class
