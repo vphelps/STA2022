@@ -147,7 +147,6 @@ Public Module DatabaseCoordinator
         form.pnlDbData.Enabled = True
         form.pnlDbInfoButtons.Enabled = True
 
-        form.tbPcDbSize.Text = ""
         form.tbPcDbInfo.Text = ""
 
     End Sub
@@ -155,7 +154,6 @@ Public Module DatabaseCoordinator
 
     Public Sub DisableDatabaseSections(form As FormMain)
 
-        form.tbPcDbSize.Text = "Offline"
         form.tbPcDbInfo.Text = "Offline"
         form.dgvAppOptions.DataSource = Nothing
 
