@@ -79,20 +79,19 @@
         ' ----------------------------
         ' Version mismatch coloring
         ' ----------------------------
-        If _form.tbDbVer.Text.Equals(_form.tbPcAdvVersion.Text) Then
+
+        Dim v1 As New Version(info.Version)
+        Dim v2 As New Version(PCInfo.DatabaseVersion)
+        If v1.Major = v2.Major AndAlso v1.Minor = v2.Minor AndAlso v1.Build = v2.Build Then  ' ✅ Compare only parts 1, 2, 3
 
             _form.tbDbVer.BackColor = TextboxColors.White
             _form.tbDbVer.ForeColor = TextboxColors.Black
-            _form.tbPcAdvVersion.BackColor = TextboxColors.White
-            _form.tbPcAdvVersion.ForeColor = TextboxColors.Black
             _form.tslblCeVersion.BackColor = TextboxColors.Control
 
         Else
 
             _form.tbDbVer.BackColor = TextboxColors.Red
             _form.tbDbVer.ForeColor = TextboxColors.White
-            _form.tbPcAdvVersion.BackColor = TextboxColors.Red
-            _form.tbPcAdvVersion.ForeColor = TextboxColors.White
             _form.tslblCeVersion.BackColor = TextboxColors.Red
 
         End If
@@ -111,7 +110,6 @@
                 _form.tbShiftDate.ForeColor = TextboxColors.Black
             End If
         End If
-
 
     End Sub
 

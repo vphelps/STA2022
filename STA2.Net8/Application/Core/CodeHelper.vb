@@ -16,8 +16,7 @@ Public Module CodeHelper
 
         If Variables.OfflineMode Then
             PCInfo.ValidDatabase = False
-            form.tbPcDbSize.Text = "Offline"
-            form.tbPcSqlVersion.Text = "Offline"
+            form.tbPcDbInfo.Text = "Offline"
             Return
         End If
 
@@ -27,72 +26,9 @@ Public Module CodeHelper
         PCInfo.FrameworkVersion = DotNetInfo.GetInstalledDotNetVersion()
         PCInfo.AdvantageVersion = CodeHelper.CeInfo
 
+        Refresher()
 
-        ' Safely update UI
-        If form IsNot Nothing AndAlso form.IsHandleCreated Then
-            If form.InvokeRequired Then
-                form.Invoke(Sub() ApplyPcInfoToForm(form))
-            Else
-                ApplyPcInfoToForm(form)
-            End If
-        End If
 
-        ' --------------------------
-        ' DB Stats via SafeDb
-        ' --------------------------
-        Try
-            Dim ds As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
-
-            Dim row0 = ds.Tables(0).Rows(0)
-            PCInfo.DbSize = Convert.ToString(row0.Item(0))
-            PCInfo.SqlVersion = Convert.ToString(row0.Item(1))
-            PCInfo.ValidDatabase = True
-
-        Catch ex As SafeDb.DatabaseOfflineException
-            Variables.OfflineMode = True
-            PCInfo.ValidDatabase = False
-            PCInfo.DbSize = "Offline"
-            PCInfo.SqlVersion = "Offline"
-            form.tbPcDbSize.Text = "Offline"
-            form.tbPcSqlVersion.Text = "Offline"
-            Return
-
-        Catch ex As Exception
-            PCInfo.ValidDatabase = False
-            PCInfo.DbSize = "Invalid Database"
-            PCInfo.SqlVersion = "Invalid Database"
-        End Try
-
-        ' Update UI with DB info
-        If PCInfo.IsSQLInstalled AndAlso form IsNot Nothing AndAlso form.IsHandleCreated Then
-            Dim updateUi =
-                Sub()
-                    If Not String.IsNullOrWhiteSpace(PCInfo.DbSize) AndAlso IsNumericLike(PCInfo.DbSize) Then
-                        If PCInfo.DbSize.Length < 4 Then
-                            form.tbPcDbSize.Text = $"{PCInfo.DbSize} MB"
-                        Else
-                            form.tbPcDbSize.Text = $"{PCInfo.DbSize} GB"
-                        End If
-                    Else
-                        form.tbPcDbSize.Text = PCInfo.DbSize
-                    End If
-
-                    Dim edition As String = ""
-                    If PCInfo.SqlVersion.IndexOf("Developer", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Developer"
-                    If PCInfo.SqlVersion.IndexOf("Express", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Express"
-                    If PCInfo.SqlVersion.IndexOf("Evaluation", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Evaluation"
-                    If PCInfo.SqlVersion.IndexOf("Standard", StringComparison.OrdinalIgnoreCase) >= 0 Then edition = "Standard"
-
-                    If PCInfo.SqlVersion.Length > 0 AndAlso edition.Length > 0 Then
-                        Dim yearText As String = ExtractYearFromVersion(PCInfo.SqlVersion)
-                        form.tbPcSqlVersion.Text = $"SQL Server {yearText} {edition} Edition"
-                    Else
-                        form.tbPcSqlVersion.Text = PCInfo.SqlVersion
-                    End If
-                End Sub
-
-            If form.InvokeRequired Then form.Invoke(updateUi) Else updateUi()
-        End If
     End Sub
 
 
@@ -178,19 +114,12 @@ Public Module CodeHelper
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
 
-        ' PC info
-        frm.tbPcName.Text = PCInfo.Name
-        frm.tbPcOsInfo.Text = PCInfo.OpSys
-        frm.tbPcRam.Text = PCInfo.Ram
-        frm.tbPcHardDrive.Text = PCInfo.FreeSpace
-        frm.tbPcArch.Text = PCInfo.Architecture
-        frm.tbPcNetVersion.Text = PCInfo.FrameworkVersion
-        frm.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
-
-
         ' ============================================================
         ' 3) DbStats (SafeDb)
         ' ============================================================
+
+        Dim PcDbSize As String = ""
+        Dim PcSqlVersion As String = ""
         Try
             Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
 
@@ -214,8 +143,8 @@ Public Module CodeHelper
 
         Catch ex As Exception
             PCInfo.ValidDatabase = False
-            frm.tbPcDbSize.Text = "Invalid Database"
-            frm.tbPcSqlVersion.Text = "Invalid Database"
+            PcDbSize = "Invalid Database"
+            PcSqlVersion = "Invalid Database"
         End Try
 
 
@@ -229,13 +158,13 @@ Public Module CodeHelper
            IsNumericLike(PCInfo.DbSize) Then
 
                 If PCInfo.DbSize.Length < 4 Then
-                    frm.tbPcDbSize.Text = $"{PCInfo.DbSize} MB"
+                    PcDbSize = $"{PCInfo.DbSize} MB"
                 Else
-                    frm.tbPcDbSize.Text = $"{PCInfo.DbSize} GB"
+                    PcDbSize = $"{PCInfo.DbSize} GB"
                 End If
 
             Else
-                frm.tbPcDbSize.Text = PCInfo.DbSize
+                PcDbSize = PCInfo.DbSize
             End If
 
 
@@ -248,28 +177,22 @@ Public Module CodeHelper
 
             If PCInfo.SqlVersion.Length > 0 AndAlso edition.Length > 0 Then
                 Dim yearText As String = ExtractYearFromVersion(PCInfo.SqlVersion)
-                frm.tbPcSqlVersion.Text = $"SQL Server {yearText} {edition} Edition"
+                PcSqlVersion = $"SQL Server {yearText} {edition} Edition"
             Else
-                frm.tbPcSqlVersion.Text = PCInfo.SqlVersion
+                PcSqlVersion = PCInfo.SqlVersion
             End If
         End If
-
+        frm.tbPcDbInfo.Text = String.Join("/", PcSqlVersion, PcDbSize)
+        If frm._options IsNot Nothing Then
+            Dim uiState = New UIStateController(frm, frm._options)
+            uiState.Refresh()
+        End If
     End Sub
 
 
     ' =======================================================================
     ' Unchanged helper functions
     ' =======================================================================
-
-    Private Sub ApplyPcInfoToForm(form As FormMain)
-        form.tbPcName.Text = PCInfo.Name
-        form.tbPcOsInfo.Text = PCInfo.OpSys
-        form.tbPcRam.Text = PCInfo.Ram
-        form.tbPcHardDrive.Text = PCInfo.FreeSpace
-        form.tbPcArch.Text = PCInfo.Architecture
-        form.tbPcNetVersion.Text = PCInfo.FrameworkVersion
-        form.tbPcAdvVersion.Text = PCInfo.AdvantageVersion
-    End Sub
 
     Private Function IsNumericLike(value As String) As Boolean
         If String.IsNullOrWhiteSpace(value) Then Return False

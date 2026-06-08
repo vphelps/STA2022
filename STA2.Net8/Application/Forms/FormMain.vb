@@ -7,7 +7,7 @@ Imports Microsoft.Data.SqlClient
 'Imports STA2.AppData
 
 Public Class FormMain
-    Private _options As AppOptions
+    Public _options As AppOptions
     Private _launcherConfig As LauncherConfig
     Private _liveOutputManager As LiveOutputManager
     Private _quickLaunchManager As QuickLaunchManager
@@ -802,63 +802,6 @@ Public Class FormMain
         OptionsManager.SaveLauncherConfig(_launcherConfig)
     End Sub
 
-    Private Sub RefreshUI()
-
-        btnAdvUpgrade.Visible = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvUpgrade"))
-        btnAdvRedeem.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvRedeem"))
-        btnAdvCardTech.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvCardTech"))
-        btnAdvReportEditor.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvReportEditor"))
-        btnAdvManager.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvManager"))
-        btnPos.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("Pos"))
-        btnAdvGroups.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvGroups"))
-        btnAdvKioskSetup.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKioskSetup"))
-        btnAdvKiosk.Enabled = Convert.ToBoolean(CodeHelper.AdvExeCheck("AdvKiosk"))
-
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
-            btnRepoMain.Enabled = False
-            btnRepoDiscardChanges.Enabled = False
-        Else
-            btnRepoMain.Enabled = True
-            btnRepoDiscardChanges.Enabled = True
-        End If
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.StartDatabaseDefault) OrElse IsScriptRunning() Then
-            btnRunDatabaseStartLive.Enabled = False
-        Else
-            btnRunDatabaseStartLive.Enabled = True
-        End If
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.ApplyFlavorDefault) OrElse IsScriptRunning() Then
-            btnRunApplyFlavorLive.Enabled = False
-            tsmiApplyDefaultFlavors.Enabled = False
-            gbFlavorsList.Enabled = False
-        Else
-            btnRunApplyFlavorLive.Enabled = True
-            tsmiApplyDefaultFlavors.Enabled = True
-            gbFlavorsList.Enabled = True
-        End If
-        If _options IsNot Nothing AndAlso Not tbSetupSwitches.Focused Then
-            tbSetupSwitches.Text = _options.SetupSwitches
-        End If
-
-        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        tslblCeVersion.Text = "Software Version:  " & info.Version & " | Database Version:  " & PCInfo.DatabaseVersion
-        tslblTime.Text = DateTime.Now.ToShortDateString() & " " & DateTime.Now.ToShortTimeString()
-        tslblNetVersion.Text = PCInfo.FrameworkVersion
-
-        If tbDbVer.Text.Equals(tbPcAdvVersion.Text) Then
-            tbDbVer.BackColor = TextboxColors.White
-            tbDbVer.ForeColor = TextboxColors.Black
-            tbPcAdvVersion.BackColor = TextboxColors.White
-            tbPcAdvVersion.ForeColor = TextboxColors.Black
-            tslblCeVersion.BackColor = TextboxColors.Control
-        Else
-            tbDbVer.BackColor = TextboxColors.Red
-            tbDbVer.ForeColor = TextboxColors.White
-            tbPcAdvVersion.BackColor = TextboxColors.Red
-            tbPcAdvVersion.ForeColor = TextboxColors.White
-            tslblCeVersion.BackColor = TextboxColors.Red
-        End If
-
-    End Sub
 
     Private Sub ForceLiveOutputRedraw()
 
