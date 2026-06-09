@@ -25,7 +25,7 @@ Public Class AppOptions
 
     Public Property RepoFolderPath As String
     Public Property FlavorFolderPath As String
-
+    Public Property BackupPathOverride As String
 
     ' -------------------------------------------------
     ' Database / SQL

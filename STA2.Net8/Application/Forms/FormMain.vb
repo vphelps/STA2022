@@ -78,6 +78,7 @@ Public Class FormMain
         SetButtonIcon(btnRepoFolder, "imgOpenFolder16.png")
         SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
         SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
+        SetButtonIcon(btnBackupPathOverride, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
         _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
@@ -321,6 +322,7 @@ Public Class FormMain
             tbSetupSwitches.Text = _options.SetupSwitches
             tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
             tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
+            tbBackupPathOverride.Text = Trim(_options.BackupPathOverride)
         End If
 
         If IsRunningAsAdmin() Then
@@ -492,6 +494,7 @@ Public Class FormMain
                                  _options.SetupSwitches = tbSetupSwitches.Text
                                  _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
                                  _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
+                                 _options.BackupPathOverride = Trim(tbBackupPathOverride.Text)
                              End Sub)
             End If
         Catch
@@ -1335,6 +1338,47 @@ Public Class FormMain
         End If
 
     End Sub
+
+    Private Sub btnBackupPathOverride_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnBackupPathOverride.Click
+
+        ' ✅ Determine current effective backup path
+        Dim currentPath = ResolveBackupPath()
+
+        With staFolderBrowserDialog
+
+            .Description = "Select Backup Folder"
+            .UseDescriptionForTitle = True
+
+            ' ✅ Default to current backup path if valid
+            If Not String.IsNullOrWhiteSpace(currentPath) AndAlso
+           IO.Directory.Exists(currentPath) Then
+
+                .SelectedPath = currentPath
+
+            Else
+                ' ✅ Fallback if nothing valid
+                .SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            End If
+
+        End With
+
+        If staFolderBrowserDialog.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Set textbox (UI reflection of option)
+            tbBackupPathOverride.Text = staFolderBrowserDialog.SelectedPath
+
+            ' ✅ Persist option
+            UpdateOption(Sub()
+                             _options.BackupPathOverride = staFolderBrowserDialog.SelectedPath
+                         End Sub)
+
+        End If
+
+    End Sub
+
     Private Sub clbSqlFiles_Enter(sender As Object, e As EventArgs) _
     Handles clbSqlFiles.Enter
 
@@ -2075,6 +2119,9 @@ e As System.ComponentModel.CancelEventArgs
         UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
     End Sub
 
+    Private Sub tbBackupPathOverride_TextChanged(sender As Object, e As EventArgs) Handles tbBackupPathOverride.TextChanged
+        UpdateOption(Sub() _options.BackupPathOverride = Trim(tbBackupPathOverride.Text))
+    End Sub
     Private Sub tslblExecutionStatus_TextChanged(
         sender As Object,
         e As EventArgs
@@ -2504,4 +2551,16 @@ e As System.ComponentModel.CancelEventArgs
         )
 
     End Function
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        Dim backupFolder = CodeHelper.GetOptionValueFromGrid(dgvAppOptions, "BackupFolder")
+        UIHelpers.TimedInfoPrompt(backupFolder, "BackupFolder value", 10)
+
+
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        tbTest1.Text = CodeHelper.ResolveBackupPath()
+
+    End Sub
 End Class

@@ -148,6 +148,9 @@ Partial Class FormMain
         cmsQuickLaunchSlot2 = New ToolStripMenuItem()
         gbAppOptions = New GroupBox()
         TableLayoutPanel1 = New TableLayoutPanel()
+        lblBackupPathOverride = New Label()
+        btnBackupPathOverride = New Button()
+        tbBackupPathOverride = New TextBox()
         btnBrowseApplyScript = New Button()
         btnBrowseStartScript = New Button()
         tbApplyFlavorDefault = New TextBox()
@@ -255,6 +258,7 @@ Partial Class FormMain
         Panel2 = New Panel()
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
+        staFolderBrowserDialog = New FolderBrowserDialog()
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -1723,6 +1727,9 @@ Partial Class FormMain
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
+        TableLayoutPanel1.Controls.Add(lblBackupPathOverride, 0, 6)
+        TableLayoutPanel1.Controls.Add(btnBackupPathOverride, 2, 6)
+        TableLayoutPanel1.Controls.Add(tbBackupPathOverride, 1, 6)
         TableLayoutPanel1.Controls.Add(btnBrowseApplyScript, 2, 5)
         TableLayoutPanel1.Controls.Add(btnBrowseStartScript, 2, 4)
         TableLayoutPanel1.Controls.Add(tbApplyFlavorDefault, 1, 5)
@@ -1741,15 +1748,46 @@ Partial Class FormMain
         TableLayoutPanel1.Location = New Point(7, 22)
         TableLayoutPanel1.Margin = New Padding(4, 3, 4, 3)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
-        TableLayoutPanel1.RowCount = 6
+        TableLayoutPanel1.RowCount = 7
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(568, 181)
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
+        TableLayoutPanel1.Size = New Size(568, 214)
         TableLayoutPanel1.TabIndex = 28
+        ' 
+        ' lblBackupPathOverride
+        ' 
+        lblBackupPathOverride.AutoSize = True
+        lblBackupPathOverride.Dock = DockStyle.Fill
+        lblBackupPathOverride.Location = New Point(4, 182)
+        lblBackupPathOverride.Margin = New Padding(4, 0, 4, 0)
+        lblBackupPathOverride.Name = "lblBackupPathOverride"
+        lblBackupPathOverride.Size = New Size(132, 32)
+        lblBackupPathOverride.TabIndex = 29
+        lblBackupPathOverride.Text = "Override Backup Path:"
+        lblBackupPathOverride.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' btnBackupPathOverride
+        ' 
+        btnBackupPathOverride.Location = New Point(529, 185)
+        btnBackupPathOverride.Margin = New Padding(4, 3, 4, 3)
+        btnBackupPathOverride.Name = "btnBackupPathOverride"
+        btnBackupPathOverride.Size = New Size(35, 26)
+        btnBackupPathOverride.TabIndex = 29
+        btnBackupPathOverride.UseVisualStyleBackColor = True
+        ' 
+        ' tbBackupPathOverride
+        ' 
+        tbBackupPathOverride.Dock = DockStyle.Fill
+        tbBackupPathOverride.Location = New Point(143, 185)
+        tbBackupPathOverride.Name = "tbBackupPathOverride"
+        tbBackupPathOverride.PlaceholderText = "Using database value from AppOptions"
+        tbBackupPathOverride.Size = New Size(379, 23)
+        tbBackupPathOverride.TabIndex = 29
         ' 
         ' btnBrowseApplyScript
         ' 
@@ -3218,4 +3256,8 @@ Partial Class FormMain
     Friend WithEvents tbPcDbInfo As TextBox
     Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
     Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
+    Friend WithEvents tbBackupPathOverride As TextBox
+    Friend WithEvents lblBackupPathOverride As Label
+    Friend WithEvents btnBackupPathOverride As Button
+    Friend WithEvents staFolderBrowserDialog As FolderBrowserDialog
 End Class

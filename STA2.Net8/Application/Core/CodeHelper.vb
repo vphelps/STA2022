@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.Windows.Forms
+Imports System.Windows.Forms.Design.AxImporter
 
 Public Module CodeHelper
 
@@ -376,5 +377,51 @@ Public Module CodeHelper
                v1.Minor = v2.Minor AndAlso
                v1.Build = v2.Build
     End Function
+    Public Function GetOptionValueFromGrid(
+    grid As DataGridView,
+    optionName As String
+) As String
 
+        If grid Is Nothing OrElse String.IsNullOrWhiteSpace(optionName) Then
+            Return Nothing
+        End If
+
+        For Each row As DataGridViewRow In grid.Rows
+
+            If row.IsNewRow Then Continue For
+
+            Dim name = row.Cells("OptionName").Value?.ToString()
+
+            If String.Equals(name, optionName, StringComparison.OrdinalIgnoreCase) Then
+                Return row.Cells("OptionValue").Value?.ToString()
+            End If
+
+        Next
+
+        Return Nothing
+
+    End Function
+    Public Function ResolveBackupPath() As String
+        Dim Form = Startup.MainFormInstance
+        ' ✅ 1. AppOptions override (PRIMARY)
+        Dim optValue = Form._options?.BackupPathOverride?.Trim()
+
+        If Not String.IsNullOrWhiteSpace(optValue) Then
+            Return optValue
+        End If
+
+        ' ✅ 2. DataGridView fallback (database value)
+        Dim dbValue = CodeHelper.GetOptionValueFromGrid(
+            Form.dgvAppOptions,
+            "BackupFolder"
+        )?.Trim()
+
+        If Not String.IsNullOrWhiteSpace(dbValue) Then
+            Return dbValue
+        End If
+
+        ' ✅ Final fallback (optional)
+        Return Nothing
+
+    End Function
 End Module
