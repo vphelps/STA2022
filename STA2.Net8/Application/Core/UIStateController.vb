@@ -80,10 +80,10 @@
         ' ----------------------------
         ' Version mismatch coloring
         ' ----------------------------
+        Dim v1 = CodeHelper.ParseVersionSafe(info.Version)
+        Dim v2 = CodeHelper.ParseVersionSafe(PCInfo.DatabaseVersion)
 
-        Dim v1 As New Version(info.Version)
-        Dim v2 As New Version(PCInfo.DatabaseVersion)
-        If v1.Major = v2.Major AndAlso v1.Minor = v2.Minor AndAlso v1.Build = v2.Build Then  ' ✅ Compare only parts 1, 2, 3
+        If CodeHelper.VersionsMatch(v1, v2) Then
 
             _form.tbDbVer.BackColor = TextboxColors.White
             _form.tbDbVer.ForeColor = TextboxColors.Black
@@ -96,6 +96,7 @@
             _form.tslblCeVersion.BackColor = TextboxColors.Red
 
         End If
+
 
         Dim now As DateTime = DateTime.Now.Date
         Dim shiftDate As DateTime

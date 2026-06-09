@@ -330,5 +330,51 @@ Public Module CodeHelper
         End If
 
     End Sub
+    Public Function ParseVersionSafe(text As String) As Version
+
+        If String.IsNullOrWhiteSpace(text) Then
+            Return Nothing
+        End If
+
+        Dim cleaned As String = text.Trim()
+
+        ' ✅ Normalize common real-world junk formats
+        ' Remove leading "v" (e.g. "v26.1")
+        If cleaned.StartsWith("v", StringComparison.OrdinalIgnoreCase) Then
+            cleaned = cleaned.Substring(1)
+        End If
+
+        ' Remove anything after a space (e.g. "26.1 (dev)")
+        Dim spaceIndex = cleaned.IndexOf(" "c)
+        If spaceIndex > 0 Then
+            cleaned = cleaned.Substring(0, spaceIndex)
+        End If
+
+        ' ✅ Remove trailing dots like "26.1."
+        cleaned = cleaned.TrimEnd("."c)
+
+        ' ✅ Ensure at least Major.Minor format
+        ' (Version class doesn't like just "26.")
+        Dim dotCount = cleaned.Count(Function(c) c = "."c)
+
+        If dotCount = 0 Then
+            cleaned &= ".0"
+        End If
+
+        ' ✅ Safe parse
+        Try
+            Return New Version(cleaned)
+        Catch
+            Return Nothing
+        End Try
+
+    End Function
+    Public Function VersionsMatch(v1 As Version, v2 As Version) As Boolean
+        If v1 Is Nothing OrElse v2 Is Nothing Then Return False
+
+        Return v1.Major = v2.Major AndAlso
+               v1.Minor = v2.Minor AndAlso
+               v1.Build = v2.Build
+    End Function
 
 End Module

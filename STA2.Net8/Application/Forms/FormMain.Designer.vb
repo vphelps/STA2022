@@ -200,6 +200,8 @@ Partial Class FormMain
         tbTest2 = New TextBox()
         tbTest3 = New TextBox()
         btnRunDatabaseStartLive = New Button()
+        ContextMenuStrip1 = New ContextMenuStrip(components)
+        ToolStripMenuItem1 = New ToolStripMenuItem()
         btnRunApplyFlavorLive = New Button()
         cmbboxAppLaunch = New ComboBox()
         btnComboAppLaunch = New Button()
@@ -253,8 +255,6 @@ Partial Class FormMain
         Panel2 = New Panel()
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
-        ContextMenuStrip1 = New ContextMenuStrip(components)
-        ToolStripMenuItem1 = New ToolStripMenuItem()
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -303,6 +303,7 @@ Partial Class FormMain
         tlpButtons1.SuspendLayout()
         gpCommonApps.SuspendLayout()
         tlpButtons2.SuspendLayout()
+        ContextMenuStrip1.SuspendLayout()
         flpQuickLaunch.SuspendLayout()
         StatusStrip1.SuspendLayout()
         CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
@@ -311,7 +312,6 @@ Partial Class FormMain
         SplitContainer2.SuspendLayout()
         tlpButtons3.SuspendLayout()
         Panel2.SuspendLayout()
-        ContextMenuStrip1.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnExit
@@ -2353,6 +2353,18 @@ Partial Class FormMain
         btnRunDatabaseStartLive.Text = "Start Database"
         btnRunDatabaseStartLive.UseVisualStyleBackColor = True
         ' 
+        ' ContextMenuStrip1
+        ' 
+        ContextMenuStrip1.Items.AddRange(New ToolStripItem() {ToolStripMenuItem1})
+        ContextMenuStrip1.Name = "ContextMenuStrip1"
+        ContextMenuStrip1.Size = New Size(175, 26)
+        ' 
+        ' ToolStripMenuItem1
+        ' 
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New Size(174, 22)
+        ToolStripMenuItem1.Text = "Raw Start Database"
+        ' 
         ' btnRunApplyFlavorLive
         ' 
         btnRunApplyFlavorLive.Dock = DockStyle.Fill
@@ -2896,18 +2908,6 @@ Partial Class FormMain
         ' 
         ofdStartScript.FileName = "OpenFileDialog1"
         ' 
-        ' ContextMenuStrip1
-        ' 
-        ContextMenuStrip1.Items.AddRange(New ToolStripItem() {ToolStripMenuItem1})
-        ContextMenuStrip1.Name = "ContextMenuStrip1"
-        ContextMenuStrip1.Size = New Size(175, 26)
-        ' 
-        ' ToolStripMenuItem1
-        ' 
-        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New Size(174, 22)
-        ToolStripMenuItem1.Text = "Raw Start Database"
-        ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -2985,6 +2985,7 @@ Partial Class FormMain
         tlpButtons1.ResumeLayout(False)
         gpCommonApps.ResumeLayout(False)
         tlpButtons2.ResumeLayout(False)
+        ContextMenuStrip1.ResumeLayout(False)
         flpQuickLaunch.ResumeLayout(False)
         StatusStrip1.ResumeLayout(False)
         StatusStrip1.PerformLayout()
@@ -2994,7 +2995,6 @@ Partial Class FormMain
         SplitContainer2.ResumeLayout(False)
         tlpButtons3.ResumeLayout(False)
         Panel2.ResumeLayout(False)
-        ContextMenuStrip1.ResumeLayout(False)
         ResumeLayout(False)
         PerformLayout()
 
