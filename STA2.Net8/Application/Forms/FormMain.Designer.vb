@@ -253,6 +253,8 @@ Partial Class FormMain
         Panel2 = New Panel()
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
+        ContextMenuStrip1 = New ContextMenuStrip(components)
+        ToolStripMenuItem1 = New ToolStripMenuItem()
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -309,6 +311,7 @@ Partial Class FormMain
         SplitContainer2.SuspendLayout()
         tlpButtons3.SuspendLayout()
         Panel2.SuspendLayout()
+        ContextMenuStrip1.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnExit
@@ -2892,6 +2895,18 @@ Partial Class FormMain
         ' 
         ofdStartScript.FileName = "OpenFileDialog1"
         ' 
+        ' ContextMenuStrip1
+        ' 
+        ContextMenuStrip1.Items.AddRange(New ToolStripItem() {ToolStripMenuItem1})
+        ContextMenuStrip1.Name = "ContextMenuStrip1"
+        ContextMenuStrip1.Size = New Size(175, 26)
+        ' 
+        ' ToolStripMenuItem1
+        ' 
+        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        ToolStripMenuItem1.Size = New Size(174, 22)
+        ToolStripMenuItem1.Text = "Raw Start Database"
+        ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -2978,6 +2993,7 @@ Partial Class FormMain
         SplitContainer2.ResumeLayout(False)
         tlpButtons3.ResumeLayout(False)
         Panel2.ResumeLayout(False)
+        ContextMenuStrip1.ResumeLayout(False)
         ResumeLayout(False)
         PerformLayout()
 
@@ -3199,4 +3215,6 @@ Partial Class FormMain
     Friend WithEvents btnUpdateShiftDate As Button
     Friend WithEvents lblPcDbInfo As Label
     Friend WithEvents tbPcDbInfo As TextBox
+    Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
+    Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
 End Class
