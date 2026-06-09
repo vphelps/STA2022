@@ -2343,6 +2343,7 @@ Partial Class FormMain
         ' 
         ' btnRunDatabaseStartLive
         ' 
+        btnRunDatabaseStartLive.ContextMenuStrip = ContextMenuStrip1
         btnRunDatabaseStartLive.Dock = DockStyle.Fill
         btnRunDatabaseStartLive.Location = New Point(291, 57)
         btnRunDatabaseStartLive.Margin = New Padding(0)
