@@ -1889,8 +1889,8 @@ Public Class FormMain
         trigger:=btnRunApplyFlavorLive,
         statusText:=description & " (live output)…",
         flavors:=selectedFlavors,
-        useVersion:=cbDbUseVersion.Checked,
-        versionText:=tbDbUseVersion.Text
+        useVersion:=False,
+        versionText:=Nothing
     )
 
     End Sub
@@ -1969,8 +1969,8 @@ e As System.ComponentModel.CancelEventArgs
         trigger:=btnRunApplyFlavorLive,
         statusText:=$"Applying {selectedFlavors.Count} flavor(s)…",
         flavors:=selectedFlavors,
-        useVersion:=cbDbUseVersion.Checked,
-        versionText:=tbDbUseVersion.Text
+        useVersion:=False,
+        versionText:=Nothing
     )
 
         lbFlavorsList.ClearSelected()
