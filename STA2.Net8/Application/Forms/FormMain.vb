@@ -83,7 +83,7 @@ Public Class FormMain
         ' ✅ Hover hints for buttons
         _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
         _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
-        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with default flavors and optionally the value from Start DB Version box")
+        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with default flavors and optionally the value from Start DB Version box.  Right Click for other Start Database options like starting with no flavors.")
         _hoverHints.Add(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
         _hoverHints.Add(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
         _hoverHints.Add(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
