@@ -71,6 +71,8 @@ Public Class FormMain
 
     End Sub
     Private Sub InitializeUIEnhancements()
+        Dim strTemp As String
+
         _hoverHints = New HoverHintManager(Me)
 
         ' ✅ Button images
@@ -84,7 +86,6 @@ Public Class FormMain
         ' ✅ Hover hints for buttons
         _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
         _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
-        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with default flavors and optionally the value from Start DB Version box.  Right Click for other Start Database options like starting with no flavors.")
         _hoverHints.Add(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
         _hoverHints.Add(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
         _hoverHints.Add(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
@@ -95,6 +96,12 @@ Public Class FormMain
         _hoverHints.Add(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
         _hoverHints.Add(btnExit, "Exit the Assistant")
         _hoverHints.Add(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
+        strTemp = "Starts the database with default flavors and optionally the value from Start DB Version box.  " &
+                Environment.NewLine & "Right Click for other Start Database options:" & Environment.NewLine &
+                      " - Start with no flavors (raw)" & Environment.NewLine &
+                      " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+                      " - Backup the database to 00Pathfinder"
+        _hoverHints.Add(btnRunDatabaseStartLive, strTemp)
 
         _hoverHints.Add(btnCalc, "Open the Calculator included with Windows")
         _hoverHints.Add(btnTaskmgr, "Open the Windows Task Manager")
@@ -2521,7 +2528,7 @@ e As System.ComponentModel.CancelEventArgs
         lbFlavorsList.ClearSelected()
 
     End Sub
-    Private Async Sub ToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem1.Click
+    Private Async Sub ToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles tsmiStartDbRaw.Click
 
 
 
@@ -2544,11 +2551,26 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private Async Sub btnTest1_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles btnTest1.Click
 
+    Private Sub btnBackupScriptPath_Click(sender As Object, e As EventArgs) Handles btnBackupScriptPath.Click
+
+        With ofdStartScript
+            .Title = "Select Backup Database Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = _options.RepoFolderPath
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Store selected script path
+            tbBackupScriptPath.Text = ofdStartScript.FileName
+
+            ' ✅ Persist to options
+            UpdateOption(Sub() _options.BackupScriptPath = ofdStartScript.FileName)
+        End If
+    End Sub
+
+    Private Async Sub tsmiStartDbBackup_Click(sender As Object, e As EventArgs) Handles tsmiStartDbBackup.Click
         If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
             MessageBox.Show(
                 "Please enter a backup path.",
@@ -2582,10 +2604,7 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private Async Sub btnTest2_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnTest2.Click
+    Private Async Sub tsmiBackupDb_Click(sender As Object, e As EventArgs) Handles tsmiBackupDb.Click
         Dim script As String = _options.BackupScriptPath
 
 
@@ -2611,23 +2630,5 @@ e As System.ComponentModel.CancelEventArgs
         overrideArgs:=args
     )
 
-    End Sub
-
-    Private Sub btnBackupScriptPath_Click(sender As Object, e As EventArgs) Handles btnBackupScriptPath.Click
-
-        With ofdStartScript
-            .Title = "Select Backup Database Script"
-            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
-            .InitialDirectory = _options.RepoFolderPath
-        End With
-
-        If ofdStartScript.ShowDialog() = DialogResult.OK Then
-
-            ' ✅ Store selected script path
-            tbBackupScriptPath.Text = ofdStartScript.FileName
-
-            ' ✅ Persist to options
-            UpdateOption(Sub() _options.BackupScriptPath = ofdStartScript.FileName)
-        End If
     End Sub
 End Class

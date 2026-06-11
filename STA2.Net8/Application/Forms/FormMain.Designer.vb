@@ -206,8 +206,11 @@ Partial Class FormMain
         tbTest2 = New TextBox()
         tbTest3 = New TextBox()
         btnRunDatabaseStartLive = New Button()
-        ContextMenuStrip1 = New ContextMenuStrip(components)
-        ToolStripMenuItem1 = New ToolStripMenuItem()
+        cmsDbStart = New ContextMenuStrip(components)
+        tsmiStartDbRaw = New ToolStripMenuItem()
+        tsmiStartDbBackup = New ToolStripMenuItem()
+        cmsDbStartSeparator1 = New ToolStripSeparator()
+        tsmiBackupDb = New ToolStripMenuItem()
         btnRunApplyFlavorLive = New Button()
         cmbboxAppLaunch = New ComboBox()
         btnComboAppLaunch = New Button()
@@ -310,7 +313,7 @@ Partial Class FormMain
         tlpButtons1.SuspendLayout()
         gpCommonApps.SuspendLayout()
         tlpButtons2.SuspendLayout()
-        ContextMenuStrip1.SuspendLayout()
+        cmsDbStart.SuspendLayout()
         flpQuickLaunch.SuspendLayout()
         StatusStrip1.SuspendLayout()
         CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
@@ -2415,7 +2418,7 @@ Partial Class FormMain
         ' 
         ' btnRunDatabaseStartLive
         ' 
-        btnRunDatabaseStartLive.ContextMenuStrip = ContextMenuStrip1
+        btnRunDatabaseStartLive.ContextMenuStrip = cmsDbStart
         btnRunDatabaseStartLive.Dock = DockStyle.Fill
         btnRunDatabaseStartLive.Location = New Point(291, 57)
         btnRunDatabaseStartLive.Margin = New Padding(0)
@@ -2425,17 +2428,34 @@ Partial Class FormMain
         btnRunDatabaseStartLive.Text = "Start Database"
         btnRunDatabaseStartLive.UseVisualStyleBackColor = True
         ' 
-        ' ContextMenuStrip1
+        ' cmsDbStart
         ' 
-        ContextMenuStrip1.Items.AddRange(New ToolStripItem() {ToolStripMenuItem1})
-        ContextMenuStrip1.Name = "ContextMenuStrip1"
-        ContextMenuStrip1.Size = New Size(175, 26)
+        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb})
+        cmsDbStart.Name = "ContextMenuStrip1"
+        cmsDbStart.Size = New Size(288, 76)
         ' 
-        ' ToolStripMenuItem1
+        ' tsmiStartDbRaw
         ' 
-        ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        ToolStripMenuItem1.Size = New Size(174, 22)
-        ToolStripMenuItem1.Text = "Raw Start Database"
+        tsmiStartDbRaw.Name = "tsmiStartDbRaw"
+        tsmiStartDbRaw.Size = New Size(287, 22)
+        tsmiStartDbRaw.Text = "Start DB with no options (raw)"
+        ' 
+        ' tsmiStartDbBackup
+        ' 
+        tsmiStartDbBackup.Name = "tsmiStartDbBackup"
+        tsmiStartDbBackup.Size = New Size(287, 22)
+        tsmiStartDbBackup.Text = "Start Database with backup 00Pathfinder"
+        ' 
+        ' cmsDbStartSeparator1
+        ' 
+        cmsDbStartSeparator1.Name = "cmsDbStartSeparator1"
+        cmsDbStartSeparator1.Size = New Size(284, 6)
+        ' 
+        ' tsmiBackupDb
+        ' 
+        tsmiBackupDb.Name = "tsmiBackupDb"
+        tsmiBackupDb.Size = New Size(287, 22)
+        tsmiBackupDb.Text = "Backup Database to 00Pathfinder"
         ' 
         ' btnRunApplyFlavorLive
         ' 
@@ -3057,7 +3077,7 @@ Partial Class FormMain
         tlpButtons1.ResumeLayout(False)
         gpCommonApps.ResumeLayout(False)
         tlpButtons2.ResumeLayout(False)
-        ContextMenuStrip1.ResumeLayout(False)
+        cmsDbStart.ResumeLayout(False)
         flpQuickLaunch.ResumeLayout(False)
         StatusStrip1.ResumeLayout(False)
         StatusStrip1.PerformLayout()
@@ -3288,8 +3308,8 @@ Partial Class FormMain
     Friend WithEvents btnUpdateShiftDate As Button
     Friend WithEvents lblPcDbInfo As Label
     Friend WithEvents tbPcDbInfo As TextBox
-    Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
-    Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
+    Friend WithEvents cmsDbStart As ContextMenuStrip
+    Friend WithEvents tsmiStartDbRaw As ToolStripMenuItem
     Friend WithEvents tbBackupPathOverride As TextBox
     Friend WithEvents lblBackupPathOverride As Label
     Friend WithEvents btnBackupPathOverride As Button
@@ -3297,4 +3317,7 @@ Partial Class FormMain
     Friend WithEvents tbBackupScriptPath As TextBox
     Friend WithEvents lblBackupScriptPath As Label
     Friend WithEvents btnBackupScriptPath As Button
+    Friend WithEvents tsmiStartDbBackup As ToolStripMenuItem
+    Friend WithEvents cmsDbStartSeparator1 As ToolStripSeparator
+    Friend WithEvents tsmiBackupDb As ToolStripMenuItem
 End Class
