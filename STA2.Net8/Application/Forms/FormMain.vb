@@ -79,6 +79,7 @@ Public Class FormMain
         SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
         SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
         SetButtonIcon(btnBackupPathOverride, "imgOpenFolder16.png")
+        SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
         _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
@@ -2543,4 +2544,90 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
+    Private Async Sub btnTest1_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles btnTest1.Click
+
+        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+            MessageBox.Show(
+                "Please enter a backup path.",
+                "Missing Backup Path",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim backupPath As String = tbBackupPathOverride.Text.Trim()
+        backupPath = String.Join("\", backupPath, "00Pathfinder.bak")
+
+        ' Build argument string (Backup + Training DB)
+        Dim args As String = $"-BackupPath ""{backupPath}"" -IncludeTrainingDB"
+
+
+        Await RunScriptAsync(
+            scriptPath:=tbDatabaseStartDefault.Text,
+            trigger:=btnTest1,
+            statusText:="Starting database (test with backup + training DB)…",
+            overrideArgs:=args
+        )
+
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            form:=Me,
+            connectionString:=ConfigValues.ConnectionString,
+            configuredContainerName:=_options?.SqlContainerName
+        )
+
+        _uiStateController.Refresh()
+
+    End Sub
+
+    Private Async Sub btnTest2_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnTest2.Click
+        Dim script As String = _options.BackupScriptPath
+
+
+        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+            MessageBox.Show(
+            "Please enter a backup directory.",
+            "Missing Directory",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim directoryPath As String = tbBackupPathOverride.Text.Trim()
+
+        ' Build argument string
+        Dim args As String = $"-Directory ""{directoryPath}"""
+
+        Await RunScriptAsync(
+        scriptPath:=script,  ' or use a textbox if you have one
+        trigger:=btnTest2,
+        statusText:="Backing up database (force)…",
+        flavors:=Nothing,
+        overrideArgs:=args
+    )
+
+    End Sub
+
+    Private Sub btnBackupScriptPath_Click(sender As Object, e As EventArgs) Handles btnBackupScriptPath.Click
+
+        With ofdStartScript
+            .Title = "Select Backup Database Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = _options.RepoFolderPath
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Store selected script path
+            tbBackupScriptPath.Text = ofdStartScript.FileName
+
+            ' ✅ Persist to options
+            UpdateOption(Sub() _options.BackupScriptPath = ofdStartScript.FileName)
+        End If
+    End Sub
 End Class
