@@ -93,31 +93,31 @@ Public Class ConfigValues
             Return csb.ConnectionString
         End Get
     End Property
-    ' ============================================================
-    ' Derived connection strings (used for detection)
-    ' ============================================================
+    '' ============================================================
+    '' Derived connection strings (used for detection)
+    '' ============================================================
 
-    Public Shared ReadOnly Property DockerConnectionString As String
-        Get
-            Dim csb As New SqlConnectionStringBuilder(ConnectionString)
+    'Public Shared ReadOnly Property DockerConnectionString As String
+    '    Get
+    '        Dim csb As New SqlConnectionStringBuilder(ConnectionString)
 
-            ' ✅ Force Docker endpoint (always port 1433)
-            csb.DataSource = "127.0.0.1,1433"
+    '        ' ✅ Force Docker endpoint (always port 1433)
+    '        csb.DataSource = "127.0.0.1,1433"
 
-            Return csb.ConnectionString
-        End Get
-    End Property
+    '        Return csb.ConnectionString
+    '    End Get
+    'End Property
 
 
-    Public Shared ReadOnly Property LocalSqlConnectionString As String
-        Get
-            Dim csb As New SqlConnectionStringBuilder(ConnectionString)
+    'Public Shared ReadOnly Property LocalSqlConnectionString As String
+    '    Get
+    '        Dim csb As New SqlConnectionStringBuilder(ConnectionString)
 
-            ' ✅ Force local instance
-            csb.DataSource = "localhost"
+    '        ' ✅ Force local instance
+    '        csb.DataSource = "localhost"
 
-            Return csb.ConnectionString
-        End Get
-    End Property
+    '        Return csb.ConnectionString
+    '    End Get
+    'End Property
 
 End Class

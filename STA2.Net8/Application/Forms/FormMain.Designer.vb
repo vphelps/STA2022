@@ -255,6 +255,7 @@ Partial Class FormMain
         ToolTipForQuickButtons = New ToolTip(components)
         SplitContainer2 = New SplitContainer()
         tlpButtons3 = New TableLayoutPanel()
+        btnTest3 = New Button()
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
@@ -2895,6 +2896,7 @@ Partial Class FormMain
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.Controls.Add(btnTest3, 2, 2)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
         tlpButtons3.Controls.Add(btnBatchLaunch, 0, 0)
@@ -2919,6 +2921,16 @@ Partial Class FormMain
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
+        ' 
+        ' btnTest3
+        ' 
+        btnTest3.Location = New Point(198, 117)
+        btnTest3.Margin = New Padding(4, 3, 4, 3)
+        btnTest3.Name = "btnTest3"
+        btnTest3.Size = New Size(88, 27)
+        btnTest3.TabIndex = 34
+        btnTest3.Text = "Test Button"
+        btnTest3.UseVisualStyleBackColor = True
         ' 
         ' btnUpdateShiftDate
         ' 
@@ -3320,4 +3332,5 @@ Partial Class FormMain
     Friend WithEvents tsmiStartDbBackup As ToolStripMenuItem
     Friend WithEvents cmsDbStartSeparator1 As ToolStripSeparator
     Friend WithEvents tsmiBackupDb As ToolStripMenuItem
+    Friend WithEvents btnTest3 As Button
 End Class

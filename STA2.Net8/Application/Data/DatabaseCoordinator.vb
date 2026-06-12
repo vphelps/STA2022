@@ -27,34 +27,39 @@ Public Module DatabaseCoordinator
     ' CLEAN DATABASE DETECTION
     ' ============================================================
     Public Sub EvaluateDatabaseAvailability(
-        form As FormMain,
-        connectionString As String,
-        Optional configuredContainerName As String = Nothing
-    )
+    form As FormMain,
+    connectionString As String,
+    Optional configuredContainerName As String = Nothing
+)
 
         Debug.WriteLine("=== DATABASE DETECTION START ===")
 
-        ' ✅ Try Docker (port 1433)
-        If TestConnection(ConfigValues.DockerConnectionString(), 3) Then
+        ' ✅ Step 1: Test main connection only
+        If Not TestConnection(connectionString, 3) Then
+            Debug.WriteLine("❌ No database available")
+            GoOffline(form, "No SQL Server available")
+            Return
+        End If
+
+        Debug.WriteLine("✅ Database connection successful")
+
+        ' ✅ Step 2: Determine environment
+        Dim isDocker As Boolean = IsConnectedToDockerContainer(connectionString)
+
+        Dim source As String
+
+        If isDocker Then
             Debug.WriteLine("✅ Docker DB detected")
-            GoOnlineWithSource(form, "Docker")
-            Return
-        End If
-
-        ' ✅ Try Local SQL
-        If TestConnection(ConfigValues.LocalSqlConnectionString(), 3) Then
+            source = "Docker"
+        Else
             Debug.WriteLine("✅ Local SQL detected")
-            GoOnlineWithSource(form, "Local SQL")
-            Return
+            source = "Local SQL"
         End If
 
-        ' ❌ Offline
-        Debug.WriteLine("❌ No database available")
-        GoOffline(form, "No SQL Server available")
+        ' ✅ Step 3: Apply UI update
+        GoOnlineWithSource(form, source)
 
     End Sub
-
-
     Public Async Function EvaluateDatabaseAvailabilityAsync(
         form As FormMain,
         connectionString As String,
@@ -261,41 +266,6 @@ Public Module DatabaseCoordinator
 
     End Sub
 
-    '    Public Sub ExecuteStoredProcedure(
-    '    connectionString As String,
-    '    procedureName As String,
-    '    Optional parameters As Dictionary(Of String, Object) = Nothing
-    ')
-
-    '        Try
-    '            Using cn As New SqlConnection(connectionString)
-    '                cn.Open()
-
-    '                Using cmd As New SqlCommand(procedureName, cn)
-    '                    cmd.CommandType = CommandType.StoredProcedure
-
-    '                    ' ✅ Add parameters if provided
-    '                    If parameters IsNot Nothing Then
-    '                        For Each kvp In parameters
-    '                            cmd.Parameters.AddWithValue(kvp.Key, kvp.Value)
-    '                        Next
-    '                    End If
-
-    '                    cmd.ExecuteNonQuery()
-    '                End Using
-    '            End Using
-
-    '        Catch ex As Exception
-    '            ' ✅ Log it using your existing global handler
-    '            GlobalErrorHandler.HandleUnhandledException(
-    '            Nothing,
-    '            New UnhandledExceptionEventArgs(ex, False)
-    '        )
-
-    '            Throw ' rethrow so UI can react if needed
-    '        End Try
-
-    '    End Sub
     Public Sub ExecuteStoredProcedure(
     connectionString As String,
     procedureName As String,
@@ -347,4 +317,113 @@ Public Module DatabaseCoordinator
         End Try
 
     End Sub
-End Module
+
+
+    ''' <summary>
+    ''' Determines if the given SQL connection is pointing to a Docker-hosted SQL Server.
+    ''' Uses @@SERVERNAME and matches against running Docker container IDs.
+    ''' </summary>
+    Public Function IsConnectedToDockerContainer(connectionString As String) As Boolean
+
+            Try
+                ' --- Step 1: Get @@SERVERNAME ---
+                Dim serverName As String = ""
+
+                Using cn As New SqlConnection(connectionString)
+                    cn.Open()
+
+                    Using cmd As New SqlCommand("SELECT @@SERVERNAME", cn)
+                        serverName = cmd.ExecuteScalar()?.ToString()?.Trim()
+                    End Using
+                End Using
+
+                If String.IsNullOrWhiteSpace(serverName) Then Return False
+
+                serverName = serverName.ToLower()
+
+                ' --- Step 2: Check Docker availability ---
+                If Not IsDockerAvailable() Then
+                    Debug.WriteLine("Docker not available")
+                    Return False
+                End If
+
+                ' --- Step 3: Get running container IDs ---
+                Dim containerIds = GetRunningContainerIds()
+
+                If containerIds Is Nothing OrElse containerIds.Count = 0 Then
+                    Return False
+                End If
+
+                ' --- Step 4: Match full SQL ID against short Docker IDs ---
+                Return containerIds.Any(Function(id) serverName.StartsWith(id))
+
+            Catch ex As Exception
+                Debug.WriteLine("Docker detection error: " & ex.Message)
+                Return False
+            End Try
+
+        End Function
+
+
+        ' ============================================================
+        ' INTERNAL HELPERS (kept private to keep API clean)
+        ' ============================================================
+
+        Private Function IsDockerAvailable() As Boolean
+
+            Try
+                Dim psi As New ProcessStartInfo With {
+                    .FileName = "docker",
+                    .Arguments = "version --format ""{{.Server.Version}}""",
+                    .RedirectStandardOutput = True,
+                    .UseShellExecute = False,
+                    .CreateNoWindow = True
+                }
+
+                Using proc As Process = Process.Start(psi)
+                    Dim output = proc.StandardOutput.ReadToEnd()
+                    proc.WaitForExit()
+
+                    Return proc.ExitCode = 0 AndAlso Not String.IsNullOrWhiteSpace(output)
+                End Using
+
+            Catch
+                Return False
+            End Try
+
+        End Function
+
+
+        Private Function GetRunningContainerIds() As List(Of String)
+
+            Try
+                Dim psi As New ProcessStartInfo With {
+                    .FileName = "docker",
+                    .Arguments = "ps --format ""{{.ID}}""",
+                    .RedirectStandardOutput = True,
+                    .UseShellExecute = False,
+                    .CreateNoWindow = True
+                }
+
+                Using proc As Process = Process.Start(psi)
+                    Dim output As String = proc.StandardOutput.ReadToEnd()
+                    proc.WaitForExit()
+
+                    If String.IsNullOrWhiteSpace(output) Then
+                        Return New List(Of String)
+                    End If
+
+                    Return output.
+                        Split({Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).
+                        Select(Function(id) id.Trim().ToLower()).
+                        ToList()
+                End Using
+
+            Catch ex As Exception
+                Debug.WriteLine("Docker container query failed: " & ex.Message)
+                Return New List(Of String)
+            End Try
+
+        End Function
+
+    End Module
