@@ -129,6 +129,13 @@ Partial Class FormMain
         btnOpenLogFile = New Button()
         btnLastLogBlock = New Button()
         btnLastFailed = New Button()
+        tpFlavor = New TabPage()
+        flpFlavorButtons = New FlowLayoutPanel()
+        btnFlavorLoad = New Button()
+        btnFlavorSave = New Button()
+        btnFlavorClear = New Button()
+        btnFlavorPaste = New Button()
+        tbFlavor = New TextBox()
         tpOptions = New TabPage()
         tbMLTest1 = New TextBox()
         gpFlavorsSettings = New GroupBox()
@@ -300,6 +307,8 @@ Partial Class FormMain
         tpLogs.SuspendLayout()
         tlpApplicationLogs.SuspendLayout()
         flpAppLogsButtons.SuspendLayout()
+        tpFlavor.SuspendLayout()
+        flpFlavorButtons.SuspendLayout()
         tpOptions.SuspendLayout()
         gpFlavorsSettings.SuspendLayout()
         gbAppLaunchSettings.SuspendLayout()
@@ -370,6 +379,7 @@ Partial Class FormMain
         tcSTA.Controls.Add(tpDbInfo)
         tcSTA.Controls.Add(tpStParse)
         tcSTA.Controls.Add(tpLogs)
+        tcSTA.Controls.Add(tpFlavor)
         tcSTA.Controls.Add(tpOptions)
         tcSTA.Dock = DockStyle.Fill
         tcSTA.Location = New Point(0, 0)
@@ -1530,6 +1540,79 @@ Partial Class FormMain
         btnLastFailed.TabIndex = 36
         btnLastFailed.Text = "Last Failed"
         btnLastFailed.UseVisualStyleBackColor = True
+        ' 
+        ' tpFlavor
+        ' 
+        tpFlavor.Controls.Add(flpFlavorButtons)
+        tpFlavor.Controls.Add(tbFlavor)
+        tpFlavor.Location = New Point(4, 24)
+        tpFlavor.Name = "tpFlavor"
+        tpFlavor.Size = New Size(1182, 629)
+        tpFlavor.TabIndex = 10
+        tpFlavor.Text = "Personal Flavor"
+        tpFlavor.UseVisualStyleBackColor = True
+        ' 
+        ' flpFlavorButtons
+        ' 
+        flpFlavorButtons.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        flpFlavorButtons.BorderStyle = BorderStyle.Fixed3D
+        flpFlavorButtons.Controls.Add(btnFlavorLoad)
+        flpFlavorButtons.Controls.Add(btnFlavorSave)
+        flpFlavorButtons.Controls.Add(btnFlavorClear)
+        flpFlavorButtons.Controls.Add(btnFlavorPaste)
+        flpFlavorButtons.FlowDirection = FlowDirection.TopDown
+        flpFlavorButtons.Location = New Point(1068, 4)
+        flpFlavorButtons.Name = "flpFlavorButtons"
+        flpFlavorButtons.Size = New Size(111, 286)
+        flpFlavorButtons.TabIndex = 2
+        ' 
+        ' btnFlavorLoad
+        ' 
+        btnFlavorLoad.Location = New Point(3, 3)
+        btnFlavorLoad.MinimumSize = New Size(97, 57)
+        btnFlavorLoad.Name = "btnFlavorLoad"
+        btnFlavorLoad.Size = New Size(97, 57)
+        btnFlavorLoad.TabIndex = 1
+        btnFlavorLoad.Text = "Load from File"
+        btnFlavorLoad.UseVisualStyleBackColor = True
+        ' 
+        ' btnFlavorSave
+        ' 
+        btnFlavorSave.Location = New Point(3, 66)
+        btnFlavorSave.MinimumSize = New Size(97, 57)
+        btnFlavorSave.Name = "btnFlavorSave"
+        btnFlavorSave.Size = New Size(97, 57)
+        btnFlavorSave.TabIndex = 3
+        btnFlavorSave.Text = "Save to file"
+        btnFlavorSave.UseVisualStyleBackColor = True
+        ' 
+        ' btnFlavorClear
+        ' 
+        btnFlavorClear.Location = New Point(3, 129)
+        btnFlavorClear.MinimumSize = New Size(97, 57)
+        btnFlavorClear.Name = "btnFlavorClear"
+        btnFlavorClear.Size = New Size(97, 57)
+        btnFlavorClear.TabIndex = 4
+        btnFlavorClear.Text = "Clear Flavor Contents"
+        btnFlavorClear.UseVisualStyleBackColor = True
+        ' 
+        ' btnFlavorPaste
+        ' 
+        btnFlavorPaste.Location = New Point(3, 192)
+        btnFlavorPaste.MinimumSize = New Size(97, 57)
+        btnFlavorPaste.Name = "btnFlavorPaste"
+        btnFlavorPaste.Size = New Size(97, 57)
+        btnFlavorPaste.TabIndex = 5
+        btnFlavorPaste.Text = "Paste from Clipboard"
+        btnFlavorPaste.UseVisualStyleBackColor = True
+        ' 
+        ' tbFlavor
+        ' 
+        tbFlavor.Location = New Point(6, 4)
+        tbFlavor.Multiline = True
+        tbFlavor.Name = "tbFlavor"
+        tbFlavor.Size = New Size(1045, 386)
+        tbFlavor.TabIndex = 0
         ' 
         ' tpOptions
         ' 
@@ -3069,6 +3152,9 @@ Partial Class FormMain
         tpLogs.ResumeLayout(False)
         tlpApplicationLogs.ResumeLayout(False)
         flpAppLogsButtons.ResumeLayout(False)
+        tpFlavor.ResumeLayout(False)
+        tpFlavor.PerformLayout()
+        flpFlavorButtons.ResumeLayout(False)
         tpOptions.ResumeLayout(False)
         tpOptions.PerformLayout()
         gpFlavorsSettings.ResumeLayout(False)
@@ -3333,4 +3419,12 @@ Partial Class FormMain
     Friend WithEvents cmsDbStartSeparator1 As ToolStripSeparator
     Friend WithEvents tsmiBackupDb As ToolStripMenuItem
     Friend WithEvents btnTest3 As Button
+    Friend WithEvents tpFlavor As TabPage
+    Friend WithEvents tlpFlavor As TableLayoutPanel
+    Friend WithEvents tbFlavor As TextBox
+    Friend WithEvents btnFlavorLoad As Button
+    Friend WithEvents flpFlavorButtons As FlowLayoutPanel
+    Friend WithEvents btnFlavorSave As Button
+    Friend WithEvents btnFlavorClear As Button
+    Friend WithEvents btnFlavorPaste As Button
 End Class

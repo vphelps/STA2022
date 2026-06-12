@@ -338,4 +338,37 @@ Public NotInheritable Class OptionsManager
         Return trimmed
     End Function
 
+    ' =========================================================
+    ' Personal Flavor File Helpers
+    ' =========================================================
+
+    Public Shared Function GetPersonalFlavorPath() As String
+        Dim optionsDir = Path.GetDirectoryName(GetOptionsPath())
+        Return Path.Combine(optionsDir, "PersonalFlavor.sql")
+    End Function
+
+    Public Shared Function LoadPersonalFlavor() As String
+        Dim path = GetPersonalFlavorPath()
+
+        Try
+            If File.Exists(path) Then
+                Return File.ReadAllText(path)
+            End If
+        Catch ex As Exception
+            Debug.WriteLine("Failed to load personal flavor: " & ex.Message)
+        End Try
+
+        Return ""
+    End Function
+
+    Public Shared Sub SavePersonalFlavor(sqlText As String)
+        Dim path = GetPersonalFlavorPath()
+
+        Try
+            EnsureParentDirectory(path)
+            File.WriteAllText(path, sqlText, Encoding.UTF8)
+        Catch ex As Exception
+            Debug.WriteLine("Failed to save personal flavor: " & ex.Message)
+        End Try
+    End Sub
 End Class
