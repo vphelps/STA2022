@@ -16,7 +16,6 @@ Public Class FormMain
     Private _runExistingVersionPath As String
     Private _tabHintLabel As Label
     Private _tabHintTimer As Timer
-    Private _hoverHints As HoverHintManager
     Private _uiStateController As UIStateController
     Private _scriptController As ScriptExecutionController
     Private _databaseController As DatabaseViewController
@@ -73,7 +72,6 @@ Public Class FormMain
     Private Sub InitializeUIEnhancements()
         Dim strTemp As String
 
-        _hoverHints = New HoverHintManager(Me)
 
         ' ✅ Button images
         SetButtonIcon(btnCopyScriptOutput, "imgCopy16.png")
@@ -84,78 +82,85 @@ Public Class FormMain
         SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
-        _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
-        _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
-        _hoverHints.Add(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
-        _hoverHints.Add(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
-        _hoverHints.Add(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
-        _hoverHints.Add(btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
-        _hoverHints.Add(btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
-        _hoverHints.Add(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
-        _hoverHints.Add(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
-        _hoverHints.Add(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
-        _hoverHints.Add(btnExit, "Exit the Assistant")
-        _hoverHints.Add(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
-        strTemp = "Starts the database with default flavors and optionally the value from Start DB Version box.  " &
-                Environment.NewLine & "Right Click for other Start Database options:" & Environment.NewLine &
-                      " - Start with no flavors (raw)" & Environment.NewLine &
-                      " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
-                      " - Backup the database to 00Pathfinder"
-        _hoverHints.Add(btnRunDatabaseStartLive, strTemp)
+        ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured default flavors")
+        ToolTip1.SetToolTip(btnOpenLogFile, "Browse and open any log file")
+        ToolTip1.SetToolTip(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
+        ToolTip1.SetToolTip(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
+        ToolTip1.SetToolTip(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
+        ToolTip1.SetToolTip(btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
+        ToolTip1.SetToolTip(btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
+        ToolTip1.SetToolTip(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
+        ToolTip1.SetToolTip(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
+        ToolTip1.SetToolTip(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
+        ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
+        ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
 
-        _hoverHints.Add(btnCalc, "Open the Calculator included with Windows")
-        _hoverHints.Add(btnTaskmgr, "Open the Windows Task Manager")
-        _hoverHints.Add(btnAppWiz, "Open the Control Panel > Programs and Features window")
-        _hoverHints.Add(btnEventViewer, "Open the Windows Event Viewer")
-        _hoverHints.Add(btnDevices, "Open the Control Panel > Devices and Printers window")
-        _hoverHints.Add(btnServices, "Open the Windows Services window")
+        strTemp =
+            "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
+            "Right Click for other Start Database options:" & Environment.NewLine &
+            " - Start with no flavors (raw)" & Environment.NewLine &
+            " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+            " - Backup the database to 00Pathfinder"
 
-        _hoverHints.Add(btnAdvManager, "Run Advantage Manager Console")
-        _hoverHints.Add(btnPos, "Run Advantage POS")
-        _hoverHints.Add(btnAdvGroups, "Run Advantage Groups")
-        _hoverHints.Add(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
-        _hoverHints.Add(btnAdvConfig, "Run CenterEdge Configuration")
-        _hoverHints.Add(btnAdvReportEditor, "Run Advantage Report Editor")
-        _hoverHints.Add(btnAdvRedeem, "Run Advantage Redemption")
-        _hoverHints.Add(btnAdvCardTech, "DESCRIPTION")
-        _hoverHints.Add(btnAdvKiosk, "Run Advantage Legacy Kiosk")
-        _hoverHints.Add(btnAdvUpgrade, "Run Advantage Upgrade (AdvUpgrade.exe)")
+        ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
+
+        ' System tools
+        ToolTip1.SetToolTip(btnCalc, "Open the Calculator included with Windows")
+        ToolTip1.SetToolTip(btnTaskmgr, "Open the Windows Task Manager")
+        ToolTip1.SetToolTip(btnAppWiz, "Open the Control Panel > Programs and Features window")
+        ToolTip1.SetToolTip(btnEventViewer, "Open the Windows Event Viewer")
+        ToolTip1.SetToolTip(btnDevices, "Open the Control Panel > Devices and Printers window")
+        ToolTip1.SetToolTip(btnServices, "Open the Windows Services window")
+
+        ' Advantage apps
+        ToolTip1.SetToolTip(btnAdvManager, "Run Advantage Manager Console")
+        ToolTip1.SetToolTip(btnPos, "Run Advantage POS")
+        ToolTip1.SetToolTip(btnAdvGroups, "Run Advantage Groups")
+        ToolTip1.SetToolTip(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
+        ToolTip1.SetToolTip(btnAdvConfig, "Run CenterEdge Configuration")
+        ToolTip1.SetToolTip(btnAdvReportEditor, "Run Advantage Report Editor")
+        ToolTip1.SetToolTip(btnAdvRedeem, "Run Advantage Redemption")
+        ToolTip1.SetToolTip(btnAdvCardTech, "DESCRIPTION")
+        ToolTip1.SetToolTip(btnAdvKiosk, "Run Advantage Legacy Kiosk")
+        ToolTip1.SetToolTip(btnAdvUpgrade, "Run Advantage Upgrade (AdvUpgrade.exe)")
 
         ' ✅ Hover hints
-        _hoverHints.Add(lbFlavorsList, "🖱 Right-click → Apply selected flavors" & vbCrLf & "⚡ Double-click → Apply highlighted")
-        _hoverHints.Add(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
-        _hoverHints.Add(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
-        _hoverHints.Add(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
+        ToolTip1.SetToolTip(
+            lbFlavorsList,
+            "🖱 Right-click → Apply selected flavors" & vbCrLf &
+            "⚡ Double-click → Apply highlighted"
+        )
+
+        ToolTip1.SetToolTip(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
+        ToolTip1.SetToolTip(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
+        ToolTip1.SetToolTip(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
 
         ' ✅ Hover hints for Options Tab
-        _hoverHints.Add(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
-        _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
-        _hoverHints.Add(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
-        _hoverHints.Add(cbShowHiddenServices, "Check this box to show all Advantage services in the Services List even if they are not installed.  Unchecked only the installed services will show")
-        _hoverHints.Add(tbDatabaseStartDefault, "This is the path to the script to start the docker database (Start-Database.ps1)")
-        _hoverHints.Add(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
-        _hoverHints.Add(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
-        _hoverHints.Add(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
+        ToolTip1.SetToolTip(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
+        ToolTip1.SetToolTip(tbRepoFolder, "Select your repository root folder")
+        ToolTip1.SetToolTip(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
+        ToolTip1.SetToolTip(cbShowHiddenServices, "Check this box to show all Advantage services in the Services List even if they are not installed.  Unchecked only the installed services will show")
+        ToolTip1.SetToolTip(tbDatabaseStartDefault, "This is the path to the script to start the docker database (Start-Database.ps1)")
+        ToolTip1.SetToolTip(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
+        ToolTip1.SetToolTip(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
+        ToolTip1.SetToolTip(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
 
+        ToolTip1.SetToolTip(btnAdd, "Add a new application to the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnEdit, "Edit the program selected in the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnDelete, "Delete the program selected in the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnLaunch, "Launch the program selected in the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnResetFlavorDefaults, "Resets the list of Default Flavors Selections to the defaults that were previously saved")
+        ToolTip1.SetToolTip(btnSaveFlavorDefaults, "Save the currently selected flavors in the Default Flavors Selection list as the new default selections")
 
-        _hoverHints.Add(btnAdd, "Add a new application to the Application Launcher Settings")
-        _hoverHints.Add(btnEdit, "Edit the program selected in the Application Launcher Settings")
-        _hoverHints.Add(btnDelete, "Delete the program selected in the Application Launcher Settings")
-        _hoverHints.Add(btnLaunch, "Launch the program selected in the Application Launcher Settings")
-        _hoverHints.Add(btnResetFlavorDefaults, "Resets the list of Default Flavors Selections to the defaults that were previously saved")
-        _hoverHints.Add(btnSaveFlavorDefaults, "Save the currently selected flavors in the Default Flavors Selection list as the new default selections")
+        ToolTip1.SetToolTip(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
+        ToolTip1.SetToolTip(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
+        ToolTip1.SetToolTip(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
+        ToolTip1.SetToolTip(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
 
-        _hoverHints.Add(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
-        _hoverHints.Add(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
-        _hoverHints.Add(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
-        _hoverHints.Add(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
-
-
-        _hoverHints.Add(btnOpenLogFile, "Opens the folder containing the log files in a Open File box to select a log file")
-        _hoverHints.Add(btnViewLatestLog, "Opens the log file for today to see the latest log entries ")
-        _hoverHints.Add(btnLastLogBlock, "Displays the very last script execution log in a message box")
-        _hoverHints.Add(btnLastFailed, "Displays the last error encountered in a message box")
-
+        ToolTip1.SetToolTip(btnOpenLogFile, "Opens the folder containing the log files in a Open File box to select a log file")
+        ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file for today to see the latest log entries")
+        ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log in a message box")
+        ToolTip1.SetToolTip(btnLastFailed, "Displays the last error encountered in a message box")
         ' Hoverhint line template
         '_hoverHints.Add(ControlName, "DESCRIPTION")
     End Sub

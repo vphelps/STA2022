@@ -3090,6 +3090,7 @@ Partial Class FormMain
         btnApplyPersonalFlavor.Size = New Size(97, 57)
         btnApplyPersonalFlavor.TabIndex = 34
         btnApplyPersonalFlavor.Text = "Apply Personal Flavor"
+        ToolTip1.SetToolTip(btnApplyPersonalFlavor, "Copy the Personal Flavor SQL to the Flavors folder and then apply it.")
         btnApplyPersonalFlavor.UseVisualStyleBackColor = True
         ' 
         ' Panel2
