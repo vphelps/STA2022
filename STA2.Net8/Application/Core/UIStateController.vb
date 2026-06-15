@@ -112,7 +112,10 @@
                 _form.tbShiftDate.ForeColor = TextboxColors.Black
             End If
         End If
+        'Flavor File name label update
+        _form.lblPersonalFlavorFile.Text = _options.PersonalFlavorFileName
 
     End Sub
+
 
 End Class

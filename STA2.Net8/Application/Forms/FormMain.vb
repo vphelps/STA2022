@@ -256,6 +256,7 @@ Public Class FormMain
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
+        lblPersonalFlavorFile.Text = _options.PersonalFlavorFileName
 
         rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
@@ -2639,13 +2640,33 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub btnFlavorSave_Click(sender As Object, e As EventArgs) Handles btnFlavorSave.Click
 
         Using sfd As New SaveFileDialog()
+
             sfd.Filter = "SQL Files (*.sql)|*.sql"
             sfd.InitialDirectory = Path.GetDirectoryName(OptionsManager.GetOptionsPath())
-            sfd.FileName = "PersonalFlavor.sql"
+            sfd.FileName = If(String.IsNullOrWhiteSpace(_options?.PersonalFlavorFileName),
+                          "PersonalFlavor.sql",
+                          _options.PersonalFlavorFileName)
 
             If sfd.ShowDialog() = DialogResult.OK Then
-                File.WriteAllText(sfd.FileName, tbFlavor.Text)
+
+                Try
+                    File.WriteAllText(sfd.FileName, tbFlavor.Text)
+
+                    ' ✅ Save filename into options
+                    _options.PersonalFlavorFileName = Path.GetFileName(sfd.FileName)
+                    OptionsManager.Save(_options)
+
+                    MessageBox.Show("Personal flavor saved.",
+                                "Saved",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information)
+
+                Catch ex As Exception
+                    MessageBox.Show("Failed to save file: " & ex.Message)
+                End Try
+
             End If
+
         End Using
 
     End Sub
@@ -2674,6 +2695,65 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnFlavorClear_Click(sender As Object, e As EventArgs) Handles btnFlavorClear.Click
         tbFlavor.Text = ""
+
+    End Sub
+    Private Async Sub btnApplyPersonalFlavor_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnApplyPersonalFlavor.Click
+
+        Try
+            ' ✅ Ensure latest text is saved first
+            OptionsManager.SavePersonalFlavor(tbFlavor.Text)
+
+            Dim sourcePath = OptionsManager.GetPersonalFlavorPath()
+
+            If Not File.Exists(sourcePath) Then
+                MessageBox.Show("Personal flavor file not found.",
+                            "Missing File",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning)
+                Return
+            End If
+
+            If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+                MessageBox.Show("Flavor folder path is not configured.",
+                            "Configuration Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error)
+                Return
+            End If
+
+            ' ✅ Use saved file name
+            Dim destFileName = If(
+            String.IsNullOrWhiteSpace(_options.PersonalFlavorFileName),
+            "PersonalFlavor.sql",
+            _options.PersonalFlavorFileName
+        )
+
+            Dim destPath = Path.Combine(_options.FlavorFolderPath, destFileName)
+
+            Directory.CreateDirectory(_options.RepoFolderPath)
+
+            File.Copy(sourcePath, destPath, True)
+
+            ' ✅ Apply using filename (no extension)
+            Dim flavors As New List(Of String) From {
+            Path.GetFileNameWithoutExtension(destFileName)
+        }
+
+            Await RunScriptAsync(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            trigger:=btnApplyPersonalFlavor,
+            statusText:=$"Applying personal flavor ({destFileName})…",
+            flavors:=flavors
+        )
+
+        Catch ex As Exception
+            MessageBox.Show("Error applying personal flavor: " & ex.Message)
+        End Try
+        _flavorManager.RefreshPreservingSelection()
+        SyncFlavorsListMirror()
 
     End Sub
 End Class

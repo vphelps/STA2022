@@ -43,7 +43,7 @@ Public Class AppOptions
     Public Property SetupSwitches As String
     Public Property StartDatabaseDefault As String
     Public Property ApplyFlavorDefault As String
-
+    Public Property PersonalFlavorFileName As String
 
     ' -------------------------------------------------
     ' Flavor selection defaults

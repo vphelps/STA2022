@@ -130,6 +130,7 @@ Partial Class FormMain
         btnLastLogBlock = New Button()
         btnLastFailed = New Button()
         tpFlavor = New TabPage()
+        lblPersonalFlavorFile = New Label()
         flpFlavorButtons = New FlowLayoutPanel()
         btnFlavorLoad = New Button()
         btnFlavorSave = New Button()
@@ -262,13 +263,13 @@ Partial Class FormMain
         ToolTipForQuickButtons = New ToolTip(components)
         SplitContainer2 = New SplitContainer()
         tlpButtons3 = New TableLayoutPanel()
-        btnTest3 = New Button()
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
         btnLaunchLatestInstaller = New Button()
         btnRepoDiscardChanges = New Button()
         btnManageInstallerVersions = New Button()
+        btnApplyPersonalFlavor = New Button()
         Panel2 = New Panel()
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
@@ -1543,6 +1544,7 @@ Partial Class FormMain
         ' 
         ' tpFlavor
         ' 
+        tpFlavor.Controls.Add(lblPersonalFlavorFile)
         tpFlavor.Controls.Add(flpFlavorButtons)
         tpFlavor.Controls.Add(tbFlavor)
         tpFlavor.Location = New Point(4, 24)
@@ -1551,6 +1553,15 @@ Partial Class FormMain
         tpFlavor.TabIndex = 10
         tpFlavor.Text = "Personal Flavor"
         tpFlavor.UseVisualStyleBackColor = True
+        ' 
+        ' lblPersonalFlavorFile
+        ' 
+        lblPersonalFlavorFile.AutoSize = True
+        lblPersonalFlavorFile.Location = New Point(72, 8)
+        lblPersonalFlavorFile.Name = "lblPersonalFlavorFile"
+        lblPersonalFlavorFile.Size = New Size(115, 15)
+        lblPersonalFlavorFile.TabIndex = 3
+        lblPersonalFlavorFile.Text = "lblPersonalFlavorFile"
         ' 
         ' flpFlavorButtons
         ' 
@@ -1608,7 +1619,7 @@ Partial Class FormMain
         ' 
         ' tbFlavor
         ' 
-        tbFlavor.Location = New Point(6, 4)
+        tbFlavor.Location = New Point(6, 27)
         tbFlavor.Multiline = True
         tbFlavor.Name = "tbFlavor"
         tbFlavor.Size = New Size(1045, 386)
@@ -2504,7 +2515,7 @@ Partial Class FormMain
         ' 
         btnRunDatabaseStartLive.ContextMenuStrip = cmsDbStart
         btnRunDatabaseStartLive.Dock = DockStyle.Fill
-        btnRunDatabaseStartLive.Location = New Point(291, 57)
+        btnRunDatabaseStartLive.Location = New Point(291, 114)
         btnRunDatabaseStartLive.Margin = New Padding(0)
         btnRunDatabaseStartLive.Name = "btnRunDatabaseStartLive"
         btnRunDatabaseStartLive.Size = New Size(97, 57)
@@ -2979,7 +2990,6 @@ Partial Class FormMain
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
-        tlpButtons3.Controls.Add(btnTest3, 2, 2)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
         tlpButtons3.Controls.Add(btnBatchLaunch, 0, 0)
@@ -2992,7 +3002,8 @@ Partial Class FormMain
         tlpButtons3.Controls.Add(btnLaunchLatestInstaller, 1, 1)
         tlpButtons3.Controls.Add(btnRepoDiscardChanges, 1, 2)
         tlpButtons3.Controls.Add(btnManageInstallerVersions, 2, 0)
-        tlpButtons3.Controls.Add(btnRunDatabaseStartLive, 3, 1)
+        tlpButtons3.Controls.Add(btnRunDatabaseStartLive, 3, 2)
+        tlpButtons3.Controls.Add(btnApplyPersonalFlavor, 3, 1)
         tlpButtons3.Dock = DockStyle.Fill
         tlpButtons3.Location = New Point(0, 0)
         tlpButtons3.Margin = New Padding(4, 3, 4, 3)
@@ -3004,16 +3015,6 @@ Partial Class FormMain
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
-        ' 
-        ' btnTest3
-        ' 
-        btnTest3.Location = New Point(198, 117)
-        btnTest3.Margin = New Padding(4, 3, 4, 3)
-        btnTest3.Name = "btnTest3"
-        btnTest3.Size = New Size(88, 27)
-        btnTest3.TabIndex = 34
-        btnTest3.Text = "Test Button"
-        btnTest3.UseVisualStyleBackColor = True
         ' 
         ' btnUpdateShiftDate
         ' 
@@ -3080,6 +3081,16 @@ Partial Class FormMain
         btnManageInstallerVersions.TabIndex = 32
         btnManageInstallerVersions.Text = "Manage Installer Versions"
         btnManageInstallerVersions.UseVisualStyleBackColor = True
+        ' 
+        ' btnApplyPersonalFlavor
+        ' 
+        btnApplyPersonalFlavor.Location = New Point(291, 57)
+        btnApplyPersonalFlavor.Margin = New Padding(0)
+        btnApplyPersonalFlavor.Name = "btnApplyPersonalFlavor"
+        btnApplyPersonalFlavor.Size = New Size(97, 57)
+        btnApplyPersonalFlavor.TabIndex = 34
+        btnApplyPersonalFlavor.Text = "Apply Personal Flavor"
+        btnApplyPersonalFlavor.UseVisualStyleBackColor = True
         ' 
         ' Panel2
         ' 
@@ -3418,7 +3429,7 @@ Partial Class FormMain
     Friend WithEvents tsmiStartDbBackup As ToolStripMenuItem
     Friend WithEvents cmsDbStartSeparator1 As ToolStripSeparator
     Friend WithEvents tsmiBackupDb As ToolStripMenuItem
-    Friend WithEvents btnTest3 As Button
+    Friend WithEvents btnApplyPersonalFlavor As Button
     Friend WithEvents tpFlavor As TabPage
     Friend WithEvents tlpFlavor As TableLayoutPanel
     Friend WithEvents tbFlavor As TextBox
@@ -3427,4 +3438,5 @@ Partial Class FormMain
     Friend WithEvents btnFlavorSave As Button
     Friend WithEvents btnFlavorClear As Button
     Friend WithEvents btnFlavorPaste As Button
+    Friend WithEvents lblPersonalFlavorFile As Label
 End Class
