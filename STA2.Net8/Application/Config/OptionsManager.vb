@@ -74,46 +74,88 @@ Public NotInheritable Class OptionsManager
     ' Save (FIXED: preserves flavors + UI toggles)
     ' =========================================================
 
+    'Public Shared Sub Save(opts As AppOptions)
+    '    Dim path = GetOptionsPath()
+
+    '    Try
+    '        EnsureParentDirectory(path)
+
+    '        If opts Is Nothing Then opts = New AppOptions()
+
+    '        ' Ensure QuickLaunchIds exists
+    '        If opts.QuickLaunchIds Is Nothing Then
+    '            opts.QuickLaunchIds =
+    '                Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+    '        End If
+
+    '        ' -------------------------------------------------
+    '        ' Snapshot properties NOT owned by QuickLaunch
+    '        ' -------------------------------------------------
+    '        Dim repoFolderSnapshot As String = opts.RepoFolderPath
+    '        Dim showHiddenSnapshot As Boolean = opts.ShowHiddenServices
+    '        Dim backupScriptPathSnapshot As String = opts.BackupScriptPath
+
+    '        Dim defaultFlavorsSnapshot As List(Of String) =
+    '            If(opts.DefaultFlavorNames Is Nothing,
+    '               Nothing,
+    '               New List(Of String)(opts.DefaultFlavorNames))
+
+    '        ' -------------------------------------------------
+    '        ' Normalize QuickLaunch ONLY
+    '        ' -------------------------------------------------
+    '        DedupeQuickLaunchIds(opts)
+    '        TrimTrailingEmptyQuickSlots(opts)
+
+    '        ' -------------------------------------------------
+    '        ' Restore preserved properties
+    '        ' -------------------------------------------------
+    '        opts.RepoFolderPath = repoFolderSnapshot
+    '        opts.ShowHiddenServices = showHiddenSnapshot
+    '        opts.DefaultFlavorNames = defaultFlavorsSnapshot
+    '        opts.BackupScriptPath = backupScriptPathSnapshot
+
+    '        ' -------------------------------------------------
+    '        ' Serialize
+    '        ' -------------------------------------------------
+    '        Dim json = JsonSerializer.Serialize(opts, _jsonOptions)
+
+    '        File.WriteAllText(path, json, Encoding.UTF8)
+
+    '    Catch ex As Exception
+    '        Debug.WriteLine("Options save failed: " & ex.Message)
+    '    End Try
+    'End Sub
     Public Shared Sub Save(opts As AppOptions)
+
         Dim path = GetOptionsPath()
 
         Try
             EnsureParentDirectory(path)
 
-            If opts Is Nothing Then opts = New AppOptions()
-
-            ' Ensure QuickLaunchIds exists
-            If opts.QuickLaunchIds Is Nothing Then
-                opts.QuickLaunchIds =
-                    Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            If opts Is Nothing Then
+                opts = New AppOptions()
             End If
 
             ' -------------------------------------------------
-            ' Snapshot properties NOT owned by QuickLaunch
+            ' Ensure required collections exist
             ' -------------------------------------------------
-            Dim repoFolderSnapshot As String = opts.RepoFolderPath
-            Dim showHiddenSnapshot As Boolean = opts.ShowHiddenServices
+            If opts.QuickLaunchIds Is Nothing Then
+                opts.QuickLaunchIds =
+                Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            End If
 
-            Dim defaultFlavorsSnapshot As List(Of String) =
-                If(opts.DefaultFlavorNames Is Nothing,
-                   Nothing,
-                   New List(Of String)(opts.DefaultFlavorNames))
+            If opts.DefaultFlavorNames Is Nothing Then
+                opts.DefaultFlavorNames = New List(Of String)
+            End If
 
             ' -------------------------------------------------
-            ' Normalize QuickLaunch ONLY
+            ' Normalize ONLY what needs normalization
             ' -------------------------------------------------
             DedupeQuickLaunchIds(opts)
             TrimTrailingEmptyQuickSlots(opts)
 
             ' -------------------------------------------------
-            ' Restore preserved properties
-            ' -------------------------------------------------
-            opts.RepoFolderPath = repoFolderSnapshot
-            opts.ShowHiddenServices = showHiddenSnapshot
-            opts.DefaultFlavorNames = defaultFlavorsSnapshot
-
-            ' -------------------------------------------------
-            ' Serialize
+            ' Serialize WITHOUT modifying unrelated properties
             ' -------------------------------------------------
             Dim json = JsonSerializer.Serialize(opts, _jsonOptions)
 
@@ -122,8 +164,8 @@ Public NotInheritable Class OptionsManager
         Catch ex As Exception
             Debug.WriteLine("Options save failed: " & ex.Message)
         End Try
-    End Sub
 
+    End Sub
     Public Shared Function GetOptionsPath() As String
         Dim dir =
             Path.Combine(

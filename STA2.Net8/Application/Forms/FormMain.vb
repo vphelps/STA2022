@@ -361,6 +361,7 @@ Public Class FormMain
             tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
             tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
             tbBackupPathOverride.Text = Trim(_options.BackupPathOverride)
+            tbBackupScriptPath.Text = Trim(_options.BackupScriptPath)
         End If
 
         If IsRunningAsAdmin() Then
