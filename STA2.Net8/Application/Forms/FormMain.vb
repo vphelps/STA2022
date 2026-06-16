@@ -145,6 +145,8 @@ Public Class FormMain
         ToolTip1.SetToolTip(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
         ToolTip1.SetToolTip(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
         ToolTip1.SetToolTip(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
+        ToolTip1.SetToolTip(tbBackupPathOverride, "This is the path to the folder that contains backup files like 00Pathfinder.bak")
+        ToolTip1.SetToolTip(tbBackupScriptPath, "This is the path to the script to backup the database to the backup folder (Backup-Database.ps1)")
 
         ToolTip1.SetToolTip(btnAdd, "Add a new application to the Application Launcher Settings")
         ToolTip1.SetToolTip(btnEdit, "Edit the program selected in the Application Launcher Settings")

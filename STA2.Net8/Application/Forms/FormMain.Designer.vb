@@ -1683,14 +1683,15 @@ Partial Class FormMain
         gpFlavorsSettings.Margin = New Padding(4, 3, 4, 3)
         gpFlavorsSettings.Name = "gpFlavorsSettings"
         gpFlavorsSettings.Padding = New Padding(4, 3, 4, 3)
-        gpFlavorsSettings.Size = New Size(553, 304)
+        gpFlavorsSettings.Size = New Size(455, 304)
         gpFlavorsSettings.TabIndex = 27
         gpFlavorsSettings.TabStop = False
         gpFlavorsSettings.Text = "Default Flavors Selection"
         ' 
         ' btnSaveFlavorDefaults
         ' 
-        btnSaveFlavorDefaults.Location = New Point(453, 83)
+        btnSaveFlavorDefaults.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        btnSaveFlavorDefaults.Location = New Point(355, 83)
         btnSaveFlavorDefaults.Margin = New Padding(4, 3, 4, 3)
         btnSaveFlavorDefaults.Name = "btnSaveFlavorDefaults"
         btnSaveFlavorDefaults.Size = New Size(93, 58)
@@ -1700,19 +1701,20 @@ Partial Class FormMain
         ' 
         ' clbSqlFiles
         ' 
+        clbSqlFiles.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         clbSqlFiles.CheckOnClick = True
-        clbSqlFiles.Dock = DockStyle.Left
         clbSqlFiles.FormattingEnabled = True
         clbSqlFiles.HorizontalScrollbar = True
         clbSqlFiles.Location = New Point(4, 19)
         clbSqlFiles.Margin = New Padding(4, 3, 4, 3)
         clbSqlFiles.Name = "clbSqlFiles"
-        clbSqlFiles.Size = New Size(412, 282)
+        clbSqlFiles.Size = New Size(314, 274)
         clbSqlFiles.TabIndex = 0
         ' 
         ' btnResetFlavorDefaults
         ' 
-        btnResetFlavorDefaults.Location = New Point(453, 18)
+        btnResetFlavorDefaults.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        btnResetFlavorDefaults.Location = New Point(355, 18)
         btnResetFlavorDefaults.Margin = New Padding(4, 3, 4, 3)
         btnResetFlavorDefaults.Name = "btnResetFlavorDefaults"
         btnResetFlavorDefaults.Size = New Size(93, 58)
@@ -1730,20 +1732,21 @@ Partial Class FormMain
         gbAppLaunchSettings.Margin = New Padding(4, 3, 4, 3)
         gbAppLaunchSettings.Name = "gbAppLaunchSettings"
         gbAppLaunchSettings.Padding = New Padding(4, 3, 4, 3)
-        gbAppLaunchSettings.Size = New Size(554, 307)
+        gbAppLaunchSettings.Size = New Size(457, 307)
         gbAppLaunchSettings.TabIndex = 17
         gbAppLaunchSettings.TabStop = False
         gbAppLaunchSettings.Text = "Application Launcher Settings"
         ' 
         ' flpAppListButtons
         ' 
+        flpAppListButtons.Anchor = AnchorStyles.Top Or AnchorStyles.Right
         flpAppListButtons.BorderStyle = BorderStyle.Fixed3D
         flpAppListButtons.Controls.Add(btnAdd)
         flpAppListButtons.Controls.Add(btnEdit)
         flpAppListButtons.Controls.Add(btnDelete)
         flpAppListButtons.Controls.Add(btnLaunch)
         flpAppListButtons.FlowDirection = FlowDirection.TopDown
-        flpAppListButtons.Location = New Point(442, 47)
+        flpAppListButtons.Location = New Point(345, 47)
         flpAppListButtons.Margin = New Padding(0)
         flpAppListButtons.Name = "flpAppListButtons"
         flpAppListButtons.Size = New Size(104, 239)
@@ -1808,7 +1811,7 @@ Partial Class FormMain
         lstPrograms.Location = New Point(15, 47)
         lstPrograms.Margin = New Padding(4, 3, 4, 3)
         lstPrograms.Name = "lstPrograms"
-        lstPrograms.Size = New Size(390, 214)
+        lstPrograms.Size = New Size(293, 214)
         lstPrograms.Sorted = True
         lstPrograms.TabIndex = 3
         ' 
@@ -1839,7 +1842,7 @@ Partial Class FormMain
         gbAppOptions.Margin = New Padding(4, 3, 4, 3)
         gbAppOptions.Name = "gbAppOptions"
         gbAppOptions.Padding = New Padding(4, 3, 4, 3)
-        gbAppOptions.Size = New Size(581, 307)
+        gbAppOptions.Size = New Size(581, 268)
         gbAppOptions.TabIndex = 17
         gbAppOptions.TabStop = False
         gbAppOptions.Text = "Application Options"
@@ -2107,11 +2110,11 @@ Partial Class FormMain
         gpAdvUpgrade.Controls.Add(cbAdvUpgradeNoBackup)
         gpAdvUpgrade.Controls.Add(cbAdvUpgradeNoSetup)
         gpAdvUpgrade.Controls.Add(cbAdvUpgradeQuiet)
-        gpAdvUpgrade.Location = New Point(582, 325)
+        gpAdvUpgrade.Location = New Point(582, 281)
         gpAdvUpgrade.Margin = New Padding(4, 3, 4, 3)
         gpAdvUpgrade.Name = "gpAdvUpgrade"
         gpAdvUpgrade.Padding = New Padding(4, 3, 4, 3)
-        gpAdvUpgrade.Size = New Size(436, 180)
+        gpAdvUpgrade.Size = New Size(352, 180)
         gpAdvUpgrade.TabIndex = 0
         gpAdvUpgrade.TabStop = False
         gpAdvUpgrade.Text = "Advantage Upgrade"
