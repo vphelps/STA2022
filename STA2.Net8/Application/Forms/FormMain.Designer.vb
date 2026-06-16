@@ -64,6 +64,8 @@ Partial Class FormMain
         tblServices = New TableLayoutPanel()
         tbServicesButtonsHelpMessage = New TextBox()
         gbFlavorsList = New GroupBox()
+        btnFlavorsListRefresh = New Button()
+        pnlFlavorsList = New Panel()
         lbFlavorsList = New ListBox()
         cmsApplySingleFlavor = New ContextMenuStrip(components)
         miApplySingleFlavor = New ToolStripMenuItem()
@@ -285,6 +287,7 @@ Partial Class FormMain
         TableLayoutPanel2.SuspendLayout()
         pnlServicesContainer.SuspendLayout()
         gbFlavorsList.SuspendLayout()
+        pnlFlavorsList.SuspendLayout()
         cmsApplySingleFlavor.SuspendLayout()
         tpAdvData.SuspendLayout()
         CType(dgvApplicationInfo, ComponentModel.ISupportInitialize).BeginInit()
@@ -423,11 +426,11 @@ Partial Class FormMain
         gpLicInfo.Controls.Add(tbDbVer)
         gpLicInfo.Controls.Add(lblLocName)
         gpLicInfo.Font = New Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        gpLicInfo.Location = New Point(248, 3)
+        gpLicInfo.Location = New Point(274, 3)
         gpLicInfo.Margin = New Padding(4, 3, 4, 3)
         gpLicInfo.Name = "gpLicInfo"
         gpLicInfo.Padding = New Padding(4, 3, 4, 3)
-        gpLicInfo.Size = New Size(493, 224)
+        gpLicInfo.Size = New Size(467, 224)
         gpLicInfo.TabIndex = 10
         gpLicInfo.TabStop = False
         gpLicInfo.Text = "License Info"
@@ -693,7 +696,8 @@ Partial Class FormMain
         ' gbFlavorsList
         ' 
         gbFlavorsList.BackColor = Color.LightGray
-        gbFlavorsList.Controls.Add(lbFlavorsList)
+        gbFlavorsList.Controls.Add(btnFlavorsListRefresh)
+        gbFlavorsList.Controls.Add(pnlFlavorsList)
         gbFlavorsList.Location = New Point(11, 6)
         gbFlavorsList.Margin = New Padding(4, 3, 4, 3)
         gbFlavorsList.Name = "gbFlavorsList"
@@ -703,6 +707,24 @@ Partial Class FormMain
         gbFlavorsList.TabStop = False
         gbFlavorsList.Text = "Flavors List"
         ' 
+        ' btnFlavorsListRefresh
+        ' 
+        btnFlavorsListRefresh.Location = New Point(194, 318)
+        btnFlavorsListRefresh.Margin = New Padding(4, 3, 4, 3)
+        btnFlavorsListRefresh.Name = "btnFlavorsListRefresh"
+        btnFlavorsListRefresh.Size = New Size(35, 27)
+        btnFlavorsListRefresh.TabIndex = 37
+        btnFlavorsListRefresh.UseVisualStyleBackColor = True
+        ' 
+        ' pnlFlavorsList
+        ' 
+        pnlFlavorsList.Controls.Add(lbFlavorsList)
+        pnlFlavorsList.Dock = DockStyle.Top
+        pnlFlavorsList.Location = New Point(4, 19)
+        pnlFlavorsList.Name = "pnlFlavorsList"
+        pnlFlavorsList.Size = New Size(225, 298)
+        pnlFlavorsList.TabIndex = 36
+        ' 
         ' lbFlavorsList
         ' 
         lbFlavorsList.ContextMenuStrip = cmsApplySingleFlavor
@@ -710,11 +732,11 @@ Partial Class FormMain
         lbFlavorsList.FormattingEnabled = True
         lbFlavorsList.IntegralHeight = False
         lbFlavorsList.ItemHeight = 15
-        lbFlavorsList.Location = New Point(4, 19)
+        lbFlavorsList.Location = New Point(0, 0)
         lbFlavorsList.Margin = New Padding(4, 3, 4, 3)
         lbFlavorsList.Name = "lbFlavorsList"
         lbFlavorsList.SelectionMode = SelectionMode.MultiExtended
-        lbFlavorsList.Size = New Size(225, 323)
+        lbFlavorsList.Size = New Size(225, 298)
         lbFlavorsList.TabIndex = 35
         ' 
         ' cmsApplySingleFlavor
@@ -1622,6 +1644,7 @@ Partial Class FormMain
         tbFlavor.Location = New Point(6, 27)
         tbFlavor.Multiline = True
         tbFlavor.Name = "tbFlavor"
+        tbFlavor.ScrollBars = ScrollBars.Both
         tbFlavor.Size = New Size(1045, 386)
         tbFlavor.TabIndex = 0
         ' 
@@ -3136,6 +3159,7 @@ Partial Class FormMain
         pnlServicesContainer.ResumeLayout(False)
         pnlServicesContainer.PerformLayout()
         gbFlavorsList.ResumeLayout(False)
+        pnlFlavorsList.ResumeLayout(False)
         cmsApplySingleFlavor.ResumeLayout(False)
         tpAdvData.ResumeLayout(False)
         tpAdvData.PerformLayout()
@@ -3440,4 +3464,6 @@ Partial Class FormMain
     Friend WithEvents btnFlavorClear As Button
     Friend WithEvents btnFlavorPaste As Button
     Friend WithEvents lblPersonalFlavorFile As Label
+    Friend WithEvents pnlFlavorsList As Panel
+    Friend WithEvents btnFlavorsListRefresh As Button
 End Class

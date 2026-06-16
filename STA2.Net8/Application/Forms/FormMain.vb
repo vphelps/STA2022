@@ -80,10 +80,11 @@ Public Class FormMain
         SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
         SetButtonIcon(btnBackupPathOverride, "imgOpenFolder16.png")
         SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
+        SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
 
         ' ✅ Hover hints for buttons
-        ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured default flavors")
-        ToolTip1.SetToolTip(btnOpenLogFile, "Browse and open any log file")
+        ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
+        ToolTip1.SetToolTip(btnOpenLogFile, "Browse And open any log file")
         ToolTip1.SetToolTip(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
         ToolTip1.SetToolTip(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
         ToolTip1.SetToolTip(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
@@ -161,8 +162,8 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file for today to see the latest log entries")
         ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log in a message box")
         ToolTip1.SetToolTip(btnLastFailed, "Displays the last error encountered in a message box")
-        ' Hoverhint line template
-        '_hoverHints.Add(ControlName, "DESCRIPTION")
+        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure to update the Advantage shift date to today's date (exec ChangeShiftDate)")
+
     End Sub
     Private Async Function RunScriptAsync(
     scriptPath As String,
@@ -261,7 +262,7 @@ Public Class FormMain
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
-        lblPersonalFlavorFile.Text = _options.PersonalFlavorFileName
+        lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
 
         rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
@@ -2758,6 +2759,12 @@ e As System.ComponentModel.CancelEventArgs
         Catch ex As Exception
             MessageBox.Show("Error applying personal flavor: " & ex.Message)
         End Try
+        _flavorManager.RefreshPreservingSelection()
+        SyncFlavorsListMirror()
+
+    End Sub
+
+    Private Sub btnFlavorsListRefresh_Click(sender As Object, e As EventArgs) Handles btnFlavorsListRefresh.Click
         _flavorManager.RefreshPreservingSelection()
         SyncFlavorsListMirror()
 

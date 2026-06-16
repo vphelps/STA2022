@@ -113,8 +113,7 @@
             End If
         End If
         'Flavor File name label update
-        _form.lblPersonalFlavorFile.Text = _options.PersonalFlavorFileName
-
+        _form.lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
     End Sub
 
 
