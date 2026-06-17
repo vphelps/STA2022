@@ -82,6 +82,7 @@ Public Class FormMain
         SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
         SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
         SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
+
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
         ToolTip1.SetToolTip(btnOpenLogFile, "Browse And open any log file")
@@ -131,6 +132,8 @@ Public Class FormMain
             "🖱 Right-click → Apply selected flavors" & vbCrLf &
             "⚡ Double-click → Apply highlighted"
         )
+        ToolTip1.SetToolTip(btnFlavorsListRefresh, "Refresh the list of flavors from the configured flavor folder")
+        ToolTip1.SetToolTip(btnFlavorFileCopy, "Copy SQL Files into the Repo's flavor folder (Determined by the Repo Folder on the Options tab")
 
         ToolTip1.SetToolTip(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
         ToolTip1.SetToolTip(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
@@ -159,12 +162,31 @@ Public Class FormMain
         ToolTip1.SetToolTip(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
         ToolTip1.SetToolTip(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
         ToolTip1.SetToolTip(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
+        ToolTip1.SetToolTip(btnRepoFolder, "Select the base folder for the Advantage Repo.  This is the folder that contains the 'tests' folder and the 'flavors' folder")
+        ToolTip1.SetToolTip(btnBrowseApplyScript, "Select the script to apply flavors to the running database (Apply-Flavors.ps1)")
+        ToolTip1.SetToolTip(btnBrowseStartScript, "Select the script to start the database (Start-Database.ps1)")
+        ToolTip1.SetToolTip(btnBackupScriptPath, "Select the script to start the database (Backup-Database.ps1)")
+        ToolTip1.SetToolTip(btnBackupPathOverride, "Select the folder to store database backup files in.  If not set default to the database value from AppOptions")
 
-        ToolTip1.SetToolTip(btnOpenLogFile, "Opens the folder containing the log files in a Open File box to select a log file")
-        ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file for today to see the latest log entries")
-        ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log in a message box")
-        ToolTip1.SetToolTip(btnLastFailed, "Displays the last error encountered in a message box")
-        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure to update the Advantage shift date to today's date (exec ChangeShiftDate)")
+        ' ✅ Hover hints for Logs Tab
+        ToolTip1.SetToolTip(btnOpenLogFile, "Opens the folder containing the log files In a Open File box To Select a log file")
+        ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file For today To see the latest log entries")
+        ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log In a message box")
+        ToolTip1.SetToolTip(btnLastFailed, "Displays the last Error encountered In a message box")
+        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
+
+        ' ✅ Hover hints for Personal Flavor Tab
+        ToolTip1.SetToolTip(btnFlavorLoad, "Opens a file dialog box to load a set of SQL queries from a selected SQL file ")
+        ToolTip1.SetToolTip(btnFlavorSave, "Opens a file dialog box to save the queries in the window to a SQL file for use as a personal flavor")
+        ToolTip1.SetToolTip(btnFlavorClear, "Clears the contents of the text entry")
+        ToolTip1.SetToolTip(btnFlavorPaste, "Paste queries to the text entry from the Clipboard")
+        ToolTip1.SetToolTip(tbFlavor, "One or more SQL queries to be used as a 'Personal Flavor' that can be applied with the Apply Personal Flavor button")
+
+
+
+
+        ToolTip1.SetToolTip(btnRefreshAdvDataTab, "Refresh the Advantage Data shown above from the tables ApplicationInfo, AppOptions, and WebOptions")
+
 
     End Sub
     Private Async Function RunScriptAsync(
@@ -1169,28 +1191,33 @@ Public Class FormMain
         _databaseController.RefreshLogs()
     End Sub
 
-    Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+    Private Async Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+
+        If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Return
 
         Cursor.Current = Cursors.WaitCursor
         btnReconnect.Enabled = False
 
         Try
-            DatabaseCoordinator.EvaluateDatabaseAvailability(
-            form:=Me,
-            connectionString:=ConfigValues.ConnectionString,
-            configuredContainerName:=_options?.SqlContainerName
-        )
+            ' Await the async evaluation (non-blocking)
+            Await DatabaseCoordinator.EvaluateDatabaseAvailabilityAsync(
+            Me,
+            ConfigValues.ConnectionString,
+            _options?.SqlContainerName)
 
+            ' If Evaluate succeeded and we are online — inform the user
             If Not Variables.OfflineMode Then
                 UIHelpers.TimedInfoPrompt(message:="Reconnected to the database.", timeoutSeconds:=30, title:="Database")
-
+            Else
+                ' Still offline — notify briefly (keeps button enabled afterwards)
+                UIHelpers.TimedErrorPrompt(message:="Reconnect attempt did not restore the database connection.", timeoutSeconds:=5, title:="Database")
             End If
 
         Catch ex As Exception
-
             UIHelpers.TimedErrorPrompt(message:=$"Reconnect failed: {ex.Message}", timeoutSeconds:=0, title:="Database")
         Finally
-            btnReconnect.Enabled = True
+            ' Enable only when still offline so user can retry; otherwise disable to avoid confusion
+            btnReconnect.Enabled = Variables.OfflineMode
             Cursor.Current = Cursors.Default
         End Try
 
@@ -1985,25 +2012,16 @@ e As System.ComponentModel.CancelEventArgs
         e.KeyChar = Chr(0)
     End Sub
 
-    Private Sub btnRefreshServices_Click(sender As Object, e As EventArgs) Handles btnRefreshGeneralTab.Click
+    Private Sub btnRefreshAdvDataTab_Click(sender As Object, e As EventArgs) Handles btnRefreshAdvDataTab.Click
 
         If Variables.OfflineMode Then
             MessageBox.Show("Database is offline.")
             Return
         End If
-
-        If tcSTA.SelectedTab.Equals(tpAdvData) Then
-            If PCInfo.ValidDatabase Then
-                DatabaseCoordinator.RefreshAdvantageData(Me)
-            End If
-        ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
-            CodeHelper.Refresher()
-            'Services.ServicesExistCheck()
-
-        Else
-            Dim TabName As String
-            TabName = tcSTA.SelectedTab.Name
+        If PCInfo.ValidDatabase Then
+            DatabaseCoordinator.RefreshAdvantageData(Me)
         End If
+
     End Sub
 
     Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged

@@ -141,6 +141,14 @@
   <metadata name="OptionValue.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="tbFlavorHints.Text" xml:space="preserve">
+    <value>Enter SQL Query or Queries into this entry field to use the buttons on this tab to save the SQL as a personal flavor that the application can copy into the Repo Flavors and apply when you use the Apply Personal Flavor button.  
+
+It will also show up in the list of Flavors and the copy in the repo folder will be discarded when using the Discard Repo Changes and Switch Repo to Main.  
+
+The file will be saved for reuse when using the Save to File button above.  
+The Load from File button enables you to load the contents of any SQL file into the entry box.</value>
+  </data>
   <metadata name="cmsQuickLaunch.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>350, 19</value>
   </metadata>

@@ -80,6 +80,7 @@ Partial Class FormMain
         DataGridViewTextBoxColumn3 = New DataGridViewTextBoxColumn()
         DataGridViewTextBoxColumn4 = New DataGridViewTextBoxColumn()
         lblWebOptions = New Label()
+        btnRefreshAdvDataTab = New Button()
         lblAppOptions = New Label()
         dgvWebOptions = New DataGridView()
         DataGridViewTextBoxColumn1 = New DataGridViewTextBoxColumn()
@@ -133,6 +134,8 @@ Partial Class FormMain
         btnLastLogBlock = New Button()
         btnLastFailed = New Button()
         tpFlavor = New TabPage()
+        Panel3 = New Panel()
+        tbFlavorHints = New TextBox()
         lblPersonalFlavorFile = New Label()
         flpFlavorButtons = New FlowLayoutPanel()
         btnFlavorLoad = New Button()
@@ -248,7 +251,6 @@ Partial Class FormMain
         Button19 = New Button()
         Button20 = New Button()
         btnAdminRestart = New Button()
-        btnRefreshGeneralTab = New Button()
         btnBatchLaunch = New Button()
         StatusStrip1 = New StatusStrip()
         tslblTime = New ToolStripStatusLabel()
@@ -313,6 +315,7 @@ Partial Class FormMain
         tlpApplicationLogs.SuspendLayout()
         flpAppLogsButtons.SuspendLayout()
         tpFlavor.SuspendLayout()
+        Panel3.SuspendLayout()
         flpFlavorButtons.SuspendLayout()
         tpOptions.SuspendLayout()
         gpFlavorsSettings.SuspendLayout()
@@ -711,7 +714,7 @@ Partial Class FormMain
         ' 
         ' btnFlavorFileCopy
         ' 
-        btnFlavorFileCopy.Location = New Point(25, 318)
+        btnFlavorFileCopy.Location = New Point(156, 318)
         btnFlavorFileCopy.Margin = New Padding(4, 3, 4, 3)
         btnFlavorFileCopy.Name = "btnFlavorFileCopy"
         btnFlavorFileCopy.Size = New Size(35, 27)
@@ -776,6 +779,7 @@ Partial Class FormMain
         tpAdvData.Controls.Add(lblApplicationInfo)
         tpAdvData.Controls.Add(dgvApplicationInfo)
         tpAdvData.Controls.Add(lblWebOptions)
+        tpAdvData.Controls.Add(btnRefreshAdvDataTab)
         tpAdvData.Controls.Add(lblAppOptions)
         tpAdvData.Controls.Add(dgvWebOptions)
         tpAdvData.Controls.Add(dgvAppOptions)
@@ -790,7 +794,7 @@ Partial Class FormMain
         ' 
         ' btnSaveWebOptionsCSV
         ' 
-        btnSaveWebOptionsCSV.Location = New Point(1077, 546)
+        btnSaveWebOptionsCSV.Location = New Point(1077, 519)
         btnSaveWebOptionsCSV.Margin = New Padding(4, 3, 4, 3)
         btnSaveWebOptionsCSV.Name = "btnSaveWebOptionsCSV"
         btnSaveWebOptionsCSV.Size = New Size(88, 27)
@@ -800,7 +804,7 @@ Partial Class FormMain
         ' 
         ' btnSaveAppotionsCSV
         ' 
-        btnSaveAppotionsCSV.Location = New Point(730, 546)
+        btnSaveAppotionsCSV.Location = New Point(730, 519)
         btnSaveAppotionsCSV.Margin = New Padding(4, 3, 4, 3)
         btnSaveAppotionsCSV.Name = "btnSaveAppotionsCSV"
         btnSaveAppotionsCSV.Size = New Size(88, 27)
@@ -810,7 +814,7 @@ Partial Class FormMain
         ' 
         ' btnSaveApplicationInfoCSV
         ' 
-        btnSaveApplicationInfoCSV.Location = New Point(229, 546)
+        btnSaveApplicationInfoCSV.Location = New Point(229, 519)
         btnSaveApplicationInfoCSV.Margin = New Padding(4, 3, 4, 3)
         btnSaveApplicationInfoCSV.Name = "btnSaveApplicationInfoCSV"
         btnSaveApplicationInfoCSV.Size = New Size(88, 27)
@@ -859,7 +863,7 @@ Partial Class FormMain
         dgvApplicationInfo.Name = "dgvApplicationInfo"
         dgvApplicationInfo.SelectionMode = DataGridViewSelectionMode.CellSelect
         dgvApplicationInfo.ShowEditingIcon = False
-        dgvApplicationInfo.Size = New Size(312, 501)
+        dgvApplicationInfo.Size = New Size(312, 475)
         dgvApplicationInfo.TabIndex = 4
         ' 
         ' DataGridViewTextBoxColumn3
@@ -884,6 +888,16 @@ Partial Class FormMain
         lblWebOptions.Size = New Size(82, 16)
         lblWebOptions.TabIndex = 3
         lblWebOptions.Text = "WebOptions"
+        ' 
+        ' btnRefreshAdvDataTab
+        ' 
+        btnRefreshAdvDataTab.Location = New Point(1068, 586)
+        btnRefreshAdvDataTab.Margin = New Padding(0)
+        btnRefreshAdvDataTab.Name = "btnRefreshAdvDataTab"
+        btnRefreshAdvDataTab.Size = New Size(97, 34)
+        btnRefreshAdvDataTab.TabIndex = 17
+        btnRefreshAdvDataTab.Text = "Refresh Data"
+        btnRefreshAdvDataTab.UseVisualStyleBackColor = True
         ' 
         ' lblAppOptions
         ' 
@@ -926,7 +940,7 @@ Partial Class FormMain
         dgvWebOptions.Name = "dgvWebOptions"
         dgvWebOptions.SelectionMode = DataGridViewSelectionMode.CellSelect
         dgvWebOptions.ShowEditingIcon = False
-        dgvWebOptions.Size = New Size(340, 501)
+        dgvWebOptions.Size = New Size(340, 475)
         dgvWebOptions.TabIndex = 1
         ' 
         ' DataGridViewTextBoxColumn1
@@ -971,7 +985,7 @@ Partial Class FormMain
         dgvAppOptions.Name = "dgvAppOptions"
         dgvAppOptions.SelectionMode = DataGridViewSelectionMode.CellSelect
         dgvAppOptions.ShowEditingIcon = False
-        dgvAppOptions.Size = New Size(495, 501)
+        dgvAppOptions.Size = New Size(495, 475)
         dgvAppOptions.TabIndex = 0
         ' 
         ' OptionName
@@ -1577,6 +1591,7 @@ Partial Class FormMain
         ' 
         ' tpFlavor
         ' 
+        tpFlavor.Controls.Add(Panel3)
         tpFlavor.Controls.Add(lblPersonalFlavorFile)
         tpFlavor.Controls.Add(flpFlavorButtons)
         tpFlavor.Controls.Add(tbFlavor)
@@ -1586,6 +1601,27 @@ Partial Class FormMain
         tpFlavor.TabIndex = 10
         tpFlavor.Text = "Personal Flavor"
         tpFlavor.UseVisualStyleBackColor = True
+        ' 
+        ' Panel3
+        ' 
+        Panel3.BorderStyle = BorderStyle.Fixed3D
+        Panel3.Controls.Add(tbFlavorHints)
+        Panel3.Location = New Point(6, 427)
+        Panel3.Name = "Panel3"
+        Panel3.Size = New Size(686, 153)
+        Panel3.TabIndex = 5
+        ' 
+        ' tbFlavorHints
+        ' 
+        tbFlavorHints.BorderStyle = BorderStyle.None
+        tbFlavorHints.Dock = DockStyle.Fill
+        tbFlavorHints.Location = New Point(0, 0)
+        tbFlavorHints.Multiline = True
+        tbFlavorHints.Name = "tbFlavorHints"
+        tbFlavorHints.ReadOnly = True
+        tbFlavorHints.Size = New Size(682, 149)
+        tbFlavorHints.TabIndex = 4
+        tbFlavorHints.Text = resources.GetString("tbFlavorHints.Text")
         ' 
         ' lblPersonalFlavorFile
         ' 
@@ -2875,17 +2911,6 @@ Partial Class FormMain
         btnAdminRestart.Text = "Relaunch as Admin"
         btnAdminRestart.UseVisualStyleBackColor = True
         ' 
-        ' btnRefreshGeneralTab
-        ' 
-        btnRefreshGeneralTab.Dock = DockStyle.Fill
-        btnRefreshGeneralTab.Location = New Point(0, 171)
-        btnRefreshGeneralTab.Margin = New Padding(0)
-        btnRefreshGeneralTab.Name = "btnRefreshGeneralTab"
-        btnRefreshGeneralTab.Size = New Size(97, 59)
-        btnRefreshGeneralTab.TabIndex = 17
-        btnRefreshGeneralTab.Text = "Refresh Tab"
-        btnRefreshGeneralTab.UseVisualStyleBackColor = True
-        ' 
         ' btnBatchLaunch
         ' 
         btnBatchLaunch.Dock = DockStyle.Fill
@@ -3033,7 +3058,6 @@ Partial Class FormMain
         tlpButtons3.Controls.Add(btnAdminRestart, 0, 1)
         tlpButtons3.Controls.Add(btnReconnect, 0, 2)
         tlpButtons3.Controls.Add(btnRunApplyFlavorLive, 3, 0)
-        tlpButtons3.Controls.Add(btnRefreshGeneralTab, 0, 3)
         tlpButtons3.Controls.Add(btnRepoMain, 1, 3)
         tlpButtons3.Controls.Add(btnSetupInstall, 1, 0)
         tlpButtons3.Controls.Add(btnLaunchLatestInstaller, 1, 1)
@@ -3144,6 +3168,13 @@ Partial Class FormMain
         ' 
         ofdStartScript.FileName = "OpenFileDialog1"
         ' 
+        ' ToolTip1
+        ' 
+        ToolTip1.AutoPopDelay = 8000
+        ToolTip1.InitialDelay = 200
+        ToolTip1.ReshowDelay = 100
+        ToolTip1.ShowAlways = True
+        ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -3204,6 +3235,8 @@ Partial Class FormMain
         flpAppLogsButtons.ResumeLayout(False)
         tpFlavor.ResumeLayout(False)
         tpFlavor.PerformLayout()
+        Panel3.ResumeLayout(False)
+        Panel3.PerformLayout()
         flpFlavorButtons.ResumeLayout(False)
         tpOptions.ResumeLayout(False)
         tpOptions.PerformLayout()
@@ -3337,7 +3370,7 @@ Partial Class FormMain
     Friend WithEvents lblAdvUpgrade As Label
     Friend WithEvents btnAdvRedeem As Button
     Friend WithEvents btnAdvCardTech As Button
-    Friend WithEvents btnRefreshGeneralTab As Button
+    Friend WithEvents btnRefreshAdvDataTab As Button
     Friend WithEvents lstPrograms As ListBox
     Friend WithEvents btnEdit As Button
     Friend WithEvents btnAdd As Button
@@ -3481,4 +3514,6 @@ Partial Class FormMain
     Friend WithEvents pnlFlavorsList As Panel
     Friend WithEvents btnFlavorsListRefresh As Button
     Friend WithEvents btnFlavorFileCopy As Button
+    Friend WithEvents tbFlavorHints As TextBox
+    Friend WithEvents Panel3 As Panel
 End Class

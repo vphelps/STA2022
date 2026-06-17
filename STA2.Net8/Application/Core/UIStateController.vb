@@ -51,8 +51,15 @@
             Not String.IsNullOrWhiteSpace(_options.ApplyFlavorDefault)
 
         _form.btnRunApplyFlavorLive.Enabled = canApplyFlavors
+        _form.btnApplyPersonalFlavor.Enabled = canApplyFlavors
         _form.tsmiApplyDefaultFlavors.Enabled = canApplyFlavors
         _form.gbFlavorsList.Enabled = canApplyFlavors
+
+        ' ----------------------------
+        ' Other buttons
+        ' ----------------------------
+        _form.btnReconnect.Enabled = Variables.OfflineMode
+
 
         ' ----------------------------
         ' Text sync (safe)
