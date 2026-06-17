@@ -64,6 +64,7 @@ Partial Class FormMain
         tblServices = New TableLayoutPanel()
         tbServicesButtonsHelpMessage = New TextBox()
         gbFlavorsList = New GroupBox()
+        btnFlavorFileCopy = New Button()
         btnFlavorsListRefresh = New Button()
         pnlFlavorsList = New Panel()
         lbFlavorsList = New ListBox()
@@ -696,6 +697,7 @@ Partial Class FormMain
         ' gbFlavorsList
         ' 
         gbFlavorsList.BackColor = Color.LightGray
+        gbFlavorsList.Controls.Add(btnFlavorFileCopy)
         gbFlavorsList.Controls.Add(btnFlavorsListRefresh)
         gbFlavorsList.Controls.Add(pnlFlavorsList)
         gbFlavorsList.Location = New Point(11, 6)
@@ -706,6 +708,15 @@ Partial Class FormMain
         gbFlavorsList.TabIndex = 35
         gbFlavorsList.TabStop = False
         gbFlavorsList.Text = "Flavors List"
+        ' 
+        ' btnFlavorFileCopy
+        ' 
+        btnFlavorFileCopy.Location = New Point(25, 318)
+        btnFlavorFileCopy.Margin = New Padding(4, 3, 4, 3)
+        btnFlavorFileCopy.Name = "btnFlavorFileCopy"
+        btnFlavorFileCopy.Size = New Size(35, 27)
+        btnFlavorFileCopy.TabIndex = 38
+        btnFlavorFileCopy.UseVisualStyleBackColor = True
         ' 
         ' btnFlavorsListRefresh
         ' 
@@ -3469,4 +3480,5 @@ Partial Class FormMain
     Friend WithEvents lblPersonalFlavorFile As Label
     Friend WithEvents pnlFlavorsList As Panel
     Friend WithEvents btnFlavorsListRefresh As Button
+    Friend WithEvents btnFlavorFileCopy As Button
 End Class

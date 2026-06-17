@@ -5,8 +5,8 @@ Imports System.Windows.Forms
 
 Public Module GlobalErrorHandler
 
-    Private ReadOnly LogFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    Private ReadOnly LogFolder As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    Public Const LogRetentionDays As Integer = 5
 
     Public Event OnErrorLogged(ex As Exception, source As String)
 
@@ -49,6 +49,9 @@ Public Module GlobalErrorHandler
         Try
             Directory.CreateDirectory(LogFolder)
 
+            ' ✅ Enforce retention
+            CleanupLogsOlderThan(LogRetentionDays)
+
             Dim logFile As String =
                 Path.Combine(LogFolder,
                     $"ScriptRun_{DateTime.Now:yyyyMMdd}.log")
@@ -85,6 +88,9 @@ Public Module GlobalErrorHandler
     Private Sub LogException(source As String, ex As Exception)
 
         Directory.CreateDirectory(LogFolder)
+
+        ' ✅ Enforce retention
+        CleanupLogsOlderThan(LogRetentionDays)
 
         Dim logFile As String =
             Path.Combine(LogFolder,
@@ -161,6 +167,26 @@ Public Module GlobalErrorHandler
     "Application Error",
     MessageBoxButtons.OK,
     MessageBoxIcon.Error)
+    End Sub
+    Public Sub CleanupLogsOlderThan(days As Integer)
+
+        Try
+            If Not Directory.Exists(LogFolder) Then Return
+
+            Dim cutoff = DateTime.Now.AddDays(-days)
+
+            For Each file In New DirectoryInfo(LogFolder).GetFiles("*.log")
+
+                If file.LastWriteTime < cutoff Then
+                    file.Delete()
+                End If
+
+            Next
+
+        Catch
+            ' Never allow cleanup failures to break logging
+        End Try
+
     End Sub
 
 End Module

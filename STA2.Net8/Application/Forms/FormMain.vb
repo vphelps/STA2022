@@ -81,7 +81,7 @@ Public Class FormMain
         SetButtonIcon(btnBackupPathOverride, "imgOpenFolder16.png")
         SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
         SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
-
+        SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
         ToolTip1.SetToolTip(btnOpenLogFile, "Browse And open any log file")
@@ -545,6 +545,10 @@ Public Class FormMain
             End If
         Catch
         End Try
+
+        ' ✅ Final log cleanup on exit
+        GlobalErrorHandler.CleanupLogsOlderThan(GlobalErrorHandler.LogRetentionDays)
+
     End Sub
 
     Private Sub InitializeFlavors()
@@ -2769,6 +2773,81 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub btnFlavorsListRefresh_Click(sender As Object, e As EventArgs) Handles btnFlavorsListRefresh.Click
         _flavorManager.RefreshPreservingSelection()
         SyncFlavorsListMirror()
+
+    End Sub
+
+    Private Sub btnFlavorFileCopy_Click(sender As Object, e As EventArgs) Handles btnFlavorFileCopy.Click
+
+        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.FlavorFolderPath) Then
+            MessageBox.Show(
+            "Flavor folder path is not configured.",
+            "Configuration Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        If Not Directory.Exists(_options.FlavorFolderPath) Then
+            MessageBox.Show(
+            "Flavor folder does not exist.",
+            "Missing Folder",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Using ofd As New OpenFileDialog()
+
+            ofd.Title = "Select SQL Flavor Files"
+            ofd.Filter = "SQL Files (*.sql)|*.sql"
+            ofd.Multiselect = True
+
+            If ofd.ShowDialog() = DialogResult.OK Then
+
+                Dim copiedCount As Integer = 0
+
+                For Each file In ofd.FileNames
+
+                    Try
+                        Dim fileName = Path.GetFileName(file)
+                        Dim destPath = Path.Combine(_options.FlavorFolderPath, fileName)
+
+                        If System.IO.File.Exists(destPath) Then
+                            Dim result = MessageBox.Show(
+                $"File '{fileName}' already exists. Overwrite?",
+                "Confirm",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question)
+
+                            If result <> DialogResult.Yes Then Continue For
+                        End If
+
+                        System.IO.File.Copy(file, destPath, True)
+                        copiedCount += 1
+
+                    Catch ex As Exception
+                        MessageBox.Show(
+            $"Failed to copy: {file}{Environment.NewLine}{ex.Message}",
+            "Copy Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+                    End Try
+
+                Next
+
+                ' ✅ Refresh flavors list
+                _flavorManager.RefreshPreservingSelection()
+                SyncFlavorsListMirror()
+
+                MessageBox.Show(
+                $"{copiedCount} file(s) added to flavors.",
+                "Success",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+
+            End If
+
+        End Using
 
     End Sub
 End Class
