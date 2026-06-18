@@ -27,6 +27,7 @@ Public Class AppOptions
     Public Property FlavorFolderPath As String
     Public Property BackupPathOverride As String
     Public Property BackupScriptPath As String
+    Public Property QaServerCommandLine As String
 
     ' -------------------------------------------------
     ' Database / SQL

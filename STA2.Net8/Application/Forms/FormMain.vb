@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.Management
 Imports System.Runtime.Intrinsics
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
@@ -82,6 +83,7 @@ Public Class FormMain
         SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
         SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
         SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
+        SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
@@ -105,13 +107,14 @@ Public Class FormMain
             " - Backup the database to 00Pathfinder"
 
         ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
+        ToolTip1.SetToolTip(btnRunQaApi, "Start the local QA API server in powershell using the command line specified in the Options tab.  The QA API server is used for testing and development of the Advantage QA API")
 
         ' System tools
-        ToolTip1.SetToolTip(btnCalc, "Open the Calculator included with Windows")
+        ToolTip1.SetToolTip(btnCalc, "Open the Calculator included With Windows")
         ToolTip1.SetToolTip(btnTaskmgr, "Open the Windows Task Manager")
-        ToolTip1.SetToolTip(btnAppWiz, "Open the Control Panel > Programs and Features window")
+        ToolTip1.SetToolTip(btnAppWiz, "Open the Control Panel > Programs And Features window")
         ToolTip1.SetToolTip(btnEventViewer, "Open the Windows Event Viewer")
-        ToolTip1.SetToolTip(btnDevices, "Open the Control Panel > Devices and Printers window")
+        ToolTip1.SetToolTip(btnDevices, "Open the Control Panel > Devices And Printers window")
         ToolTip1.SetToolTip(btnServices, "Open the Windows Services window")
 
         ' Advantage apps
@@ -132,7 +135,7 @@ Public Class FormMain
             "🖱 Right-click → Apply selected flavors" & vbCrLf &
             "⚡ Double-click → Apply highlighted"
         )
-        ToolTip1.SetToolTip(btnFlavorsListRefresh, "Refresh the list of flavors from the configured flavor folder")
+        ToolTip1.SetToolTip(btnFlavorsListRefresh, "Refresh the list Of flavors from the configured flavor folder")
         ToolTip1.SetToolTip(btnFlavorFileCopy, "Copy SQL Files into the Repo's flavor folder (Determined by the Repo Folder on the Options tab")
 
         ToolTip1.SetToolTip(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
@@ -387,6 +390,8 @@ Public Class FormMain
             tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
             tbBackupPathOverride.Text = Trim(_options.BackupPathOverride)
             tbBackupScriptPath.Text = Trim(_options.BackupScriptPath)
+            tbRunQaCmdLine.Text = Trim(_options.QaServerCommandLine)
+
         End If
 
         If IsRunningAsAdmin() Then
@@ -563,6 +568,7 @@ Public Class FormMain
                                  _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
                                  _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
                                  _options.BackupPathOverride = Trim(tbBackupPathOverride.Text)
+                                 _options.QaServerCommandLine = Trim(tbRunQaCmdLine.Text)
                              End Sub)
             End If
         Catch
@@ -1319,7 +1325,8 @@ Public Class FormMain
         With ofdStartScript
             .Title = "Select Start Database Script"
             .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
-            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            .InitialDirectory = _options.RepoFolderPath
+            .FileName = String.Empty
         End With
 
         If ofdStartScript.ShowDialog() = DialogResult.OK Then
@@ -1339,7 +1346,8 @@ Public Class FormMain
         With ofdStartScript   ' ✅ reuse same dialog (or change name if separate)
             .Title = "Select Apply Flavors Script"
             .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
-            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            .InitialDirectory = _options.RepoFolderPath
+            .FileName = String.Empty
         End With
 
         If ofdStartScript.ShowDialog() = DialogResult.OK Then
@@ -1369,7 +1377,7 @@ Public Class FormMain
 
             ' ✅ Default to current backup path if valid
             If Not String.IsNullOrWhiteSpace(currentPath) AndAlso
-           IO.Directory.Exists(currentPath) Then
+           Directory.Exists(currentPath) Then
 
                 .SelectedPath = currentPath
 
@@ -1380,7 +1388,7 @@ Public Class FormMain
 
         End With
 
-        If staFolderBrowserDialog.ShowDialog() = DialogResult.OK Then
+        If staFolderBrowserDialog.ShowDialog = DialogResult.OK Then
 
             ' ✅ Set textbox (UI reflection of option)
             tbBackupPathOverride.Text = staFolderBrowserDialog.SelectedPath
@@ -2866,6 +2874,174 @@ e As System.ComponentModel.CancelEventArgs
             End If
 
         End Using
+
+    End Sub
+
+    Private Sub btnRunQaCmdLine_Click(sender As Object, e As EventArgs) Handles btnRunQaCmdLine.Click
+
+        With ofdStartScript
+            .Title = "Select QA Api Server Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = _options.RepoFolderPath
+            .FileName = String.Empty
+        End With
+
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            Dim scriptPath As String = ofdStartScript.FileName
+
+            ' ✅ Ask for command line switches
+            Dim switches As String = InputBox(
+        "Enter command line switches (optional):",
+        "QA Script Options",
+        "")
+
+            ' ✅ Combine them (store however you prefer)
+            Dim fullCommand As String = scriptPath
+
+            If Not String.IsNullOrWhiteSpace(switches) Then
+                fullCommand &= " " & switches
+            End If
+
+            ' ✅ Update UI
+            tbRunQaCmdLine.Text = fullCommand
+
+            ' ✅ Save
+            UpdateOption(Sub() _options.QaServerCommandLine = fullCommand)
+
+        End If
+    End Sub
+
+    Private Function IsQaScriptRunning(scriptPath As String) As Boolean
+
+        Try
+            Dim query As String =
+            "SELECT CommandLine FROM Win32_Process WHERE Name = 'powershell.exe'"
+
+            Using searcher As New ManagementObjectSearcher(query)
+
+                For Each proc As ManagementObject In searcher.Get()
+
+                    Dim cmd = TryCast(proc("CommandLine"), String)
+
+                    If Not String.IsNullOrWhiteSpace(cmd) AndAlso
+                   cmd.IndexOf(scriptPath, StringComparison.OrdinalIgnoreCase) >= 0 Then
+
+                        Return True
+                    End If
+
+                Next
+
+            End Using
+
+        Catch
+            ' Ignore errors—just assume not running
+        End Try
+
+        Return False
+
+    End Function
+    Private Async Sub btnRunQaApi_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunQaApi.Click
+
+        Dim fullCommand As String = tbRunQaCmdLine.Text
+        ' ✅ Parse command (back on UI thread)
+        Dim scriptPath As String = ""
+        Dim args As String = ""
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            MessageBox.Show(
+            "No QA command line configured.",
+            "Missing Command",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            btnRunQaApi.Enabled = False
+
+            If IsQaScriptRunning(scriptPath) Then
+
+                MessageBox.Show("QA API is already running.")
+                Return
+
+            End If
+
+            ' ✅ STEP 1: Stop service in background thread
+            Dim serviceName As String = "AdvApiServer" ' 🔥 adjust if needed
+
+            Await Task.Run(Sub()
+
+                               Try
+                                   Using sc As New ServiceController(serviceName)
+
+                                       If sc.Status = ServiceControllerStatus.Running OrElse
+                                      sc.Status = ServiceControllerStatus.StartPending Then
+
+                                           sc.Stop()
+
+                                           ' ✅ Wait until fully stopped (blocking BUT off UI thread)
+                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                                       End If
+
+                                   End Using
+
+                               Catch ex As InvalidOperationException
+                                   ' Service not found → ignore
+                               End Try
+
+                           End Sub)
+
+
+
+            If fullCommand.StartsWith("""") Then
+
+                Dim endQuote = fullCommand.IndexOf("""", 1)
+
+                If endQuote > 1 Then
+                    scriptPath = fullCommand.Substring(1, endQuote - 1)
+                    args = fullCommand.Substring(endQuote + 1).Trim()
+                Else
+                    Throw New Exception("Invalid quoted script path.")
+                End If
+
+            Else
+                Dim parts = fullCommand.Split(New Char() {" "c}, 2)
+
+                scriptPath = parts(0)
+                If parts.Length > 1 Then
+                    args = parts(1)
+                End If
+            End If
+
+            ' ✅ STEP 3: Launch PowerShell (separate window, persistent)
+            Dim psCommand As String =
+            $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            Dim psi As New ProcessStartInfo With {
+            .FileName = "powershell.exe",
+            .Arguments = psCommand,
+            .UseShellExecute = True,
+            .CreateNoWindow = False
+        }
+
+            Process.Start(psi)
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+            "Failed to launch QA script:" & Environment.NewLine & ex.Message,
+            "Execution Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        Finally
+            btnRunQaApi.Enabled = True
+        End Try
 
     End Sub
 End Class

@@ -183,6 +183,9 @@ Partial Class FormMain
         lblWindowTitle = New Label()
         cbShowHiddenServices = New CheckBox()
         lblShowHiddenServices = New Label()
+        lblRunQaCmdLine = New Label()
+        btnRunQaCmdLine = New Button()
+        tbRunQaCmdLine = New TextBox()
         gpAdvUpgrade = New GroupBox()
         lblAdvUpgrade = New Label()
         tbAdvupgrade = New TextBox()
@@ -268,6 +271,7 @@ Partial Class FormMain
         ToolTipForQuickButtons = New ToolTip(components)
         SplitContainer2 = New SplitContainer()
         tlpButtons3 = New TableLayoutPanel()
+        btnRunQaApi = New Button()
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
@@ -1889,7 +1893,7 @@ Partial Class FormMain
         gbAppOptions.Margin = New Padding(4, 3, 4, 3)
         gbAppOptions.Name = "gbAppOptions"
         gbAppOptions.Padding = New Padding(4, 3, 4, 3)
-        gbAppOptions.Size = New Size(581, 268)
+        gbAppOptions.Size = New Size(581, 300)
         gbAppOptions.TabIndex = 17
         gbAppOptions.TabStop = False
         gbAppOptions.Text = "Application Options"
@@ -1922,10 +1926,13 @@ Partial Class FormMain
         TableLayoutPanel1.Controls.Add(lblWindowTitle, 0, 0)
         TableLayoutPanel1.Controls.Add(cbShowHiddenServices, 1, 3)
         TableLayoutPanel1.Controls.Add(lblShowHiddenServices, 0, 3)
+        TableLayoutPanel1.Controls.Add(lblRunQaCmdLine, 0, 8)
+        TableLayoutPanel1.Controls.Add(btnRunQaCmdLine, 2, 8)
+        TableLayoutPanel1.Controls.Add(tbRunQaCmdLine, 1, 8)
         TableLayoutPanel1.Location = New Point(7, 22)
         TableLayoutPanel1.Margin = New Padding(4, 3, 4, 3)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
-        TableLayoutPanel1.RowCount = 8
+        TableLayoutPanel1.RowCount = 9
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
@@ -1933,8 +1940,9 @@ Partial Class FormMain
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        TableLayoutPanel1.Size = New Size(568, 239)
+        TableLayoutPanel1.RowStyles.Add(New RowStyle())
+        TableLayoutPanel1.RowStyles.Add(New RowStyle())
+        TableLayoutPanel1.Size = New Size(568, 268)
         TableLayoutPanel1.TabIndex = 28
         ' 
         ' btnBackupScriptPath
@@ -1948,9 +1956,9 @@ Partial Class FormMain
         ' 
         ' tbBackupScriptPath
         ' 
-        tbBackupScriptPath.Location = New Point(143, 185)
+        tbBackupScriptPath.Location = New Point(156, 185)
         tbBackupScriptPath.Name = "tbBackupScriptPath"
-        tbBackupScriptPath.Size = New Size(379, 23)
+        tbBackupScriptPath.Size = New Size(366, 23)
         tbBackupScriptPath.TabIndex = 30
         ' 
         ' lblBackupPathOverride
@@ -1960,7 +1968,7 @@ Partial Class FormMain
         lblBackupPathOverride.Location = New Point(4, 211)
         lblBackupPathOverride.Margin = New Padding(4, 0, 4, 0)
         lblBackupPathOverride.Name = "lblBackupPathOverride"
-        lblBackupPathOverride.Size = New Size(132, 28)
+        lblBackupPathOverride.Size = New Size(145, 29)
         lblBackupPathOverride.TabIndex = 29
         lblBackupPathOverride.Text = "Override Backup Path:"
         lblBackupPathOverride.TextAlign = ContentAlignment.MiddleLeft
@@ -1977,10 +1985,10 @@ Partial Class FormMain
         ' tbBackupPathOverride
         ' 
         tbBackupPathOverride.Dock = DockStyle.Fill
-        tbBackupPathOverride.Location = New Point(143, 214)
+        tbBackupPathOverride.Location = New Point(156, 214)
         tbBackupPathOverride.Name = "tbBackupPathOverride"
         tbBackupPathOverride.PlaceholderText = "Using database value from AppOptions"
-        tbBackupPathOverride.Size = New Size(379, 23)
+        tbBackupPathOverride.Size = New Size(366, 23)
         tbBackupPathOverride.TabIndex = 29
         ' 
         ' btnBrowseApplyScript
@@ -1998,7 +2006,7 @@ Partial Class FormMain
         lblBackupScriptPath.Dock = DockStyle.Fill
         lblBackupScriptPath.Location = New Point(3, 182)
         lblBackupScriptPath.Name = "lblBackupScriptPath"
-        lblBackupScriptPath.Size = New Size(134, 29)
+        lblBackupScriptPath.Size = New Size(147, 29)
         lblBackupScriptPath.TabIndex = 33
         lblBackupScriptPath.Text = "Backup Script Path:"
         lblBackupScriptPath.TextAlign = ContentAlignment.MiddleLeft
@@ -2015,28 +2023,28 @@ Partial Class FormMain
         ' tbApplyFlavorDefault
         ' 
         tbApplyFlavorDefault.Dock = DockStyle.Fill
-        tbApplyFlavorDefault.Location = New Point(144, 152)
+        tbApplyFlavorDefault.Location = New Point(157, 152)
         tbApplyFlavorDefault.Margin = New Padding(4, 3, 4, 3)
         tbApplyFlavorDefault.Name = "tbApplyFlavorDefault"
-        tbApplyFlavorDefault.Size = New Size(377, 23)
+        tbApplyFlavorDefault.Size = New Size(364, 23)
         tbApplyFlavorDefault.TabIndex = 29
         ' 
         ' tbDatabaseStartDefault
         ' 
         tbDatabaseStartDefault.Dock = DockStyle.Fill
-        tbDatabaseStartDefault.Location = New Point(144, 119)
+        tbDatabaseStartDefault.Location = New Point(157, 119)
         tbDatabaseStartDefault.Margin = New Padding(4, 3, 4, 3)
         tbDatabaseStartDefault.Name = "tbDatabaseStartDefault"
-        tbDatabaseStartDefault.Size = New Size(377, 23)
+        tbDatabaseStartDefault.Size = New Size(364, 23)
         tbDatabaseStartDefault.TabIndex = 28
         ' 
         ' tbWindowTitle
         ' 
         tbWindowTitle.Dock = DockStyle.Fill
-        tbWindowTitle.Location = New Point(144, 3)
+        tbWindowTitle.Location = New Point(157, 3)
         tbWindowTitle.Margin = New Padding(4, 3, 4, 3)
         tbWindowTitle.Name = "tbWindowTitle"
-        tbWindowTitle.Size = New Size(377, 23)
+        tbWindowTitle.Size = New Size(364, 23)
         tbWindowTitle.TabIndex = 1
         ' 
         ' lblApplyFlavorDefault
@@ -2046,7 +2054,7 @@ Partial Class FormMain
         lblApplyFlavorDefault.Location = New Point(4, 149)
         lblApplyFlavorDefault.Margin = New Padding(4, 0, 4, 0)
         lblApplyFlavorDefault.Name = "lblApplyFlavorDefault"
-        lblApplyFlavorDefault.Size = New Size(132, 33)
+        lblApplyFlavorDefault.Size = New Size(145, 33)
         lblApplyFlavorDefault.TabIndex = 27
         lblApplyFlavorDefault.Text = "Apply Flavor Default:  "
         lblApplyFlavorDefault.TextAlign = ContentAlignment.MiddleLeft
@@ -2054,10 +2062,10 @@ Partial Class FormMain
         ' tbRepoFolder
         ' 
         tbRepoFolder.Dock = DockStyle.Fill
-        tbRepoFolder.Location = New Point(144, 32)
+        tbRepoFolder.Location = New Point(157, 32)
         tbRepoFolder.Margin = New Padding(4, 3, 4, 3)
         tbRepoFolder.Name = "tbRepoFolder"
-        tbRepoFolder.Size = New Size(377, 23)
+        tbRepoFolder.Size = New Size(364, 23)
         tbRepoFolder.TabIndex = 3
         ' 
         ' lblDatabaseStartDefault
@@ -2067,7 +2075,7 @@ Partial Class FormMain
         lblDatabaseStartDefault.Location = New Point(4, 116)
         lblDatabaseStartDefault.Margin = New Padding(4, 0, 4, 0)
         lblDatabaseStartDefault.Name = "lblDatabaseStartDefault"
-        lblDatabaseStartDefault.Size = New Size(132, 33)
+        lblDatabaseStartDefault.Size = New Size(145, 33)
         lblDatabaseStartDefault.TabIndex = 26
         lblDatabaseStartDefault.Text = "Start Database Default:  "
         lblDatabaseStartDefault.TextAlign = ContentAlignment.MiddleLeft
@@ -2088,7 +2096,7 @@ Partial Class FormMain
         lblRepoFolder.Location = New Point(4, 29)
         lblRepoFolder.Margin = New Padding(4, 0, 4, 0)
         lblRepoFolder.Name = "lblRepoFolder"
-        lblRepoFolder.Size = New Size(132, 33)
+        lblRepoFolder.Size = New Size(145, 33)
         lblRepoFolder.TabIndex = 4
         lblRepoFolder.Text = "Repo Folder:"
         lblRepoFolder.TextAlign = ContentAlignment.MiddleLeft
@@ -2100,7 +2108,7 @@ Partial Class FormMain
         lblSetupSwitches.Location = New Point(4, 62)
         lblSetupSwitches.Margin = New Padding(4, 0, 4, 0)
         lblSetupSwitches.Name = "lblSetupSwitches"
-        lblSetupSwitches.Size = New Size(132, 29)
+        lblSetupSwitches.Size = New Size(145, 29)
         lblSetupSwitches.TabIndex = 25
         lblSetupSwitches.Text = "Installer Switches:"
         lblSetupSwitches.TextAlign = ContentAlignment.MiddleLeft
@@ -2108,10 +2116,10 @@ Partial Class FormMain
         ' tbSetupSwitches
         ' 
         tbSetupSwitches.Dock = DockStyle.Fill
-        tbSetupSwitches.Location = New Point(144, 65)
+        tbSetupSwitches.Location = New Point(157, 65)
         tbSetupSwitches.Margin = New Padding(4, 3, 4, 3)
         tbSetupSwitches.Name = "tbSetupSwitches"
-        tbSetupSwitches.Size = New Size(377, 23)
+        tbSetupSwitches.Size = New Size(364, 23)
         tbSetupSwitches.TabIndex = 24
         ' 
         ' lblWindowTitle
@@ -2121,7 +2129,7 @@ Partial Class FormMain
         lblWindowTitle.Location = New Point(4, 0)
         lblWindowTitle.Margin = New Padding(4, 0, 4, 0)
         lblWindowTitle.Name = "lblWindowTitle"
-        lblWindowTitle.Size = New Size(132, 29)
+        lblWindowTitle.Size = New Size(145, 29)
         lblWindowTitle.TabIndex = 2
         lblWindowTitle.Text = "Window Title:"
         lblWindowTitle.TextAlign = ContentAlignment.MiddleLeft
@@ -2129,7 +2137,7 @@ Partial Class FormMain
         ' cbShowHiddenServices
         ' 
         cbShowHiddenServices.AutoSize = True
-        cbShowHiddenServices.Location = New Point(144, 94)
+        cbShowHiddenServices.Location = New Point(157, 94)
         cbShowHiddenServices.Margin = New Padding(4, 3, 4, 3)
         cbShowHiddenServices.Name = "cbShowHiddenServices"
         cbShowHiddenServices.Size = New Size(244, 19)
@@ -2144,10 +2152,38 @@ Partial Class FormMain
         lblShowHiddenServices.Location = New Point(4, 91)
         lblShowHiddenServices.Margin = New Padding(4, 0, 4, 0)
         lblShowHiddenServices.Name = "lblShowHiddenServices"
-        lblShowHiddenServices.Size = New Size(132, 25)
+        lblShowHiddenServices.Size = New Size(145, 25)
         lblShowHiddenServices.TabIndex = 30
         lblShowHiddenServices.Text = "Show Hidden Services:"
         lblShowHiddenServices.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblRunQaCmdLine
+        ' 
+        lblRunQaCmdLine.AutoSize = True
+        lblRunQaCmdLine.Dock = DockStyle.Fill
+        lblRunQaCmdLine.Location = New Point(3, 240)
+        lblRunQaCmdLine.Name = "lblRunQaCmdLine"
+        lblRunQaCmdLine.Size = New Size(147, 29)
+        lblRunQaCmdLine.TabIndex = 35
+        lblRunQaCmdLine.Text = "QA Server Command Line:"
+        lblRunQaCmdLine.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' btnRunQaCmdLine
+        ' 
+        btnRunQaCmdLine.Location = New Point(529, 243)
+        btnRunQaCmdLine.Margin = New Padding(4, 3, 4, 3)
+        btnRunQaCmdLine.Name = "btnRunQaCmdLine"
+        btnRunQaCmdLine.Size = New Size(35, 22)
+        btnRunQaCmdLine.TabIndex = 36
+        btnRunQaCmdLine.UseVisualStyleBackColor = True
+        ' 
+        ' tbRunQaCmdLine
+        ' 
+        tbRunQaCmdLine.Dock = DockStyle.Fill
+        tbRunQaCmdLine.Location = New Point(156, 243)
+        tbRunQaCmdLine.Name = "tbRunQaCmdLine"
+        tbRunQaCmdLine.Size = New Size(366, 23)
+        tbRunQaCmdLine.TabIndex = 37
         ' 
         ' gpAdvUpgrade
         ' 
@@ -2157,7 +2193,7 @@ Partial Class FormMain
         gpAdvUpgrade.Controls.Add(cbAdvUpgradeNoBackup)
         gpAdvUpgrade.Controls.Add(cbAdvUpgradeNoSetup)
         gpAdvUpgrade.Controls.Add(cbAdvUpgradeQuiet)
-        gpAdvUpgrade.Location = New Point(582, 281)
+        gpAdvUpgrade.Location = New Point(582, 371)
         gpAdvUpgrade.Margin = New Padding(4, 3, 4, 3)
         gpAdvUpgrade.Name = "gpAdvUpgrade"
         gpAdvUpgrade.Padding = New Padding(4, 3, 4, 3)
@@ -3052,6 +3088,7 @@ Partial Class FormMain
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.Controls.Add(btnRunQaApi, 2, 3)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
         tlpButtons3.Controls.Add(btnBatchLaunch, 0, 0)
@@ -3076,6 +3113,17 @@ Partial Class FormMain
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
+        ' 
+        ' btnRunQaApi
+        ' 
+        btnRunQaApi.Dock = DockStyle.Fill
+        btnRunQaApi.Location = New Point(194, 171)
+        btnRunQaApi.Margin = New Padding(0)
+        btnRunQaApi.Name = "btnRunQaApi"
+        btnRunQaApi.Size = New Size(97, 59)
+        btnRunQaApi.TabIndex = 35
+        btnRunQaApi.Text = "Run Local QA Server"
+        btnRunQaApi.UseVisualStyleBackColor = True
         ' 
         ' btnUpdateShiftDate
         ' 
@@ -3516,4 +3564,8 @@ Partial Class FormMain
     Friend WithEvents btnFlavorFileCopy As Button
     Friend WithEvents tbFlavorHints As TextBox
     Friend WithEvents Panel3 As Panel
+    Friend WithEvents lblRunQaCmdLine As Label
+    Friend WithEvents btnRunQaCmdLine As Button
+    Friend WithEvents tbRunQaCmdLine As TextBox
+    Friend WithEvents btnRunQaApi As Button
 End Class
