@@ -107,7 +107,12 @@ Public Class FormMain
             " - Backup the database to 00Pathfinder"
 
         ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
-        ToolTip1.SetToolTip(btnRunQaApi, "Start the local QA API server in powershell using the command line specified in the Options tab.  The QA API server is used for testing and development of the Advantage QA API")
+        strTemp =
+            "Launch the QA API in a separate PowerShell window." & Environment.NewLine &
+            "Stops the AdvApiServer service If running, Then starts the configured script." & Environment.NewLine &
+            "Prevents duplicate instances if already active."
+        ToolTip1.SetToolTip(btnRunQaApi, strTemp)
+
 
         ' System tools
         ToolTip1.SetToolTip(btnCalc, "Open the Calculator included With Windows")
@@ -154,18 +159,21 @@ Public Class FormMain
         ToolTip1.SetToolTip(tbBackupPathOverride, "This is the path to the folder that contains backup files like 00Pathfinder.bak")
         ToolTip1.SetToolTip(tbBackupScriptPath, "This is the path to the script to backup the database to the backup folder (Backup-Database.ps1)")
 
-        ToolTip1.SetToolTip(btnAdd, "Add a new application to the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnEdit, "Edit the program selected in the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnDelete, "Delete the program selected in the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnLaunch, "Launch the program selected in the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnResetFlavorDefaults, "Resets the list of Default Flavors Selections to the defaults that were previously saved")
-        ToolTip1.SetToolTip(btnSaveFlavorDefaults, "Save the currently selected flavors in the Default Flavors Selection list as the new default selections")
+        ToolTip1.SetToolTip(tbRunQaCmdLine, "Enter the QA API script path and any command line switches." & Environment.NewLine & "The script will be launched In a separate PowerShell window.")
+        ToolTip1.SetToolTip(btnRunQaCmdLine, "Browse And select a QA API script." & Environment.NewLine & "You will be prompted to enter optional command line switches after selection.")
+
+        ToolTip1.SetToolTip(btnAdd, "Add a New application To the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnEdit, "Edit the program selected In the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnDelete, "Delete the program selected In the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnLaunch, "Launch the program selected In the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnResetFlavorDefaults, "Resets the list Of Default Flavors Selections To the defaults that were previously saved")
+        ToolTip1.SetToolTip(btnSaveFlavorDefaults, "Save the currently selected flavors In the Default Flavors Selection list As the New Default selections")
 
         ToolTip1.SetToolTip(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
-        ToolTip1.SetToolTip(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
-        ToolTip1.SetToolTip(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
-        ToolTip1.SetToolTip(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
-        ToolTip1.SetToolTip(btnRepoFolder, "Select the base folder for the Advantage Repo.  This is the folder that contains the 'tests' folder and the 'flavors' folder")
+        ToolTip1.SetToolTip(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup When the database upgrade has finished")
+        ToolTip1.SetToolTip(cbAdvUpgradeQuiet, "Run the Advantage Upgrade In a command prompt without a window")
+        ToolTip1.SetToolTip(tbAdvupgrade, "Example Of the command line that will be used With the selected switches")
+        ToolTip1.SetToolTip(btnRepoFolder, "Select the base folder For the Advantage Repo.  This Is the folder that contains the 'tests' folder and the 'flavors' folder")
         ToolTip1.SetToolTip(btnBrowseApplyScript, "Select the script to apply flavors to the running database (Apply-Flavors.ps1)")
         ToolTip1.SetToolTip(btnBrowseStartScript, "Select the script to start the database (Start-Database.ps1)")
         ToolTip1.SetToolTip(btnBackupScriptPath, "Select the script to start the database (Backup-Database.ps1)")
@@ -2964,40 +2972,7 @@ e As System.ComponentModel.CancelEventArgs
         Try
             btnRunQaApi.Enabled = False
 
-            If IsQaScriptRunning(scriptPath) Then
-
-                MessageBox.Show("QA API is already running.")
-                Return
-
-            End If
-
-            ' ✅ STEP 1: Stop service in background thread
-            Dim serviceName As String = "AdvApiServer" ' 🔥 adjust if needed
-
-            Await Task.Run(Sub()
-
-                               Try
-                                   Using sc As New ServiceController(serviceName)
-
-                                       If sc.Status = ServiceControllerStatus.Running OrElse
-                                      sc.Status = ServiceControllerStatus.StartPending Then
-
-                                           sc.Stop()
-
-                                           ' ✅ Wait until fully stopped (blocking BUT off UI thread)
-                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
-                                       End If
-
-                                   End Using
-
-                               Catch ex As InvalidOperationException
-                                   ' Service not found → ignore
-                               End Try
-
-                           End Sub)
-
-
-
+            ' ✅ STEP 1: Parse command FIRST
             If fullCommand.StartsWith("""") Then
 
                 Dim endQuote = fullCommand.IndexOf("""", 1)
@@ -3017,6 +2992,58 @@ e As System.ComponentModel.CancelEventArgs
                     args = parts(1)
                 End If
             End If
+
+            ' ✅ STEP 2: NOW detection works correctly
+            If IsQaScriptRunning(scriptPath) Then
+
+                UIHelpers.TimedWarningPrompt(
+            owner:=Me,
+            message:="The QA API script is already running." & Environment.NewLine &
+                     "Stop the existing instance before starting a new one.",
+            title:="Already Running",
+            timeoutSeconds:=10)
+
+                Return
+            End If
+
+            ' ✅ STEP 3: Stop service
+
+            Dim serviceName As String = "AdvApiServer"
+
+            Await Task.Run(Sub()
+                               Try
+                                   Using sc As New ServiceController(serviceName)
+                                       If sc.Status = ServiceControllerStatus.Running OrElse
+                   sc.Status = ServiceControllerStatus.StartPending Then
+
+                                           sc.Stop()
+                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                                       End If
+                                   End Using
+                               Catch ex As InvalidOperationException
+                               End Try
+                           End Sub)
+
+
+            'If fullCommand.StartsWith("""") Then
+
+            '    Dim endQuote = fullCommand.IndexOf("""", 1)
+
+            '    If endQuote > 1 Then
+            '        scriptPath = fullCommand.Substring(1, endQuote - 1)
+            '        args = fullCommand.Substring(endQuote + 1).Trim()
+            '    Else
+            '        Throw New Exception("Invalid quoted script path.")
+            '    End If
+
+            'Else
+            '    Dim parts = fullCommand.Split(New Char() {" "c}, 2)
+
+            '    scriptPath = parts(0)
+            '    If parts.Length > 1 Then
+            '        args = parts(1)
+            '    End If
+            'End If
 
             ' ✅ STEP 3: Launch PowerShell (separate window, persistent)
             Dim psCommand As String =
