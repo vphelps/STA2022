@@ -3024,27 +3024,6 @@ e As System.ComponentModel.CancelEventArgs
                                End Try
                            End Sub)
 
-
-            'If fullCommand.StartsWith("""") Then
-
-            '    Dim endQuote = fullCommand.IndexOf("""", 1)
-
-            '    If endQuote > 1 Then
-            '        scriptPath = fullCommand.Substring(1, endQuote - 1)
-            '        args = fullCommand.Substring(endQuote + 1).Trim()
-            '    Else
-            '        Throw New Exception("Invalid quoted script path.")
-            '    End If
-
-            'Else
-            '    Dim parts = fullCommand.Split(New Char() {" "c}, 2)
-
-            '    scriptPath = parts(0)
-            '    If parts.Length > 1 Then
-            '        args = parts(1)
-            '    End If
-            'End If
-
             ' ✅ STEP 3: Launch PowerShell (separate window, persistent)
             Dim psCommand As String =
             $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
