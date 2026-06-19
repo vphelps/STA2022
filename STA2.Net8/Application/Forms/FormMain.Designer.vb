@@ -270,6 +270,9 @@ Partial Class FormMain
         tmr1Sec = New Timer(components)
         ToolTipForQuickButtons = New ToolTip(components)
         SplitContainer2 = New SplitContainer()
+        pnlButtonsLabel = New Panel()
+        lblButtons = New Label()
+        pnlButtons = New Panel()
         tlpButtons3 = New TableLayoutPanel()
         btnRunQaApi = New Button()
         btnUpdateShiftDate = New Button()
@@ -342,6 +345,8 @@ Partial Class FormMain
         SplitContainer2.Panel1.SuspendLayout()
         SplitContainer2.Panel2.SuspendLayout()
         SplitContainer2.SuspendLayout()
+        pnlButtonsLabel.SuspendLayout()
+        pnlButtons.SuspendLayout()
         tlpButtons3.SuspendLayout()
         Panel2.SuspendLayout()
         SuspendLayout()
@@ -350,10 +355,10 @@ Partial Class FormMain
         ' 
         btnExit.DialogResult = DialogResult.Cancel
         btnExit.Dock = DockStyle.Fill
-        btnExit.Location = New Point(291, 171)
+        btnExit.Location = New Point(290, 173)
         btnExit.Margin = New Padding(0)
         btnExit.Name = "btnExit"
-        btnExit.Size = New Size(97, 59)
+        btnExit.Size = New Size(96, 55)
         btnExit.TabIndex = 0
         btnExit.Text = "Exit"
         btnExit.UseVisualStyleBackColor = True
@@ -2624,10 +2629,11 @@ Partial Class FormMain
         ' 
         btnRunDatabaseStartLive.ContextMenuStrip = cmsDbStart
         btnRunDatabaseStartLive.Dock = DockStyle.Fill
-        btnRunDatabaseStartLive.Location = New Point(291, 114)
+        btnRunDatabaseStartLive.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        btnRunDatabaseStartLive.Location = New Point(290, 116)
         btnRunDatabaseStartLive.Margin = New Padding(0)
         btnRunDatabaseStartLive.Name = "btnRunDatabaseStartLive"
-        btnRunDatabaseStartLive.Size = New Size(97, 57)
+        btnRunDatabaseStartLive.Size = New Size(96, 55)
         btnRunDatabaseStartLive.TabIndex = 31
         btnRunDatabaseStartLive.Text = "Start Database"
         btnRunDatabaseStartLive.UseVisualStyleBackColor = True
@@ -2664,10 +2670,10 @@ Partial Class FormMain
         ' btnRunApplyFlavorLive
         ' 
         btnRunApplyFlavorLive.Dock = DockStyle.Fill
-        btnRunApplyFlavorLive.Location = New Point(291, 0)
+        btnRunApplyFlavorLive.Location = New Point(290, 2)
         btnRunApplyFlavorLive.Margin = New Padding(0)
         btnRunApplyFlavorLive.Name = "btnRunApplyFlavorLive"
-        btnRunApplyFlavorLive.Size = New Size(97, 57)
+        btnRunApplyFlavorLive.Size = New Size(96, 55)
         btnRunApplyFlavorLive.TabIndex = 30
         btnRunApplyFlavorLive.Text = "Apply Default Flavors"
         btnRunApplyFlavorLive.UseVisualStyleBackColor = True
@@ -2676,7 +2682,7 @@ Partial Class FormMain
         ' 
         cmbboxAppLaunch.DropDownStyle = ComboBoxStyle.DropDownList
         cmbboxAppLaunch.FormattingEnabled = True
-        cmbboxAppLaunch.Location = New Point(3, 581)
+        cmbboxAppLaunch.Location = New Point(4, 552)
         cmbboxAppLaunch.Margin = New Padding(4, 3, 4, 3)
         cmbboxAppLaunch.Name = "cmbboxAppLaunch"
         cmbboxAppLaunch.Size = New Size(278, 23)
@@ -2685,7 +2691,7 @@ Partial Class FormMain
         ' 
         ' btnComboAppLaunch
         ' 
-        btnComboAppLaunch.Location = New Point(289, 581)
+        btnComboAppLaunch.Location = New Point(290, 552)
         btnComboAppLaunch.Margin = New Padding(4, 3, 4, 3)
         btnComboAppLaunch.Name = "btnComboAppLaunch"
         btnComboAppLaunch.Size = New Size(88, 27)
@@ -2696,10 +2702,10 @@ Partial Class FormMain
         ' btnReconnect
         ' 
         btnReconnect.Dock = DockStyle.Fill
-        btnReconnect.Location = New Point(0, 114)
+        btnReconnect.Location = New Point(2, 116)
         btnReconnect.Margin = New Padding(0)
         btnReconnect.Name = "btnReconnect"
-        btnReconnect.Size = New Size(97, 57)
+        btnReconnect.Size = New Size(94, 55)
         btnReconnect.TabIndex = 22
         btnReconnect.Text = "Reconnect"
         btnReconnect.UseVisualStyleBackColor = True
@@ -2733,7 +2739,7 @@ Partial Class FormMain
         flpQuickLaunch.Location = New Point(0, 0)
         flpQuickLaunch.Margin = New Padding(4, 3, 4, 3)
         flpQuickLaunch.Name = "flpQuickLaunch"
-        flpQuickLaunch.Size = New Size(387, 575)
+        flpQuickLaunch.Size = New Size(387, 546)
         flpQuickLaunch.TabIndex = 21
         ' 
         ' Button1
@@ -2939,10 +2945,10 @@ Partial Class FormMain
         ' btnAdminRestart
         ' 
         btnAdminRestart.Dock = DockStyle.Fill
-        btnAdminRestart.Location = New Point(0, 57)
+        btnAdminRestart.Location = New Point(2, 59)
         btnAdminRestart.Margin = New Padding(0)
         btnAdminRestart.Name = "btnAdminRestart"
-        btnAdminRestart.Size = New Size(97, 57)
+        btnAdminRestart.Size = New Size(94, 55)
         btnAdminRestart.TabIndex = 20
         btnAdminRestart.Text = "Relaunch as Admin"
         btnAdminRestart.UseVisualStyleBackColor = True
@@ -2950,10 +2956,10 @@ Partial Class FormMain
         ' btnBatchLaunch
         ' 
         btnBatchLaunch.Dock = DockStyle.Fill
-        btnBatchLaunch.Location = New Point(0, 0)
+        btnBatchLaunch.Location = New Point(2, 2)
         btnBatchLaunch.Margin = New Padding(0)
         btnBatchLaunch.Name = "btnBatchLaunch"
-        btnBatchLaunch.Size = New Size(97, 57)
+        btnBatchLaunch.Size = New Size(94, 55)
         btnBatchLaunch.TabIndex = 15
         btnBatchLaunch.Text = "Batch Launch"
         btnBatchLaunch.UseVisualStyleBackColor = True
@@ -3060,7 +3066,6 @@ Partial Class FormMain
         ' 
         SplitContainer2.BorderStyle = BorderStyle.Fixed3D
         SplitContainer2.Dock = DockStyle.Fill
-        SplitContainer2.IsSplitterFixed = True
         SplitContainer2.Location = New Point(0, 0)
         SplitContainer2.Margin = New Padding(4, 3, 4, 3)
         SplitContainer2.Name = "SplitContainer2"
@@ -3075,14 +3080,46 @@ Partial Class FormMain
         ' SplitContainer2.Panel2
         ' 
         SplitContainer2.Panel2.BackColor = Color.LightGray
-        SplitContainer2.Panel2.Controls.Add(tlpButtons3)
+        SplitContainer2.Panel2.Controls.Add(pnlButtonsLabel)
+        SplitContainer2.Panel2.Controls.Add(pnlButtons)
         SplitContainer2.Size = New Size(392, 853)
-        SplitContainer2.SplitterDistance = 616
+        SplitContainer2.SplitterDistance = 587
         SplitContainer2.SplitterWidth = 3
         SplitContainer2.TabIndex = 22
         ' 
+        ' pnlButtonsLabel
+        ' 
+        pnlButtonsLabel.Controls.Add(lblButtons)
+        pnlButtonsLabel.Dock = DockStyle.Bottom
+        pnlButtonsLabel.Location = New Point(0, 232)
+        pnlButtonsLabel.Name = "pnlButtonsLabel"
+        pnlButtonsLabel.Size = New Size(388, 27)
+        pnlButtonsLabel.TabIndex = 17
+        ' 
+        ' lblButtons
+        ' 
+        lblButtons.BorderStyle = BorderStyle.FixedSingle
+        lblButtons.Dock = DockStyle.Fill
+        lblButtons.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        lblButtons.Location = New Point(0, 0)
+        lblButtons.Name = "lblButtons"
+        lblButtons.Size = New Size(388, 27)
+        lblButtons.TabIndex = 1
+        lblButtons.Text = "Bold buttons have Right Click Menus"
+        lblButtons.TextAlign = ContentAlignment.MiddleCenter
+        ' 
+        ' pnlButtons
+        ' 
+        pnlButtons.Controls.Add(tlpButtons3)
+        pnlButtons.Dock = DockStyle.Top
+        pnlButtons.Location = New Point(0, 0)
+        pnlButtons.Name = "pnlButtons"
+        pnlButtons.Size = New Size(388, 230)
+        pnlButtons.TabIndex = 0
+        ' 
         ' tlpButtons3
         ' 
+        tlpButtons3.CellBorderStyle = TableLayoutPanelCellBorderStyle.Outset
         tlpButtons3.ColumnCount = 4
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
@@ -3117,10 +3154,10 @@ Partial Class FormMain
         ' btnRunQaApi
         ' 
         btnRunQaApi.Dock = DockStyle.Fill
-        btnRunQaApi.Location = New Point(194, 171)
+        btnRunQaApi.Location = New Point(194, 173)
         btnRunQaApi.Margin = New Padding(0)
         btnRunQaApi.Name = "btnRunQaApi"
-        btnRunQaApi.Size = New Size(97, 59)
+        btnRunQaApi.Size = New Size(94, 55)
         btnRunQaApi.TabIndex = 35
         btnRunQaApi.Text = "Run Local QA Server"
         btnRunQaApi.UseVisualStyleBackColor = True
@@ -3128,10 +3165,10 @@ Partial Class FormMain
         ' btnUpdateShiftDate
         ' 
         btnUpdateShiftDate.Dock = DockStyle.Fill
-        btnUpdateShiftDate.Location = New Point(194, 57)
+        btnUpdateShiftDate.Location = New Point(194, 59)
         btnUpdateShiftDate.Margin = New Padding(0)
         btnUpdateShiftDate.Name = "btnUpdateShiftDate"
-        btnUpdateShiftDate.Size = New Size(97, 57)
+        btnUpdateShiftDate.Size = New Size(94, 55)
         btnUpdateShiftDate.TabIndex = 33
         btnUpdateShiftDate.Text = "Update Shift Date"
         btnUpdateShiftDate.UseVisualStyleBackColor = True
@@ -3139,10 +3176,10 @@ Partial Class FormMain
         ' btnRepoMain
         ' 
         btnRepoMain.Dock = DockStyle.Fill
-        btnRepoMain.Location = New Point(97, 171)
+        btnRepoMain.Location = New Point(98, 173)
         btnRepoMain.Margin = New Padding(0)
         btnRepoMain.Name = "btnRepoMain"
-        btnRepoMain.Size = New Size(97, 59)
+        btnRepoMain.Size = New Size(94, 55)
         btnRepoMain.TabIndex = 26
         btnRepoMain.Text = "Switch Repo to Main"
         btnRepoMain.UseVisualStyleBackColor = True
@@ -3150,10 +3187,10 @@ Partial Class FormMain
         ' btnSetupInstall
         ' 
         btnSetupInstall.Dock = DockStyle.Fill
-        btnSetupInstall.Location = New Point(97, 0)
+        btnSetupInstall.Location = New Point(98, 2)
         btnSetupInstall.Margin = New Padding(0)
         btnSetupInstall.Name = "btnSetupInstall"
-        btnSetupInstall.Size = New Size(97, 57)
+        btnSetupInstall.Size = New Size(94, 55)
         btnSetupInstall.TabIndex = 25
         btnSetupInstall.Text = "Extract and Install"
         btnSetupInstall.UseVisualStyleBackColor = True
@@ -3161,10 +3198,10 @@ Partial Class FormMain
         ' btnLaunchLatestInstaller
         ' 
         btnLaunchLatestInstaller.Dock = DockStyle.Fill
-        btnLaunchLatestInstaller.Location = New Point(97, 57)
+        btnLaunchLatestInstaller.Location = New Point(98, 59)
         btnLaunchLatestInstaller.Margin = New Padding(0)
         btnLaunchLatestInstaller.Name = "btnLaunchLatestInstaller"
-        btnLaunchLatestInstaller.Size = New Size(97, 57)
+        btnLaunchLatestInstaller.Size = New Size(94, 55)
         btnLaunchLatestInstaller.TabIndex = 23
         btnLaunchLatestInstaller.Text = "Latest Installer"
         btnLaunchLatestInstaller.UseVisualStyleBackColor = True
@@ -3172,10 +3209,10 @@ Partial Class FormMain
         ' btnRepoDiscardChanges
         ' 
         btnRepoDiscardChanges.Dock = DockStyle.Fill
-        btnRepoDiscardChanges.Location = New Point(97, 114)
+        btnRepoDiscardChanges.Location = New Point(98, 116)
         btnRepoDiscardChanges.Margin = New Padding(0)
         btnRepoDiscardChanges.Name = "btnRepoDiscardChanges"
-        btnRepoDiscardChanges.Size = New Size(97, 57)
+        btnRepoDiscardChanges.Size = New Size(94, 55)
         btnRepoDiscardChanges.TabIndex = 24
         btnRepoDiscardChanges.Text = "Discard Repo Changes"
         btnRepoDiscardChanges.UseVisualStyleBackColor = True
@@ -3183,20 +3220,20 @@ Partial Class FormMain
         ' btnManageInstallerVersions
         ' 
         btnManageInstallerVersions.Dock = DockStyle.Fill
-        btnManageInstallerVersions.Location = New Point(194, 0)
+        btnManageInstallerVersions.Location = New Point(194, 2)
         btnManageInstallerVersions.Margin = New Padding(0)
         btnManageInstallerVersions.Name = "btnManageInstallerVersions"
-        btnManageInstallerVersions.Size = New Size(97, 57)
+        btnManageInstallerVersions.Size = New Size(94, 55)
         btnManageInstallerVersions.TabIndex = 32
         btnManageInstallerVersions.Text = "Manage Installer Versions"
         btnManageInstallerVersions.UseVisualStyleBackColor = True
         ' 
         ' btnApplyPersonalFlavor
         ' 
-        btnApplyPersonalFlavor.Location = New Point(291, 57)
+        btnApplyPersonalFlavor.Location = New Point(290, 59)
         btnApplyPersonalFlavor.Margin = New Padding(0)
         btnApplyPersonalFlavor.Name = "btnApplyPersonalFlavor"
-        btnApplyPersonalFlavor.Size = New Size(97, 57)
+        btnApplyPersonalFlavor.Size = New Size(96, 55)
         btnApplyPersonalFlavor.TabIndex = 34
         btnApplyPersonalFlavor.Text = "Apply Personal Flavor"
         ToolTip1.SetToolTip(btnApplyPersonalFlavor, "Copy the Personal Flavor SQL to the Flavors folder and then apply it.")
@@ -3314,6 +3351,8 @@ Partial Class FormMain
         SplitContainer2.Panel2.ResumeLayout(False)
         CType(SplitContainer2, ComponentModel.ISupportInitialize).EndInit()
         SplitContainer2.ResumeLayout(False)
+        pnlButtonsLabel.ResumeLayout(False)
+        pnlButtons.ResumeLayout(False)
         tlpButtons3.ResumeLayout(False)
         Panel2.ResumeLayout(False)
         ResumeLayout(False)
@@ -3568,4 +3607,7 @@ Partial Class FormMain
     Friend WithEvents btnRunQaCmdLine As Button
     Friend WithEvents tbRunQaCmdLine As TextBox
     Friend WithEvents btnRunQaApi As Button
+    Friend WithEvents pnlButtonsLabel As Panel
+    Friend WithEvents lblButtons As Label
+    Friend WithEvents pnlButtons As Panel
 End Class
