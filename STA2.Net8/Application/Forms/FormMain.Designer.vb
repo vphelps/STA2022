@@ -286,6 +286,8 @@ Partial Class FormMain
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
         staFolderBrowserDialog = New FolderBrowserDialog()
+        cmsRunQaApi = New ContextMenuStrip(components)
+        tsmiRunQaApiKillScript = New ToolStripMenuItem()
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -349,6 +351,7 @@ Partial Class FormMain
         pnlButtons.SuspendLayout()
         tlpButtons3.SuspendLayout()
         Panel2.SuspendLayout()
+        cmsRunQaApi.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnExit
@@ -3153,6 +3156,7 @@ Partial Class FormMain
         ' 
         ' btnRunQaApi
         ' 
+        btnRunQaApi.ContextMenuStrip = cmsRunQaApi
         btnRunQaApi.Dock = DockStyle.Fill
         btnRunQaApi.Location = New Point(194, 173)
         btnRunQaApi.Margin = New Padding(0)
@@ -3260,6 +3264,18 @@ Partial Class FormMain
         ToolTip1.ReshowDelay = 100
         ToolTip1.ShowAlways = True
         ' 
+        ' cmsRunQaApi
+        ' 
+        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiKillScript})
+        cmsRunQaApi.Name = "cmsRunQaApi"
+        cmsRunQaApi.Size = New Size(289, 26)
+        ' 
+        ' tsmiRunQaApiKillScript
+        ' 
+        tsmiRunQaApiKillScript.Name = "tsmiRunQaApiKillScript"
+        tsmiRunQaApiKillScript.Size = New Size(288, 22)
+        tsmiRunQaApiKillScript.Text = "Kill running script and start new instance"
+        ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -3355,6 +3371,7 @@ Partial Class FormMain
         pnlButtons.ResumeLayout(False)
         tlpButtons3.ResumeLayout(False)
         Panel2.ResumeLayout(False)
+        cmsRunQaApi.ResumeLayout(False)
         ResumeLayout(False)
         PerformLayout()
 
@@ -3610,4 +3627,6 @@ Partial Class FormMain
     Friend WithEvents pnlButtonsLabel As Panel
     Friend WithEvents lblButtons As Label
     Friend WithEvents pnlButtons As Panel
+    Friend WithEvents cmsRunQaApi As ContextMenuStrip
+    Friend WithEvents tsmiRunQaApiKillScript As ToolStripMenuItem
 End Class
