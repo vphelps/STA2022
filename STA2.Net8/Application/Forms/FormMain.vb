@@ -2921,44 +2921,13 @@ e As System.ComponentModel.CancelEventArgs
         End If
     End Sub
 
-    Private Function IsQaScriptRunning(scriptPath As String) As Boolean
-
-        Try
-            Dim query As String =
-            "SELECT CommandLine FROM Win32_Process WHERE Name = 'powershell.exe'"
-
-            Using searcher As New ManagementObjectSearcher(query)
-
-                For Each proc As ManagementObject In searcher.Get()
-
-                    Dim cmd = TryCast(proc("CommandLine"), String)
-
-                    If Not String.IsNullOrWhiteSpace(cmd) AndAlso
-                   cmd.IndexOf(scriptPath, StringComparison.OrdinalIgnoreCase) >= 0 Then
-
-                        Return True
-                    End If
-
-                Next
-
-            End Using
-
-        Catch
-            ' Ignore errors—just assume not running
-        End Try
-
-        Return False
-
-    End Function
     Private Async Sub btnRunQaApi_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunQaApi.Click
 
         Dim fullCommand As String = tbRunQaCmdLine.Text
-        ' ✅ Parse command (back on UI thread)
-        Dim scriptPath As String = ""
-        Dim args As String = ""
+
 
         If String.IsNullOrWhiteSpace(fullCommand) Then
             MessageBox.Show(
@@ -2973,28 +2942,14 @@ e As System.ComponentModel.CancelEventArgs
             btnRunQaApi.Enabled = False
 
             ' ✅ STEP 1: Parse command FIRST
-            If fullCommand.StartsWith("""") Then
 
-                Dim endQuote = fullCommand.IndexOf("""", 1)
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
 
-                If endQuote > 1 Then
-                    scriptPath = fullCommand.Substring(1, endQuote - 1)
-                    args = fullCommand.Substring(endQuote + 1).Trim()
-                Else
-                    Throw New Exception("Invalid quoted script path.")
-                End If
-
-            Else
-                Dim parts = fullCommand.Split(New Char() {" "c}, 2)
-
-                scriptPath = parts(0)
-                If parts.Length > 1 Then
-                    args = parts(1)
-                End If
-            End If
+            Dim scriptPath = parsed.ScriptPath
+            Dim args = parsed.Args
 
             ' ✅ STEP 2: NOW detection works correctly
-            If IsQaScriptRunning(scriptPath) Then
+            If QaScriptHelper.IsScriptRunning(scriptPath) Then
 
                 UIHelpers.TimedWarningPrompt(
             owner:=Me,
@@ -3050,52 +3005,7 @@ e As System.ComponentModel.CancelEventArgs
         End Try
 
     End Sub
-    Private Sub KillQaScriptProcesses(scriptPath As String)
 
-        Try
-            Dim query As String =
-            "SELECT ProcessId, CommandLine FROM Win32_Process WHERE Name = 'powershell.exe'"
-
-            Using searcher As New ManagementObjectSearcher(query)
-
-                For Each proc As ManagementObject In searcher.Get()
-
-                    Dim cmd = TryCast(proc("CommandLine"), String)
-
-                    If Not String.IsNullOrWhiteSpace(cmd) AndAlso
-                   cmd.IndexOf(scriptPath, StringComparison.OrdinalIgnoreCase) >= 0 Then
-
-                        Dim pid = Convert.ToInt32(proc("ProcessId"))
-
-                        Try
-                            Dim p = Process.GetProcessById(pid)
-
-                            ' ✅ Attempt graceful close (like clicking X)
-                            If Not p.HasExited Then
-                                p.CloseMainWindow()
-
-                                ' ✅ Give it time to exit cleanly
-                                If Not p.WaitForExit(3000) Then
-                                    ' ❌ Still running → force kill
-                                    p.Kill()
-                                End If
-                            End If
-
-                        Catch
-                            ' Ignore per-process issues
-                        End Try
-
-                    End If
-
-                Next
-
-            End Using
-
-        Catch
-            ' Never allow cleanup to crash app
-        End Try
-
-    End Sub
 
 
     Private Async Sub tsmiRunQaApiKillScript_Click(
@@ -3104,8 +3014,7 @@ e As System.ComponentModel.CancelEventArgs
 ) Handles tsmiRunQaApiKillScript.Click
 
         Dim fullCommand As String = tbRunQaCmdLine.Text
-        Dim scriptPath As String = ""
-        Dim args As String = ""
+
 
         If String.IsNullOrWhiteSpace(fullCommand) Then
             MessageBox.Show(
@@ -3120,25 +3029,11 @@ e As System.ComponentModel.CancelEventArgs
             tsmiRunQaApiKillScript.Enabled = False
 
             ' ✅ STEP 1: Parse command
-            If fullCommand.StartsWith("""") Then
 
-                Dim endQuote = fullCommand.IndexOf("""", 1)
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
 
-                If endQuote > 1 Then
-                    scriptPath = fullCommand.Substring(1, endQuote - 1)
-                    args = fullCommand.Substring(endQuote + 1).Trim()
-                Else
-                    Throw New Exception("Invalid quoted script path.")
-                End If
-
-            Else
-                Dim parts = fullCommand.Split(New Char() {" "c}, 2)
-
-                scriptPath = parts(0)
-                If parts.Length > 1 Then
-                    args = parts(1)
-                End If
-            End If
+            Dim scriptPath = parsed.ScriptPath
+            Dim args = parsed.Args
 
             ' ✅ STEP 2: Confirm restart (OPTIONAL UPGRADE)
             Dim confirm = UIHelpers.TimedYesNoPrompt(
@@ -3155,7 +3050,7 @@ e As System.ComponentModel.CancelEventArgs
             End If
 
             ' ✅ STEP 3: Kill running script instances (if any)
-            If IsQaScriptRunning(scriptPath) Then
+            If QaScriptHelper.IsScriptRunning(scriptPath) Then
 
                 UIHelpers.TimedInfoPrompt(
                     owner:=Me,
@@ -3165,7 +3060,7 @@ e As System.ComponentModel.CancelEventArgs
 
                 Await Task.Run(Sub()
                                    ' ✅ Kill PowerShell + script
-                                   KillQaScriptProcesses(scriptPath)
+                                   QaScriptHelper.KillScriptProcesses(scriptPath)
 
                                End Sub)
             End If
