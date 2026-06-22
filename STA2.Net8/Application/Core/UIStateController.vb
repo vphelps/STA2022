@@ -8,6 +8,22 @@
         _options = options
     End Sub
 
+    Public Sub SetBold(ctrl As Control, isBold As Boolean)
+
+        If ctrl Is Nothing Then Return
+
+        Dim f = ctrl.Font
+
+        Dim newStyle =
+        If(isBold,
+           f.Style Or FontStyle.Bold,
+           f.Style And Not FontStyle.Bold)
+
+        ctrl.Font = New Font(f, newStyle)
+
+    End Sub
+
+
     Public Sub Refresh()
 
         Dim scriptRunning As Boolean = _form.IsScriptRunning()
@@ -121,6 +137,9 @@
         End If
         'Flavor File name label update
         _form.lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
+
+        SetBold(_form.btnRunDatabaseStartLive, _form.btnRunDatabaseStartLive.Enabled)
+
     End Sub
 
 
