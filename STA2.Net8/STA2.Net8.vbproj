@@ -31,6 +31,8 @@
 	  <None Remove="Application\Images\imgCheckMarkButton96.png" />
 	  <None Remove="Application\Images\imgCopy16.png" />
 	  <None Remove="Application\Images\imgCopy48.png" />
+	  <None Remove="Application\Images\imgCopyToFolder16.png" />
+	  <None Remove="Application\Images\imgCopyToFolder94.png" />
 	  <None Remove="Application\Images\imgCrossMark16.png" />
 	  <None Remove="Application\Images\imgCrossMark96.png" />
 	  <None Remove="Application\Images\imgGreenPlay16.png" />
@@ -62,6 +64,8 @@
 	  <EmbeddedResource Include="Application\Images\imgCheckMarkButton96.png" />
 	  <EmbeddedResource Include="Application\Images\imgCopy16.png" />
 	  <EmbeddedResource Include="Application\Images\imgCopy48.png" />
+	  <EmbeddedResource Include="Application\Images\imgCopyToFolder16.png" />
+	  <EmbeddedResource Include="Application\Images\imgCopyToFolder94.png" />
 	  <EmbeddedResource Include="Application\Images\imgCrossMark16.png" />
 	  <EmbeddedResource Include="Application\Images\imgCrossMark96.png" />
 	  <EmbeddedResource Include="Application\Images\imgGreenPlay16.png" />

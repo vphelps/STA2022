@@ -70,50 +70,37 @@ Public NotInheritable Class OptionsManager
         End Try
     End Function
 
-    ' =========================================================
-    ' Save (FIXED: preserves flavors + UI toggles)
-    ' =========================================================
-
     Public Shared Sub Save(opts As AppOptions)
+
         Dim path = GetOptionsPath()
 
         Try
             EnsureParentDirectory(path)
 
-            If opts Is Nothing Then opts = New AppOptions()
-
-            ' Ensure QuickLaunchIds exists
-            If opts.QuickLaunchIds Is Nothing Then
-                opts.QuickLaunchIds =
-                    Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            If opts Is Nothing Then
+                opts = New AppOptions()
             End If
 
             ' -------------------------------------------------
-            ' Snapshot properties NOT owned by QuickLaunch
+            ' Ensure required collections exist
             ' -------------------------------------------------
-            Dim repoFolderSnapshot As String = opts.RepoFolderPath
-            Dim showHiddenSnapshot As Boolean = opts.ShowHiddenServices
+            If opts.QuickLaunchIds Is Nothing Then
+                opts.QuickLaunchIds =
+                Enumerable.Repeat("", GenericConstants.QUICKLAUNCH_SLOT_COUNT).ToList()
+            End If
 
-            Dim defaultFlavorsSnapshot As List(Of String) =
-                If(opts.DefaultFlavorNames Is Nothing,
-                   Nothing,
-                   New List(Of String)(opts.DefaultFlavorNames))
+            If opts.DefaultFlavorNames Is Nothing Then
+                opts.DefaultFlavorNames = New List(Of String)
+            End If
 
             ' -------------------------------------------------
-            ' Normalize QuickLaunch ONLY
+            ' Normalize ONLY what needs normalization
             ' -------------------------------------------------
             DedupeQuickLaunchIds(opts)
             TrimTrailingEmptyQuickSlots(opts)
 
             ' -------------------------------------------------
-            ' Restore preserved properties
-            ' -------------------------------------------------
-            opts.RepoFolderPath = repoFolderSnapshot
-            opts.ShowHiddenServices = showHiddenSnapshot
-            opts.DefaultFlavorNames = defaultFlavorsSnapshot
-
-            ' -------------------------------------------------
-            ' Serialize
+            ' Serialize WITHOUT modifying unrelated properties
             ' -------------------------------------------------
             Dim json = JsonSerializer.Serialize(opts, _jsonOptions)
 
@@ -122,8 +109,8 @@ Public NotInheritable Class OptionsManager
         Catch ex As Exception
             Debug.WriteLine("Options save failed: " & ex.Message)
         End Try
-    End Sub
 
+    End Sub
     Public Shared Function GetOptionsPath() As String
         Dim dir =
             Path.Combine(
@@ -338,4 +325,37 @@ Public NotInheritable Class OptionsManager
         Return trimmed
     End Function
 
+    ' =========================================================
+    ' Personal Flavor File Helpers
+    ' =========================================================
+
+    Public Shared Function GetPersonalFlavorPath() As String
+        Dim optionsDir = Path.GetDirectoryName(GetOptionsPath())
+        Return Path.Combine(optionsDir, "PersonalFlavor.sql")
+    End Function
+
+    Public Shared Function LoadPersonalFlavor() As String
+        Dim path = GetPersonalFlavorPath()
+
+        Try
+            If File.Exists(path) Then
+                Return File.ReadAllText(path)
+            End If
+        Catch ex As Exception
+            Debug.WriteLine("Failed to load personal flavor: " & ex.Message)
+        End Try
+
+        Return ""
+    End Function
+
+    Public Shared Sub SavePersonalFlavor(sqlText As String)
+        Dim path = GetPersonalFlavorPath()
+
+        Try
+            EnsureParentDirectory(path)
+            File.WriteAllText(path, sqlText, Encoding.UTF8)
+        Catch ex As Exception
+            Debug.WriteLine("Failed to save personal flavor: " & ex.Message)
+        End Try
+    End Sub
 End Class

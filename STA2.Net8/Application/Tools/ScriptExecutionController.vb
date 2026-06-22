@@ -57,12 +57,12 @@
 
             Dim scriptArgs As String
             ' ✅ Build args
-            If triggerButton.Equals(_form.btnRunDatabaseStartLive) Then
-                scriptArgs = BuildScriptArgs(options, True)
-            Else
-                scriptArgs = BuildScriptArgs(options, False)
-            End If
-
+            'If triggerButton.Equals(_form.btnRunDatabaseStartLive) Then
+            '    scriptArgs = BuildScriptArgs(options, True)
+            'Else
+            '    scriptArgs = BuildScriptArgs(options, False)
+            'End If
+            scriptArgs = BuildScriptArgs(options, options.UseVersion)
 
 
             ' ✅ Build full command (for logging)

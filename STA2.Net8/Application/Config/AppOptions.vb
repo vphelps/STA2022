@@ -25,7 +25,9 @@ Public Class AppOptions
 
     Public Property RepoFolderPath As String
     Public Property FlavorFolderPath As String
-
+    Public Property BackupPathOverride As String
+    Public Property BackupScriptPath As String
+    Public Property QaServerCommandLine As String
 
     ' -------------------------------------------------
     ' Database / SQL
@@ -42,7 +44,7 @@ Public Class AppOptions
     Public Property SetupSwitches As String
     Public Property StartDatabaseDefault As String
     Public Property ApplyFlavorDefault As String
-
+    Public Property PersonalFlavorFileName As String
 
     ' -------------------------------------------------
     ' Flavor selection defaults

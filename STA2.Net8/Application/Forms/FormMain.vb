@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.Management
 Imports System.Runtime.Intrinsics
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
@@ -16,12 +17,10 @@ Public Class FormMain
     Private _runExistingVersionPath As String
     Private _tabHintLabel As Label
     Private _tabHintTimer As Timer
-    Private _hoverHints As HoverHintManager
     Private _uiStateController As UIStateController
     Private _scriptController As ScriptExecutionController
     Private _databaseController As DatabaseViewController
     Private _isLoadingOptions As Boolean = False
-
     Private ReadOnly _serviceNames As String() =
     {
         "AdvApiServer",
@@ -72,87 +71,160 @@ Public Class FormMain
 
     End Sub
     Private Sub InitializeUIEnhancements()
-        _hoverHints = New HoverHintManager(Me)
+        Dim strTemp As String
+
 
         ' ✅ Button images
         SetButtonIcon(btnCopyScriptOutput, "imgCopy16.png")
         SetButtonIcon(btnRepoFolder, "imgOpenFolder16.png")
         SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
         SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
+        SetButtonIcon(btnBackupPathOverride, "imgOpenFolder16.png")
+        SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
+        SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
+        SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
+        SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
-        _hoverHints.Add(btnRunApplyFlavorLive, "Applies your configured default flavors")
-        _hoverHints.Add(btnOpenLogFile, "Browse and open any log file")
-        _hoverHints.Add(btnRunDatabaseStartLive, "Starts the database with default flavors and optionally the value from Start DB Version box")
-        _hoverHints.Add(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
-        _hoverHints.Add(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
-        _hoverHints.Add(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
-        _hoverHints.Add(btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
-        _hoverHints.Add(btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
-        _hoverHints.Add(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
-        _hoverHints.Add(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
-        _hoverHints.Add(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
-        _hoverHints.Add(btnUpdateShiftDate, "Use to set the Advantage system ShiftDate to today's date")
-        _hoverHints.Add(btnExit, "Exit the Assistant")
-        _hoverHints.Add(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
+        ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
+        ToolTip1.SetToolTip(btnOpenLogFile, "Browse And open any log file")
+        ToolTip1.SetToolTip(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
+        ToolTip1.SetToolTip(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
+        ToolTip1.SetToolTip(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
+        ToolTip1.SetToolTip(btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
+        ToolTip1.SetToolTip(btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
+        ToolTip1.SetToolTip(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
+        ToolTip1.SetToolTip(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
+        ToolTip1.SetToolTip(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
+        ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
+        ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
 
-        _hoverHints.Add(btnCalc, "Open the Calculator included with Windows")
-        _hoverHints.Add(btnTaskmgr, "Open the Windows Task Manager")
-        _hoverHints.Add(btnAppWiz, "Open the Control Panel > Programs and Features window")
-        _hoverHints.Add(btnEventViewer, "Open the Windows Event Viewer")
-        _hoverHints.Add(btnDevices, "Open the Control Panel > Devices and Printers window")
-        _hoverHints.Add(btnServices, "Open the Windows Services window")
+        strTemp =
+            "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
+            "Right Click for other Start Database options:" & Environment.NewLine &
+            " - Start with no flavors (raw)" & Environment.NewLine &
+            " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+            " - Backup the database to 00Pathfinder"
 
-        _hoverHints.Add(btnAdvManager, "Run Advantage Manager Console")
-        _hoverHints.Add(btnPos, "Run Advantage POS")
-        _hoverHints.Add(btnAdvGroups, "Run Advantage Groups")
-        _hoverHints.Add(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
-        _hoverHints.Add(btnAdvConfig, "Run CenterEdge Configuration")
-        _hoverHints.Add(btnAdvReportEditor, "Run Advantage Report Editor")
-        _hoverHints.Add(btnAdvRedeem, "Run Advantage Redemption")
-        _hoverHints.Add(btnAdvCardTech, "DESCRIPTION")
-        _hoverHints.Add(btnAdvKiosk, "Run Advantage Legacy Kiosk")
-        _hoverHints.Add(btnAdvUpgrade, "Run Advantage Upgrade (AdvUpgrade.exe)")
+        ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
+        strTemp =
+            "Launch the QA API in a separate PowerShell window." & Environment.NewLine &
+            "Stops the AdvApiServer service If running, Then starts the configured script." & Environment.NewLine &
+            "Prevents duplicate instances if already active."
+        ToolTip1.SetToolTip(btnRunQaApi, strTemp)
+
+
+        ' System tools
+        ToolTip1.SetToolTip(btnCalc, "Open the Calculator included With Windows")
+        ToolTip1.SetToolTip(btnTaskmgr, "Open the Windows Task Manager")
+        ToolTip1.SetToolTip(btnAppWiz, "Open the Control Panel > Programs And Features window")
+        ToolTip1.SetToolTip(btnEventViewer, "Open the Windows Event Viewer")
+        ToolTip1.SetToolTip(btnDevices, "Open the Control Panel > Devices And Printers window")
+        ToolTip1.SetToolTip(btnServices, "Open the Windows Services window")
+
+        ' Advantage apps
+        ToolTip1.SetToolTip(btnAdvManager, "Run Advantage Manager Console")
+        ToolTip1.SetToolTip(btnPos, "Run Advantage POS")
+        ToolTip1.SetToolTip(btnAdvGroups, "Run Advantage Groups")
+        ToolTip1.SetToolTip(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
+        ToolTip1.SetToolTip(btnAdvConfig, "Run CenterEdge Configuration")
+        ToolTip1.SetToolTip(btnAdvReportEditor, "Run Advantage Report Editor")
+        ToolTip1.SetToolTip(btnAdvRedeem, "Run Advantage Redemption")
+        ToolTip1.SetToolTip(btnAdvCardTech, "DESCRIPTION")
+        ToolTip1.SetToolTip(btnAdvKiosk, "Run Advantage Legacy Kiosk")
+        ToolTip1.SetToolTip(btnAdvUpgrade, "Run Advantage Upgrade (AdvUpgrade.exe)")
 
         ' ✅ Hover hints
-        _hoverHints.Add(lbFlavorsList, "🖱 Right-click → Apply selected flavors" & vbCrLf & "⚡ Double-click → Apply highlighted")
-        _hoverHints.Add(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
-        _hoverHints.Add(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
-        _hoverHints.Add(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
+        ToolTip1.SetToolTip(
+            lbFlavorsList,
+            "🖱 Right-click → Apply selected flavors" & vbCrLf &
+            "⚡ Double-click → Apply highlighted"
+        )
+        ToolTip1.SetToolTip(btnFlavorsListRefresh, "Refresh the list Of flavors from the configured flavor folder")
+        ToolTip1.SetToolTip(btnFlavorFileCopy, "Copy SQL Files into the Repo's flavor folder (Determined by the Repo Folder on the Options tab")
+
+        ToolTip1.SetToolTip(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
+        ToolTip1.SetToolTip(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
+        ToolTip1.SetToolTip(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
 
         ' ✅ Hover hints for Options Tab
-        _hoverHints.Add(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
-        _hoverHints.Add(tbRepoFolder, "Select your repository root folder")
-        _hoverHints.Add(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
-        _hoverHints.Add(cbShowHiddenServices, "Check this box to show all Advantage services in the Services List even if they are not installed.  Unchecked only the installed services will show")
-        _hoverHints.Add(tbDatabaseStartDefault, "This is the path to the script to start the docker database (Start-Database.ps1)")
-        _hoverHints.Add(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
-        _hoverHints.Add(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
-        _hoverHints.Add(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
+        ToolTip1.SetToolTip(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
+        ToolTip1.SetToolTip(tbRepoFolder, "Select your repository root folder")
+        ToolTip1.SetToolTip(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
+        ToolTip1.SetToolTip(cbShowHiddenServices, "Check this box to show all Advantage services in the Services List even if they are not installed.  Unchecked only the installed services will show")
+        ToolTip1.SetToolTip(tbDatabaseStartDefault, "This is the path to the script to start the docker database (Start-Database.ps1)")
+        ToolTip1.SetToolTip(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
+        ToolTip1.SetToolTip(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
+        ToolTip1.SetToolTip(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
+        ToolTip1.SetToolTip(tbBackupPathOverride, "This is the path to the folder that contains backup files like 00Pathfinder.bak")
+        ToolTip1.SetToolTip(tbBackupScriptPath, "This is the path to the script to backup the database to the backup folder (Backup-Database.ps1)")
+
+        ToolTip1.SetToolTip(tbRunQaCmdLine, "Enter the QA API script path and any command line switches." & Environment.NewLine & "The script will be launched In a separate PowerShell window.")
+        ToolTip1.SetToolTip(btnRunQaCmdLine, "Browse And select a QA API script." & Environment.NewLine & "You will be prompted to enter optional command line switches after selection.")
+
+        ToolTip1.SetToolTip(btnAdd, "Add a New application To the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnEdit, "Edit the program selected In the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnDelete, "Delete the program selected In the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnLaunch, "Launch the program selected In the Application Launcher Settings")
+        ToolTip1.SetToolTip(btnResetFlavorDefaults, "Resets the list Of Default Flavors Selections To the defaults that were previously saved")
+        ToolTip1.SetToolTip(btnSaveFlavorDefaults, "Save the currently selected flavors In the Default Flavors Selection list As the New Default selections")
+
+        ToolTip1.SetToolTip(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
+        ToolTip1.SetToolTip(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup When the database upgrade has finished")
+        ToolTip1.SetToolTip(cbAdvUpgradeQuiet, "Run the Advantage Upgrade In a command prompt without a window")
+        ToolTip1.SetToolTip(tbAdvupgrade, "Example Of the command line that will be used With the selected switches")
+        ToolTip1.SetToolTip(btnRepoFolder, "Select the base folder For the Advantage Repo.  This Is the folder that contains the 'tests' folder and the 'flavors' folder")
+        ToolTip1.SetToolTip(btnBrowseApplyScript, "Select the script to apply flavors to the running database (Apply-Flavors.ps1)")
+        ToolTip1.SetToolTip(btnBrowseStartScript, "Select the script to start the database (Start-Database.ps1)")
+        ToolTip1.SetToolTip(btnBackupScriptPath, "Select the script to start the database (Backup-Database.ps1)")
+        ToolTip1.SetToolTip(btnBackupPathOverride, "Select the folder to store database backup files in.  If not set default to the database value from AppOptions")
+
+        ' ✅ Hover hints for Logs Tab
+        ToolTip1.SetToolTip(btnOpenLogFile, "Opens the folder containing the log files In a Open File box To Select a log file")
+        ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file For today To see the latest log entries")
+        ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log In a message box")
+        ToolTip1.SetToolTip(btnLastFailed, "Displays the last Error encountered In a message box")
+        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
+
+        ' ✅ Hover hints for Personal Flavor Tab
+        ToolTip1.SetToolTip(btnFlavorLoad, "Opens a file dialog box to load a set of SQL queries from a selected SQL file ")
+        ToolTip1.SetToolTip(btnFlavorSave, "Opens a file dialog box to save the queries in the window to a SQL file for use as a personal flavor")
+        ToolTip1.SetToolTip(btnFlavorClear, "Clears the contents of the text entry")
+        ToolTip1.SetToolTip(btnFlavorPaste, "Paste queries to the text entry from the Clipboard")
+        ToolTip1.SetToolTip(tbFlavor, "One or more SQL queries to be used as a 'Personal Flavor' that can be applied with the Apply Personal Flavor button")
 
 
-        _hoverHints.Add(btnAdd, "Add a new application to the Application Launcher Settings")
-        _hoverHints.Add(btnEdit, "Edit the program selected in the Application Launcher Settings")
-        _hoverHints.Add(btnDelete, "Delete the program selected in the Application Launcher Settings")
-        _hoverHints.Add(btnLaunch, "Launch the program selected in the Application Launcher Settings")
-        _hoverHints.Add(btnResetFlavorDefaults, "Resets the list of Default Flavors Selections to the defaults that were previously saved")
-        _hoverHints.Add(btnSaveFlavorDefaults, "Save the currently selected flavors in the Default Flavors Selection list as the new default selections")
-
-        _hoverHints.Add(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
-        _hoverHints.Add(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup when the database upgrade has finished")
-        _hoverHints.Add(cbAdvUpgradeQuiet, "Run the Advantage Upgrade in a command prompt without a window")
-        _hoverHints.Add(tbAdvupgrade, "Example of the command line that will be used with the selected switches")
 
 
-        _hoverHints.Add(btnOpenLogFile, "Opens the folder containing the log files in a Open File box to select a log file")
-        _hoverHints.Add(btnViewLatestLog, "Opens the log file for today to see the latest log entries ")
-        _hoverHints.Add(btnLastLogBlock, "Displays the very last script execution log in a message box")
-        _hoverHints.Add(btnLastFailed, "Displays the last error encountered in a message box")
+        ToolTip1.SetToolTip(btnRefreshAdvDataTab, "Refresh the Advantage Data shown above from the tables ApplicationInfo, AppOptions, and WebOptions")
 
-        ' Hoverhint line template
-        '_hoverHints.Add(ControlName, "DESCRIPTION")
+
     End Sub
+    Private Async Function RunScriptAsync(
+    scriptPath As String,
+    trigger As Button,
+    statusText As String,
+    Optional flavors As List(Of String) = Nothing,
+    Optional useVersion As Boolean = False,
+    Optional versionText As String = Nothing,
+    Optional overrideArgs As String = Nothing
+) As Task
 
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = scriptPath,
+        .FlavorNames = flavors,
+        .UseVersion = useVersion,
+        .VersionText = If(useVersion, versionText, Nothing),
+        .OverrideArgs = overrideArgs
+    }
+
+        Await _scriptController.RunAsync(
+        options:=cmdOptions,
+        triggerButton:=trigger,
+        runningStatusText:=statusText
+    )
+
+    End Function
     Private Sub ShowErrorPopup(ex As Exception, source As String)
         If ex Is Nothing Then Return
 
@@ -225,6 +297,7 @@ Public Class FormMain
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
+        lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
 
         rtbLiveOutput.CreateControl()
         flpQuickLaunch.AllowDrop = True
@@ -237,16 +310,6 @@ Public Class FormMain
     options:=_options,
     liveOutputManager:=_liveOutputManager
 )
-
-        ' Quick Launch manager
-        _quickLaunchManager = New QuickLaunchManager(
-        panel:=flpQuickLaunch,
-        options:=_options,
-        launcherConfig:=_launcherConfig,
-        toolTip:=ToolTipForQuickButtons,
-        launchCallback:=AddressOf ProgramLauncher.Launch
-    )
-
         _isLoadingOptions = True
 
         If _options IsNot Nothing Then
@@ -257,7 +320,14 @@ Public Class FormMain
 
         _isLoadingOptions = False
 
-
+        ' Quick Launch manager
+        _quickLaunchManager = New QuickLaunchManager(
+        panel:=flpQuickLaunch,
+        options:=_options,
+        launcherConfig:=_launcherConfig,
+        toolTip:=ToolTipForQuickButtons,
+        launchCallback:=AddressOf ProgramLauncher.Launch
+    )
 
         ' --------------------------------------------------
         ' Flavor selection manager (FIXED AND CORRECT)
@@ -326,6 +396,10 @@ Public Class FormMain
             tbSetupSwitches.Text = _options.SetupSwitches
             tbDatabaseStartDefault.Text = Trim(_options.StartDatabaseDefault)
             tbApplyFlavorDefault.Text = Trim(_options.ApplyFlavorDefault)
+            tbBackupPathOverride.Text = Trim(_options.BackupPathOverride)
+            tbBackupScriptPath.Text = Trim(_options.BackupScriptPath)
+            tbRunQaCmdLine.Text = Trim(_options.QaServerCommandLine)
+
         End If
 
         If IsRunningAsAdmin() Then
@@ -341,6 +415,10 @@ Public Class FormMain
 
         DatabaseCoordinator.RefreshAdvantageData(Me)
         EnableDoubleBuffering(tblServices)
+
+
+        ' Load saved personal flavor if it exists
+        tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
 
     End Sub
 
@@ -497,10 +575,16 @@ Public Class FormMain
                                  _options.SetupSwitches = tbSetupSwitches.Text
                                  _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text)
                                  _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
+                                 _options.BackupPathOverride = Trim(tbBackupPathOverride.Text)
+                                 _options.QaServerCommandLine = Trim(tbRunQaCmdLine.Text)
                              End Sub)
             End If
         Catch
         End Try
+
+        ' ✅ Final log cleanup on exit
+        GlobalErrorHandler.CleanupLogsOlderThan(GlobalErrorHandler.LogRetentionDays)
+
     End Sub
 
     Private Sub InitializeFlavors()
@@ -816,7 +900,6 @@ Public Class FormMain
         OptionsManager.SaveLauncherConfig(_launcherConfig)
     End Sub
 
-
     Private Sub ForceLiveOutputRedraw()
 
         If rtbLiveOutput.IsDisposed Then Return
@@ -1122,28 +1205,33 @@ Public Class FormMain
         _databaseController.RefreshLogs()
     End Sub
 
-    Private Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+    Private Async Sub btnReconnect_Click(sender As Object, e As EventArgs) Handles btnReconnect.Click
+
+        If Me.IsDisposed OrElse Not Me.IsHandleCreated Then Return
 
         Cursor.Current = Cursors.WaitCursor
         btnReconnect.Enabled = False
 
         Try
-            DatabaseCoordinator.EvaluateDatabaseAvailability(
-            form:=Me,
-            connectionString:=ConfigValues.ConnectionString,
-            configuredContainerName:=_options?.SqlContainerName
-        )
+            ' Await the async evaluation (non-blocking)
+            Await DatabaseCoordinator.EvaluateDatabaseAvailabilityAsync(
+            Me,
+            ConfigValues.ConnectionString,
+            _options?.SqlContainerName)
 
+            ' If Evaluate succeeded and we are online — inform the user
             If Not Variables.OfflineMode Then
                 UIHelpers.TimedInfoPrompt(message:="Reconnected to the database.", timeoutSeconds:=30, title:="Database")
-
+            Else
+                ' Still offline — notify briefly (keeps button enabled afterwards)
+                UIHelpers.TimedErrorPrompt(message:="Reconnect attempt did not restore the database connection.", timeoutSeconds:=5, title:="Database")
             End If
 
         Catch ex As Exception
-
             UIHelpers.TimedErrorPrompt(message:=$"Reconnect failed: {ex.Message}", timeoutSeconds:=0, title:="Database")
         Finally
-            btnReconnect.Enabled = True
+            ' Enable only when still offline so user can retry; otherwise disable to avoid confusion
+            btnReconnect.Enabled = Variables.OfflineMode
             Cursor.Current = Cursors.Default
         End Try
 
@@ -1238,79 +1326,6 @@ Public Class FormMain
             btnBatchLaunch.Enabled = True
         End Try
     End Sub
-    Private Async Sub btnRunApplyFlavorLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunApplyFlavorLive.Click
-
-        Dim defaultFlavors = _options?.DefaultFlavorNames
-
-        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
-            MessageBox.Show(
-            "No default flavors are configured.",
-            "No Defaults",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Information)
-            Return
-        End If
-
-        Dim cmdOptions As New ScriptCommandOptions With {
-        .ScriptPath = tbApplyFlavorDefault.Text,
-        .FlavorNames = defaultFlavors,
-        .UseVersion = cbDbUseVersion.Checked,
-        .VersionText = tbDbUseVersion.Text
-    }
-
-        Await _scriptController.RunAsync(
-        options:=cmdOptions,
-        triggerButton:=btnRunApplyFlavorLive,
-        runningStatusText:="Applying default flavors (live output)…"
-    )
-
-    End Sub
-
-
-    Private Async Sub btnRunDatabaseStartLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunDatabaseStartLive.Click
-
-        ' ✅ Get default flavors
-        Dim defaultFlavors = _options?.DefaultFlavorNames
-
-        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
-            MessageBox.Show(
-            "No default flavors are configured.",
-            "No Defaults",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Information)
-            Return
-        End If
-
-        Dim cmdOptions As New ScriptCommandOptions With {
-        .ScriptPath = tbDatabaseStartDefault.Text,
-        .FlavorNames = defaultFlavors,
-        .UseVersion = cbDbUseVersion.Checked,
-        .VersionText = tbDbUseVersion.Text
-    }
-
-        Await _scriptController.RunAsync(
-        options:=cmdOptions,
-        triggerButton:=btnRunDatabaseStartLive,
-        runningStatusText:="Starting database (live output)…"
-    )
-
-        ' ✅ Refresh DB state after run
-        DatabaseCoordinator.EvaluateDatabaseAvailability(
-        form:=Me,
-        connectionString:=ConfigValues.ConnectionString,
-        configuredContainerName:=_options?.SqlContainerName
-    )
-
-        _uiStateController.Refresh()
-
-    End Sub
-
     Private Sub btnBrowseStartScript_Click(sender As Object, e As EventArgs) Handles btnBrowseStartScript.Click
 
 
@@ -1318,7 +1333,8 @@ Public Class FormMain
         With ofdStartScript
             .Title = "Select Start Database Script"
             .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
-            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            .InitialDirectory = _options.RepoFolderPath
+            .FileName = String.Empty
         End With
 
         If ofdStartScript.ShowDialog() = DialogResult.OK Then
@@ -1338,7 +1354,8 @@ Public Class FormMain
         With ofdStartScript   ' ✅ reuse same dialog (or change name if separate)
             .Title = "Select Apply Flavors Script"
             .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
-            .InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            .InitialDirectory = _options.RepoFolderPath
+            .FileName = String.Empty
         End With
 
         If ofdStartScript.ShowDialog() = DialogResult.OK Then
@@ -1352,6 +1369,47 @@ Public Class FormMain
         End If
 
     End Sub
+
+    Private Sub btnBackupPathOverride_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnBackupPathOverride.Click
+
+        ' ✅ Determine current effective backup path
+        Dim currentPath = ResolveBackupPath()
+
+        With staFolderBrowserDialog
+
+            .Description = "Select Backup Folder"
+            .UseDescriptionForTitle = True
+
+            ' ✅ Default to current backup path if valid
+            If Not String.IsNullOrWhiteSpace(currentPath) AndAlso
+           Directory.Exists(currentPath) Then
+
+                .SelectedPath = currentPath
+
+            Else
+                ' ✅ Fallback if nothing valid
+                .SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            End If
+
+        End With
+
+        If staFolderBrowserDialog.ShowDialog = DialogResult.OK Then
+
+            ' ✅ Set textbox (UI reflection of option)
+            tbBackupPathOverride.Text = staFolderBrowserDialog.SelectedPath
+
+            ' ✅ Persist option
+            UpdateOption(Sub()
+                             _options.BackupPathOverride = staFolderBrowserDialog.SelectedPath
+                         End Sub)
+
+        End If
+
+    End Sub
+
     Private Sub clbSqlFiles_Enter(sender As Object, e As EventArgs) _
     Handles clbSqlFiles.Enter
 
@@ -1782,28 +1840,6 @@ Public Class FormMain
             Next
         End Using
     End Sub
-
-    'Private Sub cbAdvUpgradeQuiet_CheckedChanged(sender As Object, e As EventArgs) Handles cbAdvUpgradeQuiet.CheckedChanged, cbAdvUpgradeNoBackup.CheckedChanged, cbAdvUpgradeNoSetup.CheckedChanged
-    '    Dim quiet As String
-    '    Dim nobackup As String
-    '    Dim nosetup As String
-    '    If cbAdvUpgradeQuiet.Checked Then
-    '        quiet = "/q "
-    '    Else
-    '        quiet = ""
-    '    End If
-    '    If cbAdvUpgradeNoBackup.Checked Then
-    '        nobackup = "/nobackup "
-    '    Else
-    '        nobackup = ""
-    '    End If
-    '    If cbAdvUpgradeNoSetup.Checked Then
-    '        nosetup = "/nosetup "
-    '    Else
-    '        nosetup = ""
-    '    End If
-    '    tbAdvupgrade.Text = "AdvUpgrade.exe " + quiet + nobackup + nosetup
-    'End Sub
     Private Sub cbAdvUpgradeQuiet_CheckedChanged(
     sender As Object,
     e As EventArgs
@@ -1859,17 +1895,6 @@ Public Class FormMain
         UpdateOption(Sub() _options.SetupSwitches = tbSetupSwitches.Text)
     End Sub
 
-    Private Async Sub lbFlavorsList_DoubleClick(
-    sender As Object,
-    e As EventArgs
-) Handles lbFlavorsList.DoubleClick
-
-        ' Optional: only apply when 1 item is selected
-        If lbFlavorsList.SelectedItems.Count = 0 Then Return
-
-        Await ApplySelectedFlavorsAsync()
-
-    End Sub
     Private Sub lbFlavorsList_MouseDown(
     sender As Object,
     e As MouseEventArgs
@@ -1887,8 +1912,8 @@ Public Class FormMain
     End Sub
     Private Sub cmsApplySingleFlavor_Opening(
 sender As Object,
-e As CancelEventArgs
-)
+e As System.ComponentModel.CancelEventArgs
+) Handles cmsApplySingleFlavor.Opening
 
         Dim count = lbFlavorsList.SelectedItems.Count
 
@@ -1925,61 +1950,9 @@ e As CancelEventArgs
         End If
 
     End Sub
-    Private Async Sub miApplySingleFlavor_Click(
-    sender As Object,
-    e As EventArgs
-)
 
-        Await ApplySelectedFlavorsAsync()
-        lbFlavorsList.ClearSelected()
-    End Sub
 
-    Private Async Sub tsmiApplyDefaultFlavors_Click(
-    sender As Object,
-    e As EventArgs
-)
 
-        ' ✅ Validate script path
-        If String.IsNullOrWhiteSpace(tbApplyFlavorDefault.Text) Then
-            MessageBox.Show(
-            "Please select an Apply Flavors script first.",
-            "Missing Script",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Warning)
-            Return
-        End If
-
-        ' ✅ Get DEFAULT flavors
-        Dim defaultFlavors = _options.DefaultFlavorNames
-
-        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
-            MessageBox.Show(
-            "No default flavors are configured.",
-            "No Defaults",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Information)
-            Return
-        End If
-
-        ' ✅ Build command options (NEW model-based approach)
-        Dim cmdOptions As New ScriptCommandOptions With {
-        .ScriptPath = tbApplyFlavorDefault.Text,
-        .FlavorNames = defaultFlavors,
-        .UseVersion = cbDbUseVersion.Checked,
-        .VersionText = tbDbUseVersion.Text
-    }
-
-        ' ✅ Run script
-        Await _scriptController.RunAsync(
-        options:=cmdOptions,
-        triggerButton:=btnRunApplyFlavorLive,
-        runningStatusText:="Applying default flavors (live output)…"
-    )
-
-        ' ✅ Clear selection after run
-        lbFlavorsList.ClearSelected()
-
-    End Sub
     Private Sub btnSTParse_Click(sender As Object, e As EventArgs) Handles btnStParse.Click, btnSTClear.Click
         If sender.Equals(btnSTClear) Then
             tbSTParse.Text = ""
@@ -2055,25 +2028,16 @@ e As CancelEventArgs
         e.KeyChar = Chr(0)
     End Sub
 
-    Private Sub btnRefreshServices_Click(sender As Object, e As EventArgs) Handles btnRefreshGeneralTab.Click
+    Private Sub btnRefreshAdvDataTab_Click(sender As Object, e As EventArgs) Handles btnRefreshAdvDataTab.Click
 
         If Variables.OfflineMode Then
             MessageBox.Show("Database is offline.")
             Return
         End If
-
-        If tcSTA.SelectedTab.Equals(tpAdvData) Then
-            If PCInfo.ValidDatabase Then
-                DatabaseCoordinator.RefreshAdvantageData(Me)
-            End If
-        ElseIf tcSTA.SelectedTab.Equals(tpGeneral) Then
-            CodeHelper.Refresher()
-            'Services.ServicesExistCheck()
-
-        Else
-            Dim TabName As String
-            TabName = tcSTA.SelectedTab.Name
+        If PCInfo.ValidDatabase Then
+            DatabaseCoordinator.RefreshAdvantageData(Me)
         End If
+
     End Sub
 
     Private Sub tbDatabaseStartDefault_TextChanged(sender As Object, e As EventArgs) Handles tbDatabaseStartDefault.TextChanged
@@ -2085,10 +2049,13 @@ e As CancelEventArgs
         UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
     End Sub
 
+    Private Sub tbBackupPathOverride_TextChanged(sender As Object, e As EventArgs) Handles tbBackupPathOverride.TextChanged
+        UpdateOption(Sub() _options.BackupPathOverride = Trim(tbBackupPathOverride.Text))
+    End Sub
     Private Sub tslblExecutionStatus_TextChanged(
         sender As Object,
         e As EventArgs
-    )
+    ) Handles tslblExecutionStatus.TextChanged
 
         ' If there is text, show it; otherwise hide it
         tslblExecutionStatus.Visible =
@@ -2438,7 +2405,7 @@ e As CancelEventArgs
     Private Sub btnUpdateShiftDate_Click(sender As Object, e As EventArgs) Handles btnUpdateShiftDate.Click
 
         Try
-            Dim connectionString = ConfigValues.DockerConnectionString()
+            Dim connectionString = ConfigValues.ConnectionString()
 
             DatabaseCoordinator.ExecuteStoredProcedure(
             connectionString,
@@ -2467,17 +2434,684 @@ e As CancelEventArgs
 
     End Sub
 
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+    Private Async Sub btnRunDatabaseStartLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunDatabaseStartLive.Click
+
+        Dim flavors = _options?.DefaultFlavorNames
+
+        If flavors Is Nothing OrElse flavors.Count = 0 Then
+            MessageBox.Show(
+                "No default flavors are configured.",
+                "No Defaults",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+            Return
+        End If
+
+        Await RunScriptAsync(
+            scriptPath:=tbDatabaseStartDefault.Text,
+            trigger:=btnRunDatabaseStartLive,
+            statusText:="Starting database (live output)…",
+            flavors:=flavors,
+            useVersion:=cbDbUseVersion.Checked,
+            versionText:=tbDbUseVersion.Text
+)
+
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            form:=Me,
+            connectionString:=ConfigValues.ConnectionString,
+            configuredContainerName:=_options?.SqlContainerName
+        )
+
+        _uiStateController.Refresh()
+
+    End Sub
+    Private Async Sub btnRunApplyFlavorLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunApplyFlavorLive.Click
+
+        Dim defaultFlavors = _options?.DefaultFlavorNames
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+            MessageBox.Show(
+                "No default flavors are configured.",
+                "No Defaults",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+            Return
+        End If
+
+        Await RunScriptAsync(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            trigger:=btnRunApplyFlavorLive,
+            statusText:="Applying default flavors (live output)…",
+            flavors:=defaultFlavors
+        )
+
+    End Sub
+    Private Async Sub tsmiApplyDefaultFlavors_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiApplyDefaultFlavors.Click
+
+        If String.IsNullOrWhiteSpace(tbApplyFlavorDefault.Text) Then
+            MessageBox.Show(
+            "Please select an Apply Flavors script first.",
+            "Missing Script",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim defaultFlavors = _options.DefaultFlavorNames
+
+        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+            MessageBox.Show(
+            "No default flavors are configured.",
+            "No Defaults",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
+            Return
+        End If
+
+        Await RunScriptAsync(
+        scriptPath:=tbApplyFlavorDefault.Text,
+        trigger:=btnRunApplyFlavorLive,
+        statusText:="Applying default flavors (live output)…",
+        flavors:=defaultFlavors
+    )
+
+        lbFlavorsList.ClearSelected()
+
+    End Sub
+    Private Async Sub lbFlavorsList_DoubleClick(
+    sender As Object,
+    e As EventArgs
+) Handles lbFlavorsList.DoubleClick
+
+        If lbFlavorsList.SelectedItems.Count = 0 Then Return
+
+        Dim selectedFlavors As New List(Of String)
+
+        For Each item As FlavorSelectionManager.SqlFileItem In
+            lbFlavorsList.SelectedItems.OfType(Of FlavorSelectionManager.SqlFileItem)()
+
+            selectedFlavors.Add(item.FlavorName)
+        Next
+
+        Dim description As String =
+            If(selectedFlavors.Count = 1,
+               $"Applying flavor '{selectedFlavors(0)}'",
+               $"Applying {selectedFlavors.Count} flavors")
+
+        Await RunScriptAsync(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            trigger:=btnRunApplyFlavorLive,
+            statusText:=description & " (live output)…",
+            flavors:=selectedFlavors
+        )
+
+    End Sub
+    Private Async Sub miApplySingleFlavor_Click(
+    sender As Object,
+    e As EventArgs
+) Handles miApplySingleFlavor.Click
+
+        If lbFlavorsList.SelectedItems.Count = 0 Then Return
+
+        Dim selectedFlavors As New List(Of String)
+
+        For Each item As FlavorSelectionManager.SqlFileItem In
+            lbFlavorsList.SelectedItems.OfType(Of FlavorSelectionManager.SqlFileItem)()
+
+            selectedFlavors.Add(item.FlavorName)
+        Next
+
+        Await RunScriptAsync(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            trigger:=btnRunApplyFlavorLive,
+            statusText:=$"Applying {selectedFlavors.Count} flavor(s)…",
+            flavors:=selectedFlavors
+        )
+
+        lbFlavorsList.ClearSelected()
+
+    End Sub
+    Private Async Sub ToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles tsmiStartDbRaw.Click
+
+
+
+        Await RunScriptAsync(
+            scriptPath:=tbDatabaseStartDefault.Text,
+            trigger:=btnRunDatabaseStartLive,
+            statusText:="Starting database (force only)…",
+            overrideArgs:=""   ' ✅ produces "-Force" only
+        )
+
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            form:=Me,
+            connectionString:=ConfigValues.ConnectionString,
+            configuredContainerName:=_options?.SqlContainerName
+        )
+
+        _uiStateController.Refresh()
+
+
+
+    End Sub
+
+
+    Private Sub btnBackupScriptPath_Click(sender As Object, e As EventArgs) Handles btnBackupScriptPath.Click
+
+        With ofdStartScript
+            .Title = "Select Backup Database Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = _options.RepoFolderPath
+        End With
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            ' ✅ Store selected script path
+            tbBackupScriptPath.Text = ofdStartScript.FileName
+
+            ' ✅ Persist to options
+            UpdateOption(Sub() _options.BackupScriptPath = ofdStartScript.FileName)
+        End If
+    End Sub
+
+    Private Async Sub tsmiStartDbBackup_Click(sender As Object, e As EventArgs) Handles tsmiStartDbBackup.Click
+        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+            MessageBox.Show(
+                "Please enter a backup path.",
+                "Missing Backup Path",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim backupPath As String = tbBackupPathOverride.Text.Trim()
+        backupPath = String.Join("\", backupPath, "00Pathfinder.bak")
+
+        ' Build argument string (Backup + Training DB)
+        Dim args As String = $"-BackupPath ""{backupPath}"" -IncludeTrainingDB"
+
+
+        Await RunScriptAsync(
+            scriptPath:=tbDatabaseStartDefault.Text,
+            trigger:=btnTest1,
+            statusText:="Starting database (test with backup + training DB)…",
+            overrideArgs:=args
+        )
+
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            form:=Me,
+            connectionString:=ConfigValues.ConnectionString,
+            configuredContainerName:=_options?.SqlContainerName
+        )
+
         _uiStateController.Refresh()
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
-        tcSTA.SelectedTab = tpOptions
+    Private Async Sub tsmiBackupDb_Click(sender As Object, e As EventArgs) Handles tsmiBackupDb.Click
+        Dim script As String = _options.BackupScriptPath
+
+
+        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+            MessageBox.Show(
+            "Please enter a backup directory.",
+            "Missing Directory",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim directoryPath As String = tbBackupPathOverride.Text.Trim()
+
+        ' Build argument string
+        Dim args As String = $"-Directory ""{directoryPath}"""
+
+        Await RunScriptAsync(
+        scriptPath:=script,  ' or use a textbox if you have one
+        trigger:=btnTest2,
+        statusText:="Backing up database (force)…",
+        flavors:=Nothing,
+        overrideArgs:=args
+    )
 
     End Sub
 
-    Private Sub tsmiBtnRClick_Click(sender As Object, e As EventArgs)
-        tcSTA.SelectedTab = tpLogs
+    Private Sub btnFlavorSave_Click(sender As Object, e As EventArgs) Handles btnFlavorSave.Click
+
+        Using sfd As New SaveFileDialog()
+
+            sfd.Filter = "SQL Files (*.sql)|*.sql"
+            sfd.InitialDirectory = Path.GetDirectoryName(OptionsManager.GetOptionsPath())
+            sfd.FileName = If(String.IsNullOrWhiteSpace(_options?.PersonalFlavorFileName),
+                          "PersonalFlavor.sql",
+                          _options.PersonalFlavorFileName)
+
+            If sfd.ShowDialog() = DialogResult.OK Then
+
+                Try
+                    File.WriteAllText(sfd.FileName, tbFlavor.Text)
+
+                    ' ✅ Save filename into options
+                    _options.PersonalFlavorFileName = Path.GetFileName(sfd.FileName)
+                    OptionsManager.Save(_options)
+
+                    MessageBox.Show("Personal flavor saved.",
+                                "Saved",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information)
+
+                Catch ex As Exception
+                    MessageBox.Show("Failed to save file: " & ex.Message)
+                End Try
+
+            End If
+
+        End Using
+
     End Sub
+    Private Sub btnFlavorLoad_Click(sender As Object, e As EventArgs) Handles btnFlavorLoad.Click
+
+        Using ofd As New OpenFileDialog()
+            ofd.Filter = "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*"
+
+            If ofd.ShowDialog() = DialogResult.OK Then
+                Try
+                    tbFlavor.Text = File.ReadAllText(ofd.FileName)
+                Catch ex As Exception
+                    MessageBox.Show("Failed to load file: " & ex.Message)
+                End Try
+            End If
+        End Using
+
+    End Sub
+    Private Sub btnFlavorPaste_Click(sender As Object, e As EventArgs) Handles btnFlavorPaste.Click
+
+        If Clipboard.ContainsText() Then
+            tbFlavor.Text += Clipboard.GetText()
+        End If
+
+    End Sub
+
+    Private Sub btnFlavorClear_Click(sender As Object, e As EventArgs) Handles btnFlavorClear.Click
+        tbFlavor.Text = ""
+
+    End Sub
+    Private Async Sub btnApplyPersonalFlavor_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnApplyPersonalFlavor.Click
+
+        Try
+            ' ✅ Ensure latest text is saved first
+            OptionsManager.SavePersonalFlavor(tbFlavor.Text)
+
+            Dim sourcePath = OptionsManager.GetPersonalFlavorPath()
+
+            If Not File.Exists(sourcePath) Then
+                MessageBox.Show("Personal flavor file not found.",
+                            "Missing File",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning)
+                Return
+            End If
+
+            If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+                MessageBox.Show("Flavor folder path is not configured.",
+                            "Configuration Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error)
+                Return
+            End If
+
+            ' ✅ Use saved file name
+            Dim destFileName = If(
+            String.IsNullOrWhiteSpace(_options.PersonalFlavorFileName),
+            "PersonalFlavor.sql",
+            _options.PersonalFlavorFileName
+        )
+
+            Dim destPath = Path.Combine(_options.FlavorFolderPath, destFileName)
+
+            Directory.CreateDirectory(_options.RepoFolderPath)
+
+            File.Copy(sourcePath, destPath, True)
+
+            ' ✅ Apply using filename (no extension)
+            Dim flavors As New List(Of String) From {
+            Path.GetFileNameWithoutExtension(destFileName)
+        }
+
+            Await RunScriptAsync(
+            scriptPath:=tbApplyFlavorDefault.Text,
+            trigger:=btnApplyPersonalFlavor,
+            statusText:=$"Applying personal flavor ({destFileName})…",
+            flavors:=flavors
+        )
+
+        Catch ex As Exception
+            MessageBox.Show("Error applying personal flavor: " & ex.Message)
+        End Try
+        _flavorManager.RefreshPreservingSelection()
+        SyncFlavorsListMirror()
+
+    End Sub
+
+    Private Sub btnFlavorsListRefresh_Click(sender As Object, e As EventArgs) Handles btnFlavorsListRefresh.Click
+        _flavorManager.RefreshPreservingSelection()
+        SyncFlavorsListMirror()
+
+    End Sub
+
+    Private Sub btnFlavorFileCopy_Click(sender As Object, e As EventArgs) Handles btnFlavorFileCopy.Click
+
+        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.FlavorFolderPath) Then
+            MessageBox.Show(
+            "Flavor folder path is not configured.",
+            "Configuration Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        If Not Directory.Exists(_options.FlavorFolderPath) Then
+            MessageBox.Show(
+            "Flavor folder does not exist.",
+            "Missing Folder",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Using ofd As New OpenFileDialog()
+
+            ofd.Title = "Select SQL Flavor Files"
+            ofd.Filter = "SQL Files (*.sql)|*.sql"
+            ofd.Multiselect = True
+
+            If ofd.ShowDialog() = DialogResult.OK Then
+
+                Dim copiedCount As Integer = 0
+
+                For Each file In ofd.FileNames
+
+                    Try
+                        Dim fileName = Path.GetFileName(file)
+                        Dim destPath = Path.Combine(_options.FlavorFolderPath, fileName)
+
+                        If System.IO.File.Exists(destPath) Then
+                            Dim result = MessageBox.Show(
+                $"File '{fileName}' already exists. Overwrite?",
+                "Confirm",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question)
+
+                            If result <> DialogResult.Yes Then Continue For
+                        End If
+
+                        System.IO.File.Copy(file, destPath, True)
+                        copiedCount += 1
+
+                    Catch ex As Exception
+                        MessageBox.Show(
+            $"Failed to copy: {file}{Environment.NewLine}{ex.Message}",
+            "Copy Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+                    End Try
+
+                Next
+
+                ' ✅ Refresh flavors list
+                _flavorManager.RefreshPreservingSelection()
+                SyncFlavorsListMirror()
+
+                MessageBox.Show(
+                $"{copiedCount} file(s) added to flavors.",
+                "Success",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+
+            End If
+
+        End Using
+
+    End Sub
+
+    Private Sub btnRunQaCmdLine_Click(sender As Object, e As EventArgs) Handles btnRunQaCmdLine.Click
+
+        With ofdStartScript
+            .Title = "Select QA Api Server Script"
+            .Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+            .InitialDirectory = _options.RepoFolderPath
+            .FileName = String.Empty
+        End With
+
+
+        If ofdStartScript.ShowDialog() = DialogResult.OK Then
+
+            Dim scriptPath As String = ofdStartScript.FileName
+
+            ' ✅ Ask for command line switches
+            Dim switches As String = InputBox(
+        "Enter command line switches (optional):",
+        "QA Script Options",
+        "")
+
+            ' ✅ Combine them (store however you prefer)
+            Dim fullCommand As String = scriptPath
+
+            If Not String.IsNullOrWhiteSpace(switches) Then
+                fullCommand &= " " & switches
+            End If
+
+            ' ✅ Update UI
+            tbRunQaCmdLine.Text = fullCommand
+
+            ' ✅ Save
+            UpdateOption(Sub() _options.QaServerCommandLine = fullCommand)
+
+        End If
+    End Sub
+
+    Private Async Sub btnRunQaApi_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunQaApi.Click
+
+        Dim fullCommand As String = tbRunQaCmdLine.Text
+
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            MessageBox.Show(
+            "No QA command line configured.",
+            "Missing Command",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            btnRunQaApi.Enabled = False
+
+            ' ✅ STEP 1: Parse command FIRST
+
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
+
+            Dim scriptPath = parsed.ScriptPath
+            Dim args = parsed.Args
+
+            ' ✅ STEP 2: NOW detection works correctly
+            If QaScriptHelper.IsScriptRunning(scriptPath) Then
+
+                UIHelpers.TimedWarningPrompt(
+            owner:=Me,
+            message:="The QA API script is already running." & Environment.NewLine &
+                     "Stop the existing instance before starting a new one.",
+            title:="Already Running",
+            timeoutSeconds:=10)
+
+                Return
+            End If
+
+            ' ✅ STEP 3: Stop service
+
+            Dim serviceName As String = "AdvApiServer"
+
+            Await Task.Run(Sub()
+                               Try
+                                   Using sc As New ServiceController(serviceName)
+                                       If sc.Status = ServiceControllerStatus.Running OrElse
+                   sc.Status = ServiceControllerStatus.StartPending Then
+
+                                           sc.Stop()
+                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                                       End If
+                                   End Using
+                               Catch ex As InvalidOperationException
+                               End Try
+                           End Sub)
+
+            ' ✅ STEP 3: Launch PowerShell (separate window, persistent)
+            Dim psCommand As String =
+            $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            Dim psi As New ProcessStartInfo With {
+            .FileName = "powershell.exe",
+            .Arguments = psCommand,
+            .UseShellExecute = True,
+            .CreateNoWindow = False
+        }
+
+            Process.Start(psi)
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+            "Failed to launch QA script:" & Environment.NewLine & ex.Message,
+            "Execution Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        Finally
+            btnRunQaApi.Enabled = True
+        End Try
+
+    End Sub
+
+
+
+    Private Async Sub tsmiRunQaApiKillScript_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiRunQaApiKillScript.Click
+
+        Dim fullCommand As String = tbRunQaCmdLine.Text
+
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            MessageBox.Show(
+                "No QA command line configured.",
+                "Missing Command",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            tsmiRunQaApiKillScript.Enabled = False
+
+            ' ✅ STEP 1: Parse command
+
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
+
+            Dim scriptPath = parsed.ScriptPath
+            Dim args = parsed.Args
+
+            ' ✅ STEP 2: Confirm restart (OPTIONAL UPGRADE)
+            Dim confirm = UIHelpers.TimedYesNoPrompt(
+                owner:=Me,
+                message:="This will terminate the running QA API instance (if any) and start a fresh one." &
+                         Environment.NewLine & Environment.NewLine &
+                         "Continue?",
+                title:="Restart QA API",
+                timeoutSeconds:=10,
+                defaultChoice:=DialogResult.No)
+
+            If confirm <> DialogResult.Yes Then
+                Return
+            End If
+
+            ' ✅ STEP 3: Kill running script instances (if any)
+            If QaScriptHelper.IsScriptRunning(scriptPath) Then
+
+                UIHelpers.TimedInfoPrompt(
+                    owner:=Me,
+                    message:="Stopping existing QA API instance...",
+                    title:="Restarting",
+                    timeoutSeconds:=3)
+
+                Await Task.Run(Sub()
+                                   ' ✅ Kill PowerShell + script
+                                   QaScriptHelper.KillScriptProcesses(scriptPath)
+
+                               End Sub)
+            End If
+
+            ' ✅ STEP 4: Stop Windows service
+            Dim serviceName As String = "AdvApiServer"
+
+            Await Task.Run(Sub()
+                               Try
+                                   Using sc As New ServiceController(serviceName)
+
+                                       If sc.Status = ServiceControllerStatus.Running OrElse
+                                          sc.Status = ServiceControllerStatus.StartPending Then
+
+                                           sc.Stop()
+                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+
+                                       End If
+
+                                   End Using
+                               Catch
+                                   ' Ignore if not installed
+                               End Try
+                           End Sub)
+
+            ' ✅ STEP 5: Launch fresh instance (NO -NoExit)
+            Dim psCommand As String =
+                $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            Dim psi As New ProcessStartInfo With {
+                .FileName = "powershell.exe",
+                .Arguments = psCommand,
+                .UseShellExecute = True,
+                .CreateNoWindow = False
+            }
+
+            Process.Start(psi)
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+                "Failed to restart QA script:" & Environment.NewLine & ex.Message,
+                "Execution Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+
+        Finally
+            tsmiRunQaApiKillScript.Enabled = True
+        End Try
+
+    End Sub
+
+
 End Class

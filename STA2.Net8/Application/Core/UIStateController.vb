@@ -8,6 +8,22 @@
         _options = options
     End Sub
 
+    Public Sub SetBold(ctrl As Control, isBold As Boolean)
+
+        If ctrl Is Nothing Then Return
+
+        Dim f = ctrl.Font
+
+        Dim newStyle =
+        If(isBold,
+           f.Style Or FontStyle.Bold,
+           f.Style And Not FontStyle.Bold)
+
+        ctrl.Font = New Font(f, newStyle)
+
+    End Sub
+
+
     Public Sub Refresh()
 
         Dim scriptRunning As Boolean = _form.IsScriptRunning()
@@ -51,8 +67,15 @@
             Not String.IsNullOrWhiteSpace(_options.ApplyFlavorDefault)
 
         _form.btnRunApplyFlavorLive.Enabled = canApplyFlavors
+        _form.btnApplyPersonalFlavor.Enabled = canApplyFlavors
         _form.tsmiApplyDefaultFlavors.Enabled = canApplyFlavors
         _form.gbFlavorsList.Enabled = canApplyFlavors
+
+        ' ----------------------------
+        ' Other buttons
+        ' ----------------------------
+        _form.btnReconnect.Enabled = Variables.OfflineMode
+
 
         ' ----------------------------
         ' Text sync (safe)
@@ -80,10 +103,10 @@
         ' ----------------------------
         ' Version mismatch coloring
         ' ----------------------------
+        Dim v1 = CodeHelper.ParseVersionSafe(info.Version)
+        Dim v2 = CodeHelper.ParseVersionSafe(PCInfo.DatabaseVersion)
 
-        Dim v1 As New Version(info.Version)
-        Dim v2 As New Version(PCInfo.DatabaseVersion)
-        If v1.Major = v2.Major AndAlso v1.Minor = v2.Minor AndAlso v1.Build = v2.Build Then  ' ✅ Compare only parts 1, 2, 3
+        If CodeHelper.VersionsMatch(v1, v2) Then
 
             _form.tbDbVer.BackColor = TextboxColors.White
             _form.tbDbVer.ForeColor = TextboxColors.Black
@@ -96,6 +119,7 @@
             _form.tslblCeVersion.BackColor = TextboxColors.Red
 
         End If
+
 
         Dim now As DateTime = DateTime.Now.Date
         Dim shiftDate As DateTime
@@ -111,7 +135,12 @@
                 _form.tbShiftDate.ForeColor = TextboxColors.Black
             End If
         End If
+        'Flavor File name label update
+        _form.lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
+
+        SetBold(_form.btnRunDatabaseStartLive, _form.btnRunDatabaseStartLive.Enabled)
 
     End Sub
+
 
 End Class
