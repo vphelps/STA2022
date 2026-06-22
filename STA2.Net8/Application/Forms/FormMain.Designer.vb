@@ -607,7 +607,7 @@ Partial Class FormMain
         ' 
         TableLayoutPanel2.ColumnCount = 2
         TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 35F))
+        TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 35.0F))
         TableLayoutPanel2.Controls.Add(btnCopyScriptOutput, 1, 1)
         TableLayoutPanel2.Controls.Add(tbOutputScript, 0, 1)
         TableLayoutPanel2.Controls.Add(rtbLiveOutput, 0, 0)
@@ -616,8 +616,8 @@ Partial Class FormMain
         TableLayoutPanel2.Margin = New Padding(4, 3, 4, 3)
         TableLayoutPanel2.Name = "TableLayoutPanel2"
         TableLayoutPanel2.RowCount = 2
-        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Absolute, 35F))
+        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
+        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Absolute, 35.0F))
         TableLayoutPanel2.Size = New Size(702, 245)
         TableLayoutPanel2.TabIndex = 0
         ' 
@@ -634,7 +634,7 @@ Partial Class FormMain
         ' tbOutputScript
         ' 
         tbOutputScript.Dock = DockStyle.Fill
-        tbOutputScript.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbOutputScript.Font = New Font("Microsoft Sans Serif", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbOutputScript.Location = New Point(1, 211)
         tbOutputScript.Margin = New Padding(1)
         tbOutputScript.Name = "tbOutputScript"
@@ -675,24 +675,24 @@ Partial Class FormMain
         tblServices.AutoSizeMode = AutoSizeMode.GrowAndShrink
         tblServices.BackColor = Color.Transparent
         tblServices.ColumnCount = 1
-        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
-        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
+        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50.0F))
+        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50.0F))
         tblServices.Dock = DockStyle.Top
         tblServices.Location = New Point(0, 0)
         tblServices.Margin = New Padding(4, 3, 4, 3)
         tblServices.Name = "tblServices"
         tblServices.RowCount = 1
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
         tblServices.Size = New Size(408, 0)
         tblServices.TabIndex = 1
         ' 
@@ -700,7 +700,7 @@ Partial Class FormMain
         ' 
         tbServicesButtonsHelpMessage.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
         tbServicesButtonsHelpMessage.Enabled = False
-        tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbServicesButtonsHelpMessage.Location = New Point(115, 511)
         tbServicesButtonsHelpMessage.Margin = New Padding(4, 3, 4, 3)
         tbServicesButtonsHelpMessage.Multiline = True
@@ -854,7 +854,7 @@ Partial Class FormMain
         dgvApplicationInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         DataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle1.BackColor = SystemColors.Control
-        DataGridViewCellStyle1.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle1.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle1.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText
@@ -864,7 +864,7 @@ Partial Class FormMain
         dgvApplicationInfo.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn3, DataGridViewTextBoxColumn4})
         DataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle2.BackColor = SystemColors.Window
-        DataGridViewCellStyle2.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle2.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle2.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText
@@ -931,7 +931,7 @@ Partial Class FormMain
         dgvWebOptions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         DataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle3.BackColor = SystemColors.Control
-        DataGridViewCellStyle3.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle3.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle3.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText
@@ -941,7 +941,7 @@ Partial Class FormMain
         dgvWebOptions.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn1, DataGridViewTextBoxColumn2})
         DataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle4.BackColor = SystemColors.Window
-        DataGridViewCellStyle4.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle4.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle4.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText
@@ -976,7 +976,7 @@ Partial Class FormMain
         dgvAppOptions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         DataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle5.BackColor = SystemColors.Control
-        DataGridViewCellStyle5.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle5.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle5.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle5.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText
@@ -986,7 +986,7 @@ Partial Class FormMain
         dgvAppOptions.Columns.AddRange(New DataGridViewColumn() {OptionName, OptionValue})
         DataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle6.BackColor = SystemColors.Window
-        DataGridViewCellStyle6.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle6.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle6.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle6.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle6.SelectionForeColor = SystemColors.HighlightText
@@ -1039,7 +1039,7 @@ Partial Class FormMain
         tlpLogData.Name = "tlpLogData"
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
-        tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
+        tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511.0F))
         tlpLogData.Size = New Size(1161, 454)
         tlpLogData.TabIndex = 5
         ' 
@@ -1065,7 +1065,7 @@ Partial Class FormMain
         dgvDbLogCount.BorderStyle = BorderStyle.Fixed3D
         DataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle7.BackColor = SystemColors.Control
-        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle7.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText
@@ -1074,7 +1074,7 @@ Partial Class FormMain
         dgvDbLogCount.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle8.BackColor = SystemColors.Window
-        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle8.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle8.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle8.SelectionForeColor = SystemColors.HighlightText
@@ -1110,7 +1110,7 @@ Partial Class FormMain
         dgvDbLogData.BorderStyle = BorderStyle.Fixed3D
         DataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle9.BackColor = SystemColors.Control
-        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle9.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle9.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle9.SelectionForeColor = SystemColors.HighlightText
@@ -1119,7 +1119,7 @@ Partial Class FormMain
         dgvDbLogData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle10.BackColor = SystemColors.Window
-        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle10.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle10.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle10.SelectionForeColor = SystemColors.HighlightText
@@ -1413,7 +1413,7 @@ Partial Class FormMain
         dgvDbTableSize.BorderStyle = BorderStyle.Fixed3D
         DataGridViewCellStyle11.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle11.BackColor = SystemColors.Control
-        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle11.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle11.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle11.SelectionForeColor = SystemColors.HighlightText
@@ -1422,7 +1422,7 @@ Partial Class FormMain
         dgvDbTableSize.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle12.BackColor = SystemColors.Window
-        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9F)
+        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9.0F)
         DataGridViewCellStyle12.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle12.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle12.SelectionForeColor = SystemColors.HighlightText
@@ -1526,7 +1526,7 @@ Partial Class FormMain
         ' tlpApplicationLogs
         ' 
         tlpApplicationLogs.ColumnCount = 1
-        tlpApplicationLogs.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
+        tlpApplicationLogs.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50.0F))
         tlpApplicationLogs.Controls.Add(rtbLogs, 0, 0)
         tlpApplicationLogs.Controls.Add(flpAppLogsButtons, 0, 1)
         tlpApplicationLogs.Dock = DockStyle.Fill
@@ -1541,7 +1541,7 @@ Partial Class FormMain
         ' rtbLogs
         ' 
         rtbLogs.Dock = DockStyle.Fill
-        rtbLogs.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        rtbLogs.Font = New Font("Consolas", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         rtbLogs.Location = New Point(3, 3)
         rtbLogs.Name = "rtbLogs"
         rtbLogs.ReadOnly = True
@@ -1911,7 +1911,7 @@ Partial Class FormMain
         TableLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink
         TableLayoutPanel1.ColumnCount = 3
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.Controls.Add(btnBackupScriptPath, 2, 6)
         TableLayoutPanel1.Controls.Add(tbBackupScriptPath, 1, 6)
@@ -2347,11 +2347,11 @@ Partial Class FormMain
         ' 
         tlpButtons1.BackColor = Color.LightGray
         tlpButtons1.ColumnCount = 5
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
         tlpButtons1.Controls.Add(btnAdvUpgrade, 4, 1)
         tlpButtons1.Controls.Add(btnAdvKiosk, 3, 1)
         tlpButtons1.Controls.Add(btnAdvCardTech, 2, 1)
@@ -2367,8 +2367,8 @@ Partial Class FormMain
         tlpButtons1.Margin = New Padding(4, 3, 4, 3)
         tlpButtons1.Name = "tlpButtons1"
         tlpButtons1.RowCount = 2
-        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
+        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
+        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
         tlpButtons1.Size = New Size(498, 137)
         tlpButtons1.TabIndex = 37
         ' 
@@ -2530,8 +2530,8 @@ Partial Class FormMain
         tlpButtons2.Margin = New Padding(4, 3, 4, 3)
         tlpButtons2.Name = "tlpButtons2"
         tlpButtons2.RowCount = 2
-        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
-        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
+        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
+        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
         tlpButtons2.Size = New Size(308, 137)
         tlpButtons2.TabIndex = 36
         ' 
@@ -2632,7 +2632,7 @@ Partial Class FormMain
         ' 
         btnRunDatabaseStartLive.ContextMenuStrip = cmsDbStart
         btnRunDatabaseStartLive.Dock = DockStyle.Fill
-        btnRunDatabaseStartLive.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        btnRunDatabaseStartLive.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         btnRunDatabaseStartLive.Location = New Point(290, 116)
         btnRunDatabaseStartLive.Margin = New Padding(0)
         btnRunDatabaseStartLive.Name = "btnRunDatabaseStartLive"
@@ -3013,7 +3013,7 @@ Partial Class FormMain
         ' tslblDbState
         ' 
         tslblDbState.BackColor = Color.DarkGreen
-        tslblDbState.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        tslblDbState.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         tslblDbState.ForeColor = Color.WhiteSmoke
         tslblDbState.Name = "tslblDbState"
         tslblDbState.Size = New Size(50, 19)
@@ -3103,7 +3103,7 @@ Partial Class FormMain
         ' 
         lblButtons.BorderStyle = BorderStyle.FixedSingle
         lblButtons.Dock = DockStyle.Fill
-        lblButtons.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
+        lblButtons.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
         lblButtons.Location = New Point(0, 0)
         lblButtons.Name = "lblButtons"
         lblButtons.Size = New Size(388, 27)
@@ -3124,10 +3124,10 @@ Partial Class FormMain
         ' 
         tlpButtons3.CellBorderStyle = TableLayoutPanelCellBorderStyle.Outset
         tlpButtons3.ColumnCount = 4
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
         tlpButtons3.Controls.Add(btnRunQaApi, 2, 3)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
@@ -3147,10 +3147,10 @@ Partial Class FormMain
         tlpButtons3.Margin = New Padding(4, 3, 4, 3)
         tlpButtons3.Name = "tlpButtons3"
         tlpButtons3.RowCount = 4
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
         ' 
@@ -3278,7 +3278,7 @@ Partial Class FormMain
         ' 
         ' FormMain
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnExit
         ClientSize = New Size(1600, 884)

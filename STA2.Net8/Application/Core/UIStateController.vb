@@ -139,6 +139,7 @@
         _form.lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
 
         SetBold(_form.btnRunDatabaseStartLive, _form.btnRunDatabaseStartLive.Enabled)
+        SetBold(_form.btnRunQaApi, _form.btnRunQaApi.Enabled)
 
     End Sub
 
