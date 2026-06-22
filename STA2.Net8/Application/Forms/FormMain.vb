@@ -3050,4 +3050,172 @@ e As System.ComponentModel.CancelEventArgs
         End Try
 
     End Sub
+    Private Sub KillQaScriptProcesses(scriptPath As String)
+
+        Try
+            Dim query As String =
+            "SELECT ProcessId, CommandLine FROM Win32_Process WHERE Name = 'powershell.exe'"
+
+            Using searcher As New ManagementObjectSearcher(query)
+
+                For Each proc As ManagementObject In searcher.Get()
+
+                    Dim cmd = TryCast(proc("CommandLine"), String)
+
+                    If Not String.IsNullOrWhiteSpace(cmd) AndAlso
+                   cmd.IndexOf(scriptPath, StringComparison.OrdinalIgnoreCase) >= 0 Then
+
+                        Dim pid = Convert.ToInt32(proc("ProcessId"))
+
+                        Try
+                            Dim p = Process.GetProcessById(pid)
+
+                            ' ✅ Attempt graceful close (like clicking X)
+                            If Not p.HasExited Then
+                                p.CloseMainWindow()
+
+                                ' ✅ Give it time to exit cleanly
+                                If Not p.WaitForExit(3000) Then
+                                    ' ❌ Still running → force kill
+                                    p.Kill()
+                                End If
+                            End If
+
+                        Catch
+                            ' Ignore per-process issues
+                        End Try
+
+                    End If
+
+                Next
+
+            End Using
+
+        Catch
+            ' Never allow cleanup to crash app
+        End Try
+
+    End Sub
+
+
+    Private Async Sub tsmiRunQaApiKillScript_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiRunQaApiKillScript.Click
+
+        Dim fullCommand As String = tbRunQaCmdLine.Text
+        Dim scriptPath As String = ""
+        Dim args As String = ""
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            MessageBox.Show(
+                "No QA command line configured.",
+                "Missing Command",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            tsmiRunQaApiKillScript.Enabled = False
+
+            ' ✅ STEP 1: Parse command
+            If fullCommand.StartsWith("""") Then
+
+                Dim endQuote = fullCommand.IndexOf("""", 1)
+
+                If endQuote > 1 Then
+                    scriptPath = fullCommand.Substring(1, endQuote - 1)
+                    args = fullCommand.Substring(endQuote + 1).Trim()
+                Else
+                    Throw New Exception("Invalid quoted script path.")
+                End If
+
+            Else
+                Dim parts = fullCommand.Split(New Char() {" "c}, 2)
+
+                scriptPath = parts(0)
+                If parts.Length > 1 Then
+                    args = parts(1)
+                End If
+            End If
+
+            ' ✅ STEP 2: Confirm restart (OPTIONAL UPGRADE)
+            Dim confirm = UIHelpers.TimedYesNoPrompt(
+                owner:=Me,
+                message:="This will terminate the running QA API instance (if any) and start a fresh one." &
+                         Environment.NewLine & Environment.NewLine &
+                         "Continue?",
+                title:="Restart QA API",
+                timeoutSeconds:=10,
+                defaultChoice:=DialogResult.No)
+
+            If confirm <> DialogResult.Yes Then
+                Return
+            End If
+
+            ' ✅ STEP 3: Kill running script instances (if any)
+            If IsQaScriptRunning(scriptPath) Then
+
+                UIHelpers.TimedInfoPrompt(
+                    owner:=Me,
+                    message:="Stopping existing QA API instance...",
+                    title:="Restarting",
+                    timeoutSeconds:=3)
+
+                Await Task.Run(Sub()
+                                   ' ✅ Kill PowerShell + script
+                                   KillQaScriptProcesses(scriptPath)
+
+                               End Sub)
+            End If
+
+            ' ✅ STEP 4: Stop Windows service
+            Dim serviceName As String = "AdvApiServer"
+
+            Await Task.Run(Sub()
+                               Try
+                                   Using sc As New ServiceController(serviceName)
+
+                                       If sc.Status = ServiceControllerStatus.Running OrElse
+                                          sc.Status = ServiceControllerStatus.StartPending Then
+
+                                           sc.Stop()
+                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+
+                                       End If
+
+                                   End Using
+                               Catch
+                                   ' Ignore if not installed
+                               End Try
+                           End Sub)
+
+            ' ✅ STEP 5: Launch fresh instance (NO -NoExit)
+            Dim psCommand As String =
+                $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            Dim psi As New ProcessStartInfo With {
+                .FileName = "powershell.exe",
+                .Arguments = psCommand,
+                .UseShellExecute = True,
+                .CreateNoWindow = False
+            }
+
+            Process.Start(psi)
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+                "Failed to restart QA script:" & Environment.NewLine & ex.Message,
+                "Execution Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+
+        Finally
+            tsmiRunQaApiKillScript.Enabled = True
+        End Try
+
+    End Sub
+
 End Class
