@@ -3008,10 +3008,10 @@ e As System.ComponentModel.CancelEventArgs
 
 
 
-    Private Async Sub tsmiRunQaApiKillScript_Click(
+    Private Async Sub tsmiRunQaApiRerunScript_Click(
     sender As Object,
     e As EventArgs
-) Handles tsmiRunQaApiKillScript.Click
+) Handles tsmiRunQaApiRerunScript.Click
 
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
@@ -3026,7 +3026,7 @@ e As System.ComponentModel.CancelEventArgs
         End If
 
         Try
-            tsmiRunQaApiKillScript.Enabled = False
+            tsmiRunQaApiRerunScript.Enabled = False
 
             ' ✅ STEP 1: Parse command
 
@@ -3108,10 +3108,82 @@ e As System.ComponentModel.CancelEventArgs
                 MessageBoxIcon.Error)
 
         Finally
-            tsmiRunQaApiKillScript.Enabled = True
+            tsmiRunQaApiRerunScript.Enabled = True
         End Try
 
     End Sub
 
+    Private Async Sub tsmiQaScriptKill_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles tsmiQaScriptKill.Click
 
+        Dim fullCommand As String = tbRunQaCmdLine.Text
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            MessageBox.Show(
+                "No QA command line configured.",
+                "Missing Command",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            tsmiQaScriptKill.Enabled = False
+
+            ' ✅ Parse command
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
+            Dim scriptPath = parsed.ScriptPath
+
+            ' ✅ Check if running
+            If Not QaScriptHelper.IsScriptRunning(scriptPath) Then
+
+                UIHelpers.TimedInfoPrompt(
+                    owner:=Me,
+                    message:="No running QA API instance was found.",
+                    title:="Kill QA Script",
+                    timeoutSeconds:=5)
+
+                Return
+            End If
+
+            ' ✅ Confirm kill (optional but recommended)
+            Dim confirm = UIHelpers.TimedYesNoPrompt(
+                owner:=Me,
+                message:="This will terminate the QA API PowerShell process." &
+                         Environment.NewLine & Environment.NewLine &
+                         "Continue?",
+                title:="Kill QA Script",
+                timeoutSeconds:=10,
+                defaultChoice:=DialogResult.No)
+
+            If confirm <> DialogResult.Yes Then
+                Return
+            End If
+
+            ' ✅ Kill script + PowerShell
+            Await Task.Run(Sub()
+                               QaScriptHelper.KillScriptProcesses(scriptPath)
+                           End Sub)
+
+            'UIHelpers.TimedInfoPrompt(
+            '    owner:=Me,
+            '    message:="QA API script stopped.",
+            '    title:="Stopped",
+            '    timeoutSeconds:=5)
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+                "Failed to stop QA script:" & Environment.NewLine & ex.Message,
+                "Execution Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+
+        Finally
+            tsmiQaScriptKill.Enabled = True
+        End Try
+
+    End Sub
 End Class
