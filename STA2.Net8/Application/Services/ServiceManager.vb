@@ -56,34 +56,49 @@ Public Class ServiceManager
         _timer?.Dispose()
         _timer = Nothing
     End Sub
+    Private Function ServiceExists(serviceName As String) As Boolean
+        Return ServiceController.GetServices().
+        Any(Function(s) s.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase))
+    End Function
+
 
     Private Sub PollServices(state As Object)
 
+        ' ✅ Get installed services ONCE per poll
+        Dim installedServices As HashSet(Of String) =
+        ServiceController.GetServices().
+        Select(Function(s) s.ServiceName).
+        ToHashSet(StringComparer.OrdinalIgnoreCase)
+
         For Each name In _serviceNames
+
+            ' ✅ Fast lookup (no exceptions, no repeated enumeration)
+            If Not installedServices.Contains(name) Then
+                RaiseEvent ServiceNotInstalled(name)
+                Continue For
+            End If
 
             Try
                 Using sc As New ServiceController(name)
+
+                    sc.Refresh()   ' ✅ ensure current state
+
                     Dim status = sc.Status
                     RaiseEvent ServiceStatusChanged(name, status)
+
                 End Using
-
-            Catch ex As InvalidOperationException
-                ' ✅ Service does not exist / not installed
-                RaiseEvent ServiceNotInstalled(name)
-
-            Catch ex As ArgumentException
-                ' ✅ Transient or shutdown race – ignore
 
             Catch ex As Exception
 #If DEBUG Then
                 Debug.WriteLine(
-                $"Unexpected polling error for {name}: {ex.GetType().Name}")
+                $"Polling error for {name}: {ex.GetType().Name}")
 #End If
             End Try
 
         Next
 
     End Sub
+
     ' -----------------------------
     ' Service execution
     ' -----------------------------
@@ -146,7 +161,10 @@ Public Class ServiceManager
         action As Action(Of ServiceController),
         finalStatus As ServiceControllerStatus
     ) As Task
-
+        If Not ServiceExists(serviceName) Then
+            RaiseEvent ServiceNotInstalled(serviceName)
+            Return
+        End If
 
         If _busyServices.Contains(serviceName) Then
             Return

@@ -704,11 +704,16 @@ Public Class FormMain
     End Function
     Private Function GetServiceDisplayName(serviceName As String) As String
         Try
+            If Not ServiceController.GetServices().
+            Any(Function(s) s.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase)) Then
+                Return serviceName
+            End If
+
             Using sc As New ServiceController(serviceName)
                 Return sc.DisplayName
             End Using
+
         Catch
-            ' Fallback if service is missing or inaccessible
             Return serviceName
         End Try
     End Function
