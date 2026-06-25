@@ -3186,4 +3186,36 @@ e As System.ComponentModel.CancelEventArgs
         End Try
 
     End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        UIHelpers.TimedInfoPrompt(
+                    owner:=Me,
+                    message:="This is a test prompt with a 5-second timeout.",
+                    title:="TimedInfoPrompt",
+                    timeoutSeconds:=5)
+    End Sub
+
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        UIHelpers.TimedYesNoPrompt(
+                    owner:=Me,
+                    message:="This is a test error prompt with a 5-second timeout.",
+                    title:="TimedYesNoPrompt",
+                    timeoutSeconds:=5)
+    End Sub
+
+    Private Sub btnTest3_Click(sender As Object, e As EventArgs) Handles btnTest3.Click
+        UIHelpers.TimedErrorPrompt(
+                    owner:=Me,
+                    message:="This is a test prompt with a 5-second timeout and two buttons." & Environment.NewLine &
+                             "Click 'View Full Log' to simulate an action.",
+                    title:="TimedErrorPrompt with Buttons",
+                    timeoutSeconds:=5,
+                    button1Text:="&Dismiss",
+                    button1Result:=DialogResult.No,
+                    button2Text:="&View Full Log",
+                    button2Result:=DialogResult.Yes,
+                    defaultButtonIndex:=1,
+                    cancelButtonIndex:=1)
+
+    End Sub
 End Class

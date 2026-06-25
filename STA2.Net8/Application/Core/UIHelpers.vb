@@ -98,8 +98,8 @@ Public Module UIHelpers
 
             Dim buttonTop = If(useTimeout, lblCountdown.Bottom, lblMessage.Bottom) + 15
 
-            Dim btnYes = CreateButton("Yes", If(hasIcon, 170, 120), buttonTop)
-            Dim btnNo = CreateButton("No", If(hasIcon, 290, 230), buttonTop)
+            Dim btnYes = CreateButton("&Yes", If(hasIcon, 170, 120), buttonTop)
+            Dim btnNo = CreateButton("&No", If(hasIcon, 290, 230), buttonTop)
 
             dlg.AcceptButton = btnYes
             dlg.CancelButton = btnNo
@@ -392,7 +392,7 @@ Public Module UIHelpers
             dlg.Controls.Add(lblCountdown)
 
             Dim btnTop = If(useTimeout, lblCountdown.Bottom, lblMessage.Bottom) + 15
-            Dim btnOk = CreateButton("OK", 160, btnTop)
+            Dim btnOk = CreateButton("&OK", 160, btnTop)
             dlg.AcceptButton = btnOk
 
             AddHandler btnOk.Click, Sub() dlg.Close()
