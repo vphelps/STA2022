@@ -6,23 +6,59 @@ Imports System.Threading.Tasks
 Public Module DatabaseCoordinator
 
     Private _evaluationInProgress As Boolean = False
+    Private _lastKnownOnline As Boolean? = Nothing
+    Private _lastKnownSource As String = Nothing
 
     ' ============================================================
     ' SIMPLE CONNECTION TEST
     ' ============================================================
+    'Public Function TestConnection(connectionString As String, Optional timeoutSeconds As Integer = 3) As Boolean
+    '    Try
+    '        Using cn As New SqlConnection(connectionString)
+    '            cn.Open()
+    '            Return True
+    '        End Using
+    '    Catch ex As Exception
+    '        Debug.WriteLine("DB connection failed: " & ex.Message)
+    '        Return False
+    '    End Try
+    'End Function
     Public Function TestConnection(connectionString As String, Optional timeoutSeconds As Integer = 3) As Boolean
+
+        If Not IsValidConnectionString(connectionString) Then
+#If DEBUG Then
+            Debug.WriteLine("Invalid connection string")
+#End If
+            Return False
+        End If
+
         Try
-            Using cn As New SqlConnection(connectionString)
+            Dim builder As New SqlConnectionStringBuilder(connectionString)
+            builder.ConnectTimeout = Math.Max(1, timeoutSeconds)
+
+            Using cn As New SqlConnection(builder.ConnectionString)
                 cn.Open()
                 Return True
             End Using
+
+        Catch ex As SqlException
+            ' ✅ expected (server down, unreachable)
+
+        Catch ex As ArgumentException
+            ' ✅ bad connection string
+#If DEBUG Then
+            Debug.WriteLine("Connection ARG error: " & ex.Message)
+#End If
+
         Catch ex As Exception
-            Debug.WriteLine("DB connection failed: " & ex.Message)
-            Return False
+#If DEBUG Then
+            Debug.WriteLine("Unexpected DB error: " & ex.GetType().Name)
+#End If
         End Try
+
+        Return False
+
     End Function
-
-
     ' ============================================================
     ' CLEAN DATABASE DETECTION
     ' ============================================================
@@ -34,32 +70,98 @@ Public Module DatabaseCoordinator
 
         Debug.WriteLine("=== DATABASE DETECTION START ===")
 
-        ' ✅ Step 1: Test main connection only
-        If Not TestConnection(connectionString, 3) Then
-            Debug.WriteLine("❌ No database available")
-            GoOffline(form, "No SQL Server available")
+        Dim builder As SqlConnectionStringBuilder
+
+        Try
+            ' ✅ Parse ONCE (validation + builder creation in one step)
+            builder = New SqlConnectionStringBuilder(connectionString)
+
+        Catch
+#If DEBUG Then
+            Debug.WriteLine("❌ Invalid connection string")
+#End If
+
+            If _lastKnownOnline <> False Then
+                GoOffline(form, "Invalid connection string")
+                _lastKnownOnline = False
+            End If
+
             Return
-        End If
+        End Try
 
-        Debug.WriteLine("✅ Database connection successful")
+        Try
+            ' ✅ Set timeout AFTER successful parse
+            builder.ConnectTimeout = 3
 
-        ' ✅ Step 2: Determine environment
-        Dim isDocker As Boolean = IsConnectedToDockerContainer(connectionString)
 
-        Dim source As String
+            Using cn As New SqlConnection(builder.ConnectionString)
 
-        If isDocker Then
-            Debug.WriteLine("✅ Docker DB detected")
-            source = "Docker"
-        Else
-            Debug.WriteLine("✅ Local SQL detected")
-            source = "Local SQL"
-        End If
+                cn.Open()
 
-        ' ✅ Step 3: Apply UI update
-        GoOnlineWithSource(form, source)
+                Debug.WriteLine("✅ Database connection successful")
+
+                ' ✅ Step 2: Determine environment (REUSE SAME CONNECTION)
+                Dim isDocker As Boolean = IsConnectedToDockerContainer(cn)
+
+                Dim source As String = If(isDocker, "Docker", "Local SQL")
+
+                If isDocker Then
+                    Debug.WriteLine("✅ Docker DB detected")
+                Else
+                    Debug.WriteLine("✅ Local SQL detected")
+                End If
+
+                ' ✅ Only update UI if ONLINE state OR SOURCE changed
+                If _lastKnownOnline <> True OrElse _lastKnownSource <> source Then
+                    GoOnlineWithSource(form, source)
+                    _lastKnownOnline = True
+                    _lastKnownSource = source
+                End If
+            End Using
+
+        Catch ex As SqlException
+            ' ✅ Expected: server down / unreachable
+
+#If DEBUG Then
+            Debug.WriteLine("❌ SQL connection failed")
+#End If
+
+            If _lastKnownOnline <> False Then
+                GoOffline(form, "No SQL Server available")
+                _lastKnownOnline = False
+                _lastKnownSource = Nothing
+            End If
+
+        Catch ex As ArgumentException
+            ' ✅ Bad connection string – don't retry repeatedly
+
+#If DEBUG Then
+            Debug.WriteLine("❌ Connection ARG error: " & ex.Message)
+#End If
+
+            If _lastKnownOnline <> False Then
+                GoOffline(form, "Invalid connection string")
+                _lastKnownOnline = False
+                _lastKnownSource = Nothing
+            End If
+
+        Catch ex As Exception
+            ' ✅ Unexpected issues
+
+#If DEBUG Then
+            Debug.WriteLine("❌ Unexpected DB error: " & ex.GetType().Name)
+#End If
+
+            If _lastKnownOnline <> False Then
+                GoOffline(form, "Database error")
+                _lastKnownOnline = False
+                _lastKnownSource = Nothing
+            End If
+
+        End Try
 
     End Sub
+
     Public Async Function EvaluateDatabaseAvailabilityAsync(
         form As FormMain,
         connectionString As String,
@@ -273,7 +375,13 @@ Public Module DatabaseCoordinator
 )
 
         Try
-            Using cn As New SqlConnection(connectionString)
+            If Not IsValidConnectionString(connectionString) Then
+                Throw New ArgumentException("Invalid connection string")
+            End If
+
+            Dim builder As New SqlConnectionStringBuilder(connectionString)
+
+            Using cn As New SqlConnection(builder.ConnectionString)
                 cn.Open()
 
                 Using cmd As New SqlCommand(procedureName, cn)
@@ -323,53 +431,47 @@ Public Module DatabaseCoordinator
     ''' Determines if the given SQL connection is pointing to a Docker-hosted SQL Server.
     ''' Uses @@SERVERNAME and matches against running Docker container IDs.
     ''' </summary>
-    Public Function IsConnectedToDockerContainer(connectionString As String) As Boolean
+    Public Function IsConnectedToDockerContainer(cn As SqlConnection) As Boolean
 
-            Try
-                ' --- Step 1: Get @@SERVERNAME ---
-                Dim serverName As String = ""
+        Try
+            ' --- Step 1: Get @@SERVERNAME using EXISTING connection ---
+            Dim serverName As String = ""
 
-                Using cn As New SqlConnection(connectionString)
-                    cn.Open()
+            Using cmd As New SqlCommand("SELECT @@SERVERNAME", cn)
+                serverName = cmd.ExecuteScalar()?.ToString()?.Trim()
+            End Using
 
-                    Using cmd As New SqlCommand("SELECT @@SERVERNAME", cn)
-                        serverName = cmd.ExecuteScalar()?.ToString()?.Trim()
-                    End Using
-                End Using
+            If String.IsNullOrWhiteSpace(serverName) Then Return False
+            serverName = serverName.ToLowerInvariant()
 
-                If String.IsNullOrWhiteSpace(serverName) Then Return False
-
-                serverName = serverName.ToLower()
-
-                ' --- Step 2: Check Docker availability ---
-                If Not IsDockerAvailable() Then
-                    Debug.WriteLine("Docker not available")
-                    Return False
-                End If
-
-                ' --- Step 3: Get running container IDs ---
-                Dim containerIds = GetRunningContainerIds()
-
-                If containerIds Is Nothing OrElse containerIds.Count = 0 Then
-                    Return False
-                End If
-
-                ' --- Step 4: Match full SQL ID against short Docker IDs ---
-                Return containerIds.Any(Function(id) serverName.StartsWith(id))
-
-            Catch ex As Exception
-                Debug.WriteLine("Docker detection error: " & ex.Message)
+            ' --- Step 2: Check Docker availability ---
+            If Not IsDockerAvailable() Then
+                Debug.WriteLine("Docker not available")
                 Return False
-            End Try
+            End If
 
-        End Function
+            ' --- Step 3: Get running container IDs ---
+            Dim containerIds = GetRunningContainerIds()
 
+            If containerIds Is Nothing OrElse containerIds.Count = 0 Then
+                Return False
+            End If
 
-        ' ============================================================
-        ' INTERNAL HELPERS (kept private to keep API clean)
-        ' ============================================================
+            ' --- Step 4: Match SQL server name to container ID ---
+            Return containerIds.Any(Function(id) serverName.StartsWith(id))
 
-        Private Function IsDockerAvailable() As Boolean
+        Catch ex As Exception
+            Debug.WriteLine("Docker detection error: " & ex.Message)
+            Return False
+        End Try
+
+    End Function
+
+    ' ============================================================
+    ' INTERNAL HELPERS (kept private to keep API clean)
+    ' ============================================================
+
+    Private Function IsDockerAvailable() As Boolean
 
             Try
                 Dim psi As New ProcessStartInfo With {
@@ -425,5 +527,14 @@ Public Module DatabaseCoordinator
             End Try
 
         End Function
+    Private Function IsValidConnectionString(cs As String) As Boolean
+        If String.IsNullOrWhiteSpace(cs) Then Return False
 
-    End Module
+        Try
+            Dim builder As New SqlConnectionStringBuilder(cs)
+            Return True
+        Catch
+            Return False
+        End Try
+    End Function
+End Module
