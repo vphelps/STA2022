@@ -3047,8 +3047,8 @@ e As System.ComponentModel.CancelEventArgs
                          Environment.NewLine & Environment.NewLine &
                          "Continue?",
                 title:="Restart QA API",
-                timeoutSeconds:=10,
-                defaultChoice:=DialogResult.No)
+                timeoutSeconds:=5,
+                defaultChoice:=DialogResult.Yes)
 
             If confirm <> DialogResult.Yes Then
                 Return
@@ -3057,11 +3057,11 @@ e As System.ComponentModel.CancelEventArgs
             ' ✅ STEP 3: Kill running script instances (if any)
             If QaScriptHelper.IsScriptRunning(scriptPath) Then
 
-                UIHelpers.TimedInfoPrompt(
-                    owner:=Me,
-                    message:="Stopping existing QA API instance...",
-                    title:="Restarting",
-                    timeoutSeconds:=3)
+                'UIHelpers.TimedInfoPrompt(
+                '    owner:=Me,
+                '    message:="Stopping existing QA API instance...",
+                '    title:="Restarting",
+                '    timeoutSeconds:=3)
 
                 Await Task.Run(Sub()
                                    ' ✅ Kill PowerShell + script
@@ -3154,18 +3154,18 @@ e As System.ComponentModel.CancelEventArgs
             End If
 
             ' ✅ Confirm kill (optional but recommended)
-            Dim confirm = UIHelpers.TimedYesNoPrompt(
-                owner:=Me,
-                message:="This will terminate the QA API PowerShell process." &
-                         Environment.NewLine & Environment.NewLine &
-                         "Continue?",
-                title:="Kill QA Script",
-                timeoutSeconds:=10,
-                defaultChoice:=DialogResult.No)
+            'Dim confirm = UIHelpers.TimedYesNoPrompt(
+            '    owner:=Me,
+            '    message:="This will terminate the QA API PowerShell process." &
+            '             Environment.NewLine & Environment.NewLine &
+            '             "Continue?",
+            '    title:="Kill QA Script",
+            '    timeoutSeconds:=10,
+            '    defaultChoice:=DialogResult.No)
 
-            If confirm <> DialogResult.Yes Then
-                Return
-            End If
+            'If confirm <> DialogResult.Yes Then
+            '    Return
+            'End If
 
             ' ✅ Kill script + PowerShell
             Await Task.Run(Sub()
