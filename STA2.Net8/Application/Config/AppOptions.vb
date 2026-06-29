@@ -18,6 +18,11 @@ Public Class AppOptions
     ' Persisted toggle: show services that are not installed
     Public Property ShowHiddenServices As Boolean = False
 
+    ' QA run button prompt and timeout settings
+    Public Property QaRunPromptAction As Boolean
+    Public Property QaRunPromptTimeoutSeconds As Integer
+
+
 
     ' -------------------------------------------------
     ' Repository / paths
