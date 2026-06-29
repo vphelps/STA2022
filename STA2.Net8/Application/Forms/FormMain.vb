@@ -1771,7 +1771,7 @@ Public Class FormMain
         ElseIf Executable = "Devices" Then
             Process.Start("control.exe", "/name Microsoft.DevicesAndPrinters")
         ElseIf Executable = "EventViewer" Then
-            Process.Start("eventvwr.msc")
+            Process.Start("mmc.exe", "eventvwr.msc")
         Else
             Process.Start(Executable)
         End If
