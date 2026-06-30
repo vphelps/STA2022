@@ -1683,7 +1683,8 @@ Public Class FormMain
                 upgradeBasePath:=AppData.UpgradePath,
                 installerName:="AdvantageSetup-x64.exe",
                 progressPercent:=percentProgress,
-                progressText:=textProgress)
+                progressText:=textProgress,
+_options)
 
             ' If user chose Run Existing, this path already existed
             If Directory.Exists(extractDir) AndAlso

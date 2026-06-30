@@ -7,6 +7,7 @@
 
         RegisterRepoMain(form, options)
         RegisterRepoDiscardChanges(form, options)
+        RegisterExistingVersionPrompt(form, options)
 
         ' ✅ Add more here later:
         ' RegisterRunQaApi(form, options)
@@ -86,4 +87,41 @@
             save)
 
     End Sub
+    Private Sub RegisterExistingVersionPrompt(
+    form As FormMain,
+    options As AppOptions
+)
+
+        Dim configure As Action(Of PromptDefaultsForm) =
+            Sub(dlg)
+
+                dlg.Text = "Existing Version Prompt Defaults"
+                dlg.YesText = "Overwrite automatically"
+                dlg.NoText = "Run existing version"
+
+                dlg.PromptEnabled = options.SetupExistingVersionPromptEnabled
+                dlg.TimeoutSeconds = options.SetupExistingVersionPromptTimeoutSeconds
+                dlg.IsYesSelected = options.SetupExistingVersionPromptAction
+
+            End Sub
+
+        Dim save As Action(Of PromptDefaultsForm) =
+            Sub(dlg)
+
+                form.UpdateOption(Sub()
+                                      options.SetupExistingVersionPromptEnabled = dlg.PromptEnabled
+                                      options.SetupExistingVersionPromptAction = dlg.IsYesSelected
+                                      options.SetupExistingVersionPromptTimeoutSeconds = dlg.TimeoutSeconds
+                                  End Sub)
+
+            End Sub
+
+        CodeHelper.AttachPromptDefaultsMenu(
+            form.btnSetupInstall,   ' ✅ attach to your button
+            form,
+            configure,
+            save)
+
+    End Sub
+
 End Module

@@ -1,7 +1,8 @@
-﻿Imports System.IO
+﻿Imports System.Diagnostics
+Imports System.IO
 Imports System.IO.Compression
-Imports System.Diagnostics
 Imports System.Windows.Forms
+Imports System.Windows.Forms.Design.AxImporter
 
 ' ===========================================================
 ' InstallerTools (.NET Framework 4.8 compatible)
@@ -21,100 +22,57 @@ End Enum
 
 
 Public Module InstallerTools
+
     Private Function PromptForExistingVersion(
     versionPath As String,
-    timeoutSeconds As Integer
+    timeoutSeconds As Integer,
+    options As AppOptions
 ) As ExistingVersionAction
 
-        Dim result As ExistingVersionAction = ExistingVersionAction.Overwrite
-        Dim secondsLeft As Integer = timeoutSeconds
+        If options Is Nothing Then
+            Return ExistingVersionAction.Overwrite
+        End If
 
-        Using form As New Form()
-            form.Text = "Existing Version Detected"
-            form.StartPosition = FormStartPosition.CenterParent
-            form.FormBorderStyle = FormBorderStyle.FixedDialog
-            form.MaximizeBox = False
-            form.MinimizeBox = False
-            form.Width = 480
-            form.Height = 220
+        If options.SetupExistingVersionPromptTimeoutSeconds < 0 Then
+            timeoutSeconds = 10
+        End If
+        Dim message As String =
+        "The following version already exists:" & Environment.NewLine &
+        versionPath & Environment.NewLine & Environment.NewLine &
+        "What would you like to do?"
 
-            Dim lblMessage As New Label() With {
-            .AutoSize = False,
-            .Top = 20,
-            .Left = 20,
-            .Width = 420,
-            .Height = 60,
-            .Text =
-                "The following version already exists:" & Environment.NewLine &
-                versionPath & Environment.NewLine & Environment.NewLine &
-                "What would you like to do?"
-        }
 
-            Dim lblCountdown As New Label() With {
-            .Top = 90,
-            .Left = 20,
-            .Width = 420,
-            .Height = 20
-        }
 
-            Dim btnOverwrite As New Button() With {
-            .Text = "Overwrite",
-            .Left = 80,
-            .Top = 130,
-            .Width = 120
-        }
 
-            Dim btnRunExisting As New Button() With {
-            .Text = "Run Existing",
-            .Left = 220,
-            .Top = 130,
-            .Width = 120
-        }
+        Dim result As DialogResult
 
-            AddHandler btnOverwrite.Click,
-            Sub()
-                result = ExistingVersionAction.Overwrite
-                form.Close()
-            End Sub
+        If options IsNot Nothing AndAlso options.SetupExistingVersionPromptEnabled Then
 
-            AddHandler btnRunExisting.Click,
-            Sub()
-                result = ExistingVersionAction.RunExisting
-                form.Close()
-            End Sub
+            result = UIHelpers.TimedErrorPrompt(
+        owner:=Nothing,
+        message:=message,
+        title:="Existing Version Detected",
+        timeoutSeconds:=If(options.SetupExistingVersionPromptTimeoutSeconds > 0,
+                           options.SetupExistingVersionPromptTimeoutSeconds,
+                           timeoutSeconds),
+        button1Text:="Overwrite",
+        button1Result:=DialogResult.Yes,
+        button2Text:="Run Existing",
+        button2Result:=DialogResult.No,
+        defaultButtonIndex:=1,
+        defaultActionText:="Default action: Overwrite")
 
-            Dim timer As New Timer() With {.Interval = 1000}
+        Else
+            result = DialogResult.Yes
+        End If
 
-            AddHandler timer.Tick,
-            Sub()
-                secondsLeft -= 1
-                lblCountdown.Text =
-                    $"Defaulting to Overwrite in {secondsLeft} seconds..."
 
-                If secondsLeft <= 0 Then
-                    timer.Stop()
-                    result = ExistingVersionAction.Overwrite
-                    form.Close()
-                End If
-            End Sub
+        Return If(result = DialogResult.Yes,
+              ExistingVersionAction.Overwrite,
+              ExistingVersionAction.RunExisting)
 
-            lblCountdown.Text =
-            $"Defaulting to Overwrite in {secondsLeft} seconds..."
-            timer.Start()
-
-            form.Controls.AddRange({
-            lblMessage,
-            lblCountdown,
-            btnOverwrite,
-            btnRunExisting
-        })
-
-            form.ShowDialog()
-            timer.Stop()
-        End Using
-
-        Return result
     End Function
+
 
     ' -------------------------------------------------------
     ' Resolve setup.zip (with optional browse)
@@ -200,7 +158,8 @@ Public Module InstallerTools
     upgradeBasePath As String,
     installerName As String,
     progressPercent As IProgress(Of Integer),
-    progressText As IProgress(Of String)
+    progressText As IProgress(Of String),
+    options As AppOptions
 ) As Task(Of String)
 
         If String.IsNullOrWhiteSpace(upgradeBasePath) Then
@@ -247,7 +206,7 @@ Public Module InstallerTools
             If Directory.Exists(finalDir) Then
 
                 Dim action As ExistingVersionAction =
-                PromptForExistingVersion(finalDir, timeoutSeconds:=10)
+                PromptForExistingVersion(finalDir, timeoutSeconds:=10, options)
 
                 If action = ExistingVersionAction.RunExisting Then
                     progressText?.Report("Using existing installation.")

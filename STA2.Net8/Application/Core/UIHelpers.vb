@@ -236,7 +236,8 @@ Public Module UIHelpers
     Optional button3Text As String = Nothing,
     Optional button3Result As DialogResult = DialogResult.None,
     Optional defaultButtonIndex As Integer = 1,
-    Optional cancelButtonIndex As Integer = 2
+    Optional cancelButtonIndex As Integer = 2,
+    Optional defaultActionText As String = Nothing
 ) As DialogResult
 
         Dim result As DialogResult = button1Result
@@ -258,9 +259,18 @@ Public Module UIHelpers
             ' ✅ Message
             Dim lblMessage = CreateMessageLabel(message, 60, 20, 340)
             dlg.Controls.Add(lblMessage)
+            Dim lblDefaultAction As Label = Nothing
+
+            If Not String.IsNullOrWhiteSpace(defaultActionText) Then
+                lblDefaultAction = CreateMessageLabel(defaultActionText, 60, lblMessage.Bottom + 5, 340)
+                dlg.Controls.Add(lblDefaultAction)
+            End If
 
             ' ✅ Countdown
-            Dim lblCountdown = CreateCountdownLabel(lblMessage.Bottom + 10, useTimeout)
+            Dim countdownTop As Integer = If(lblDefaultAction IsNot Nothing, lblDefaultAction.Bottom + 5, lblMessage.Bottom + 10)
+            Dim lblCountdown = CreateCountdownLabel(countdownTop, useTimeout)
+
+            'Dim lblCountdown = CreateCountdownLabel(lblMessage.Bottom + 10, useTimeout)
             lblCountdown.Left = 60
             lblCountdown.Width = 340
             dlg.Controls.Add(lblCountdown)

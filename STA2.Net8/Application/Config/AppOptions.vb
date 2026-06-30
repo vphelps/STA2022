@@ -31,6 +31,9 @@ Public Class AppOptions
     Public Property RepoDiscardPromptTimeoutSeconds As Integer
     Public Property RepoDiscardPromptEnabled As Boolean = True
 
+    Public Property SetupExistingVersionPromptEnabled As Boolean = True
+    Public Property SetupExistingVersionPromptAction As Boolean
+    Public Property SetupExistingVersionPromptTimeoutSeconds As Integer
     ' -------------------------------------------------
     ' Repository / paths
     ' -------------------------------------------------
