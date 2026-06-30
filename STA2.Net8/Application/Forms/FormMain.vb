@@ -3052,8 +3052,8 @@ e As System.ComponentModel.CancelEventArgs
                          Environment.NewLine & Environment.NewLine &
                          "Continue?",
                 title:="Restart QA API",
-                timeoutSeconds:=5,
-                defaultChoice:=DialogResult.Yes)
+                timeoutSeconds:=_options.QaRunPromptTimeoutSeconds,
+                defaultChoice:=If(_options.QaRunPromptAction, DialogResult.Yes, DialogResult.No))
 
             If confirm <> DialogResult.Yes Then
                 Return
