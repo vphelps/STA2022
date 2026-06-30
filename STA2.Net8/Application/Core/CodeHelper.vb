@@ -424,4 +424,31 @@ Public Module CodeHelper
         Return Nothing
 
     End Function
+    Public Async Function KillQaScriptIfRunningAsync(fullCommand As String) As Task
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            Return
+        End If
+
+        Try
+            ' ✅ Parse command
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
+            Dim scriptPath = parsed.ScriptPath
+
+            ' ✅ Check if running
+            If Not QaScriptHelper.IsScriptRunning(scriptPath) Then
+                Return
+            End If
+
+            ' ✅ Kill script + PowerShell
+            Await Task.Run(Sub()
+                               QaScriptHelper.KillScriptProcesses(scriptPath)
+                           End Sub)
+
+        Catch
+            ' ✅ Silent fail (important for installer scenarios)
+        End Try
+
+    End Function
+
 End Module

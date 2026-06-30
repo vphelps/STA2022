@@ -419,7 +419,6 @@ Public Class FormMain
 
         ' Load saved personal flavor if it exists
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
-
     End Sub
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -1636,7 +1635,13 @@ Public Class FormMain
         End Sub)
 
         Try
-            ' Resolve setup.zip (with optional browse)
+            ' ✅ Stop QA script before install (if running)
+            SetExecutionStatus("Stopping QA API (if running)...", force:=True)
+
+            Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
+
+            ' Resolve setup.zip
+
             Dim zipPath As String =
             Await InstallerTools.ResolveSetupZipAsync(
                 zipPath:=AppData.UpgradePath,
@@ -3055,20 +3060,8 @@ e As System.ComponentModel.CancelEventArgs
             End If
 
             ' ✅ STEP 3: Kill running script instances (if any)
-            If QaScriptHelper.IsScriptRunning(scriptPath) Then
 
-                'UIHelpers.TimedInfoPrompt(
-                '    owner:=Me,
-                '    message:="Stopping existing QA API instance...",
-                '    title:="Restarting",
-                '    timeoutSeconds:=3)
-
-                Await Task.Run(Sub()
-                                   ' ✅ Kill PowerShell + script
-                                   QaScriptHelper.KillScriptProcesses(scriptPath)
-
-                               End Sub)
-            End If
+            Await CodeHelper.KillQaScriptIfRunningAsync(fullCommand)
 
             ' ✅ STEP 4: Stop Windows service
             Dim serviceName As String = "AdvApiServer"
@@ -3119,73 +3112,21 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Async Sub tsmiQaScriptKill_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles tsmiQaScriptKill.Click
-
-        Dim fullCommand As String = tbRunQaCmdLine.Text
-
-        If String.IsNullOrWhiteSpace(fullCommand) Then
-            MessageBox.Show(
-                "No QA command line configured.",
-                "Missing Command",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
-            Return
-        End If
+    sender As Object,
+    e As EventArgs
+) Handles tsmiQaScriptKill.Click
 
         Try
             tsmiQaScriptKill.Enabled = False
 
-            ' ✅ Parse command
-            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
-            Dim scriptPath = parsed.ScriptPath
-
-            ' ✅ Check if running
-            If Not QaScriptHelper.IsScriptRunning(scriptPath) Then
-
-                UIHelpers.TimedInfoPrompt(
-                    owner:=Me,
-                    message:="No running QA API instance was found.",
-                    title:="Kill QA Script",
-                    timeoutSeconds:=5)
-
-                Return
-            End If
-
-            ' ✅ Confirm kill (optional but recommended)
-            'Dim confirm = UIHelpers.TimedYesNoPrompt(
-            '    owner:=Me,
-            '    message:="This will terminate the QA API PowerShell process." &
-            '             Environment.NewLine & Environment.NewLine &
-            '             "Continue?",
-            '    title:="Kill QA Script",
-            '    timeoutSeconds:=10,
-            '    defaultChoice:=DialogResult.No)
-
-            'If confirm <> DialogResult.Yes Then
-            '    Return
-            'End If
-
-            ' ✅ Kill script + PowerShell
-            Await Task.Run(Sub()
-                               QaScriptHelper.KillScriptProcesses(scriptPath)
-                           End Sub)
-
-            'UIHelpers.TimedInfoPrompt(
-            '    owner:=Me,
-            '    message:="QA API script stopped.",
-            '    title:="Stopped",
-            '    timeoutSeconds:=5)
+            Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
 
         Catch ex As Exception
-
             MessageBox.Show(
-                "Failed to stop QA script:" & Environment.NewLine & ex.Message,
-                "Execution Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-
+            "Failed to stop QA script:" & Environment.NewLine & ex.Message,
+            "Execution Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
         Finally
             tsmiQaScriptKill.Enabled = True
         End Try
