@@ -1,0 +1,244 @@
+﻿
+
+***
+
+# ✅ PromptDefaults System – Usage Guide
+
+***
+
+# ✅ 1. When to Use PromptDefaults
+
+Use prompt defaults for actions that:
+
+* ✅ Modify system state
+* ✅ Delete or overwrite data
+* ✅ Launch installers or scripts
+* ✅ Restart or stop services
+
+👉 Examples:
+
+* Repo discard changes ✅
+* Restart QA API ✅
+* Run installer ✅
+
+***
+
+# ✅ 2. Required AppOptions Properties
+
+Each button/action needs its own settings:
+
+```vb
+Public Property <ActionName>PromptEnabled As Boolean
+Public Property <ActionName>PromptAction As Boolean
+Public Property <ActionName>PromptTimeoutSeconds As Integer
+```
+
+***
+
+## ✅ Meaning
+
+| Property             | Purpose                     |
+| -------------------- | --------------------------- |
+| PromptEnabled        | Show prompt or skip         |
+| PromptAction         | Default choice (True = Yes) |
+| PromptTimeoutSeconds | Auto-selection delay        |
+
+***
+
+# ✅ 3. Add Prompt Logic to a Button/Action
+
+Wrap your prompt like this:
+
+```vb
+Dim response As DialogResult
+
+If _options.<ActionName>PromptEnabled Then
+
+    response = UIHelpers.TimedYesNoPrompt(
+        message:="...",
+        title:="...",
+        timeoutSeconds:=If(_options.<ActionName>PromptTimeoutSeconds > 0,
+                           _options.<ActionName>PromptTimeoutSeconds,
+                           10),
+        defaultChoice:=If(_options.<ActionName>PromptAction,
+                          DialogResult.Yes,
+                          DialogResult.No))
+
+Else
+    ' Prompt disabled → auto-confirm
+    response = DialogResult.Yes
+
+End If
+
+If response <> DialogResult.Yes Then Return
+```
+
+***
+
+# ✅ 4. Add Configuration UI (PromptDefaultsForm)
+
+Use the form to allow users to configure behavior.
+
+***
+
+## ✅ Load values into form
+
+```vb
+dlg.PromptEnabled = _options.<ActionName>PromptEnabled
+dlg.YesText = "Default to Yes"
+dlg.NoText = "Default to No"
+dlg.TimeoutSeconds = _options.<ActionName>PromptTimeoutSeconds
+dlg.IsYesSelected = _options.<ActionName>PromptAction
+dlg.Text = "My Action Prompt Defaults"
+```
+
+***
+
+## ✅ Save values from form
+
+```vb
+UpdateOption(Sub()
+    _options.<ActionName>PromptEnabled = dlg.PromptEnabled
+    _options.<ActionName>PromptAction = dlg.IsYesSelected
+    _options.<ActionName>PromptTimeoutSeconds = dlg.TimeoutSeconds
+End Sub)
+```
+
+***
+
+# ✅ 5. Use PromptDefaultsRegistrar (Preferred)
+
+To keep `FormMain` clean, register prompts centrally.
+
+***
+
+## ✅ Add registration method
+
+```vb
+Private Sub RegisterMyAction(form As FormMain, options As AppOptions)
+
+    Dim configure As Action(Of PromptDefaultsForm) =
+        Sub(dlg)
+            dlg.Text = "My Action Defaults"
+            dlg.YesText = "Do it automatically"
+            dlg.NoText = "Ask first"
+
+            dlg.PromptEnabled = options.MyActionPromptEnabled
+            dlg.TimeoutSeconds = options.MyActionPromptTimeoutSeconds
+            dlg.IsYesSelected = options.MyActionPromptAction
+        End Sub
+
+    Dim save As Action(Of PromptDefaultsForm) =
+        Sub(dlg)
+            form.UpdateOption(Sub()
+                options.MyActionPromptEnabled = dlg.PromptEnabled
+                options.MyActionPromptAction = dlg.IsYesSelected
+                options.MyActionPromptTimeoutSeconds = dlg.TimeoutSeconds
+            End Sub)
+        End Sub
+
+    CodeHelper.AttachPromptDefaultsMenu(
+        form.btnMyAction,
+        form,
+        configure,
+        save)
+
+End Sub
+```
+
+***
+
+## ✅ Register everything in one place
+
+```vb
+PromptDefaultsRegistrar.RegisterAll(Me, _options)
+```
+
+***
+
+# ✅ 6. Behavior Rules
+
+***
+
+## ✅ When PromptEnabled = TRUE
+
+* Prompt is shown
+* Timeout applies
+* Default choice is used if no response
+
+***
+
+## ✅ When PromptEnabled = FALSE
+
+* Prompt is skipped
+* Action proceeds automatically
+* Always treated as **YES**
+
+***
+
+# ✅ 7. UI Behavior (PromptDefaultsForm)
+
+Controls:
+
+* ✅ Checkbox → Enable prompt
+* ✅ Radio buttons → Yes / No
+* ✅ Numeric input → timeout
+
+***
+
+## ✅ Important UX rule
+
+* If prompt is disabled:
+  * Radios and timeout can be disabled (optional)
+  * Action always proceeds
+
+***
+
+# ✅ 8. Where NOT to Use PromptDefaults
+
+Do NOT use for:
+
+* ❌ Informational messages
+* ❌ Error messages
+* ❌ File dialogs
+* ❌ Simple navigation or launch buttons
+* ❌ Background tasks / timers
+
+***
+
+# ✅ 9. Default Values (Safe Fallbacks)
+
+If values are not set:
+
+* Timeout → `10 seconds` (or higher for destructive actions)
+* Default → **No**
+* Enabled → **True**
+
+***
+
+# ✅ 10. One-Line Pattern Summary
+
+> “Each action has its own prompt settings, uses PromptDefaultsForm for configuration, and skips the prompt entirely when disabled by treating the result as Yes.”
+
+***
+
+# ✅ ✅ ✅ Optional (future improvements)
+
+* ✅ Add helper: `GetPromptResult(options, config)`
+* ✅ Add UI indicator when prompt is disabled (⚙ icon)
+* ✅ Add global defaults fallback
+
+***
+
+# ✅ ✅ ✅ Final Practical Workflow
+
+When adding a new action:
+
+1. ✅ Add AppOptions fields
+2. ✅ Wrap prompt logic in handler
+3. ✅ Register with PromptDefaultsRegistrar
+4. ✅ Done
+
+***
+
+This gives you a **repeatable, scalable system** across your entire app 👍

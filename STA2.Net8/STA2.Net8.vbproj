@@ -127,10 +127,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Application\Docs\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
 		<PackageReference Include="System.Management" Version="10.0.8" />
 		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.8" />
