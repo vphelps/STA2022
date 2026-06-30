@@ -1488,29 +1488,29 @@ Public Class FormMain
         Try
             If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
 
-                'Dim response As DialogResult =
-                'UIHelpers.TimedYesNoPrompt(
-                '    message:=
-                '        "There are uncommitted changes." & Environment.NewLine &
-                '        "Discard them and switch to main?",
-                '    title:="Confirm",
-                '    timeoutSeconds:=10)
-                Dim response As DialogResult =
-UIHelpers.TimedYesNoPrompt(
-    message:=
-        "There are uncommitted changes." & Environment.NewLine &
-        "Discard them and switch to main?",
-    title:="Confirm",
-    timeoutSeconds:=If(_options.RepoMainPromptTimeoutSeconds > 0,
-                       _options.RepoMainPromptTimeoutSeconds,
-                       10),
-    defaultChoice:=If(_options.RepoMainPromptAction,
-                      DialogResult.Yes,
-                      DialogResult.No))
+                Dim response As DialogResult
 
+                If _options.RepoMainPromptEnabled Then
+
+                    response = UIHelpers.TimedYesNoPrompt(
+                    message:=
+                        "There are uncommitted changes." & Environment.NewLine &
+                        "Discard them and switch to main?",
+                    title:="Confirm",
+                    timeoutSeconds:=If(_options.RepoMainPromptTimeoutSeconds > 0,
+                                       _options.RepoMainPromptTimeoutSeconds,
+                                       10),
+                    defaultChoice:=If(_options.RepoMainPromptAction,
+                                      DialogResult.Yes,
+                                      DialogResult.No))
+
+                Else
+                    ' ✅ Prompt disabled → auto-confirm
+                    response = DialogResult.Yes
+
+                End If
 
                 If response <> DialogResult.Yes Then
-                    ' User clicked No OR dialog timed out
                     Return
                 End If
 
@@ -1520,31 +1520,30 @@ UIHelpers.TimedYesNoPrompt(
             RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
 
             UIHelpers.TimedInfoPrompt(
-    message:="Switched to main branch.",
-    title:="Repository",
-    timeoutSeconds:=10)
+            message:="Switched to main branch.",
+            title:="Repository",
+            timeoutSeconds:=10)
 
         Catch ex As Exception
             UIHelpers.TimedErrorPrompt(
-                message:="Git Error",
-                title:="Repository")
-
-
+            message:="Git Error",
+            title:="Repository")
         End Try
 
     End Sub
+
     Private Sub btnRepoDiscardChanges_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles btnRepoDiscardChanges.Click
+    sender As Object,
+    e As EventArgs
+) Handles btnRepoDiscardChanges.Click
 
         If _options Is Nothing OrElse
-           String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+       String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
             MessageBox.Show(
-                "Repository path is not configured.",
-                "Discard Changes",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
+            "Repository path is not configured.",
+            "Discard Changes",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1554,37 +1553,38 @@ UIHelpers.TimedYesNoPrompt(
         Dim preview As String = RepoTools.PreviewDiscard(repoPath)
 
         Dim message As String =
-            "This will permanently discard ALL local changes in the repository:" &
-            Environment.NewLine & Environment.NewLine &
-            repoPath & Environment.NewLine & Environment.NewLine &
-            If(String.IsNullOrWhiteSpace(preview),
-               "No untracked files will be removed.",
-               "The following untracked files will be deleted:" &
-               Environment.NewLine & preview) &
-            Environment.NewLine & Environment.NewLine &
-            "This action CANNOT be undone." &
-            Environment.NewLine & Environment.NewLine &
-            "Continue?"
+        "This will permanently discard ALL local changes in the repository:" &
+        Environment.NewLine & Environment.NewLine &
+        repoPath & Environment.NewLine & Environment.NewLine &
+        If(String.IsNullOrWhiteSpace(preview),
+           "No untracked files will be removed.",
+           "The following untracked files will be deleted:" &
+           Environment.NewLine & preview) &
+        Environment.NewLine & Environment.NewLine &
+        "This action CANNOT be undone." &
+        Environment.NewLine & Environment.NewLine &
+        "Continue?"
 
-        If UIHelpers.TimedYesNoPrompt(
-        message:=message,
-        title:="Discard All Changes",
-        timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
-                           _options.RepoDiscardPromptTimeoutSeconds,
-                           30),
-        defaultChoice:=If(_options.RepoDiscardPromptAction,
-                          DialogResult.Yes,
-                          DialogResult.No)) <> DialogResult.Yes Then
-            Return
+        Dim response As DialogResult
+
+        If _options.RepoDiscardPromptEnabled Then
+
+            response = UIHelpers.TimedYesNoPrompt(
+            message:=message,
+            title:="Discard All Changes",
+            timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
+                               _options.RepoDiscardPromptTimeoutSeconds,
+                               30),
+            defaultChoice:=If(_options.RepoDiscardPromptAction,
+                              DialogResult.Yes,
+                              DialogResult.No))
+
+        Else
+            ' ✅ Prompt disabled → automatically approve action
+            response = DialogResult.Yes
         End If
 
-
-        'If UIHelpers.TimedYesNoPrompt(
-        '    message:=message,
-        '    title:="Discard All Changes",
-        '    timeoutSeconds:=30) <> DialogResult.Yes Then
-        '    Return
-        'End If
+        If response <> DialogResult.Yes Then Return
 
         Try
             Cursor.Current = Cursors.WaitCursor
@@ -1593,14 +1593,14 @@ UIHelpers.TimedYesNoPrompt(
             RepoTools.DiscardAllChanges(repoPath)
 
             UIHelpers.TimedInfoPrompt(
-    message:="All local changes were discarded successfully.",
-    title:="Discard Complete",
-    timeoutSeconds:=10)
+            message:="All local changes were discarded successfully.",
+            title:="Discard Complete",
+            timeoutSeconds:=10)
 
         Catch ex As Exception
             UIHelpers.TimedErrorPrompt(
-                message:="Git Error",
-                title:="Repository")
+            message:="Git Error",
+            title:="Repository")
 
         Finally
             btnRepoDiscardChanges.Enabled = True
@@ -3052,13 +3052,12 @@ e As System.ComponentModel.CancelEventArgs
 
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
-
         If String.IsNullOrWhiteSpace(fullCommand) Then
             MessageBox.Show(
-                "No QA command line configured.",
-                "Missing Command",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
+            "No QA command line configured.",
+            "Missing Command",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
             Return
         End If
 
@@ -3066,71 +3065,83 @@ e As System.ComponentModel.CancelEventArgs
             tsmiRunQaApiRerunScript.Enabled = False
 
             ' ✅ STEP 1: Parse command
-
             Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
-
             Dim scriptPath = parsed.ScriptPath
             Dim args = parsed.Args
 
-            ' ✅ STEP 2: Confirm restart (OPTIONAL UPGRADE)
-            Dim confirm = UIHelpers.TimedYesNoPrompt(
+            ' ✅ STEP 2: Confirm restart
+            Dim confirm As DialogResult
+
+            If _options.QaRunPromptEnabled Then
+
+                confirm = UIHelpers.TimedYesNoPrompt(
                 owner:=Me,
-                message:="This will terminate the running QA API instance (if any) and start a fresh one." &
-                         Environment.NewLine & Environment.NewLine &
-                         "Continue?",
+                message:=
+                    "This will terminate the running QA API instance (if any) and start a fresh one." &
+                    Environment.NewLine & Environment.NewLine &
+                    "Continue?",
                 title:="Restart QA API",
-                timeoutSeconds:=_options.QaRunPromptTimeoutSeconds,
-                defaultChoice:=If(_options.QaRunPromptAction, DialogResult.Yes, DialogResult.No))
+                timeoutSeconds:=If(_options.QaRunPromptTimeoutSeconds > 0,
+                                   _options.QaRunPromptTimeoutSeconds,
+                                   10),
+                defaultChoice:=If(_options.QaRunPromptAction,
+                                  DialogResult.Yes,
+                                  DialogResult.No))
+
+            Else
+                ' ✅ Prompt disabled → always proceed
+                confirm = DialogResult.Yes
+            End If
 
             If confirm <> DialogResult.Yes Then
                 Return
             End If
 
-            ' ✅ STEP 3: Kill running script instances (if any)
-
+            ' ✅ STEP 3: Kill running script instances
             Await CodeHelper.KillQaScriptIfRunningAsync(fullCommand)
 
             ' ✅ STEP 4: Stop Windows service
             Dim serviceName As String = "AdvApiServer"
 
-            Await Task.Run(Sub()
-                               Try
-                                   Using sc As New ServiceController(serviceName)
+            Await Task.Run(
+            Sub()
+                Try
+                    Using sc As New ServiceController(serviceName)
 
-                                       If sc.Status = ServiceControllerStatus.Running OrElse
-                                          sc.Status = ServiceControllerStatus.StartPending Then
+                        If sc.Status = ServiceControllerStatus.Running OrElse
+                           sc.Status = ServiceControllerStatus.StartPending Then
 
-                                           sc.Stop()
-                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                            sc.Stop()
+                            sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
 
-                                       End If
+                        End If
 
-                                   End Using
-                               Catch
-                                   ' Ignore if not installed
-                               End Try
-                           End Sub)
+                    End Using
+                Catch
+                    ' Ignore if not installed
+                End Try
+            End Sub)
 
-            ' ✅ STEP 5: Launch fresh instance (NO -NoExit)
+            ' ✅ STEP 5: Launch fresh instance
             Dim psCommand As String =
-                $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+            $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
 
             Dim psi As New ProcessStartInfo With {
-                .FileName = "powershell.exe",
-                .Arguments = psCommand,
-                .UseShellExecute = True,
-                .CreateNoWindow = False
-            }
+            .FileName = "powershell.exe",
+            .Arguments = psCommand,
+            .UseShellExecute = True,
+            .CreateNoWindow = False
+        }
 
             Process.Start(psi)
 
         Catch ex As Exception
 
             MessageBox.Show(
-                "Failed to restart QA script:" & Environment.NewLine & ex.Message,
-                "Execution Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
+            "Failed to restart QA script:" & Environment.NewLine & ex.Message,
+            "Execution Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
 
         Finally
             tsmiRunQaApiRerunScript.Enabled = True
@@ -3165,6 +3176,7 @@ e As System.ComponentModel.CancelEventArgs
         Using dlg As New PromptDefaultsForm()
 
             'dlg.TitleText = "Select default choice after timeout"
+            dlg.PromptEnabled = _options.QaRunPromptEnabled
             dlg.YesText = "Default to Yes"
             dlg.NoText = "Default to No"
             dlg.TimeoutSeconds = _options.QaRunPromptTimeoutSeconds
@@ -3193,6 +3205,7 @@ e As System.ComponentModel.CancelEventArgs
                 UpdateOption(Sub()
                                  _options.QaRunPromptTimeoutSeconds = dlg.TimeoutSeconds
                                  _options.QaRunPromptAction = isYes
+                                 _options.QaRunPromptEnabled = dlg.PromptEnabled
                              End Sub)
 
             End If

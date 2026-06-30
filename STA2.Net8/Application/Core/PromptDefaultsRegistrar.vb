@@ -26,6 +26,7 @@
                 dlg.YesText = "Discard changes automatically"
                 dlg.NoText = "Do not discard (ask each time)"
 
+                dlg.PromptEnabled = options.RepoMainPromptEnabled
                 dlg.TimeoutSeconds = options.RepoMainPromptTimeoutSeconds
                 dlg.IsYesSelected = options.RepoMainPromptAction
 
@@ -37,6 +38,7 @@
                 form.UpdateOption(Sub()
                                       options.RepoMainPromptAction = dlg.IsYesSelected
                                       options.RepoMainPromptTimeoutSeconds = dlg.TimeoutSeconds
+                                      options.RepoMainPromptEnabled = dlg.PromptEnabled
                                   End Sub)
 
             End Sub
@@ -60,6 +62,7 @@
                 dlg.YesText = "Discard changes automatically"
                 dlg.NoText = "Do not discard (prompt each time)"
 
+                dlg.PromptEnabled = options.RepoDiscardPromptEnabled
                 dlg.TimeoutSeconds = options.RepoDiscardPromptTimeoutSeconds
                 dlg.IsYesSelected = options.RepoDiscardPromptAction
 
@@ -71,6 +74,7 @@
                 form.UpdateOption(Sub()
                                       options.RepoDiscardPromptAction = dlg.IsYesSelected
                                       options.RepoDiscardPromptTimeoutSeconds = dlg.TimeoutSeconds
+                                      options.RepoDiscardPromptEnabled = dlg.PromptEnabled
                                   End Sub)
 
             End Sub

@@ -7,8 +7,14 @@
     Public Property TimeoutSeconds As Integer
     Public Property IsYesSelected As Boolean
     Public Property TitleText As String
+    Public Property PromptEnabled As Boolean = True
 
     Private Sub PromptDefaultsForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        chkEnablePrompt.Checked = PromptEnabled
+        rbDefaultYes.Enabled = PromptEnabled
+        rbDefaultNo.Enabled = PromptEnabled
+        nudTimeoutSeconds.Enabled = PromptEnabled
+
         gbDefaults1.Text = If(String.IsNullOrWhiteSpace(TitleText), DefaultTitle, TitleText)
 
         rbDefaultYes.Text = YesText
@@ -25,8 +31,17 @@
 
     End Sub
 
-    Private Sub btnOk_Click(sender As Object, e As EventArgs) Handles btnOk.Click
+    Private Sub chkEnablePrompt_CheckedChanged(sender As Object, e As EventArgs) Handles chkEnablePrompt.CheckedChanged
 
+        Dim enabled = chkEnablePrompt.Checked
+
+        rbDefaultYes.Enabled = enabled
+        rbDefaultNo.Enabled = enabled
+        nudTimeoutSeconds.Enabled = enabled
+    End Sub
+
+    Private Sub btnOk_Click(sender As Object, e As EventArgs) Handles btnOk.Click
+        PromptEnabled = chkEnablePrompt.Checked
         IsYesSelected = rbDefaultYes.Checked
 
         TimeoutSeconds = CInt(nudTimeoutSeconds.Value)
@@ -39,5 +54,6 @@
         Me.DialogResult = DialogResult.Cancel
         Me.Close()
     End Sub
+
 
 End Class

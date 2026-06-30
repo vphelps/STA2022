@@ -29,6 +29,7 @@ Partial Class PromptDefaultsForm
         btnOk = New Button()
         btnCancel = New Button()
         lblTimeoutSeconds = New Label()
+        chkEnablePrompt = New CheckBox()
         gbDefaults1.SuspendLayout()
         CType(nudTimeoutSeconds, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
@@ -37,7 +38,7 @@ Partial Class PromptDefaultsForm
         ' 
         gbDefaults1.Controls.Add(rbDefaultNo)
         gbDefaults1.Controls.Add(rbDefaultYes)
-        gbDefaults1.Location = New Point(12, 12)
+        gbDefaults1.Location = New Point(12, 42)
         gbDefaults1.Name = "gbDefaults1"
         gbDefaults1.Size = New Size(274, 77)
         gbDefaults1.TabIndex = 0
@@ -68,7 +69,7 @@ Partial Class PromptDefaultsForm
         ' 
         ' nudTimeoutSeconds
         ' 
-        nudTimeoutSeconds.Location = New Point(131, 126)
+        nudTimeoutSeconds.Location = New Point(131, 156)
         nudTimeoutSeconds.Name = "nudTimeoutSeconds"
         nudTimeoutSeconds.Size = New Size(70, 23)
         nudTimeoutSeconds.TabIndex = 2
@@ -76,7 +77,7 @@ Partial Class PromptDefaultsForm
         ' btnOk
         ' 
         btnOk.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnOk.Location = New Point(131, 159)
+        btnOk.Location = New Point(131, 190)
         btnOk.Name = "btnOk"
         btnOk.Size = New Size(75, 23)
         btnOk.TabIndex = 3
@@ -86,7 +87,7 @@ Partial Class PromptDefaultsForm
         ' btnCancel
         ' 
         btnCancel.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnCancel.Location = New Point(211, 159)
+        btnCancel.Location = New Point(211, 190)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(75, 23)
         btnCancel.TabIndex = 4
@@ -96,11 +97,21 @@ Partial Class PromptDefaultsForm
         ' lblTimeoutSeconds
         ' 
         lblTimeoutSeconds.AutoSize = True
-        lblTimeoutSeconds.Location = New Point(12, 108)
+        lblTimeoutSeconds.Location = New Point(12, 138)
         lblTimeoutSeconds.Name = "lblTimeoutSeconds"
         lblTimeoutSeconds.Size = New Size(194, 15)
         lblTimeoutSeconds.TabIndex = 5
         lblTimeoutSeconds.Text = "Auto-select after timeout (seconds)"
+        ' 
+        ' chkEnablePrompt
+        ' 
+        chkEnablePrompt.AutoSize = True
+        chkEnablePrompt.Location = New Point(12, 17)
+        chkEnablePrompt.Name = "chkEnablePrompt"
+        chkEnablePrompt.Size = New Size(107, 19)
+        chkEnablePrompt.TabIndex = 6
+        chkEnablePrompt.Text = " Enable prompt"
+        chkEnablePrompt.UseVisualStyleBackColor = True
         ' 
         ' PromptDefaultsForm
         ' 
@@ -108,7 +119,8 @@ Partial Class PromptDefaultsForm
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnCancel
-        ClientSize = New Size(295, 194)
+        ClientSize = New Size(295, 225)
+        Controls.Add(chkEnablePrompt)
         Controls.Add(lblTimeoutSeconds)
         Controls.Add(btnCancel)
         Controls.Add(btnOk)
@@ -131,4 +143,5 @@ Partial Class PromptDefaultsForm
     Friend WithEvents btnOk As Button
     Friend WithEvents btnCancel As Button
     Friend WithEvents lblTimeoutSeconds As Label
+    Friend WithEvents chkEnablePrompt As CheckBox
 End Class
