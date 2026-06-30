@@ -28,7 +28,7 @@ Partial Class PromptDefaultsForm
         nudTimeoutSeconds = New NumericUpDown()
         btnOk = New Button()
         btnCancel = New Button()
-        Label1 = New Label()
+        lblTimeoutSeconds = New Label()
         gbDefaults1.SuspendLayout()
         CType(nudTimeoutSeconds, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
@@ -37,9 +37,9 @@ Partial Class PromptDefaultsForm
         ' 
         gbDefaults1.Controls.Add(rbDefaultNo)
         gbDefaults1.Controls.Add(rbDefaultYes)
-        gbDefaults1.Location = New Point(12, 28)
+        gbDefaults1.Location = New Point(12, 12)
         gbDefaults1.Name = "gbDefaults1"
-        gbDefaults1.Size = New Size(274, 167)
+        gbDefaults1.Size = New Size(274, 77)
         gbDefaults1.TabIndex = 0
         gbDefaults1.TabStop = False
         gbDefaults1.Text = "gbDefaults1"
@@ -68,14 +68,15 @@ Partial Class PromptDefaultsForm
         ' 
         ' nudTimeoutSeconds
         ' 
-        nudTimeoutSeconds.Location = New Point(67, 211)
+        nudTimeoutSeconds.Location = New Point(131, 126)
         nudTimeoutSeconds.Name = "nudTimeoutSeconds"
-        nudTimeoutSeconds.Size = New Size(120, 23)
+        nudTimeoutSeconds.Size = New Size(70, 23)
         nudTimeoutSeconds.TabIndex = 2
         ' 
         ' btnOk
         ' 
-        btnOk.Location = New Point(687, 250)
+        btnOk.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        btnOk.Location = New Point(131, 159)
         btnOk.Name = "btnOk"
         btnOk.Size = New Size(75, 23)
         btnOk.TabIndex = 3
@@ -84,21 +85,22 @@ Partial Class PromptDefaultsForm
         ' 
         ' btnCancel
         ' 
-        btnCancel.Location = New Point(704, 300)
+        btnCancel.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        btnCancel.Location = New Point(211, 159)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(75, 23)
         btnCancel.TabIndex = 4
         btnCancel.Text = "Cancel"
         btnCancel.UseVisualStyleBackColor = True
         ' 
-        ' Label1
+        ' lblTimeoutSeconds
         ' 
-        Label1.AutoSize = True
-        Label1.Location = New Point(272, 366)
-        Label1.Name = "Label1"
-        Label1.Size = New Size(41, 15)
-        Label1.TabIndex = 5
-        Label1.Text = "Label1"
+        lblTimeoutSeconds.AutoSize = True
+        lblTimeoutSeconds.Location = New Point(12, 108)
+        lblTimeoutSeconds.Name = "lblTimeoutSeconds"
+        lblTimeoutSeconds.Size = New Size(194, 15)
+        lblTimeoutSeconds.TabIndex = 5
+        lblTimeoutSeconds.Text = "Auto-select after timeout (seconds)"
         ' 
         ' PromptDefaultsForm
         ' 
@@ -106,12 +108,13 @@ Partial Class PromptDefaultsForm
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnCancel
-        ClientSize = New Size(867, 494)
-        Controls.Add(Label1)
+        ClientSize = New Size(295, 194)
+        Controls.Add(lblTimeoutSeconds)
         Controls.Add(btnCancel)
         Controls.Add(btnOk)
         Controls.Add(nudTimeoutSeconds)
         Controls.Add(gbDefaults1)
+        FormBorderStyle = FormBorderStyle.FixedDialog
         Name = "PromptDefaultsForm"
         Text = "PromptDefaultsForm"
         gbDefaults1.ResumeLayout(False)
@@ -127,5 +130,5 @@ Partial Class PromptDefaultsForm
     Friend WithEvents nudTimeoutSeconds As NumericUpDown
     Friend WithEvents btnOk As Button
     Friend WithEvents btnCancel As Button
-    Friend WithEvents Label1 As Label
+    Friend WithEvents lblTimeoutSeconds As Label
 End Class

@@ -2056,7 +2056,7 @@ e As System.ComponentModel.CancelEventArgs
 
 
     Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
-        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
+        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(_options.ApplyFlavorDefault))
     End Sub
 
     Private Sub tbBackupPathOverride_TextChanged(sender As Object, e As EventArgs) Handles tbBackupPathOverride.TextChanged
@@ -3133,13 +3133,24 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+    Private Sub tsmiQaMenuPromptDefaults_Click(sender As Object, e As EventArgs) Handles tsmiQaMenuPromptDefaults.Click
+
         Using dlg As New PromptDefaultsForm()
 
-            dlg.YesText = tbTest1.Text
-            dlg.NoText = tbTest2.Text
+            'dlg.TitleText = "Select default choice after timeout"
+            dlg.YesText = "Default to Yes"
+            dlg.NoText = "Default to No"
             dlg.TimeoutSeconds = _options.QaRunPromptTimeoutSeconds
             dlg.IsYesSelected = _options.QaRunPromptAction
+            dlg.Text = "QA Run Prompt Defaults"
+
+
+            ' Ensure dialog appears on the same screen as the parent form
+            dlg.StartPosition = FormStartPosition.Manual
+            Dim scr = Screen.FromControl(Me)
+            Dim centerX = scr.WorkingArea.Left + (scr.WorkingArea.Width - dlg.Width) \ 2
+            Dim centerY = scr.WorkingArea.Top + (scr.WorkingArea.Height - dlg.Height) \ 2
+            dlg.Location = New Point(Math.Max(scr.WorkingArea.Left, centerX), Math.Max(scr.WorkingArea.Top, centerY))
 
             If dlg.ShowDialog(Me) = DialogResult.OK Then
 
@@ -3159,14 +3170,7 @@ e As System.ComponentModel.CancelEventArgs
 
             End If
 
-
-
         End Using
-
-    End Sub
-
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        tbTest3.Text = _options.QaRunPromptAction.ToString() & " (Timeout: " & _options.QaRunPromptTimeoutSeconds & "s)"
 
     End Sub
 End Class

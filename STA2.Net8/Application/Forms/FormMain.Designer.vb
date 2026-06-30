@@ -279,6 +279,8 @@ Partial Class FormMain
         cmsRunQaApi = New ContextMenuStrip(components)
         tsmiRunQaApiRerunScript = New ToolStripMenuItem()
         tsmiQaScriptKill = New ToolStripMenuItem()
+        cmsSeparator1 = New ToolStripSeparator()
+        tsmiQaMenuPromptDefaults = New ToolStripMenuItem()
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
@@ -3181,9 +3183,9 @@ Partial Class FormMain
         ' 
         ' cmsRunQaApi
         ' 
-        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiRerunScript, tsmiQaScriptKill})
+        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiRerunScript, tsmiQaScriptKill, cmsSeparator1, tsmiQaMenuPromptDefaults})
         cmsRunQaApi.Name = "cmsRunQaApi"
-        cmsRunQaApi.Size = New Size(289, 48)
+        cmsRunQaApi.Size = New Size(289, 76)
         ' 
         ' tsmiRunQaApiRerunScript
         ' 
@@ -3196,6 +3198,17 @@ Partial Class FormMain
         tsmiQaScriptKill.Name = "tsmiQaScriptKill"
         tsmiQaScriptKill.Size = New Size(288, 22)
         tsmiQaScriptKill.Text = "End the QA Api Server Script"
+        ' 
+        ' cmsSeparator1
+        ' 
+        cmsSeparator1.Name = "cmsSeparator1"
+        cmsSeparator1.Size = New Size(285, 6)
+        ' 
+        ' tsmiQaMenuPromptDefaults
+        ' 
+        tsmiQaMenuPromptDefaults.Name = "tsmiQaMenuPromptDefaults"
+        tsmiQaMenuPromptDefaults.Size = New Size(288, 22)
+        tsmiQaMenuPromptDefaults.Text = "Set Prompt Defaults"
         ' 
         ' btnUpdateShiftDate
         ' 
@@ -3650,4 +3663,6 @@ Partial Class FormMain
     Friend WithEvents tsmiRunQaApiRerunScript As ToolStripMenuItem
     Friend WithEvents tsmiQaScriptKill As ToolStripMenuItem
     Friend WithEvents btnTest3 As Button
+    Friend WithEvents cmsSeparator1 As ToolStripSeparator
+    Friend WithEvents tsmiQaMenuPromptDefaults As ToolStripMenuItem
 End Class
