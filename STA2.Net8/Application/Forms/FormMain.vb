@@ -419,6 +419,9 @@ Public Class FormMain
 
         ' Load saved personal flavor if it exists
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
+
+        PromptDefaultsRegistrar.RegisterAll(Me, _options)
+
     End Sub
 
     Private Sub FormMain_Shown(sender As Object, e As EventArgs) Handles Me.Shown
@@ -723,7 +726,7 @@ Public Class FormMain
     )
         prop?.SetValue(ctrl, True, Nothing)
     End Sub
-    Private Sub UpdateOption(setter As Action)
+    Friend Sub UpdateOption(setter As Action)
         If _options Is Nothing Then Return
 
         setter()
@@ -1485,13 +1488,26 @@ Public Class FormMain
         Try
             If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
 
+                'Dim response As DialogResult =
+                'UIHelpers.TimedYesNoPrompt(
+                '    message:=
+                '        "There are uncommitted changes." & Environment.NewLine &
+                '        "Discard them and switch to main?",
+                '    title:="Confirm",
+                '    timeoutSeconds:=10)
                 Dim response As DialogResult =
-                UIHelpers.TimedYesNoPrompt(
-                    message:=
-                        "There are uncommitted changes." & Environment.NewLine &
-                        "Discard them and switch to main?",
-                    title:="Confirm",
-                    timeoutSeconds:=10)
+UIHelpers.TimedYesNoPrompt(
+    message:=
+        "There are uncommitted changes." & Environment.NewLine &
+        "Discard them and switch to main?",
+    title:="Confirm",
+    timeoutSeconds:=If(_options.RepoMainPromptTimeoutSeconds > 0,
+                       _options.RepoMainPromptTimeoutSeconds,
+                       10),
+    defaultChoice:=If(_options.RepoMainPromptAction,
+                      DialogResult.Yes,
+                      DialogResult.No))
+
 
                 If response <> DialogResult.Yes Then
                     ' User clicked No OR dialog timed out
@@ -1550,14 +1566,25 @@ Public Class FormMain
             Environment.NewLine & Environment.NewLine &
             "Continue?"
 
-
-
         If UIHelpers.TimedYesNoPrompt(
-            message:=message,
-            title:="Discard All Changes",
-            timeoutSeconds:=30) <> DialogResult.Yes Then
+        message:=message,
+        title:="Discard All Changes",
+        timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
+                           _options.RepoDiscardPromptTimeoutSeconds,
+                           30),
+        defaultChoice:=If(_options.RepoDiscardPromptAction,
+                          DialogResult.Yes,
+                          DialogResult.No)) <> DialogResult.Yes Then
             Return
         End If
+
+
+        'If UIHelpers.TimedYesNoPrompt(
+        '    message:=message,
+        '    title:="Discard All Changes",
+        '    timeoutSeconds:=30) <> DialogResult.Yes Then
+        '    Return
+        'End If
 
         Try
             Cursor.Current = Cursors.WaitCursor

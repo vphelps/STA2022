@@ -21,7 +21,10 @@ Public Class AppOptions
     ' QA run button prompt and timeout settings
     Public Property QaRunPromptAction As Boolean
     Public Property QaRunPromptTimeoutSeconds As Integer
-
+    Public Property RepoMainPromptAction As Boolean
+    Public Property RepoMainPromptTimeoutSeconds As Integer
+    Public Property RepoDiscardPromptAction As Boolean
+    Public Property RepoDiscardPromptTimeoutSeconds As Integer
 
 
     ' -------------------------------------------------
