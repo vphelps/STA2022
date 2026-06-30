@@ -380,7 +380,7 @@ Public Class FormMain
         tbMLTest1.Visible = False
         btnTest1.Visible = False
         btnTest2.Visible = False
-
+        btnTest3.Visible = False
 
 #End If
 #If DEBUG Then
