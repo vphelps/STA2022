@@ -2477,59 +2477,85 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
 
-        Dim flavors = _options?.DefaultFlavorNames
+        Dim flavors = GetSelectedAndDefaultFlavors()
 
-        If flavors Is Nothing OrElse flavors.Count = 0 Then
+        If flavors.Count = 0 Then
             MessageBox.Show(
-                "No default flavors are configured.",
-                "No Defaults",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            "No default flavors are configured and no flavors are selected.",
+            "No Flavors",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
             Return
         End If
 
         Await RunScriptAsync(
-            scriptPath:=tbDatabaseStartDefault.Text,
-            trigger:=btnRunDatabaseStartLive,
-            statusText:="Starting database (live output)…",
-            flavors:=flavors,
-            useVersion:=cbDbUseVersion.Checked,
-            versionText:=tbDbUseVersion.Text
-)
+        scriptPath:=tbDatabaseStartDefault.Text,
+        trigger:=btnRunDatabaseStartLive,
+        statusText:="Starting database (live output)…",
+        flavors:=flavors,
+        useVersion:=cbDbUseVersion.Checked,
+        versionText:=tbDbUseVersion.Text
+    )
 
         DatabaseCoordinator.EvaluateDatabaseAvailability(
-            form:=Me,
-            connectionString:=ConfigValues.ConnectionString,
-            configuredContainerName:=_options?.SqlContainerName
-        )
+        form:=Me,
+        connectionString:=ConfigValues.ConnectionString,
+        configuredContainerName:=_options?.SqlContainerName
+    )
 
         _uiStateController.Refresh()
 
     End Sub
+
     Private Async Sub btnRunApplyFlavorLive_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
 
-        Dim defaultFlavors = _options?.DefaultFlavorNames
+        Dim flavors = GetSelectedAndDefaultFlavors()
 
-        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+        If flavors.Count = 0 Then
             MessageBox.Show(
-                "No default flavors are configured.",
-                "No Defaults",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            "No default flavors are configured and no flavors are selected.",
+            "No Flavors",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
             Return
         End If
 
         Await RunScriptAsync(
-            scriptPath:=tbApplyFlavorDefault.Text,
-            trigger:=btnRunApplyFlavorLive,
-            statusText:="Applying default flavors (live output)…",
-            flavors:=defaultFlavors
-        )
+        scriptPath:=tbApplyFlavorDefault.Text,
+        trigger:=btnRunApplyFlavorLive,
+        statusText:="Applying flavors (live output)…",
+        flavors:=flavors
+    )
 
     End Sub
+    Private Function GetSelectedAndDefaultFlavors() As List(Of String)
+
+        Dim flavors As New List(Of String)
+
+        ' Start with configured defaults
+        If _options?.DefaultFlavorNames IsNot Nothing Then
+            flavors.AddRange(_options.DefaultFlavorNames)
+        End If
+
+        ' Add any currently highlighted flavors
+        If lbFlavorsList.SelectedItems.Count > 0 Then
+
+            flavors.AddRange(
+            lbFlavorsList.SelectedItems _
+                .OfType(Of FlavorSelectionManager.SqlFileItem)() _
+                .Select(Function(f) f.FlavorName)
+        )
+
+        End If
+
+        Return flavors _
+        .Distinct(StringComparer.OrdinalIgnoreCase) _
+        .ToList()
+
+    End Function
     Private Async Sub tsmiApplyDefaultFlavors_Click(
     sender As Object,
     e As EventArgs
