@@ -2556,6 +2556,14 @@ e As System.ComponentModel.CancelEventArgs
         .ToList()
 
     End Function
+    Private Sub UpdateApplyFlavorButtonText()
+
+        btnRunApplyFlavorLive.Text =
+        If(lbFlavorsList.SelectedItems.Count > 0,
+           "Apply Default/Selected Flavors",
+           "Apply Default Flavors")
+
+    End Sub
     Private Async Sub tsmiApplyDefaultFlavors_Click(
     sender As Object,
     e As EventArgs
@@ -2871,6 +2879,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub btnFlavorsListRefresh_Click(sender As Object, e As EventArgs) Handles btnFlavorsListRefresh.Click
         _flavorManager.RefreshPreservingSelection()
         SyncFlavorsListMirror()
+        UpdateApplyFlavorButtonText()
 
     End Sub
 
@@ -3239,5 +3248,9 @@ e As System.ComponentModel.CancelEventArgs
 
         End Using
 
+    End Sub
+
+    Private Sub lbFlavorsList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lbFlavorsList.SelectedIndexChanged
+        UpdateApplyFlavorButtonText()
     End Sub
 End Class
