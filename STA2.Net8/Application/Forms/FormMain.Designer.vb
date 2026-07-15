@@ -275,6 +275,7 @@ Partial Class FormMain
         lblButtons = New Label()
         pnlButtons = New Panel()
         tlpButtons3 = New TableLayoutPanel()
+        btnConnectionProfiles = New Button()
         btnRunQaApi = New Button()
         cmsRunQaApi = New ContextMenuStrip(components)
         tsmiRunQaApiRerunScript = New ToolStripMenuItem()
@@ -3143,6 +3144,7 @@ Partial Class FormMain
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.Controls.Add(btnConnectionProfiles, 2, 2)
         tlpButtons3.Controls.Add(btnRunQaApi, 2, 3)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
@@ -3168,6 +3170,17 @@ Partial Class FormMain
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
+        ' 
+        ' btnConnectionProfiles
+        ' 
+        btnConnectionProfiles.Dock = DockStyle.Fill
+        btnConnectionProfiles.Location = New Point(194, 116)
+        btnConnectionProfiles.Margin = New Padding(0)
+        btnConnectionProfiles.Name = "btnConnectionProfiles"
+        btnConnectionProfiles.Size = New Size(94, 55)
+        btnConnectionProfiles.TabIndex = 36
+        btnConnectionProfiles.Text = "Connection Profiles"
+        btnConnectionProfiles.UseVisualStyleBackColor = True
         ' 
         ' btnRunQaApi
         ' 
@@ -3665,4 +3678,5 @@ Partial Class FormMain
     Friend WithEvents btnTest3 As Button
     Friend WithEvents cmsSeparator1 As ToolStripSeparator
     Friend WithEvents tsmiQaMenuPromptDefaults As ToolStripMenuItem
+    Friend WithEvents btnConnectionProfiles As Button
 End Class

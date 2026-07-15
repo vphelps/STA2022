@@ -98,6 +98,7 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
         ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
         ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
+        ToolTip1.SetToolTip(btnConnectionProfiles, "Manage saved PFSConnect.ini connection configurations")
 
         strTemp =
             "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
@@ -3252,5 +3253,28 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub lbFlavorsList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lbFlavorsList.SelectedIndexChanged
         UpdateApplyFlavorButtonText()
+    End Sub
+
+    Private Sub btnConnectionProfiles_Click(sender As Object, e As EventArgs) Handles btnConnectionProfiles.Click
+
+        Using dlg As New ConnectionProfilesForm()
+
+            '' ✅ Ensure dialog opens on same screen as parent
+            'dlg.StartPosition = FormStartPosition.Manual
+
+            'Dim screen As Screen = Screen.FromControl(Me)
+            'Dim working = screen.WorkingArea
+
+            'Dim centerX = working.Left + (working.Width - dlg.Width) \ 2
+            'Dim centerY = working.Top + (working.Height - dlg.Height) \ 2
+
+            'dlg.Location = New Point(
+            '            Math.Max(working.Left, centerX),
+            '            Math.Max(working.Top, centerY)
+            '        )
+            dlg.ShowDialog(Me)
+
+        End Using
+
     End Sub
 End Class
