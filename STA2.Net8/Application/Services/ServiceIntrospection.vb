@@ -4,8 +4,24 @@ Imports Microsoft.Win32
 
 Public Module ServiceIntrospection
     Public Function GetInstalledVersionString() As String
+
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-        Return info.Version
+
+        Debug.WriteLine($"Service Version: '{info.Version}'")
+        Debug.WriteLine($"Service Path: '{info.Path}'")
+
+        If Not String.IsNullOrWhiteSpace(info.Version) Then
+            Return info.Version
+        End If
+
+        Debug.WriteLine("Falling back to AdvCommon.dll")
+
+        Dim version = GetAdvCommonVersion()
+
+        Debug.WriteLine($"AdvCommon Version: '{version}'")
+
+        Return version
+
     End Function
 
     ' Entry: returns a tuple with:
@@ -114,5 +130,98 @@ Public Module ServiceIntrospection
             Return ""
         End Try
     End Function
+
+    Private Function GetAdvCommonVersion() As String
+
+        Dim candidates As New List(Of String)
+
+        ' x64 installation
+        If Not String.IsNullOrWhiteSpace(AppData.CEPath64) Then
+            candidates.Add(IO.Path.Combine(AppData.CEPath64, "AdvCommon.dll"))
+        End If
+
+        ' x86 installation
+        If Not String.IsNullOrWhiteSpace(AppData.CEPath86) Then
+            candidates.Add(IO.Path.Combine(AppData.CEPath86, "AdvCommon.dll"))
+        End If
+
+        For Each filePath In candidates
+
+            Dim version = GetFileVersion(filePath)
+
+            If Not String.IsNullOrWhiteSpace(version) Then
+                Return version
+            End If
+
+        Next
+
+        Return ""
+
+    End Function
+
+    Private Function GetFileVersion(filePath As String) As String
+
+        If String.IsNullOrWhiteSpace(filePath) Then Return ""
+
+        If Not IO.File.Exists(filePath) Then Return ""
+
+        Try
+
+            Dim fvi = FileVersionInfo.GetVersionInfo(filePath)
+
+            Return If(fvi.FileVersion, "")
+
+        Catch
+            Return ""
+        End Try
+
+    End Function
+    Private Function GetProductVersionFromInstallFiles() As String
+
+        Dim candidates As String() =
+        {
+            "AdvCommon.dll",
+            "Advantage.exe",
+            "AdvManager.exe"
+        }
+
+        Dim roots As String() =
+        {
+            AppData.CEPath64,
+            AppData.CEPath86
+        }
+
+        For Each root In roots
+
+            If String.IsNullOrWhiteSpace(root) Then Continue For
+
+            For Each fileName In candidates
+
+                Dim path = IO.Path.Combine(root, fileName)
+
+                Dim version = GetFileVersion(path)
+
+                If Not String.IsNullOrWhiteSpace(version) Then
+                    Return version
+                End If
+
+            Next
+
+        Next
+
+        Return ""
+        'Public Function GetInstalledVersionString() As String
+
+        '        Dim info = GetServiceFileInfo("AdvCoreService")
+
+        '        If Not String.IsNullOrWhiteSpace(info.Version) Then
+        '            Return info.Version
+        '        End If
+
+        '        Return GetProductVersionFromInstallFiles()
+
+        '    End Function
+    End Function
+
 
 End Module

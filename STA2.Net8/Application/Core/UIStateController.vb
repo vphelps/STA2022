@@ -87,12 +87,12 @@
         ' ----------------------------
         ' Version info
         ' ----------------------------
-        Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
-
+        'Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
+        Dim version As String = ServiceIntrospection.GetInstalledVersionString()
 
         _form.tslblCeVersion.Text =
-            "Software Version:  " & info.Version &
-            " | Database Version:  " & PCInfo.DatabaseVersion
+    "Software Version:  " & version &
+    " | Database Version:  " & PCInfo.DatabaseVersion
 
         _form.tslblTime.Text =
             DateTime.Now.ToShortDateString() & " " &
@@ -103,7 +103,7 @@
         ' ----------------------------
         ' Version mismatch coloring
         ' ----------------------------
-        Dim v1 = CodeHelper.ParseVersionSafe(info.Version)
+        Dim v1 = CodeHelper.ParseVersionSafe(version)
         Dim v2 = CodeHelper.ParseVersionSafe(PCInfo.DatabaseVersion)
 
         If CodeHelper.VersionsMatch(v1, v2) Then
