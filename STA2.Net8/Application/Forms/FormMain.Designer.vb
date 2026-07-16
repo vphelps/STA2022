@@ -201,12 +201,12 @@ Partial Class FormMain
         btnTest2 = New Button()
         gbAdvApps = New GroupBox()
         tlpButtons1 = New TableLayoutPanel()
+        btnConnectionProfiles = New Button()
         btnAdvUpgrade = New Button()
         btnAdvKiosk = New Button()
         btnAdvCardTech = New Button()
         btnAdvRedeem = New Button()
         btnAdvReportEditor = New Button()
-        btnAdvConfig = New Button()
         btnAdvKioskSetup = New Button()
         btnAdvGroups = New Button()
         btnPos = New Button()
@@ -275,7 +275,6 @@ Partial Class FormMain
         lblButtons = New Label()
         pnlButtons = New Panel()
         tlpButtons3 = New TableLayoutPanel()
-        btnConnectionProfiles = New Button()
         btnRunQaApi = New Button()
         cmsRunQaApi = New ContextMenuStrip(components)
         tsmiRunQaApiRerunScript = New ToolStripMenuItem()
@@ -2368,12 +2367,12 @@ Partial Class FormMain
         tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
         tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
         tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.Controls.Add(btnConnectionProfiles, 4, 0)
         tlpButtons1.Controls.Add(btnAdvUpgrade, 4, 1)
         tlpButtons1.Controls.Add(btnAdvKiosk, 3, 1)
         tlpButtons1.Controls.Add(btnAdvCardTech, 2, 1)
         tlpButtons1.Controls.Add(btnAdvRedeem, 1, 1)
         tlpButtons1.Controls.Add(btnAdvReportEditor, 0, 1)
-        tlpButtons1.Controls.Add(btnAdvConfig, 4, 0)
         tlpButtons1.Controls.Add(btnAdvKioskSetup, 3, 0)
         tlpButtons1.Controls.Add(btnAdvGroups, 2, 0)
         tlpButtons1.Controls.Add(btnPos, 1, 0)
@@ -2387,6 +2386,17 @@ Partial Class FormMain
         tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
         tlpButtons1.Size = New Size(498, 137)
         tlpButtons1.TabIndex = 37
+        ' 
+        ' btnConnectionProfiles
+        ' 
+        btnConnectionProfiles.Dock = DockStyle.Fill
+        btnConnectionProfiles.Location = New Point(396, 0)
+        btnConnectionProfiles.Margin = New Padding(0)
+        btnConnectionProfiles.Name = "btnConnectionProfiles"
+        btnConnectionProfiles.Size = New Size(102, 68)
+        btnConnectionProfiles.TabIndex = 37
+        btnConnectionProfiles.Text = "Connection Profiles"
+        btnConnectionProfiles.UseVisualStyleBackColor = True
         ' 
         ' btnAdvUpgrade
         ' 
@@ -2446,17 +2456,6 @@ Partial Class FormMain
         btnAdvReportEditor.TabIndex = 17
         btnAdvReportEditor.Text = "Report Editor"
         btnAdvReportEditor.UseVisualStyleBackColor = True
-        ' 
-        ' btnAdvConfig
-        ' 
-        btnAdvConfig.Dock = DockStyle.Fill
-        btnAdvConfig.Location = New Point(396, 0)
-        btnAdvConfig.Margin = New Padding(0)
-        btnAdvConfig.Name = "btnAdvConfig"
-        btnAdvConfig.Size = New Size(102, 68)
-        btnAdvConfig.TabIndex = 12
-        btnAdvConfig.Text = "CenterEdge Configuration"
-        btnAdvConfig.UseVisualStyleBackColor = True
         ' 
         ' btnAdvKioskSetup
         ' 
@@ -3144,7 +3143,6 @@ Partial Class FormMain
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
-        tlpButtons3.Controls.Add(btnConnectionProfiles, 2, 2)
         tlpButtons3.Controls.Add(btnRunQaApi, 2, 3)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
@@ -3170,17 +3168,6 @@ Partial Class FormMain
         tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
-        ' 
-        ' btnConnectionProfiles
-        ' 
-        btnConnectionProfiles.Dock = DockStyle.Fill
-        btnConnectionProfiles.Location = New Point(194, 116)
-        btnConnectionProfiles.Margin = New Padding(0)
-        btnConnectionProfiles.Name = "btnConnectionProfiles"
-        btnConnectionProfiles.Size = New Size(94, 55)
-        btnConnectionProfiles.TabIndex = 36
-        btnConnectionProfiles.Text = "Connection Profiles"
-        btnConnectionProfiles.UseVisualStyleBackColor = True
         ' 
         ' btnRunQaApi
         ' 
@@ -3457,7 +3444,6 @@ Partial Class FormMain
     Friend WithEvents rbDbTableSize As RadioButton
     Friend WithEvents rbDbSizeByDay As RadioButton
     Friend WithEvents rbDbDeadlocks As RadioButton
-    Friend WithEvents btnAdvConfig As Button
     Friend WithEvents tpDbLogs As TabPage
     Friend WithEvents pnlDbLogs As Panel
     Friend WithEvents dgvDbLogCount As DataGridView

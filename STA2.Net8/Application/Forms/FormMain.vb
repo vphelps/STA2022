@@ -128,7 +128,6 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnPos, "Run Advantage POS")
         ToolTip1.SetToolTip(btnAdvGroups, "Run Advantage Groups")
         ToolTip1.SetToolTip(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
-        ToolTip1.SetToolTip(btnAdvConfig, "Run CenterEdge Configuration")
         ToolTip1.SetToolTip(btnAdvReportEditor, "Run Advantage Report Editor")
         ToolTip1.SetToolTip(btnAdvRedeem, "Run Advantage Redemption")
         ToolTip1.SetToolTip(btnAdvCardTech, "DESCRIPTION")
@@ -1810,15 +1809,15 @@ _options)
             Process.Start(Executable)
         End If
     End Sub
-    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click, btnAdvConfig.Click
-        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
-        Dim Executable As String = caller.Name.Replace("btn", "")
-        Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click
+        Dim caller = DirectCast(sender, Button)
+        Dim Executable = caller.Name.Replace("btn", "")
+        Dim Version As Integer = AdvExeCheck(Executable)
 
         If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
         If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
 
-        System.Diagnostics.Process.Start(Executable)
+        Process.Start(Executable)
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
@@ -3257,7 +3256,7 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnConnectionProfiles_Click(sender As Object, e As EventArgs) Handles btnConnectionProfiles.Click
 
-        Using dlg As New ConnectionProfilesForm()
+        Using dlg As New ConnectionProfilesForm
 
             '' ✅ Ensure dialog opens on same screen as parent
             'dlg.StartPosition = FormStartPosition.Manual
@@ -3277,4 +3276,6 @@ e As System.ComponentModel.CancelEventArgs
         End Using
 
     End Sub
+
+
 End Class

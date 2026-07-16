@@ -25,10 +25,10 @@ Partial Class ConnectionProfilesForm
         gbProfiles = New GroupBox()
         lstProfiles = New ListBox()
         gbCurrentConnection = New GroupBox()
-        lblServerCaption = New Label()
-        lblServer = New Label()
-        lblDatabaseCaption = New Label()
         lblDatabase = New Label()
+        lblDatabaseCaption = New Label()
+        lblServer = New Label()
+        lblServerCaption = New Label()
         btnActivate = New Button()
         btnSaveCurrentAs = New Button()
         btnDelete = New Button()
@@ -73,23 +73,14 @@ Partial Class ConnectionProfilesForm
         gbCurrentConnection.TabStop = False
         gbCurrentConnection.Text = "Current Active Connection"
         ' 
-        ' lblServerCaption
+        ' lblDatabase
         ' 
-        lblServerCaption.AutoSize = True
-        lblServerCaption.Location = New Point(6, 29)
-        lblServerCaption.Name = "lblServerCaption"
-        lblServerCaption.Size = New Size(42, 15)
-        lblServerCaption.TabIndex = 2
-        lblServerCaption.Text = "Server:"
-        ' 
-        ' lblServer
-        ' 
-        lblServer.AutoSize = True
-        lblServer.Location = New Point(95, 29)
-        lblServer.Name = "lblServer"
-        lblServer.Size = New Size(52, 15)
-        lblServer.TabIndex = 3
-        lblServer.Text = "lblServer"
+        lblDatabase.AutoSize = True
+        lblDatabase.Location = New Point(95, 53)
+        lblDatabase.Name = "lblDatabase"
+        lblDatabase.Size = New Size(68, 15)
+        lblDatabase.TabIndex = 5
+        lblDatabase.Text = "lblDatabase"
         ' 
         ' lblDatabaseCaption
         ' 
@@ -100,14 +91,23 @@ Partial Class ConnectionProfilesForm
         lblDatabaseCaption.TabIndex = 4
         lblDatabaseCaption.Text = "Database:"
         ' 
-        ' lblDatabase
+        ' lblServer
         ' 
-        lblDatabase.AutoSize = True
-        lblDatabase.Location = New Point(95, 53)
-        lblDatabase.Name = "lblDatabase"
-        lblDatabase.Size = New Size(68, 15)
-        lblDatabase.TabIndex = 5
-        lblDatabase.Text = "lblDatabase"
+        lblServer.AutoSize = True
+        lblServer.Location = New Point(95, 29)
+        lblServer.Name = "lblServer"
+        lblServer.Size = New Size(52, 15)
+        lblServer.TabIndex = 3
+        lblServer.Text = "lblServer"
+        ' 
+        ' lblServerCaption
+        ' 
+        lblServerCaption.AutoSize = True
+        lblServerCaption.Location = New Point(6, 29)
+        lblServerCaption.Name = "lblServerCaption"
+        lblServerCaption.Size = New Size(42, 15)
+        lblServerCaption.TabIndex = 2
+        lblServerCaption.Text = "Server:"
         ' 
         ' btnActivate
         ' 
@@ -190,6 +190,7 @@ Partial Class ConnectionProfilesForm
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
+        CancelButton = btnClose
         ClientSize = New Size(800, 450)
         Controls.Add(tbProfileInfo)
         Controls.Add(lblProfileFolder)
