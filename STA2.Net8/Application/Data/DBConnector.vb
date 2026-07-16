@@ -121,8 +121,6 @@ Public Class DBConnector
     '======================================================================
     Private Shared Sub HandleDatabaseFailure(prefix As String, ex As Exception)
 
-        Debug.WriteLine($"{prefix}: {ex.Message}")
-
         Variables.OfflineMode = True
         PCInfo.ValidDatabase = False
 

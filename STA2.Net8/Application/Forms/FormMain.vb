@@ -1745,6 +1745,7 @@ _options)
     e As EventArgs
 ) Handles btnManageInstallerVersions.Click
 
+
         btnManageInstallerVersions.Enabled = False
         Try
             Dim versions =
@@ -1762,13 +1763,6 @@ _options)
                                 End Sub)
             End Function
         )
-
-#If DEBUG Then
-            For Each v In versions
-                Debug.WriteLine(
-                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
-            Next
-#End If
 
             Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
 

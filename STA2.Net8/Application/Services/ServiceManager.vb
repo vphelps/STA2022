@@ -89,10 +89,7 @@ Public Class ServiceManager
                 End Using
 
             Catch ex As Exception
-#If DEBUG Then
-                Debug.WriteLine(
-                $"Polling error for {name}: {ex.GetType().Name}")
-#End If
+
             End Try
 
         Next

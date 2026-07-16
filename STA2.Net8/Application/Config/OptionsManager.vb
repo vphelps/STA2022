@@ -107,7 +107,6 @@ Public NotInheritable Class OptionsManager
             File.WriteAllText(path, json, Encoding.UTF8)
 
         Catch ex As Exception
-            Debug.WriteLine("Options save failed: " & ex.Message)
         End Try
 
     End Sub
@@ -342,7 +341,7 @@ Public NotInheritable Class OptionsManager
                 Return File.ReadAllText(path)
             End If
         Catch ex As Exception
-            Debug.WriteLine("Failed to load personal flavor: " & ex.Message)
+
         End Try
 
         Return ""
@@ -355,7 +354,7 @@ Public NotInheritable Class OptionsManager
             EnsureParentDirectory(path)
             File.WriteAllText(path, sqlText, Encoding.UTF8)
         Catch ex As Exception
-            Debug.WriteLine("Failed to save personal flavor: " & ex.Message)
+
         End Try
     End Sub
 End Class

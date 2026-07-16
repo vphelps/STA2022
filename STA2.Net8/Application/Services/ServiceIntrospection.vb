@@ -7,18 +7,11 @@ Public Module ServiceIntrospection
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
 
-        Debug.WriteLine($"Service Version: '{info.Version}'")
-        Debug.WriteLine($"Service Path: '{info.Path}'")
-
         If Not String.IsNullOrWhiteSpace(info.Version) Then
             Return info.Version
         End If
 
-        Debug.WriteLine("Falling back to AdvCommon.dll")
-
         Dim version = GetAdvCommonVersion()
-
-        Debug.WriteLine($"AdvCommon Version: '{version}'")
 
         Return version
 

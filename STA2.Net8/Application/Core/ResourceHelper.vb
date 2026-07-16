@@ -16,13 +16,11 @@ Public Module ResourceHelper
                        End Function)
 
         If fullName Is Nothing Then
-            Debug.WriteLine("Resource not found: " & resourceName)
             Return Nothing
         End If
 
         Using stream = asm.GetManifestResourceStream(fullName)
             If stream Is Nothing Then
-                Debug.WriteLine("Resource stream null: " & fullName)
                 Return Nothing
             End If
 
