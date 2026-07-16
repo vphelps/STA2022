@@ -84,6 +84,7 @@ Public Class FormMain
         SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
         SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
         SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
+        SetButtonIcon(btnInstallPathFallback, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
@@ -161,6 +162,7 @@ Public Class FormMain
 
         ToolTip1.SetToolTip(tbRunQaCmdLine, "Enter the QA API script path and any command line switches." & Environment.NewLine & "The script will be launched In a separate PowerShell window.")
         ToolTip1.SetToolTip(btnRunQaCmdLine, "Browse And select a QA API script." & Environment.NewLine & "You will be prompted to enter optional command line switches after selection.")
+        ToolTip1.SetToolTip(btnInstallPathFallback, "Select a fallback folder patch that installers are saved to if this is a station and not a server")
 
         ToolTip1.SetToolTip(btnAdd, "Add a New application To the Application Launcher Settings")
         ToolTip1.SetToolTip(btnEdit, "Edit the program selected In the Application Launcher Settings")
@@ -399,7 +401,7 @@ Public Class FormMain
             tbBackupPathOverride.Text = Trim(_options.BackupPathOverride)
             tbBackupScriptPath.Text = Trim(_options.BackupScriptPath)
             tbRunQaCmdLine.Text = Trim(_options.QaServerCommandLine)
-
+            tbInstallPathFallback.Text = Trim(_options.InstallFolderPath)
         End If
 
         If IsRunningAsAdmin() Then
@@ -579,6 +581,7 @@ Public Class FormMain
                                  _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
                                  _options.BackupPathOverride = Trim(tbBackupPathOverride.Text)
                                  _options.QaServerCommandLine = Trim(tbRunQaCmdLine.Text)
+                                 _options.InstallFolderPath = Trim(tbInstallPathFallback.Text)
                              End Sub)
             End If
         Catch
@@ -1740,50 +1743,177 @@ _options)
         _uiStateController.Refresh()
 
     End Sub
+    '    Private Async Sub btnManageInstallerVersions_Click(
+    '    sender As Object,
+    '    e As EventArgs
+    ') Handles btnManageInstallerVersions.Click
+
+
+    '        btnManageInstallerVersions.Enabled = False
+    '        Try
+    '            Dim versions =
+    '            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+    '            Await ProgressOverlayService.RunWithOverlayAsync(
+    '            Me,
+    '            "Scanning installed installer versions…" & Environment.NewLine &
+    '            "Please wait.",
+    '            Function()
+    '                Return Task.Run(Sub()
+    '                                    InstallerTools.ApplyCleanupSafetyRules(
+    '                        versions,
+    '                        runExistingVersionPath:=_runExistingVersionPath)
+    '                                End Sub)
+    '            End Function
+    '        )
+
+    '            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+
+    '                If dlg.ShowDialog(Me) = DialogResult.OK Then
+    '                    ' ✅ Confirmation has ALREADY occurred in ManageInstallerVersionsForm
+    '                    Dim result =
+    '                    InstallerTools.ExecuteInstallerVersionCleanup(
+    '                        dlg.SelectedForCleanup)
+
+    '                    ShowCleanupSummary(result)
+    '                End If
+
+    '            End Using
+
+    '        Finally
+    '            btnManageInstallerVersions.Enabled = True
+    '        End Try
+
+    '    End Sub
     Private Async Sub btnManageInstallerVersions_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnManageInstallerVersions.Click
 
-
         btnManageInstallerVersions.Enabled = False
+
         Try
+
+            Dim installerPath As String
+
+            Select Case Variables.CurrentDatabaseEnvironment
+
+                Case DatabaseEnvironment.RemoteServer
+
+                    installerPath = _options.InstallFolderPath
+
+                    Debug.WriteLine($"InstallFolderPath: {installerPath}")
+
+                    Dim swDir As Stopwatch = Stopwatch.StartNew()
+
+                    Directory.CreateDirectory(installerPath)
+
+                    swDir.Stop()
+
+                    Debug.WriteLine(
+                    $"CreateDirectory completed in {swDir.ElapsedMilliseconds} ms")
+
+                Case Else
+
+                    installerPath = AppData.UpgradePath
+
+            End Select
+
+            Debug.WriteLine($"Installer Path: {installerPath}")
+
+            Dim sw As New Stopwatch()
+
+            ' --------------------------------------------------
+            ' DiscoverInstalledInstallerVersions timing
+            ' --------------------------------------------------
+            sw.Start()
+
             Dim versions =
-            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+            InstallerTools.DiscoverInstalledInstallerVersions(installerPath)
+
+            sw.Stop()
+
+            Debug.WriteLine(
+            $"DiscoverInstalledInstallerVersions completed in {sw.ElapsedMilliseconds} ms")
+
+            Debug.WriteLine(
+            $"Installer versions found: {If(versions Is Nothing, 0, versions.Count)}")
+
+            ' --------------------------------------------------
+            ' ApplyCleanupSafetyRules timing
+            ' --------------------------------------------------
+            sw.Restart()
 
             Await ProgressOverlayService.RunWithOverlayAsync(
             Me,
-            "Scanning installed installer versions…" & Environment.NewLine &
+            "Scanning installed installer versions..." &
+            Environment.NewLine &
             "Please wait.",
             Function()
-                Return Task.Run(Sub()
-                                    InstallerTools.ApplyCleanupSafetyRules(
-                        versions,
-                        runExistingVersionPath:=_runExistingVersionPath)
-                                End Sub)
-            End Function
-        )
+                Return Task.Run(
+                    Sub()
 
-            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+                        Dim swSafety As Stopwatch = Stopwatch.StartNew()
+
+                        InstallerTools.ApplyCleanupSafetyRules(
+                            versions,
+                            runExistingVersionPath:=_runExistingVersionPath)
+
+                        swSafety.Stop()
+
+                        Debug.WriteLine(
+                            $"ApplyCleanupSafetyRules completed in {swSafety.ElapsedMilliseconds} ms")
+
+                    End Sub)
+            End Function)
+
+            sw.Stop()
+
+            Debug.WriteLine(
+            $"ProgressOverlayService completed in {sw.ElapsedMilliseconds} ms")
+
+            ' --------------------------------------------------
+            ' Dialog constructor timing
+            ' --------------------------------------------------
+            sw.Restart()
+
+            Using dlg As New ManageInstallerVersionsForm(
+            versions,
+            installerPath)
+
+                sw.Stop()
+
+                Debug.WriteLine(
+                $"ManageInstallerVersionsForm constructor completed in {sw.ElapsedMilliseconds} ms")
+
+                Debug.WriteLine("Showing ManageInstallerVersionsForm")
 
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
-                    ' ✅ Confirmation has ALREADY occurred in ManageInstallerVersionsForm
+
+                    sw.Restart()
+
                     Dim result =
                     InstallerTools.ExecuteInstallerVersionCleanup(
                         dlg.SelectedForCleanup)
 
+                    sw.Stop()
+
+                    Debug.WriteLine(
+                    $"ExecuteInstallerVersionCleanup completed in {sw.ElapsedMilliseconds} ms")
+
                     ShowCleanupSummary(result)
+
                 End If
 
             End Using
 
         Finally
+
             btnManageInstallerVersions.Enabled = True
+
         End Try
 
     End Sub
-
-
     Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
 
         Dim caller = DirectCast(sender, Button)
@@ -3271,5 +3401,31 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
+    Private Sub btnInstallPathFallback_Click(sender As Object, e As EventArgs) Handles btnInstallPathFallback.Click
 
+        Using dlg As New FolderBrowserDialog()
+
+            dlg.Description = "Select the folder where installers are located"
+            dlg.ShowNewFolderButton = False
+
+            ' Optional: start at the previously saved folder
+            If _options IsNot Nothing AndAlso
+           Not String.IsNullOrWhiteSpace(_options.InstallFolderPath) AndAlso
+           IO.Directory.Exists(_options.InstallFolderPath) Then
+
+                dlg.SelectedPath = _options.InstallFolderPath
+            End If
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                Dim InstallFolderPath As String = dlg.SelectedPath
+
+                ' Update options object
+                UpdateOption(Sub() _options.InstallFolderPath = InstallFolderPath)
+
+                ' Optional: show in UI
+                tbInstallPathFallback.Text = InstallFolderPath
+
+            End If
+        End Using
+    End Sub
 End Class

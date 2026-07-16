@@ -16,9 +16,17 @@ End Class
 Public Class Variables
     Public Shared LoggedIn As Boolean = False
     Public Shared OfflineMode As Boolean = False
+    Public Shared Property CurrentDatabaseEnvironment As DatabaseEnvironment
 
 End Class
+Public Enum DatabaseEnvironment
 
+    Offline = 0
+    Docker = 1
+    LocalServer = 2
+    RemoteServer = 3
+
+End Enum
 Public Structure PCInfo
     Public Shared Name As String = ""
     Public Shared OpSys As String = ""
@@ -119,5 +127,5 @@ Public Class ConfigValues
     '        Return csb.ConnectionString
     '    End Get
     'End Property
-
+    Public Property CurrentDatabaseEnvironment As DatabaseEnvironment
 End Class

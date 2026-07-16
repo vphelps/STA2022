@@ -162,6 +162,9 @@ Partial Class FormMain
         cmsQuickLaunchSlot2 = New ToolStripMenuItem()
         gbAppOptions = New GroupBox()
         TableLayoutPanel1 = New TableLayoutPanel()
+        tbInstallPathFallback = New TextBox()
+        btnInstallPathFallback = New Button()
+        lblInstallPathFallback = New Label()
         btnBackupScriptPath = New Button()
         tbBackupScriptPath = New TextBox()
         lblBackupPathOverride = New Label()
@@ -1905,7 +1908,7 @@ Partial Class FormMain
         gbAppOptions.Margin = New Padding(4, 3, 4, 3)
         gbAppOptions.Name = "gbAppOptions"
         gbAppOptions.Padding = New Padding(4, 3, 4, 3)
-        gbAppOptions.Size = New Size(581, 300)
+        gbAppOptions.Size = New Size(581, 328)
         gbAppOptions.TabIndex = 17
         gbAppOptions.TabStop = False
         gbAppOptions.Text = "Application Options"
@@ -1917,6 +1920,9 @@ Partial Class FormMain
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
+        TableLayoutPanel1.Controls.Add(tbInstallPathFallback, 1, 9)
+        TableLayoutPanel1.Controls.Add(btnInstallPathFallback, 2, 9)
+        TableLayoutPanel1.Controls.Add(lblInstallPathFallback, 0, 9)
         TableLayoutPanel1.Controls.Add(btnBackupScriptPath, 2, 6)
         TableLayoutPanel1.Controls.Add(tbBackupScriptPath, 1, 6)
         TableLayoutPanel1.Controls.Add(lblBackupPathOverride, 0, 7)
@@ -1944,7 +1950,7 @@ Partial Class FormMain
         TableLayoutPanel1.Location = New Point(7, 22)
         TableLayoutPanel1.Margin = New Padding(4, 3, 4, 3)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
-        TableLayoutPanel1.RowCount = 9
+        TableLayoutPanel1.RowCount = 10
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
@@ -1954,8 +1960,38 @@ Partial Class FormMain
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(568, 268)
+        TableLayoutPanel1.RowStyles.Add(New RowStyle())
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
+        TableLayoutPanel1.Size = New Size(568, 298)
         TableLayoutPanel1.TabIndex = 28
+        ' 
+        ' tbInstallPathFallback
+        ' 
+        tbInstallPathFallback.Dock = DockStyle.Fill
+        tbInstallPathFallback.Location = New Point(156, 272)
+        tbInstallPathFallback.Name = "tbInstallPathFallback"
+        tbInstallPathFallback.Size = New Size(366, 23)
+        tbInstallPathFallback.TabIndex = 38
+        ' 
+        ' btnInstallPathFallback
+        ' 
+        btnInstallPathFallback.Location = New Point(529, 272)
+        btnInstallPathFallback.Margin = New Padding(4, 3, 4, 3)
+        btnInstallPathFallback.Name = "btnInstallPathFallback"
+        btnInstallPathFallback.Size = New Size(35, 22)
+        btnInstallPathFallback.TabIndex = 39
+        btnInstallPathFallback.UseVisualStyleBackColor = True
+        ' 
+        ' lblInstallPathFallback
+        ' 
+        lblInstallPathFallback.AutoSize = True
+        lblInstallPathFallback.Dock = DockStyle.Fill
+        lblInstallPathFallback.Location = New Point(3, 269)
+        lblInstallPathFallback.Name = "lblInstallPathFallback"
+        lblInstallPathFallback.Size = New Size(147, 29)
+        lblInstallPathFallback.TabIndex = 38
+        lblInstallPathFallback.Text = "Fallback Install folder:"
+        lblInstallPathFallback.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' btnBackupScriptPath
         ' 
@@ -3665,4 +3701,7 @@ Partial Class FormMain
     Friend WithEvents cmsSeparator1 As ToolStripSeparator
     Friend WithEvents tsmiQaMenuPromptDefaults As ToolStripMenuItem
     Friend WithEvents btnConnectionProfiles As Button
+    Friend WithEvents tbInstallPathFallback As TextBox
+    Friend WithEvents btnInstallPathFallback As Button
+    Friend WithEvents lblInstallPathFallback As Label
 End Class

@@ -55,7 +55,7 @@ Public Class AppOptions
     ' -------------------------------------------------
     ' Installer / setup defaults
     ' -------------------------------------------------
-
+    Public Property InstallFolderPath As String
     Public Property SetupSwitches As String
     Public Property StartDatabaseDefault As String
     Public Property ApplyFlavorDefault As String

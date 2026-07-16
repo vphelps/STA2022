@@ -8,8 +8,14 @@ Public Module DatabaseCoordinator
     Private _evaluationInProgress As Boolean = False
     Private _lastKnownOnline As Boolean? = Nothing
     Private _lastKnownSource As String = Nothing
+    Public Enum DatabaseEnvironment
 
+        Offline = 0
+        Docker = 1
+        LocalServer = 2
+        RemoteServer = 3
 
+    End Enum
     Public Function TestConnection(connectionString As String, Optional timeoutSeconds As Integer = 3) As Boolean
 
         If Not IsValidConnectionString(connectionString) Then
@@ -75,11 +81,28 @@ Public Module DatabaseCoordinator
                 cn.Open()
 
                 ' ✅ Step 2: Determine environment (REUSE SAME CONNECTION)
-                Dim isDocker As Boolean = IsConnectedToDockerContainer(cn)
+                'Dim isDocker As Boolean = IsConnectedToDockerContainer(cn)
 
-                Dim source As String = If(isDocker, "Docker", "Local SQL")
+                'Dim source As String = If(isDocker, "Docker", "Local SQL")
+                Dim env = DetermineDatabaseEnvironment(cn)
 
-                ' ✅ Only update UI if ONLINE state OR SOURCE changed
+                Dim source As String
+
+                Select Case env
+
+                    Case DatabaseEnvironment.Docker
+                        source = "Docker"
+
+                    Case DatabaseEnvironment.LocalServer
+                        source = "SQL Server (Local)"
+
+                    Case DatabaseEnvironment.RemoteServer
+                        source = "SQL Server (Remote)"
+
+                    Case Else
+                        source = "Unknown"
+
+                End Select                ' ✅ Only update UI if ONLINE state OR SOURCE changed
                 If _lastKnownOnline <> True OrElse _lastKnownSource <> source Then
                     GoOnlineWithSource(form, source)
                     _lastKnownOnline = True
@@ -489,5 +512,29 @@ Public Module DatabaseCoordinator
         Catch
             Return False
         End Try
+    End Function
+
+    Private Function DetermineDatabaseEnvironment(
+    cn As SqlConnection
+) As DatabaseEnvironment
+
+        If IsConnectedToDockerContainer(cn) Then
+            Return DatabaseEnvironment.Docker
+        End If
+
+        Dim dataSource As String =
+        cn.DataSource.Split("\"c)(0).
+                      Split(","c)(0).
+                      Trim()
+
+        If dataSource.Equals(
+        Environment.MachineName,
+        StringComparison.OrdinalIgnoreCase) Then
+
+            Return DatabaseEnvironment.LocalServer
+        End If
+
+        Return DatabaseEnvironment.RemoteServer
+
     End Function
 End Module

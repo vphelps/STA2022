@@ -493,28 +493,93 @@ Public Module InstallerTools
         Return results
     End Function
 
+    'Public Function ContainsLockedFiles(folderPath As String) As Boolean
+
+    '    For Each filePath As String In
+    '    Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)
+
+    '        Try
+    '            Using fs As FileStream =
+    '            File.Open(
+    '                filePath,
+    '                FileMode.Open,
+    '                FileAccess.Read,
+    '                FileShare.None)
+    '            End Using
+
+    '        Catch
+    '            ' Any failure means the file is locked or inaccessible
+    '            Return True
+    '        End Try
+
+    '    Next
+
+    '    Return False
+    'End Function
     Public Function ContainsLockedFiles(folderPath As String) As Boolean
 
-        For Each filePath As String In
-        Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)
+        Dim overallSw As Stopwatch = Stopwatch.StartNew()
 
-            Try
-                Using fs As FileStream =
-                File.Open(
-                    filePath,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.None)
-                End Using
 
-            Catch
-                ' Any failure means the file is locked or inaccessible
-                Return True
-            End Try
+        Try
 
-        Next
+            Dim files =
+            Directory.EnumerateFiles(
+                folderPath,
+                "*",
+                SearchOption.AllDirectories).ToList()
+
+
+            For Each filePath As String In files
+
+                Dim fileSw As Stopwatch = Stopwatch.StartNew()
+
+                Try
+
+                    Using fs As FileStream =
+                    File.Open(
+                        filePath,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.None)
+
+                    End Using
+
+                    fileSw.Stop()
+
+                    If fileSw.ElapsedMilliseconds > 100 Then
+
+                    End If
+
+                Catch ex As Exception
+
+                    fileSw.Stop()
+
+
+
+                    overallSw.Stop()
+
+
+
+                    Return True
+
+                End Try
+
+            Next
+
+        Catch ex As Exception
+
+
+
+            Return True
+
+        End Try
+
+        overallSw.Stop()
+
 
         Return False
+
     End Function
     Public Function IsInstallerRunningFromVersion(folderPath As String) As Boolean
 
@@ -553,99 +618,267 @@ Public Module InstallerTools
 
         Return False
     End Function
+    '    Public Sub ApplyCleanupSafetyRules(
+    '    versions As List(Of InstallerVersionInfo),
+    '    Optional runExistingVersionPath As String = Nothing
+    ')
+
+    '        ' --------------------------------------------------------
+    '        ' Resolve installed installer folder ONCE
+    '        ' --------------------------------------------------------
+    '        Dim installedFolder As String =
+    '        InstalledVersionParsing.FindInstalledInstallerFolder(
+    '            AppData.UpgradePath,
+    '            "AdvCoreService"
+    '        )
+
+    '        For Each v In versions
+
+    '            ' ====================================================
+    '            ' RULE 0 — INSTALLED VERSION (ABSOLUTE PRIORITY)
+    '            ' ====================================================
+    '            If Not String.IsNullOrEmpty(installedFolder) AndAlso
+    '           v.FolderPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
+
+    '                v.LockReason = VersionLockReason.InstalledVersion
+    '                Continue For
+    '            End If
+
+
+    '            ' ====================================================
+    '            ' RULE 1 — LATEST VERSION (OPTIONAL PROTECTION)
+    '            '
+    '            ' 🔹 IMPORTANT:
+    '            ' 🔹 Latest version is ONLY protected if it is not
+    '            ' 🔹 allowed to be deleted.
+    '            '
+    '            ' 🔹 Since installed version is already handled above,
+    '            ' 🔹 highest version can now be deleted safely IF desired.
+    '            ' ====================================================
+    '            If v.IsLatest Then
+    '                ' COMMENT OUT the next two lines if you want
+    '                ' the highest version to ALWAYS be deletable.
+    '                '
+    '                ' v.LockReason = VersionLockReason.LatestVersion
+    '                ' Continue For
+    '            End If
+
+
+    '            ' ====================================================
+    '            ' RULE 2 — LTS (Minor = 1) ALWAYS PROTECTED
+    '            ' ====================================================
+    '            If v.Track = ReleaseTrack.LongTermSupport Then
+    '                v.LockReason = VersionLockReason.LongTermSupport
+    '                Continue For
+    '            End If
+
+
+    '            ' ====================================================
+    '            ' RULE 3 — USER SELECTED "RUN EXISTING"
+    '            ' ====================================================
+    '            If Not String.IsNullOrWhiteSpace(runExistingVersionPath) AndAlso
+    '           v.FolderPath.Equals(runExistingVersionPath, StringComparison.OrdinalIgnoreCase) Then
+
+    '                v.LockReason = VersionLockReason.SelectedAsRunExisting
+    '                Continue For
+    '            End If
+
+
+    '            ' ====================================================
+    '            ' RULE 4 — INSTALLER CURRENTLY RUNNING
+    '            ' ====================================================
+    '            If IsInstallerRunningFromVersion(v.FolderPath) Then
+    '                v.LockReason = VersionLockReason.InstallerRunning
+    '                Continue For
+    '            End If
+
+
+    '            ' ====================================================
+    '            ' RULE 5 — FILES LOCKED ON DISK
+    '            ' ====================================================
+    '            If ContainsLockedFiles(v.FolderPath) Then
+    '                v.LockReason = VersionLockReason.FileLocked
+    '                Continue For
+    '            End If
+
+
+    '            ' ====================================================
+    '            ' RULE 6 — ELIGIBLE FOR CLEANUP
+    '            ' ====================================================
+    '            v.LockReason = VersionLockReason.None
+
+    '        Next
+
+    '    End Sub
     Public Sub ApplyCleanupSafetyRules(
     versions As List(Of InstallerVersionInfo),
     Optional runExistingVersionPath As String = Nothing
 )
 
+        Dim overallSw As Stopwatch = Stopwatch.StartNew()
+
         ' --------------------------------------------------------
         ' Resolve installed installer folder ONCE
         ' --------------------------------------------------------
+        Dim sw As Stopwatch = Stopwatch.StartNew()
+
         Dim installedFolder As String =
         InstalledVersionParsing.FindInstalledInstallerFolder(
             AppData.UpgradePath,
             "AdvCoreService"
         )
 
+        sw.Stop()
+
+
         For Each v In versions
 
+
+
+            Dim versionSw As Stopwatch = Stopwatch.StartNew()
+
             ' ====================================================
-            ' RULE 0 — INSTALLED VERSION (ABSOLUTE PRIORITY)
+            ' RULE 0 — INSTALLED VERSION
             ' ====================================================
+
+            sw.Restart()
+
             If Not String.IsNullOrEmpty(installedFolder) AndAlso
-           v.FolderPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
+           v.FolderPath.Equals(
+               installedFolder,
+               StringComparison.OrdinalIgnoreCase) Then
+
+                sw.Stop()
+
+
 
                 v.LockReason = VersionLockReason.InstalledVersion
+
                 Continue For
+
             End If
 
+            sw.Stop()
+
 
             ' ====================================================
-            ' RULE 1 — LATEST VERSION (OPTIONAL PROTECTION)
-            '
-            ' 🔹 IMPORTANT:
-            ' 🔹 Latest version is ONLY protected if it is not
-            ' 🔹 allowed to be deleted.
-            '
-            ' 🔹 Since installed version is already handled above,
-            ' 🔹 highest version can now be deleted safely IF desired.
+            ' RULE 1 — LATEST VERSION
             ' ====================================================
+
+            sw.Restart()
+
             If v.IsLatest Then
-                ' COMMENT OUT the next two lines if you want
-                ' the highest version to ALWAYS be deletable.
-                '
+
                 ' v.LockReason = VersionLockReason.LatestVersion
                 ' Continue For
+
             End If
 
+            sw.Stop()
+
+
 
             ' ====================================================
-            ' RULE 2 — LTS (Minor = 1) ALWAYS PROTECTED
+            ' RULE 2 — LTS
             ' ====================================================
+
+            sw.Restart()
+
             If v.Track = ReleaseTrack.LongTermSupport Then
+
+                sw.Stop()
+
+
                 v.LockReason = VersionLockReason.LongTermSupport
+
                 Continue For
+
             End If
 
+            sw.Stop()
+
+
 
             ' ====================================================
-            ' RULE 3 — USER SELECTED "RUN EXISTING"
+            ' RULE 3 — RUN EXISTING
             ' ====================================================
+
+            sw.Restart()
+
             If Not String.IsNullOrWhiteSpace(runExistingVersionPath) AndAlso
-           v.FolderPath.Equals(runExistingVersionPath, StringComparison.OrdinalIgnoreCase) Then
+           v.FolderPath.Equals(
+               runExistingVersionPath,
+               StringComparison.OrdinalIgnoreCase) Then
+
+                sw.Stop()
+
+
 
                 v.LockReason = VersionLockReason.SelectedAsRunExisting
+
                 Continue For
+
             End If
 
+            sw.Stop()
+
 
             ' ====================================================
-            ' RULE 4 — INSTALLER CURRENTLY RUNNING
+            ' RULE 4 — INSTALLER RUNNING
             ' ====================================================
-            If IsInstallerRunningFromVersion(v.FolderPath) Then
+
+            sw.Restart()
+
+            Dim isRunning =
+            IsInstallerRunningFromVersion(v.FolderPath)
+
+            sw.Stop()
+
+
+            If isRunning Then
+
                 v.LockReason = VersionLockReason.InstallerRunning
+
                 Continue For
+
             End If
 
+            ' ====================================================
+            ' RULE 5 — FILE LOCKS
+            ' ====================================================
 
-            ' ====================================================
-            ' RULE 5 — FILES LOCKED ON DISK
-            ' ====================================================
-            If ContainsLockedFiles(v.FolderPath) Then
+            sw.Restart()
+
+            Dim hasLockedFiles =
+            ContainsLockedFiles(v.FolderPath)
+
+            sw.Stop()
+
+
+            If hasLockedFiles Then
+
                 v.LockReason = VersionLockReason.FileLocked
+
                 Continue For
+
             End If
 
+            ' ====================================================
+            ' RULE 6 — CLEANUP ELIGIBLE
+            ' ====================================================
 
-            ' ====================================================
-            ' RULE 6 — ELIGIBLE FOR CLEANUP
-            ' ====================================================
             v.LockReason = VersionLockReason.None
+
+            versionSw.Stop()
+
+
 
         Next
 
-    End Sub
+        overallSw.Stop()
 
+
+    End Sub
     Public Function ExecuteInstallerVersionCleanup(
         versionsToDelete As List(Of InstallerVersionInfo)
     ) As InstallerCleanupResult
