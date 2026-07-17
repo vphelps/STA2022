@@ -109,7 +109,7 @@ Public Class ConnectionProfilesForm
     Private Sub btnActivate_Click(
     sender As Object,
     e As EventArgs
-) Handles btnActivate.Click
+) Handles btnApply.Click
 
         If lstProfiles.SelectedItem Is Nothing Then
 
