@@ -11,5 +11,11 @@
         BringToFront()
         Refresh()
     End Sub
+    Public Sub SetMessage(message As String)
 
+        lblMessage.Text = message
+
+        lblMessage.Refresh()
+
+    End Sub
 End Class

@@ -1744,48 +1744,7 @@ _options)
         _uiStateController.Refresh()
 
     End Sub
-    '    Private Async Sub btnManageInstallerVersions_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnManageInstallerVersions.Click
 
-
-    '        btnManageInstallerVersions.Enabled = False
-    '        Try
-    '            Dim versions =
-    '            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
-
-    '            Await ProgressOverlayService.RunWithOverlayAsync(
-    '            Me,
-    '            "Scanning installed installer versions…" & Environment.NewLine &
-    '            "Please wait.",
-    '            Function()
-    '                Return Task.Run(Sub()
-    '                                    InstallerTools.ApplyCleanupSafetyRules(
-    '                        versions,
-    '                        runExistingVersionPath:=_runExistingVersionPath)
-    '                                End Sub)
-    '            End Function
-    '        )
-
-    '            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
-
-    '                If dlg.ShowDialog(Me) = DialogResult.OK Then
-    '                    ' ✅ Confirmation has ALREADY occurred in ManageInstallerVersionsForm
-    '                    Dim result =
-    '                    InstallerTools.ExecuteInstallerVersionCleanup(
-    '                        dlg.SelectedForCleanup)
-
-    '                    ShowCleanupSummary(result)
-    '                End If
-
-    '            End Using
-
-    '        Finally
-    '            btnManageInstallerVersions.Enabled = True
-    '        End Try
-
-    '    End Sub
     Private Async Sub btnManageInstallerVersions_Click(
     sender As Object,
     e As EventArgs
@@ -1803,7 +1762,6 @@ _options)
 
                     installerPath = _options.InstallFolderPath
 
-                    Debug.WriteLine($"InstallFolderPath: {installerPath}")
 
                     Dim swDir As Stopwatch = Stopwatch.StartNew()
 
@@ -1811,16 +1769,12 @@ _options)
 
                     swDir.Stop()
 
-                    Debug.WriteLine(
-                    $"CreateDirectory completed in {swDir.ElapsedMilliseconds} ms")
-
                 Case Else
 
                     installerPath = AppData.UpgradePath
 
             End Select
 
-            Debug.WriteLine($"Installer Path: {installerPath}")
 
             Dim sw As New Stopwatch()
 
@@ -1829,16 +1783,14 @@ _options)
             ' --------------------------------------------------
             sw.Start()
 
-            Dim versions =
-            InstallerTools.DiscoverInstalledInstallerVersions(installerPath)
+            Dim versions = InstallerTools.DiscoverInstalledInstallerVersions(
+        installerPath,
+        Sub(msg)
+            ProgressOverlayService.UpdateMessage(msg)
+        End Sub)
 
             sw.Stop()
 
-            Debug.WriteLine(
-            $"DiscoverInstalledInstallerVersions completed in {sw.ElapsedMilliseconds} ms")
-
-            Debug.WriteLine(
-            $"Installer versions found: {If(versions Is Nothing, 0, versions.Count)}")
 
             ' --------------------------------------------------
             ' ApplyCleanupSafetyRules timing
@@ -1857,21 +1809,19 @@ _options)
                         Dim swSafety As Stopwatch = Stopwatch.StartNew()
 
                         InstallerTools.ApplyCleanupSafetyRules(
-                            versions,
-                            runExistingVersionPath:=_runExistingVersionPath)
+    versions,
+    runExistingVersionPath:=_runExistingVersionPath,
+    progress:=Sub(msg)
+                  ProgressOverlayService.UpdateMessage(msg)
+              End Sub)
 
                         swSafety.Stop()
-
-                        Debug.WriteLine(
-                            $"ApplyCleanupSafetyRules completed in {swSafety.ElapsedMilliseconds} ms")
 
                     End Sub)
             End Function)
 
             sw.Stop()
 
-            Debug.WriteLine(
-            $"ProgressOverlayService completed in {sw.ElapsedMilliseconds} ms")
 
             ' --------------------------------------------------
             ' Dialog constructor timing
@@ -1884,10 +1834,6 @@ _options)
 
                 sw.Stop()
 
-                Debug.WriteLine(
-                $"ManageInstallerVersionsForm constructor completed in {sw.ElapsedMilliseconds} ms")
-
-                Debug.WriteLine("Showing ManageInstallerVersionsForm")
 
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
 
@@ -1899,8 +1845,6 @@ _options)
 
                     sw.Stop()
 
-                    Debug.WriteLine(
-                    $"ExecuteInstallerVersionCleanup completed in {sw.ElapsedMilliseconds} ms")
 
                     ShowCleanupSummary(result)
 

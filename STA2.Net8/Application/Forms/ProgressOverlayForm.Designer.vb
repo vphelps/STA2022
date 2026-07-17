@@ -22,37 +22,39 @@ Partial Class ProgressOverlayForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.lblMessage = New System.Windows.Forms.Label()
-        Me.SuspendLayout()
-        '
-        'lblMessage
-        '
-        Me.lblMessage.AutoSize = True
-        Me.lblMessage.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblMessage.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold)
-        Me.lblMessage.Location = New System.Drawing.Point(0, 0)
-        Me.lblMessage.Name = "lblMessage"
-        Me.lblMessage.Size = New System.Drawing.Size(53, 19)
-        Me.lblMessage.TabIndex = 0
-        Me.lblMessage.Text = "Label1"
-        Me.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'ProgressOverlayForm
-        '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.White
-        Me.ClientSize = New System.Drawing.Size(800, 450)
-        Me.ControlBox = False
-        Me.Controls.Add(Me.lblMessage)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
-        Me.Name = "ProgressOverlayForm"
-        Me.Opacity = 0.95R
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
-        Me.Text = "ProgressOverlayForm"
-        Me.TopMost = True
-        Me.ResumeLayout(False)
-        Me.PerformLayout()
+        lblMessage = New Label()
+        SuspendLayout()
+        ' 
+        ' lblMessage
+        ' 
+        lblMessage.AutoSize = True
+        lblMessage.Dock = DockStyle.Fill
+        lblMessage.Font = New Font("Segoe UI", 10F, FontStyle.Bold)
+        lblMessage.Location = New Point(0, 0)
+        lblMessage.Margin = New Padding(4, 0, 4, 0)
+        lblMessage.Name = "lblMessage"
+        lblMessage.Size = New Size(53, 19)
+        lblMessage.TabIndex = 0
+        lblMessage.Text = "Label1"
+        lblMessage.TextAlign = ContentAlignment.MiddleCenter
+        ' 
+        ' ProgressOverlayForm
+        ' 
+        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleMode = AutoScaleMode.Font
+        BackColor = Color.White
+        ClientSize = New Size(933, 519)
+        ControlBox = False
+        Controls.Add(lblMessage)
+        FormBorderStyle = FormBorderStyle.None
+        Margin = New Padding(4, 3, 4, 3)
+        Name = "ProgressOverlayForm"
+        Opacity = 0.95R
+        StartPosition = FormStartPosition.Manual
+        Text = "ProgressOverlayForm"
+        TopMost = True
+        ResumeLayout(False)
+        PerformLayout()
 
     End Sub
 
