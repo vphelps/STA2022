@@ -282,6 +282,7 @@ Partial Class ConnectionProfilesForm
         Controls.Add(btnApply)
         Controls.Add(gbCurrentConnection)
         Controls.Add(gbProfiles)
+        FormBorderStyle = FormBorderStyle.FixedDialog
         MaximizeBox = False
         MinimizeBox = False
         Name = "ConnectionProfilesForm"

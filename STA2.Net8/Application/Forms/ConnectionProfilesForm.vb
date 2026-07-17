@@ -106,7 +106,7 @@ Public Class ConnectionProfilesForm
         End Try
 
     End Sub
-    Private Sub btnActivate_Click(
+    Private Sub btnApply_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnApply.Click
@@ -133,15 +133,8 @@ Public Class ConnectionProfilesForm
             RefreshCurrentConnection()
             SelectActiveProfile()
             ConnectionChanged = True
-
-            MessageBox.Show(
-                $"Profile '{profileName}' activated successfully." &
-                Environment.NewLine &
-                Environment.NewLine &
-                "Applications may need to be restarted for changes to take effect.",
-                "Profile Activated",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            DialogResult = DialogResult.OK
+            Close()
 
         Catch ex As Exception
 
@@ -414,4 +407,6 @@ Public Class ConnectionProfilesForm
         End Try
 
     End Sub
+
+
 End Class
