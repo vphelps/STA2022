@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Management
 Imports System.Runtime.Intrinsics
+Imports System.Security.Principal
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
@@ -3377,30 +3378,38 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub lbFlavorsList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lbFlavorsList.SelectedIndexChanged
         UpdateApplyFlavorButtonText()
     End Sub
+    Private Sub ReloadApplication()
 
-    Private Sub btnConnectionProfiles_Click(sender As Object, e As EventArgs) Handles btnConnectionProfiles.Click
+        Dim psi As New ProcessStartInfo(
+        Application.ExecutablePath)
 
-        Using dlg As New ConnectionProfilesForm
+        ' Restart at the same elevation level
+        If IsRunningAsAdmin() Then
+            psi.Verb = "runas"
+        End If
 
-            '' ✅ Ensure dialog opens on same screen as parent
-            'dlg.StartPosition = FormStartPosition.Manual
+        Process.Start(psi)
 
-            'Dim screen As Screen = Screen.FromControl(Me)
-            'Dim working = screen.WorkingArea
-
-            'Dim centerX = working.Left + (working.Width - dlg.Width) \ 2
-            'Dim centerY = working.Top + (working.Height - dlg.Height) \ 2
-
-            'dlg.Location = New Point(
-            '            Math.Max(working.Left, centerX),
-            '            Math.Max(working.Top, centerY)
-            '        )
-            dlg.ShowDialog(Me)
-
-        End Using
+        Application.Exit()
 
     End Sub
 
+    Private Sub btnConnectionProfiles_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnConnectionProfiles.Click
+
+        Using dlg As New ConnectionProfilesForm()
+
+            dlg.ShowDialog(Me)
+
+            If dlg.ConnectionChanged Then
+
+                ReloadApplication()
+            End If
+
+        End Using
+    End Sub
     Private Sub btnInstallPathFallback_Click(sender As Object, e As EventArgs) Handles btnInstallPathFallback.Click
 
         Using dlg As New FolderBrowserDialog()

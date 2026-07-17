@@ -1,6 +1,8 @@
 ﻿Imports System.IO
 
 Public Class ConnectionProfilesForm
+    Public Property ConnectionChanged As Boolean
+
     Private Sub LoadProfiles()
 
         lstProfiles.Items.Clear()
@@ -30,6 +32,8 @@ Public Class ConnectionProfilesForm
         LoadProfiles()
 
         RefreshCurrentConnection()
+
+        SelectActiveProfile()
 
     End Sub
     Private Sub btnLaunchConfig_Click(sender As Object, e As EventArgs) Handles btnLaunchConfig.Click
@@ -119,14 +123,16 @@ Public Class ConnectionProfilesForm
 
         End If
 
-        Dim profileName As String =
-            lstProfiles.SelectedItem.ToString()
+        Dim profileName =
+            lstProfiles.SelectedItem.ToString
 
         Try
 
             ConnectionProfileManager.ActivateProfile(profileName)
 
             RefreshCurrentConnection()
+            SelectActiveProfile()
+            ConnectionChanged = True
 
             MessageBox.Show(
                 $"Profile '{profileName}' activated successfully." &
@@ -167,6 +173,26 @@ Public Class ConnectionProfilesForm
 
         Dim profileName As String =
             lstProfiles.SelectedItem.ToString()
+        Dim activeProfileName =
+    ConnectionProfileManager.GetActiveProfileName()
+
+        If String.Equals(
+    profileName,
+    activeProfileName,
+    StringComparison.OrdinalIgnoreCase) Then
+
+            MessageBox.Show(
+        "The active connection profile cannot be deleted." &
+        Environment.NewLine &
+        Environment.NewLine &
+        "Activate another profile first.",
+        "Profile In Use",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Information)
+
+            Return
+
+        End If
 
         Dim result =
             MessageBox.Show(
@@ -230,6 +256,160 @@ Public Class ConnectionProfilesForm
             "Refresh Failed",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error)
+
+        End Try
+
+    End Sub
+    Private Sub lstProfiles_SelectedIndexChanged(
+    sender As Object,
+    e As EventArgs
+) Handles lstProfiles.SelectedIndexChanged
+
+        RefreshSelectedProfileInfo()
+
+    End Sub
+    Private Sub RefreshSelectedProfileInfo()
+
+        If lstProfiles.SelectedItem Is Nothing Then
+
+            lblSelectedServer.Text = ""
+            lblSelectedDatabase.Text = ""
+
+            Return
+
+        End If
+
+        Dim profileName As String =
+            lstProfiles.SelectedItem.ToString()
+
+        Dim profilePath =
+            Path.Combine(
+                ConnectionProfileManager.ProfilesFolder,
+                $"{profileName}.ini")
+
+        Dim info =
+            ConnectionProfileManager.ReadConnectionInfo(profilePath)
+
+        lblSelectedServer.Text = info.DataSource
+
+        lblSelectedDatabase.Text = info.Catalog
+
+    End Sub
+    Private Sub SelectActiveProfile()
+
+        Dim activeInfo =
+            ConnectionProfileManager.GetActiveConnectionInfo()
+
+        If activeInfo Is Nothing Then Return
+
+        For i As Integer = 0 To lstProfiles.Items.Count - 1
+
+            Dim profileName As String =
+                lstProfiles.Items(i).ToString()
+
+            Dim profilePath As String =
+                Path.Combine(
+                    ConnectionProfileManager.ProfilesFolder,
+                    $"{profileName}.ini")
+
+            Dim profileInfo =
+                ConnectionProfileManager.ReadConnectionInfo(profilePath)
+
+            If String.Equals(
+                activeInfo.DataSource,
+                profileInfo.DataSource,
+                StringComparison.OrdinalIgnoreCase) AndAlso
+               String.Equals(
+                activeInfo.Catalog,
+                profileInfo.Catalog,
+                StringComparison.OrdinalIgnoreCase) Then
+
+                lstProfiles.SelectedIndex = i
+
+                Exit For
+
+            End If
+
+        Next
+
+    End Sub
+    Private Sub btnRename_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRename.Click
+
+        If lstProfiles.SelectedItem Is Nothing Then
+
+            MessageBox.Show(
+                "Please select a profile to rename.",
+                "No Profile Selected",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+
+            Return
+
+        End If
+
+        Dim oldName As String =
+            lstProfiles.SelectedItem.ToString()
+
+        Dim newName As String =
+            InputBox(
+                "Enter a new profile name.",
+                "Rename Profile",
+                oldName)
+
+        If String.IsNullOrWhiteSpace(newName) Then
+            Return
+        End If
+
+        If String.Equals(
+            oldName,
+            newName,
+            StringComparison.OrdinalIgnoreCase) Then
+
+            Return
+
+        End If
+
+        Try
+
+            ConnectionProfileManager.RenameProfile(
+                oldName,
+                newName)
+
+            LoadProfiles()
+
+            For i As Integer = 0 To lstProfiles.Items.Count - 1
+
+                If String.Equals(
+                    lstProfiles.Items(i).ToString(),
+                    newName,
+                    StringComparison.OrdinalIgnoreCase) Then
+
+                    lstProfiles.SelectedIndex = i
+
+                    Exit For
+
+                End If
+
+            Next
+
+            RefreshSelectedProfileInfo()
+
+            MessageBox.Show(
+                $"Profile renamed from '{oldName}' to '{newName}'.",
+                "Profile Renamed",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+                ex.Message,
+                "Rename Failed",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
 
         End Try
 

@@ -7,8 +7,8 @@ Public Class ConnectionInfo
 
 End Class
 Public Class ConnectionProfileManager
-    Private Const ProfilesFolder As String = "C:\PFSCommon\ConnectionProfiles"
-    Private Const ActiveIniPath As String = "C:\PFSCommon\PFSConnect.ini"
+    Public Const ProfilesFolder As String = "C:\PFSCommon\ConnectionProfiles"
+    Public Const ActiveIniPath As String = "C:\PFSCommon\PFSConnect.ini"
 
     Public Shared Function GetProfiles() As List(Of String)
 
@@ -128,6 +128,64 @@ Public Class ConnectionProfileManager
         End If
 
         File.Delete(profileFile)
+
+    End Sub
+
+    Public Shared Function GetActiveProfileName() As String
+
+        If Not File.Exists(ActiveIniPath) Then
+            Return Nothing
+        End If
+
+        Dim activeContent =
+            File.ReadAllText(ActiveIniPath)
+
+        For Each profilePath In Directory.GetFiles(ProfilesFolder, "*.ini")
+
+            If File.ReadAllText(profilePath) = activeContent Then
+
+                Return Path.GetFileNameWithoutExtension(profilePath)
+
+            End If
+
+        Next
+
+        Return Nothing
+
+    End Function
+    Public Shared Sub RenameProfile(
+    oldProfileName As String,
+    newProfileName As String)
+
+        If String.IsNullOrWhiteSpace(oldProfileName) Then
+            Throw New ArgumentException("Original profile name is required.")
+        End If
+
+        If String.IsNullOrWhiteSpace(newProfileName) Then
+            Throw New ArgumentException("New profile name is required.")
+        End If
+
+        Dim oldPath =
+            Path.Combine(
+                ProfilesFolder,
+                $"{oldProfileName}.ini")
+
+        Dim newPath =
+            Path.Combine(
+                ProfilesFolder,
+                $"{newProfileName}.ini")
+
+        If Not File.Exists(oldPath) Then
+            Throw New FileNotFoundException(
+                $"Profile '{oldProfileName}' was not found.")
+        End If
+
+        If File.Exists(newPath) Then
+            Throw New IOException(
+                $"A profile named '{newProfileName}' already exists.")
+        End If
+
+        File.Move(oldPath, newPath)
 
     End Sub
 

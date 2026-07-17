@@ -37,8 +37,15 @@ Partial Class ConnectionProfilesForm
         btnClose = New Button()
         lblProfileFolder = New Label()
         tbProfileInfo = New TextBox()
+        gbSelectedConnection = New GroupBox()
+        lblSelectedDatabase = New Label()
+        lblSelectedDatabaseCaption = New Label()
+        lblSelectedServer = New Label()
+        lblSelectedServerCaption = New Label()
+        btnRename = New Button()
         gbProfiles.SuspendLayout()
         gbCurrentConnection.SuspendLayout()
+        gbSelectedConnection.SuspendLayout()
         SuspendLayout()
         ' 
         ' gbProfiles
@@ -66,9 +73,9 @@ Partial Class ConnectionProfilesForm
         gbCurrentConnection.Controls.Add(lblDatabaseCaption)
         gbCurrentConnection.Controls.Add(lblServer)
         gbCurrentConnection.Controls.Add(lblServerCaption)
-        gbCurrentConnection.Location = New Point(45, 197)
+        gbCurrentConnection.Location = New Point(45, 311)
         gbCurrentConnection.Name = "gbCurrentConnection"
-        gbCurrentConnection.Size = New Size(452, 114)
+        gbCurrentConnection.Size = New Size(452, 79)
         gbCurrentConnection.TabIndex = 1
         gbCurrentConnection.TabStop = False
         gbCurrentConnection.Text = "Current Active Connection"
@@ -172,7 +179,7 @@ Partial Class ConnectionProfilesForm
         ' lblProfileFolder
         ' 
         lblProfileFolder.AutoSize = True
-        lblProfileFolder.Location = New Point(43, 335)
+        lblProfileFolder.Location = New Point(12, 426)
         lblProfileFolder.Name = "lblProfileFolder"
         lblProfileFolder.Size = New Size(199, 15)
         lblProfileFolder.TabIndex = 8
@@ -180,11 +187,70 @@ Partial Class ConnectionProfilesForm
         ' 
         ' tbProfileInfo
         ' 
-        tbProfileInfo.Location = New Point(231, 393)
+        tbProfileInfo.Location = New Point(372, 415)
         tbProfileInfo.Name = "tbProfileInfo"
         tbProfileInfo.ReadOnly = True
         tbProfileInfo.Size = New Size(100, 23)
         tbProfileInfo.TabIndex = 9
+        ' 
+        ' gbSelectedConnection
+        ' 
+        gbSelectedConnection.Controls.Add(lblSelectedDatabase)
+        gbSelectedConnection.Controls.Add(lblSelectedDatabaseCaption)
+        gbSelectedConnection.Controls.Add(lblSelectedServer)
+        gbSelectedConnection.Controls.Add(lblSelectedServerCaption)
+        gbSelectedConnection.Location = New Point(45, 210)
+        gbSelectedConnection.Name = "gbSelectedConnection"
+        gbSelectedConnection.Size = New Size(452, 79)
+        gbSelectedConnection.TabIndex = 6
+        gbSelectedConnection.TabStop = False
+        gbSelectedConnection.Text = "Selected Profile"
+        ' 
+        ' lblSelectedDatabase
+        ' 
+        lblSelectedDatabase.AutoSize = True
+        lblSelectedDatabase.Location = New Point(95, 53)
+        lblSelectedDatabase.Name = "lblSelectedDatabase"
+        lblSelectedDatabase.Size = New Size(41, 15)
+        lblSelectedDatabase.TabIndex = 5
+        lblSelectedDatabase.Text = "Label1"
+        ' 
+        ' lblSelectedDatabaseCaption
+        ' 
+        lblSelectedDatabaseCaption.AutoSize = True
+        lblSelectedDatabaseCaption.Location = New Point(7, 53)
+        lblSelectedDatabaseCaption.Name = "lblSelectedDatabaseCaption"
+        lblSelectedDatabaseCaption.Size = New Size(58, 15)
+        lblSelectedDatabaseCaption.TabIndex = 4
+        lblSelectedDatabaseCaption.Text = "Database:"
+        ' 
+        ' lblSelectedServer
+        ' 
+        lblSelectedServer.AutoSize = True
+        lblSelectedServer.Location = New Point(95, 29)
+        lblSelectedServer.Name = "lblSelectedServer"
+        lblSelectedServer.Size = New Size(41, 15)
+        lblSelectedServer.TabIndex = 3
+        lblSelectedServer.Text = "Label3"
+        ' 
+        ' lblSelectedServerCaption
+        ' 
+        lblSelectedServerCaption.AutoSize = True
+        lblSelectedServerCaption.Location = New Point(6, 29)
+        lblSelectedServerCaption.Name = "lblSelectedServerCaption"
+        lblSelectedServerCaption.Size = New Size(42, 15)
+        lblSelectedServerCaption.TabIndex = 2
+        lblSelectedServerCaption.Text = "Server:"
+        ' 
+        ' btnRename
+        ' 
+        btnRename.Location = New Point(523, 219)
+        btnRename.Name = "btnRename"
+        btnRename.Size = New Size(96, 55)
+        btnRename.TabIndex = 10
+        btnRename.Tag = "Copies selected profile to PFSConnect.ini"
+        btnRename.Text = "Rename"
+        btnRename.UseVisualStyleBackColor = True
         ' 
         ' ConnectionProfilesForm
         ' 
@@ -192,6 +258,8 @@ Partial Class ConnectionProfilesForm
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnClose
         ClientSize = New Size(800, 450)
+        Controls.Add(btnRename)
+        Controls.Add(gbSelectedConnection)
         Controls.Add(tbProfileInfo)
         Controls.Add(lblProfileFolder)
         Controls.Add(btnClose)
@@ -211,6 +279,8 @@ Partial Class ConnectionProfilesForm
         gbProfiles.ResumeLayout(False)
         gbCurrentConnection.ResumeLayout(False)
         gbCurrentConnection.PerformLayout()
+        gbSelectedConnection.ResumeLayout(False)
+        gbSelectedConnection.PerformLayout()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -230,4 +300,10 @@ Partial Class ConnectionProfilesForm
     Friend WithEvents btnClose As Button
     Friend WithEvents lblProfileFolder As Label
     Friend WithEvents tbProfileInfo As TextBox
+    Friend WithEvents gbSelectedConnection As GroupBox
+    Friend WithEvents lblSelectedDatabase As Label
+    Friend WithEvents lblSelectedDatabaseCaption As Label
+    Friend WithEvents lblSelectedServer As Label
+    Friend WithEvents lblSelectedServerCaption As Label
+    Friend WithEvents btnRename As Button
 End Class
