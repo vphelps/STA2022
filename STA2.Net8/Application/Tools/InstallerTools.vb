@@ -1,7 +1,8 @@
-﻿Imports System.IO
+﻿Imports System.Diagnostics
+Imports System.IO
 Imports System.IO.Compression
-Imports System.Diagnostics
 Imports System.Windows.Forms
+Imports System.Windows.Forms.Design.AxImporter
 
 ' ===========================================================
 ' InstallerTools (.NET Framework 4.8 compatible)
@@ -21,100 +22,57 @@ End Enum
 
 
 Public Module InstallerTools
+
     Private Function PromptForExistingVersion(
     versionPath As String,
-    timeoutSeconds As Integer
+    timeoutSeconds As Integer,
+    options As AppOptions
 ) As ExistingVersionAction
 
-        Dim result As ExistingVersionAction = ExistingVersionAction.Overwrite
-        Dim secondsLeft As Integer = timeoutSeconds
+        If options Is Nothing Then
+            Return ExistingVersionAction.Overwrite
+        End If
 
-        Using form As New Form()
-            form.Text = "Existing Version Detected"
-            form.StartPosition = FormStartPosition.CenterParent
-            form.FormBorderStyle = FormBorderStyle.FixedDialog
-            form.MaximizeBox = False
-            form.MinimizeBox = False
-            form.Width = 480
-            form.Height = 220
+        If options.SetupExistingVersionPromptTimeoutSeconds < 0 Then
+            timeoutSeconds = 10
+        End If
+        Dim message As String =
+        "The following version already exists:" & Environment.NewLine &
+        versionPath & Environment.NewLine & Environment.NewLine &
+        "What would you like to do?"
 
-            Dim lblMessage As New Label() With {
-            .AutoSize = False,
-            .Top = 20,
-            .Left = 20,
-            .Width = 420,
-            .Height = 60,
-            .Text =
-                "The following version already exists:" & Environment.NewLine &
-                versionPath & Environment.NewLine & Environment.NewLine &
-                "What would you like to do?"
-        }
 
-            Dim lblCountdown As New Label() With {
-            .Top = 90,
-            .Left = 20,
-            .Width = 420,
-            .Height = 20
-        }
 
-            Dim btnOverwrite As New Button() With {
-            .Text = "Overwrite",
-            .Left = 80,
-            .Top = 130,
-            .Width = 120
-        }
 
-            Dim btnRunExisting As New Button() With {
-            .Text = "Run Existing",
-            .Left = 220,
-            .Top = 130,
-            .Width = 120
-        }
+        Dim result As DialogResult
 
-            AddHandler btnOverwrite.Click,
-            Sub()
-                result = ExistingVersionAction.Overwrite
-                form.Close()
-            End Sub
+        If options IsNot Nothing AndAlso options.SetupExistingVersionPromptEnabled Then
 
-            AddHandler btnRunExisting.Click,
-            Sub()
-                result = ExistingVersionAction.RunExisting
-                form.Close()
-            End Sub
+            result = UIHelpers.TimedErrorPrompt(
+        owner:=Nothing,
+        message:=message,
+        title:="Existing Version Detected",
+        timeoutSeconds:=If(options.SetupExistingVersionPromptTimeoutSeconds > 0,
+                           options.SetupExistingVersionPromptTimeoutSeconds,
+                           timeoutSeconds),
+        button1Text:="Overwrite",
+        button1Result:=DialogResult.Yes,
+        button2Text:="Run Existing",
+        button2Result:=DialogResult.No,
+        defaultButtonIndex:=1,
+        defaultActionText:="Default action: Overwrite")
 
-            Dim timer As New Timer() With {.Interval = 1000}
+        Else
+            result = DialogResult.Yes
+        End If
 
-            AddHandler timer.Tick,
-            Sub()
-                secondsLeft -= 1
-                lblCountdown.Text =
-                    $"Defaulting to Overwrite in {secondsLeft} seconds..."
 
-                If secondsLeft <= 0 Then
-                    timer.Stop()
-                    result = ExistingVersionAction.Overwrite
-                    form.Close()
-                End If
-            End Sub
+        Return If(result = DialogResult.Yes,
+              ExistingVersionAction.Overwrite,
+              ExistingVersionAction.RunExisting)
 
-            lblCountdown.Text =
-            $"Defaulting to Overwrite in {secondsLeft} seconds..."
-            timer.Start()
-
-            form.Controls.AddRange({
-            lblMessage,
-            lblCountdown,
-            btnOverwrite,
-            btnRunExisting
-        })
-
-            form.ShowDialog()
-            timer.Stop()
-        End Using
-
-        Return result
     End Function
+
 
     ' -------------------------------------------------------
     ' Resolve setup.zip (with optional browse)
@@ -200,7 +158,8 @@ Public Module InstallerTools
     upgradeBasePath As String,
     installerName As String,
     progressPercent As IProgress(Of Integer),
-    progressText As IProgress(Of String)
+    progressText As IProgress(Of String),
+    options As AppOptions
 ) As Task(Of String)
 
         If String.IsNullOrWhiteSpace(upgradeBasePath) Then
@@ -247,7 +206,7 @@ Public Module InstallerTools
             If Directory.Exists(finalDir) Then
 
                 Dim action As ExistingVersionAction =
-                PromptForExistingVersion(finalDir, timeoutSeconds:=10)
+                PromptForExistingVersion(finalDir, timeoutSeconds:=10, options)
 
                 If action = ExistingVersionAction.RunExisting Then
                     progressText?.Report("Using existing installation.")
@@ -490,40 +449,77 @@ Public Module InstallerTools
     End Function
 
     Public Function DiscoverInstalledInstallerVersions(
-    upgradeBasePath As String
+    upgradeBasePath As String,
+    Optional progress As Action(Of String) = Nothing
 ) As List(Of InstallerVersionInfo)
 
         Dim results As New List(Of InstallerVersionInfo)
 
-        If String.IsNullOrWhiteSpace(upgradeBasePath) Then Return results
-        If Not Directory.Exists(upgradeBasePath) Then Return results
+        If String.IsNullOrWhiteSpace(upgradeBasePath) Then
+            Return results
+        End If
 
-        ' Expected format: "Version 26.10.1.2431"
-        For Each dirPath In Directory.GetDirectories(upgradeBasePath, "Version *")
+        If Not Directory.Exists(upgradeBasePath) Then
+            Return results
+        End If
 
-            Dim dirName As String = Path.GetFileName(dirPath)
-            Dim versionPart As String = dirName.Substring("Version ".Length).Trim()
+        Dim directories() As String =
+        Directory.GetDirectories(
+            upgradeBasePath,
+            "Version *")
+
+        Dim total As Integer = directories.Length
+        Dim current As Integer = 0
+
+        For Each dirPath As String In directories
+
+            current += 1
+
+            Dim percent As Integer
+
+            If total > 0 Then
+                percent = CInt((current / total) * 100)
+            Else
+                percent = 0
+            End If
+
+            If progress IsNot Nothing Then
+
+                progress.Invoke(
+                "Scanning installer versions..." &
+                Environment.NewLine &
+                $"{current} of {total} ({percent}%)" &
+                Environment.NewLine &
+                Path.GetFileName(dirPath))
+            End If
+
+            Dim dirName As String =
+            Path.GetFileName(dirPath)
+
+            Dim versionPart As String =
+            dirName.Substring("Version ".Length).Trim()
 
             Dim parsedVersion As Version = Nothing
+
             If Not Version.TryParse(versionPart, parsedVersion) Then
-                ' Skip folders that don't match semantic version format
                 Continue For
             End If
 
             Dim info As New InstallerVersionInfo With {
-                .Version = parsedVersion,
-                .VersionString = dirName,
-                .FolderPath = dirPath,
-                .CreationTime = Directory.GetCreationTime(dirPath),
-                .SizeBytes = GetDirectorySizeBytes(dirPath),
-                .Track = GetReleaseTrack(parsedVersion)
-            }
+            .Version = parsedVersion,
+            .VersionString = dirName,
+            .FolderPath = dirPath,
+            .CreationTime = Directory.GetCreationTime(dirPath),
+            .SizeBytes = GetDirectorySizeBytes(dirPath),
+            .Track = GetReleaseTrack(parsedVersion)
+        }
 
             results.Add(info)
+
         Next
 
-        ' ✅ Determine latest version (across all tracks)
-        Dim latest = results.
+        Dim latest As InstallerVersionInfo =
+        results.
             OrderByDescending(Function(v) v.Version).
             FirstOrDefault()
 
@@ -532,30 +528,73 @@ Public Module InstallerTools
         End If
 
         Return results
+
     End Function
 
     Public Function ContainsLockedFiles(folderPath As String) As Boolean
 
-        For Each filePath As String In
-        Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories)
+        Dim overallSw As Stopwatch = Stopwatch.StartNew()
 
-            Try
-                Using fs As FileStream =
-                File.Open(
-                    filePath,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.None)
-                End Using
 
-            Catch
-                ' Any failure means the file is locked or inaccessible
-                Return True
-            End Try
+        Try
 
-        Next
+            Dim files =
+            Directory.EnumerateFiles(
+                folderPath,
+                "*",
+                SearchOption.AllDirectories).ToList()
+
+
+            For Each filePath As String In files
+
+                Dim fileSw As Stopwatch = Stopwatch.StartNew()
+
+                Try
+
+                    Using fs As FileStream =
+                    File.Open(
+                        filePath,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.None)
+
+                    End Using
+
+                    fileSw.Stop()
+
+                    If fileSw.ElapsedMilliseconds > 100 Then
+
+                    End If
+
+                Catch ex As Exception
+
+                    fileSw.Stop()
+
+
+
+                    overallSw.Stop()
+
+
+
+                    Return True
+
+                End Try
+
+            Next
+
+        Catch ex As Exception
+
+
+
+            Return True
+
+        End Try
+
+        overallSw.Stop()
+
 
         Return False
+
     End Function
     Public Function IsInstallerRunningFromVersion(folderPath As String) As Boolean
 
@@ -594,9 +633,11 @@ Public Module InstallerTools
 
         Return False
     End Function
+
     Public Sub ApplyCleanupSafetyRules(
     versions As List(Of InstallerVersionInfo),
-    Optional runExistingVersionPath As String = Nothing
+    Optional runExistingVersionPath As String = Nothing,
+    Optional progress As Action(Of String) = Nothing
 )
 
         ' --------------------------------------------------------
@@ -608,85 +649,113 @@ Public Module InstallerTools
             "AdvCoreService"
         )
 
+        Dim total As Integer = versions.Count
+        Dim current As Integer = 0
+
         For Each v In versions
 
-            ' ====================================================
-            ' RULE 0 — INSTALLED VERSION (ABSOLUTE PRIORITY)
-            ' ====================================================
-            If Not String.IsNullOrEmpty(installedFolder) AndAlso
-           v.FolderPath.Equals(installedFolder, StringComparison.OrdinalIgnoreCase) Then
+            current += 1
 
-                v.LockReason = VersionLockReason.InstalledVersion
-                Continue For
+            Dim percent As Integer
+
+            If total > 0 Then
+                percent = CInt((current / total) * 100)
+            Else
+                percent = 0
             End If
 
+            If progress IsNot Nothing Then
+
+                progress.Invoke(
+                "Evaluating installer versions..." &
+                Environment.NewLine &
+                $"{current} of {total} ({percent}%)" &
+                Environment.NewLine &
+                v.VersionString)
+
+            End If
 
             ' ====================================================
-            ' RULE 1 — LATEST VERSION (OPTIONAL PROTECTION)
-            '
-            ' 🔹 IMPORTANT:
-            ' 🔹 Latest version is ONLY protected if it is not
-            ' 🔹 allowed to be deleted.
-            '
-            ' 🔹 Since installed version is already handled above,
-            ' 🔹 highest version can now be deleted safely IF desired.
+            ' RULE 0 — INSTALLED VERSION
+            ' ====================================================
+            If Not String.IsNullOrEmpty(installedFolder) AndAlso
+           v.FolderPath.Equals(
+               installedFolder,
+               StringComparison.OrdinalIgnoreCase) Then
+
+                v.LockReason = VersionLockReason.InstalledVersion
+
+                Continue For
+
+            End If
+
+            ' ====================================================
+            ' RULE 1 — LATEST VERSION
             ' ====================================================
             If v.IsLatest Then
-                ' COMMENT OUT the next two lines if you want
-                ' the highest version to ALWAYS be deletable.
+
+                ' Uncomment if latest version should be protected
                 '
                 ' v.LockReason = VersionLockReason.LatestVersion
                 ' Continue For
+
             End If
 
-
             ' ====================================================
-            ' RULE 2 — LTS (Minor = 1) ALWAYS PROTECTED
+            ' RULE 2 — LTS
             ' ====================================================
             If v.Track = ReleaseTrack.LongTermSupport Then
+
                 v.LockReason = VersionLockReason.LongTermSupport
+
                 Continue For
+
             End If
 
-
             ' ====================================================
-            ' RULE 3 — USER SELECTED "RUN EXISTING"
+            ' RULE 3 — RUN EXISTING
             ' ====================================================
             If Not String.IsNullOrWhiteSpace(runExistingVersionPath) AndAlso
-           v.FolderPath.Equals(runExistingVersionPath, StringComparison.OrdinalIgnoreCase) Then
+           v.FolderPath.Equals(
+               runExistingVersionPath,
+               StringComparison.OrdinalIgnoreCase) Then
 
                 v.LockReason = VersionLockReason.SelectedAsRunExisting
+
                 Continue For
+
             End If
 
-
             ' ====================================================
-            ' RULE 4 — INSTALLER CURRENTLY RUNNING
+            ' RULE 4 — INSTALLER RUNNING
             ' ====================================================
             If IsInstallerRunningFromVersion(v.FolderPath) Then
+
                 v.LockReason = VersionLockReason.InstallerRunning
+
                 Continue For
+
             End If
 
-
             ' ====================================================
-            ' RULE 5 — FILES LOCKED ON DISK
+            ' RULE 5 — FILES LOCKED
             ' ====================================================
             If ContainsLockedFiles(v.FolderPath) Then
+
                 v.LockReason = VersionLockReason.FileLocked
+
                 Continue For
+
             End If
 
-
             ' ====================================================
-            ' RULE 6 — ELIGIBLE FOR CLEANUP
+            ' RULE 6 — CLEANUP ELIGIBLE
             ' ====================================================
             v.LockReason = VersionLockReason.None
 
         Next
 
     End Sub
-
     Public Function ExecuteInstallerVersionCleanup(
         versionsToDelete As List(Of InstallerVersionInfo)
     ) As InstallerCleanupResult

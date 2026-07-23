@@ -162,6 +162,9 @@ Partial Class FormMain
         cmsQuickLaunchSlot2 = New ToolStripMenuItem()
         gbAppOptions = New GroupBox()
         TableLayoutPanel1 = New TableLayoutPanel()
+        tbInstallPathFallback = New TextBox()
+        btnInstallPathFallback = New Button()
+        lblInstallPathFallback = New Label()
         btnBackupScriptPath = New Button()
         tbBackupScriptPath = New TextBox()
         lblBackupPathOverride = New Label()
@@ -193,6 +196,7 @@ Partial Class FormMain
         cbAdvUpgradeNoSetup = New CheckBox()
         cbAdvUpgradeQuiet = New CheckBox()
         pnlButtonCollection = New Panel()
+        btnTest3 = New Button()
         gpDBStartVersion = New GroupBox()
         cbDbUseVersion = New CheckBox()
         tbDbUseVersion = New TextBox()
@@ -200,12 +204,12 @@ Partial Class FormMain
         btnTest2 = New Button()
         gbAdvApps = New GroupBox()
         tlpButtons1 = New TableLayoutPanel()
+        btnConnectionProfiles = New Button()
         btnAdvUpgrade = New Button()
         btnAdvKiosk = New Button()
         btnAdvCardTech = New Button()
         btnAdvRedeem = New Button()
         btnAdvReportEditor = New Button()
-        btnAdvConfig = New Button()
         btnAdvKioskSetup = New Button()
         btnAdvGroups = New Button()
         btnPos = New Button()
@@ -276,7 +280,10 @@ Partial Class FormMain
         tlpButtons3 = New TableLayoutPanel()
         btnRunQaApi = New Button()
         cmsRunQaApi = New ContextMenuStrip(components)
-        tsmiRunQaApiKillScript = New ToolStripMenuItem()
+        tsmiRunQaApiRerunScript = New ToolStripMenuItem()
+        tsmiQaScriptKill = New ToolStripMenuItem()
+        cmsSeparator1 = New ToolStripSeparator()
+        tsmiQaMenuPromptDefaults = New ToolStripMenuItem()
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
@@ -607,7 +614,7 @@ Partial Class FormMain
         ' 
         TableLayoutPanel2.ColumnCount = 2
         TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 35.0F))
+        TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 35F))
         TableLayoutPanel2.Controls.Add(btnCopyScriptOutput, 1, 1)
         TableLayoutPanel2.Controls.Add(tbOutputScript, 0, 1)
         TableLayoutPanel2.Controls.Add(rtbLiveOutput, 0, 0)
@@ -616,8 +623,8 @@ Partial Class FormMain
         TableLayoutPanel2.Margin = New Padding(4, 3, 4, 3)
         TableLayoutPanel2.Name = "TableLayoutPanel2"
         TableLayoutPanel2.RowCount = 2
-        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Percent, 100.0F))
-        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Absolute, 35.0F))
+        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        TableLayoutPanel2.RowStyles.Add(New RowStyle(SizeType.Absolute, 35F))
         TableLayoutPanel2.Size = New Size(702, 245)
         TableLayoutPanel2.TabIndex = 0
         ' 
@@ -634,7 +641,7 @@ Partial Class FormMain
         ' tbOutputScript
         ' 
         tbOutputScript.Dock = DockStyle.Fill
-        tbOutputScript.Font = New Font("Microsoft Sans Serif", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbOutputScript.Font = New Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbOutputScript.Location = New Point(1, 211)
         tbOutputScript.Margin = New Padding(1)
         tbOutputScript.Name = "tbOutputScript"
@@ -675,24 +682,24 @@ Partial Class FormMain
         tblServices.AutoSizeMode = AutoSizeMode.GrowAndShrink
         tblServices.BackColor = Color.Transparent
         tblServices.ColumnCount = 1
-        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50.0F))
-        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50.0F))
+        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
+        tblServices.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
         tblServices.Dock = DockStyle.Top
         tblServices.Location = New Point(0, 0)
         tblServices.Margin = New Padding(4, 3, 4, 3)
         tblServices.Name = "tblServices"
         tblServices.RowCount = 1
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
-        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1.0F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
+        tblServices.RowStyles.Add(New RowStyle(SizeType.Absolute, 1F))
         tblServices.Size = New Size(408, 0)
         tblServices.TabIndex = 1
         ' 
@@ -700,7 +707,7 @@ Partial Class FormMain
         ' 
         tbServicesButtonsHelpMessage.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
         tbServicesButtonsHelpMessage.Enabled = False
-        tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         tbServicesButtonsHelpMessage.Location = New Point(115, 511)
         tbServicesButtonsHelpMessage.Margin = New Padding(4, 3, 4, 3)
         tbServicesButtonsHelpMessage.Multiline = True
@@ -854,7 +861,7 @@ Partial Class FormMain
         dgvApplicationInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         DataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle1.BackColor = SystemColors.Control
-        DataGridViewCellStyle1.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle1.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle1.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText
@@ -864,7 +871,7 @@ Partial Class FormMain
         dgvApplicationInfo.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn3, DataGridViewTextBoxColumn4})
         DataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle2.BackColor = SystemColors.Window
-        DataGridViewCellStyle2.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle2.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle2.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText
@@ -931,7 +938,7 @@ Partial Class FormMain
         dgvWebOptions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         DataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle3.BackColor = SystemColors.Control
-        DataGridViewCellStyle3.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle3.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle3.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText
@@ -941,7 +948,7 @@ Partial Class FormMain
         dgvWebOptions.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn1, DataGridViewTextBoxColumn2})
         DataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle4.BackColor = SystemColors.Window
-        DataGridViewCellStyle4.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle4.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle4.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText
@@ -976,7 +983,7 @@ Partial Class FormMain
         dgvAppOptions.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         DataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle5.BackColor = SystemColors.Control
-        DataGridViewCellStyle5.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle5.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle5.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle5.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText
@@ -986,7 +993,7 @@ Partial Class FormMain
         dgvAppOptions.Columns.AddRange(New DataGridViewColumn() {OptionName, OptionValue})
         DataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle6.BackColor = SystemColors.Window
-        DataGridViewCellStyle6.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle6.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle6.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle6.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle6.SelectionForeColor = SystemColors.HighlightText
@@ -1039,7 +1046,7 @@ Partial Class FormMain
         tlpLogData.Name = "tlpLogData"
         tlpLogData.RowCount = 1
         tlpLogData.RowStyles.Add(New RowStyle())
-        tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511.0F))
+        tlpLogData.RowStyles.Add(New RowStyle(SizeType.Absolute, 511F))
         tlpLogData.Size = New Size(1161, 454)
         tlpLogData.TabIndex = 5
         ' 
@@ -1065,7 +1072,7 @@ Partial Class FormMain
         dgvDbLogCount.BorderStyle = BorderStyle.Fixed3D
         DataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle7.BackColor = SystemColors.Control
-        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle7.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle7.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle7.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle7.SelectionForeColor = SystemColors.HighlightText
@@ -1074,7 +1081,7 @@ Partial Class FormMain
         dgvDbLogCount.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle8.BackColor = SystemColors.Window
-        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle8.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle8.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle8.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle8.SelectionForeColor = SystemColors.HighlightText
@@ -1110,7 +1117,7 @@ Partial Class FormMain
         dgvDbLogData.BorderStyle = BorderStyle.Fixed3D
         DataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle9.BackColor = SystemColors.Control
-        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle9.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle9.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle9.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle9.SelectionForeColor = SystemColors.HighlightText
@@ -1119,7 +1126,7 @@ Partial Class FormMain
         dgvDbLogData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle10.BackColor = SystemColors.Window
-        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle10.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle10.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle10.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle10.SelectionForeColor = SystemColors.HighlightText
@@ -1413,7 +1420,7 @@ Partial Class FormMain
         dgvDbTableSize.BorderStyle = BorderStyle.Fixed3D
         DataGridViewCellStyle11.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle11.BackColor = SystemColors.Control
-        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle11.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle11.ForeColor = SystemColors.WindowText
         DataGridViewCellStyle11.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle11.SelectionForeColor = SystemColors.HighlightText
@@ -1422,7 +1429,7 @@ Partial Class FormMain
         dgvDbTableSize.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewCellStyle12.Alignment = DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle12.BackColor = SystemColors.Window
-        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9.0F)
+        DataGridViewCellStyle12.Font = New Font("Segoe UI", 9F)
         DataGridViewCellStyle12.ForeColor = SystemColors.ControlText
         DataGridViewCellStyle12.SelectionBackColor = SystemColors.Highlight
         DataGridViewCellStyle12.SelectionForeColor = SystemColors.HighlightText
@@ -1526,7 +1533,7 @@ Partial Class FormMain
         ' tlpApplicationLogs
         ' 
         tlpApplicationLogs.ColumnCount = 1
-        tlpApplicationLogs.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50.0F))
+        tlpApplicationLogs.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50F))
         tlpApplicationLogs.Controls.Add(rtbLogs, 0, 0)
         tlpApplicationLogs.Controls.Add(flpAppLogsButtons, 0, 1)
         tlpApplicationLogs.Dock = DockStyle.Fill
@@ -1541,7 +1548,7 @@ Partial Class FormMain
         ' rtbLogs
         ' 
         rtbLogs.Dock = DockStyle.Fill
-        rtbLogs.Font = New Font("Consolas", 9.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        rtbLogs.Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         rtbLogs.Location = New Point(3, 3)
         rtbLogs.Name = "rtbLogs"
         rtbLogs.ReadOnly = True
@@ -1901,7 +1908,7 @@ Partial Class FormMain
         gbAppOptions.Margin = New Padding(4, 3, 4, 3)
         gbAppOptions.Name = "gbAppOptions"
         gbAppOptions.Padding = New Padding(4, 3, 4, 3)
-        gbAppOptions.Size = New Size(581, 300)
+        gbAppOptions.Size = New Size(581, 328)
         gbAppOptions.TabIndex = 17
         gbAppOptions.TabStop = False
         gbAppOptions.Text = "Application Options"
@@ -1911,8 +1918,11 @@ Partial Class FormMain
         TableLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink
         TableLayoutPanel1.ColumnCount = 3
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100.0F))
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
+        TableLayoutPanel1.Controls.Add(tbInstallPathFallback, 1, 9)
+        TableLayoutPanel1.Controls.Add(btnInstallPathFallback, 2, 9)
+        TableLayoutPanel1.Controls.Add(lblInstallPathFallback, 0, 9)
         TableLayoutPanel1.Controls.Add(btnBackupScriptPath, 2, 6)
         TableLayoutPanel1.Controls.Add(tbBackupScriptPath, 1, 6)
         TableLayoutPanel1.Controls.Add(lblBackupPathOverride, 0, 7)
@@ -1940,7 +1950,7 @@ Partial Class FormMain
         TableLayoutPanel1.Location = New Point(7, 22)
         TableLayoutPanel1.Margin = New Padding(4, 3, 4, 3)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
-        TableLayoutPanel1.RowCount = 9
+        TableLayoutPanel1.RowCount = 10
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
@@ -1950,8 +1960,38 @@ Partial Class FormMain
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(568, 268)
+        TableLayoutPanel1.RowStyles.Add(New RowStyle())
+        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
+        TableLayoutPanel1.Size = New Size(568, 298)
         TableLayoutPanel1.TabIndex = 28
+        ' 
+        ' tbInstallPathFallback
+        ' 
+        tbInstallPathFallback.Dock = DockStyle.Fill
+        tbInstallPathFallback.Location = New Point(156, 272)
+        tbInstallPathFallback.Name = "tbInstallPathFallback"
+        tbInstallPathFallback.Size = New Size(366, 23)
+        tbInstallPathFallback.TabIndex = 38
+        ' 
+        ' btnInstallPathFallback
+        ' 
+        btnInstallPathFallback.Location = New Point(529, 272)
+        btnInstallPathFallback.Margin = New Padding(4, 3, 4, 3)
+        btnInstallPathFallback.Name = "btnInstallPathFallback"
+        btnInstallPathFallback.Size = New Size(35, 22)
+        btnInstallPathFallback.TabIndex = 39
+        btnInstallPathFallback.UseVisualStyleBackColor = True
+        ' 
+        ' lblInstallPathFallback
+        ' 
+        lblInstallPathFallback.AutoSize = True
+        lblInstallPathFallback.Dock = DockStyle.Fill
+        lblInstallPathFallback.Location = New Point(3, 269)
+        lblInstallPathFallback.Name = "lblInstallPathFallback"
+        lblInstallPathFallback.Size = New Size(147, 29)
+        lblInstallPathFallback.TabIndex = 38
+        lblInstallPathFallback.Text = "Fallback Install folder:"
+        lblInstallPathFallback.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' btnBackupScriptPath
         ' 
@@ -2264,6 +2304,7 @@ Partial Class FormMain
         ' 
         ' pnlButtonCollection
         ' 
+        pnlButtonCollection.Controls.Add(btnTest3)
         pnlButtonCollection.Controls.Add(gpDBStartVersion)
         pnlButtonCollection.Controls.Add(btnTest2)
         pnlButtonCollection.Controls.Add(gbAdvApps)
@@ -2277,6 +2318,16 @@ Partial Class FormMain
         pnlButtonCollection.Name = "pnlButtonCollection"
         pnlButtonCollection.Size = New Size(1190, 191)
         pnlButtonCollection.TabIndex = 0
+        ' 
+        ' btnTest3
+        ' 
+        btnTest3.Location = New Point(1054, 158)
+        btnTest3.Margin = New Padding(4, 3, 4, 3)
+        btnTest3.Name = "btnTest3"
+        btnTest3.Size = New Size(103, 27)
+        btnTest3.TabIndex = 37
+        btnTest3.Text = "Test Button 3"
+        btnTest3.UseVisualStyleBackColor = True
         ' 
         ' gpDBStartVersion
         ' 
@@ -2322,7 +2373,7 @@ Partial Class FormMain
         ' 
         ' btnTest2
         ' 
-        btnTest2.Location = New Point(919, 158)
+        btnTest2.Location = New Point(944, 158)
         btnTest2.Margin = New Padding(4, 3, 4, 3)
         btnTest2.Name = "btnTest2"
         btnTest2.Size = New Size(103, 27)
@@ -2347,17 +2398,17 @@ Partial Class FormMain
         ' 
         tlpButtons1.BackColor = Color.LightGray
         tlpButtons1.ColumnCount = 5
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
-        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20.0F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 20F))
+        tlpButtons1.Controls.Add(btnConnectionProfiles, 4, 0)
         tlpButtons1.Controls.Add(btnAdvUpgrade, 4, 1)
         tlpButtons1.Controls.Add(btnAdvKiosk, 3, 1)
         tlpButtons1.Controls.Add(btnAdvCardTech, 2, 1)
         tlpButtons1.Controls.Add(btnAdvRedeem, 1, 1)
         tlpButtons1.Controls.Add(btnAdvReportEditor, 0, 1)
-        tlpButtons1.Controls.Add(btnAdvConfig, 4, 0)
         tlpButtons1.Controls.Add(btnAdvKioskSetup, 3, 0)
         tlpButtons1.Controls.Add(btnAdvGroups, 2, 0)
         tlpButtons1.Controls.Add(btnPos, 1, 0)
@@ -2367,10 +2418,21 @@ Partial Class FormMain
         tlpButtons1.Margin = New Padding(4, 3, 4, 3)
         tlpButtons1.Name = "tlpButtons1"
         tlpButtons1.RowCount = 2
-        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
-        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
+        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
+        tlpButtons1.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
         tlpButtons1.Size = New Size(498, 137)
         tlpButtons1.TabIndex = 37
+        ' 
+        ' btnConnectionProfiles
+        ' 
+        btnConnectionProfiles.Dock = DockStyle.Fill
+        btnConnectionProfiles.Location = New Point(396, 0)
+        btnConnectionProfiles.Margin = New Padding(0)
+        btnConnectionProfiles.Name = "btnConnectionProfiles"
+        btnConnectionProfiles.Size = New Size(102, 68)
+        btnConnectionProfiles.TabIndex = 37
+        btnConnectionProfiles.Text = "Connection Profiles"
+        btnConnectionProfiles.UseVisualStyleBackColor = True
         ' 
         ' btnAdvUpgrade
         ' 
@@ -2431,17 +2493,6 @@ Partial Class FormMain
         btnAdvReportEditor.Text = "Report Editor"
         btnAdvReportEditor.UseVisualStyleBackColor = True
         ' 
-        ' btnAdvConfig
-        ' 
-        btnAdvConfig.Dock = DockStyle.Fill
-        btnAdvConfig.Location = New Point(396, 0)
-        btnAdvConfig.Margin = New Padding(0)
-        btnAdvConfig.Name = "btnAdvConfig"
-        btnAdvConfig.Size = New Size(102, 68)
-        btnAdvConfig.TabIndex = 12
-        btnAdvConfig.Text = "CenterEdge Configuration"
-        btnAdvConfig.UseVisualStyleBackColor = True
-        ' 
         ' btnAdvKioskSetup
         ' 
         btnAdvKioskSetup.Dock = DockStyle.Fill
@@ -2492,7 +2543,7 @@ Partial Class FormMain
         ' 
         ' btnTest1
         ' 
-        btnTest1.Location = New Point(830, 158)
+        btnTest1.Location = New Point(848, 158)
         btnTest1.Margin = New Padding(4, 3, 4, 3)
         btnTest1.Name = "btnTest1"
         btnTest1.Size = New Size(88, 27)
@@ -2530,8 +2581,8 @@ Partial Class FormMain
         tlpButtons2.Margin = New Padding(4, 3, 4, 3)
         tlpButtons2.Name = "tlpButtons2"
         tlpButtons2.RowCount = 2
-        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
-        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50.0F))
+        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
+        tlpButtons2.RowStyles.Add(New RowStyle(SizeType.Percent, 50F))
         tlpButtons2.Size = New Size(308, 137)
         tlpButtons2.TabIndex = 36
         ' 
@@ -2632,7 +2683,7 @@ Partial Class FormMain
         ' 
         btnRunDatabaseStartLive.ContextMenuStrip = cmsDbStart
         btnRunDatabaseStartLive.Dock = DockStyle.Fill
-        btnRunDatabaseStartLive.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        btnRunDatabaseStartLive.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         btnRunDatabaseStartLive.Location = New Point(290, 116)
         btnRunDatabaseStartLive.Margin = New Padding(0)
         btnRunDatabaseStartLive.Name = "btnRunDatabaseStartLive"
@@ -3013,7 +3064,7 @@ Partial Class FormMain
         ' tslblDbState
         ' 
         tslblDbState.BackColor = Color.DarkGreen
-        tslblDbState.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        tslblDbState.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         tslblDbState.ForeColor = Color.WhiteSmoke
         tslblDbState.Name = "tslblDbState"
         tslblDbState.Size = New Size(50, 19)
@@ -3103,7 +3154,7 @@ Partial Class FormMain
         ' 
         lblButtons.BorderStyle = BorderStyle.FixedSingle
         lblButtons.Dock = DockStyle.Fill
-        lblButtons.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        lblButtons.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         lblButtons.Location = New Point(0, 0)
         lblButtons.Name = "lblButtons"
         lblButtons.Size = New Size(388, 27)
@@ -3124,10 +3175,10 @@ Partial Class FormMain
         ' 
         tlpButtons3.CellBorderStyle = TableLayoutPanelCellBorderStyle.Outset
         tlpButtons3.ColumnCount = 4
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
-        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
+        tlpButtons3.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 25F))
         tlpButtons3.Controls.Add(btnRunQaApi, 2, 3)
         tlpButtons3.Controls.Add(btnUpdateShiftDate, 2, 1)
         tlpButtons3.Controls.Add(btnExit, 3, 3)
@@ -3147,10 +3198,10 @@ Partial Class FormMain
         tlpButtons3.Margin = New Padding(4, 3, 4, 3)
         tlpButtons3.Name = "tlpButtons3"
         tlpButtons3.RowCount = 4
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
-        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25.0F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
+        tlpButtons3.RowStyles.Add(New RowStyle(SizeType.Percent, 25F))
         tlpButtons3.Size = New Size(388, 230)
         tlpButtons3.TabIndex = 0
         ' 
@@ -3168,15 +3219,32 @@ Partial Class FormMain
         ' 
         ' cmsRunQaApi
         ' 
-        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiKillScript})
+        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiRerunScript, tsmiQaScriptKill, cmsSeparator1, tsmiQaMenuPromptDefaults})
         cmsRunQaApi.Name = "cmsRunQaApi"
-        cmsRunQaApi.Size = New Size(289, 26)
+        cmsRunQaApi.Size = New Size(289, 76)
         ' 
-        ' tsmiRunQaApiKillScript
+        ' tsmiRunQaApiRerunScript
         ' 
-        tsmiRunQaApiKillScript.Name = "tsmiRunQaApiKillScript"
-        tsmiRunQaApiKillScript.Size = New Size(288, 22)
-        tsmiRunQaApiKillScript.Text = "Kill running script and start new instance"
+        tsmiRunQaApiRerunScript.Name = "tsmiRunQaApiRerunScript"
+        tsmiRunQaApiRerunScript.Size = New Size(288, 22)
+        tsmiRunQaApiRerunScript.Text = "Kill running script and start new instance"
+        ' 
+        ' tsmiQaScriptKill
+        ' 
+        tsmiQaScriptKill.Name = "tsmiQaScriptKill"
+        tsmiQaScriptKill.Size = New Size(288, 22)
+        tsmiQaScriptKill.Text = "End the QA Api Server Script"
+        ' 
+        ' cmsSeparator1
+        ' 
+        cmsSeparator1.Name = "cmsSeparator1"
+        cmsSeparator1.Size = New Size(285, 6)
+        ' 
+        ' tsmiQaMenuPromptDefaults
+        ' 
+        tsmiQaMenuPromptDefaults.Name = "tsmiQaMenuPromptDefaults"
+        tsmiQaMenuPromptDefaults.Size = New Size(288, 22)
+        tsmiQaMenuPromptDefaults.Text = "Set Prompt Defaults"
         ' 
         ' btnUpdateShiftDate
         ' 
@@ -3278,7 +3346,7 @@ Partial Class FormMain
         ' 
         ' FormMain
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnExit
         ClientSize = New Size(1600, 884)
@@ -3412,7 +3480,6 @@ Partial Class FormMain
     Friend WithEvents rbDbTableSize As RadioButton
     Friend WithEvents rbDbSizeByDay As RadioButton
     Friend WithEvents rbDbDeadlocks As RadioButton
-    Friend WithEvents btnAdvConfig As Button
     Friend WithEvents tpDbLogs As TabPage
     Friend WithEvents pnlDbLogs As Panel
     Friend WithEvents dgvDbLogCount As DataGridView
@@ -3628,5 +3695,13 @@ Partial Class FormMain
     Friend WithEvents lblButtons As Label
     Friend WithEvents pnlButtons As Panel
     Friend WithEvents cmsRunQaApi As ContextMenuStrip
-    Friend WithEvents tsmiRunQaApiKillScript As ToolStripMenuItem
+    Friend WithEvents tsmiRunQaApiRerunScript As ToolStripMenuItem
+    Friend WithEvents tsmiQaScriptKill As ToolStripMenuItem
+    Friend WithEvents btnTest3 As Button
+    Friend WithEvents cmsSeparator1 As ToolStripSeparator
+    Friend WithEvents tsmiQaMenuPromptDefaults As ToolStripMenuItem
+    Friend WithEvents btnConnectionProfiles As Button
+    Friend WithEvents tbInstallPathFallback As TextBox
+    Friend WithEvents btnInstallPathFallback As Button
+    Friend WithEvents lblInstallPathFallback As Label
 End Class

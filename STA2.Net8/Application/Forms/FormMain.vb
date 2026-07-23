@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Management
 Imports System.Runtime.Intrinsics
+Imports System.Security.Principal
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
@@ -84,6 +85,7 @@ Public Class FormMain
         SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
         SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
         SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
+        SetButtonIcon(btnInstallPathFallback, "imgOpenFolder16.png")
 
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
@@ -98,6 +100,7 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
         ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
         ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
+        ToolTip1.SetToolTip(btnConnectionProfiles, "Manage saved PFSConnect.ini connection configurations")
 
         strTemp =
             "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
@@ -127,7 +130,6 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnPos, "Run Advantage POS")
         ToolTip1.SetToolTip(btnAdvGroups, "Run Advantage Groups")
         ToolTip1.SetToolTip(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
-        ToolTip1.SetToolTip(btnAdvConfig, "Run CenterEdge Configuration")
         ToolTip1.SetToolTip(btnAdvReportEditor, "Run Advantage Report Editor")
         ToolTip1.SetToolTip(btnAdvRedeem, "Run Advantage Redemption")
         ToolTip1.SetToolTip(btnAdvCardTech, "DESCRIPTION")
@@ -161,6 +163,7 @@ Public Class FormMain
 
         ToolTip1.SetToolTip(tbRunQaCmdLine, "Enter the QA API script path and any command line switches." & Environment.NewLine & "The script will be launched In a separate PowerShell window.")
         ToolTip1.SetToolTip(btnRunQaCmdLine, "Browse And select a QA API script." & Environment.NewLine & "You will be prompted to enter optional command line switches after selection.")
+        ToolTip1.SetToolTip(btnInstallPathFallback, "Select a fallback folder patch that installers are saved to if this is a station and not a server")
 
         ToolTip1.SetToolTip(btnAdd, "Add a New application To the Application Launcher Settings")
         ToolTip1.SetToolTip(btnEdit, "Edit the program selected In the Application Launcher Settings")
@@ -380,7 +383,7 @@ Public Class FormMain
         tbMLTest1.Visible = False
         btnTest1.Visible = False
         btnTest2.Visible = False
-
+        btnTest3.Visible = False
 
 #End If
 #If DEBUG Then
@@ -399,7 +402,7 @@ Public Class FormMain
             tbBackupPathOverride.Text = Trim(_options.BackupPathOverride)
             tbBackupScriptPath.Text = Trim(_options.BackupScriptPath)
             tbRunQaCmdLine.Text = Trim(_options.QaServerCommandLine)
-
+            tbInstallPathFallback.Text = Trim(_options.InstallFolderPath)
         End If
 
         If IsRunningAsAdmin() Then
@@ -419,6 +422,8 @@ Public Class FormMain
 
         ' Load saved personal flavor if it exists
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
+
+        PromptDefaultsRegistrar.RegisterAll(Me, _options)
 
     End Sub
 
@@ -577,6 +582,7 @@ Public Class FormMain
                                  _options.StartDatabaseDefault = Trim(tbDatabaseStartDefault.Text)
                                  _options.BackupPathOverride = Trim(tbBackupPathOverride.Text)
                                  _options.QaServerCommandLine = Trim(tbRunQaCmdLine.Text)
+                                 _options.InstallFolderPath = Trim(tbInstallPathFallback.Text)
                              End Sub)
             End If
         Catch
@@ -704,11 +710,16 @@ Public Class FormMain
     End Function
     Private Function GetServiceDisplayName(serviceName As String) As String
         Try
+            If Not ServiceController.GetServices().
+            Any(Function(s) s.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase)) Then
+                Return serviceName
+            End If
+
             Using sc As New ServiceController(serviceName)
                 Return sc.DisplayName
             End Using
+
         Catch
-            ' Fallback if service is missing or inaccessible
             Return serviceName
         End Try
     End Function
@@ -719,7 +730,7 @@ Public Class FormMain
     )
         prop?.SetValue(ctrl, True, Nothing)
     End Sub
-    Private Sub UpdateOption(setter As Action)
+    Friend Sub UpdateOption(setter As Action)
         If _options Is Nothing Then Return
 
         setter()
@@ -1481,16 +1492,29 @@ Public Class FormMain
         Try
             If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
 
-                Dim response As DialogResult =
-                UIHelpers.TimedYesNoPrompt(
+                Dim response As DialogResult
+
+                If _options.RepoMainPromptEnabled Then
+
+                    response = UIHelpers.TimedYesNoPrompt(
                     message:=
                         "There are uncommitted changes." & Environment.NewLine &
                         "Discard them and switch to main?",
                     title:="Confirm",
-                    timeoutSeconds:=10)
+                    timeoutSeconds:=If(_options.RepoMainPromptTimeoutSeconds > 0,
+                                       _options.RepoMainPromptTimeoutSeconds,
+                                       10),
+                    defaultChoice:=If(_options.RepoMainPromptAction,
+                                      DialogResult.Yes,
+                                      DialogResult.No))
+
+                Else
+                    ' ✅ Prompt disabled → auto-confirm
+                    response = DialogResult.Yes
+
+                End If
 
                 If response <> DialogResult.Yes Then
-                    ' User clicked No OR dialog timed out
                     Return
                 End If
 
@@ -1500,31 +1524,30 @@ Public Class FormMain
             RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
 
             UIHelpers.TimedInfoPrompt(
-    message:="Switched to main branch.",
-    title:="Repository",
-    timeoutSeconds:=10)
+            message:="Switched to main branch.",
+            title:="Repository",
+            timeoutSeconds:=10)
 
         Catch ex As Exception
             UIHelpers.TimedErrorPrompt(
-                message:="Git Error",
-                title:="Repository")
-
-
+            message:="Git Error",
+            title:="Repository")
         End Try
 
     End Sub
+
     Private Sub btnRepoDiscardChanges_Click(
-        sender As Object,
-        e As EventArgs
-    ) Handles btnRepoDiscardChanges.Click
+    sender As Object,
+    e As EventArgs
+) Handles btnRepoDiscardChanges.Click
 
         If _options Is Nothing OrElse
-           String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+       String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
             MessageBox.Show(
-                "Repository path is not configured.",
-                "Discard Changes",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
+            "Repository path is not configured.",
+            "Discard Changes",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1534,26 +1557,38 @@ Public Class FormMain
         Dim preview As String = RepoTools.PreviewDiscard(repoPath)
 
         Dim message As String =
-            "This will permanently discard ALL local changes in the repository:" &
-            Environment.NewLine & Environment.NewLine &
-            repoPath & Environment.NewLine & Environment.NewLine &
-            If(String.IsNullOrWhiteSpace(preview),
-               "No untracked files will be removed.",
-               "The following untracked files will be deleted:" &
-               Environment.NewLine & preview) &
-            Environment.NewLine & Environment.NewLine &
-            "This action CANNOT be undone." &
-            Environment.NewLine & Environment.NewLine &
-            "Continue?"
+        "This will permanently discard ALL local changes in the repository:" &
+        Environment.NewLine & Environment.NewLine &
+        repoPath & Environment.NewLine & Environment.NewLine &
+        If(String.IsNullOrWhiteSpace(preview),
+           "No untracked files will be removed.",
+           "The following untracked files will be deleted:" &
+           Environment.NewLine & preview) &
+        Environment.NewLine & Environment.NewLine &
+        "This action CANNOT be undone." &
+        Environment.NewLine & Environment.NewLine &
+        "Continue?"
 
+        Dim response As DialogResult
 
+        If _options.RepoDiscardPromptEnabled Then
 
-        If UIHelpers.TimedYesNoPrompt(
+            response = UIHelpers.TimedYesNoPrompt(
             message:=message,
             title:="Discard All Changes",
-            timeoutSeconds:=30) <> DialogResult.Yes Then
-            Return
+            timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
+                               _options.RepoDiscardPromptTimeoutSeconds,
+                               30),
+            defaultChoice:=If(_options.RepoDiscardPromptAction,
+                              DialogResult.Yes,
+                              DialogResult.No))
+
+        Else
+            ' ✅ Prompt disabled → automatically approve action
+            response = DialogResult.Yes
         End If
+
+        If response <> DialogResult.Yes Then Return
 
         Try
             Cursor.Current = Cursors.WaitCursor
@@ -1562,14 +1597,14 @@ Public Class FormMain
             RepoTools.DiscardAllChanges(repoPath)
 
             UIHelpers.TimedInfoPrompt(
-    message:="All local changes were discarded successfully.",
-    title:="Discard Complete",
-    timeoutSeconds:=10)
+            message:="All local changes were discarded successfully.",
+            title:="Discard Complete",
+            timeoutSeconds:=10)
 
         Catch ex As Exception
             UIHelpers.TimedErrorPrompt(
-                message:="Git Error",
-                title:="Repository")
+            message:="Git Error",
+            title:="Repository")
 
         Finally
             btnRepoDiscardChanges.Enabled = True
@@ -1631,7 +1666,13 @@ Public Class FormMain
         End Sub)
 
         Try
-            ' Resolve setup.zip (with optional browse)
+            ' ✅ Stop QA script before install (if running)
+            SetExecutionStatus("Stopping QA API (if running)...", force:=True)
+
+            Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
+
+            ' Resolve setup.zip
+
             Dim zipPath As String =
             Await InstallerTools.ResolveSetupZipAsync(
                 zipPath:=AppData.UpgradePath,
@@ -1646,7 +1687,8 @@ Public Class FormMain
                 upgradeBasePath:=AppData.UpgradePath,
                 installerName:="AdvantageSetup-x64.exe",
                 progressPercent:=percentProgress,
-                progressText:=textProgress)
+                progressText:=textProgress,
+_options)
 
             ' If user chose Run Existing, this path already existed
             If Directory.Exists(extractDir) AndAlso
@@ -1702,56 +1744,121 @@ Public Class FormMain
         _uiStateController.Refresh()
 
     End Sub
+
     Private Async Sub btnManageInstallerVersions_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnManageInstallerVersions.Click
 
         btnManageInstallerVersions.Enabled = False
+
         Try
-            Dim versions =
-            InstallerTools.DiscoverInstalledInstallerVersions(AppData.UpgradePath)
+
+            Dim installerPath As String
+
+            Select Case Variables.CurrentDatabaseEnvironment
+
+                Case DatabaseEnvironment.RemoteServer
+
+                    installerPath = _options.InstallFolderPath
+
+
+                    Dim swDir As Stopwatch = Stopwatch.StartNew()
+
+                    Directory.CreateDirectory(installerPath)
+
+                    swDir.Stop()
+
+                Case Else
+
+                    installerPath = AppData.UpgradePath
+
+            End Select
+
+
+            Dim sw As New Stopwatch()
+
+            ' --------------------------------------------------
+            ' DiscoverInstalledInstallerVersions timing
+            ' --------------------------------------------------
+            sw.Start()
+
+            Dim versions = InstallerTools.DiscoverInstalledInstallerVersions(
+        installerPath,
+        Sub(msg)
+            ProgressOverlayService.UpdateMessage(msg)
+        End Sub)
+
+            sw.Stop()
+
+
+            ' --------------------------------------------------
+            ' ApplyCleanupSafetyRules timing
+            ' --------------------------------------------------
+            sw.Restart()
 
             Await ProgressOverlayService.RunWithOverlayAsync(
             Me,
-            "Scanning installed installer versions…" & Environment.NewLine &
+            "Scanning installed installer versions..." &
+            Environment.NewLine &
             "Please wait.",
             Function()
-                Return Task.Run(Sub()
-                                    InstallerTools.ApplyCleanupSafetyRules(
-                        versions,
-                        runExistingVersionPath:=_runExistingVersionPath)
-                                End Sub)
-            End Function
-        )
+                Return Task.Run(
+                    Sub()
 
-#If DEBUG Then
-            For Each v In versions
-                Debug.WriteLine(
-                $"{v.VersionString} | CanDelete={v.CanDelete} | Reason={v.LockReason}")
-            Next
-#End If
+                        Dim swSafety As Stopwatch = Stopwatch.StartNew()
 
-            Using dlg As New ManageInstallerVersionsForm(versions, AppData.UpgradePath)
+                        InstallerTools.ApplyCleanupSafetyRules(
+    versions,
+    runExistingVersionPath:=_runExistingVersionPath,
+    progress:=Sub(msg)
+                  ProgressOverlayService.UpdateMessage(msg)
+              End Sub)
+
+                        swSafety.Stop()
+
+                    End Sub)
+            End Function)
+
+            sw.Stop()
+
+
+            ' --------------------------------------------------
+            ' Dialog constructor timing
+            ' --------------------------------------------------
+            sw.Restart()
+
+            Using dlg As New ManageInstallerVersionsForm(
+            versions,
+            installerPath)
+
+                sw.Stop()
+
 
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
-                    ' ✅ Confirmation has ALREADY occurred in ManageInstallerVersionsForm
+
+                    sw.Restart()
+
                     Dim result =
                     InstallerTools.ExecuteInstallerVersionCleanup(
                         dlg.SelectedForCleanup)
 
+                    sw.Stop()
+
+
                     ShowCleanupSummary(result)
+
                 End If
 
             End Using
 
         Finally
+
             btnManageInstallerVersions.Enabled = True
+
         End Try
 
     End Sub
-
-
     Private Sub btnCalc_Click(sender As Object, e As EventArgs) Handles btnCalc.Click, btnTaskmgr.Click, btnEventViewer.Click, btnDevices.Click, btnAppWiz.Click, btnServices.Click
 
         Dim caller = DirectCast(sender, Button)
@@ -1766,20 +1873,20 @@ Public Class FormMain
         ElseIf Executable = "Devices" Then
             Process.Start("control.exe", "/name Microsoft.DevicesAndPrinters")
         ElseIf Executable = "EventViewer" Then
-            Process.Start("eventvwr.msc")
+            Process.Start("mmc.exe", "eventvwr.msc")
         Else
             Process.Start(Executable)
         End If
     End Sub
-    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click, btnAdvConfig.Click
-        Dim caller As System.Windows.Forms.Button = DirectCast(sender, System.Windows.Forms.Button)
-        Dim Executable As String = caller.Name.Replace("btn", "")
-        Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
+    Private Sub btnAdvManager_Click(sender As Object, e As EventArgs) Handles btnAdvManager.Click, btnPos.Click, btnAdvGroups.Click, btnAdvReportEditor.Click, btnAdvRedeem.Click, btnAdvCardTech.Click, btnAdvKiosk.Click, btnAdvKioskSetup.Click
+        Dim caller = DirectCast(sender, Button)
+        Dim Executable = caller.Name.Replace("btn", "")
+        Dim Version As Integer = AdvExeCheck(Executable)
 
         If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
         If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
 
-        System.Diagnostics.Process.Start(Executable)
+        Process.Start(Executable)
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
@@ -2046,7 +2153,7 @@ e As System.ComponentModel.CancelEventArgs
 
 
     Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
-        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
+        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(_options.ApplyFlavorDefault))
     End Sub
 
     Private Sub tbBackupPathOverride_TextChanged(sender As Object, e As EventArgs) Handles tbBackupPathOverride.TextChanged
@@ -2439,57 +2546,91 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles btnRunDatabaseStartLive.Click
 
-        Dim flavors = _options?.DefaultFlavorNames
+        Dim flavors = GetSelectedAndDefaultFlavors()
 
-        If flavors Is Nothing OrElse flavors.Count = 0 Then
+        If flavors.Count = 0 Then
             MessageBox.Show(
-                "No default flavors are configured.",
-                "No Defaults",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            "No default flavors are configured and no flavors are selected.",
+            "No Flavors",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
             Return
         End If
 
         Await RunScriptAsync(
-            scriptPath:=tbDatabaseStartDefault.Text,
-            trigger:=btnRunDatabaseStartLive,
-            statusText:="Starting database (live output)…",
-            flavors:=flavors,
-            useVersion:=cbDbUseVersion.Checked,
-            versionText:=tbDbUseVersion.Text
-)
+        scriptPath:=tbDatabaseStartDefault.Text,
+        trigger:=btnRunDatabaseStartLive,
+        statusText:="Starting database (live output)…",
+        flavors:=flavors,
+        useVersion:=cbDbUseVersion.Checked,
+        versionText:=tbDbUseVersion.Text
+    )
 
         DatabaseCoordinator.EvaluateDatabaseAvailability(
-            form:=Me,
-            connectionString:=ConfigValues.ConnectionString,
-            configuredContainerName:=_options?.SqlContainerName
-        )
+        form:=Me,
+        connectionString:=ConfigValues.ConnectionString,
+        configuredContainerName:=_options?.SqlContainerName
+    )
 
         _uiStateController.Refresh()
 
     End Sub
+
     Private Async Sub btnRunApplyFlavorLive_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRunApplyFlavorLive.Click
 
-        Dim defaultFlavors = _options?.DefaultFlavorNames
+        Dim flavors = GetSelectedAndDefaultFlavors()
 
-        If defaultFlavors Is Nothing OrElse defaultFlavors.Count = 0 Then
+        If flavors.Count = 0 Then
             MessageBox.Show(
-                "No default flavors are configured.",
-                "No Defaults",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information)
+            "No default flavors are configured and no flavors are selected.",
+            "No Flavors",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information)
             Return
         End If
 
         Await RunScriptAsync(
-            scriptPath:=tbApplyFlavorDefault.Text,
-            trigger:=btnRunApplyFlavorLive,
-            statusText:="Applying default flavors (live output)…",
-            flavors:=defaultFlavors
+        scriptPath:=tbApplyFlavorDefault.Text,
+        trigger:=btnRunApplyFlavorLive,
+        statusText:="Applying flavors (live output)…",
+        flavors:=flavors
+    )
+
+    End Sub
+    Private Function GetSelectedAndDefaultFlavors() As List(Of String)
+
+        Dim flavors As New List(Of String)
+
+        ' Start with configured defaults
+        If _options?.DefaultFlavorNames IsNot Nothing Then
+            flavors.AddRange(_options.DefaultFlavorNames)
+        End If
+
+        ' Add any currently highlighted flavors
+        If lbFlavorsList.SelectedItems.Count > 0 Then
+
+            flavors.AddRange(
+            lbFlavorsList.SelectedItems _
+                .OfType(Of FlavorSelectionManager.SqlFileItem)() _
+                .Select(Function(f) f.FlavorName)
         )
+
+        End If
+
+        Return flavors _
+        .Distinct(StringComparer.OrdinalIgnoreCase) _
+        .ToList()
+
+    End Function
+    Private Sub UpdateApplyFlavorButtonText()
+
+        btnRunApplyFlavorLive.Text =
+        If(lbFlavorsList.SelectedItems.Count > 0,
+           "Apply Default/Selected Flavors",
+           "Apply Default Flavors")
 
     End Sub
     Private Async Sub tsmiApplyDefaultFlavors_Click(
@@ -2807,6 +2948,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub btnFlavorsListRefresh_Click(sender As Object, e As EventArgs) Handles btnFlavorsListRefresh.Click
         _flavorManager.RefreshPreservingSelection()
         SyncFlavorsListMirror()
+        UpdateApplyFlavorButtonText()
 
     End Sub
 
@@ -3008,110 +3150,235 @@ e As System.ComponentModel.CancelEventArgs
 
 
 
-    Private Async Sub tsmiRunQaApiKillScript_Click(
+    Private Async Sub tsmiRunQaApiRerunScript_Click(
     sender As Object,
     e As EventArgs
-) Handles tsmiRunQaApiKillScript.Click
+) Handles tsmiRunQaApiRerunScript.Click
 
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
-
         If String.IsNullOrWhiteSpace(fullCommand) Then
             MessageBox.Show(
-                "No QA command line configured.",
-                "Missing Command",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning)
+            "No QA command line configured.",
+            "Missing Command",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning)
             Return
         End If
 
         Try
-            tsmiRunQaApiKillScript.Enabled = False
+            tsmiRunQaApiRerunScript.Enabled = False
 
             ' ✅ STEP 1: Parse command
-
             Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
-
             Dim scriptPath = parsed.ScriptPath
             Dim args = parsed.Args
 
-            ' ✅ STEP 2: Confirm restart (OPTIONAL UPGRADE)
-            Dim confirm = UIHelpers.TimedYesNoPrompt(
+            ' ✅ STEP 2: Confirm restart
+            Dim confirm As DialogResult
+
+            If _options.QaRunPromptEnabled Then
+
+                confirm = UIHelpers.TimedYesNoPrompt(
                 owner:=Me,
-                message:="This will terminate the running QA API instance (if any) and start a fresh one." &
-                         Environment.NewLine & Environment.NewLine &
-                         "Continue?",
+                message:=
+                    "This will terminate the running QA API instance (if any) and start a fresh one." &
+                    Environment.NewLine & Environment.NewLine &
+                    "Continue?",
                 title:="Restart QA API",
-                timeoutSeconds:=10,
-                defaultChoice:=DialogResult.No)
+                timeoutSeconds:=If(_options.QaRunPromptTimeoutSeconds > 0,
+                                   _options.QaRunPromptTimeoutSeconds,
+                                   10),
+                defaultChoice:=If(_options.QaRunPromptAction,
+                                  DialogResult.Yes,
+                                  DialogResult.No))
+
+            Else
+                ' ✅ Prompt disabled → always proceed
+                confirm = DialogResult.Yes
+            End If
 
             If confirm <> DialogResult.Yes Then
                 Return
             End If
 
-            ' ✅ STEP 3: Kill running script instances (if any)
-            If QaScriptHelper.IsScriptRunning(scriptPath) Then
-
-                UIHelpers.TimedInfoPrompt(
-                    owner:=Me,
-                    message:="Stopping existing QA API instance...",
-                    title:="Restarting",
-                    timeoutSeconds:=3)
-
-                Await Task.Run(Sub()
-                                   ' ✅ Kill PowerShell + script
-                                   QaScriptHelper.KillScriptProcesses(scriptPath)
-
-                               End Sub)
-            End If
+            ' ✅ STEP 3: Kill running script instances
+            Await CodeHelper.KillQaScriptIfRunningAsync(fullCommand)
 
             ' ✅ STEP 4: Stop Windows service
             Dim serviceName As String = "AdvApiServer"
 
-            Await Task.Run(Sub()
-                               Try
-                                   Using sc As New ServiceController(serviceName)
+            Await Task.Run(
+            Sub()
+                Try
+                    Using sc As New ServiceController(serviceName)
 
-                                       If sc.Status = ServiceControllerStatus.Running OrElse
-                                          sc.Status = ServiceControllerStatus.StartPending Then
+                        If sc.Status = ServiceControllerStatus.Running OrElse
+                           sc.Status = ServiceControllerStatus.StartPending Then
 
-                                           sc.Stop()
-                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                            sc.Stop()
+                            sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
 
-                                       End If
+                        End If
 
-                                   End Using
-                               Catch
-                                   ' Ignore if not installed
-                               End Try
-                           End Sub)
+                    End Using
+                Catch
+                    ' Ignore if not installed
+                End Try
+            End Sub)
 
-            ' ✅ STEP 5: Launch fresh instance (NO -NoExit)
+            ' ✅ STEP 5: Launch fresh instance
             Dim psCommand As String =
-                $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+            $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
 
             Dim psi As New ProcessStartInfo With {
-                .FileName = "powershell.exe",
-                .Arguments = psCommand,
-                .UseShellExecute = True,
-                .CreateNoWindow = False
-            }
+            .FileName = "powershell.exe",
+            .Arguments = psCommand,
+            .UseShellExecute = True,
+            .CreateNoWindow = False
+        }
 
             Process.Start(psi)
 
         Catch ex As Exception
 
             MessageBox.Show(
-                "Failed to restart QA script:" & Environment.NewLine & ex.Message,
-                "Execution Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
+            "Failed to restart QA script:" & Environment.NewLine & ex.Message,
+            "Execution Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
 
         Finally
-            tsmiRunQaApiKillScript.Enabled = True
+            tsmiRunQaApiRerunScript.Enabled = True
         End Try
 
     End Sub
 
+    Private Async Sub tsmiQaScriptKill_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiQaScriptKill.Click
 
+        Try
+            tsmiQaScriptKill.Enabled = False
+
+            Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
+
+        Catch ex As Exception
+            MessageBox.Show(
+            "Failed to stop QA script:" & Environment.NewLine & ex.Message,
+            "Execution Error",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+        Finally
+            tsmiQaScriptKill.Enabled = True
+        End Try
+
+    End Sub
+
+    Private Sub tsmiQaMenuPromptDefaults_Click(sender As Object, e As EventArgs) Handles tsmiQaMenuPromptDefaults.Click
+
+        Using dlg As New PromptDefaultsForm()
+
+            'dlg.TitleText = "Select default choice after timeout"
+            dlg.PromptEnabled = _options.QaRunPromptEnabled
+            dlg.YesText = "Default to Yes"
+            dlg.NoText = "Default to No"
+            dlg.TimeoutSeconds = _options.QaRunPromptTimeoutSeconds
+            dlg.IsYesSelected = _options.QaRunPromptAction
+            dlg.Text = "QA Run Prompt Defaults"
+
+
+            ' Ensure dialog appears on the same screen as the parent form
+            dlg.StartPosition = FormStartPosition.Manual
+            Dim scr = Screen.FromControl(Me)
+            Dim centerX = scr.WorkingArea.Left + (scr.WorkingArea.Width - dlg.Width) \ 2
+            Dim centerY = scr.WorkingArea.Top + (scr.WorkingArea.Height - dlg.Height) \ 2
+            dlg.Location = New Point(Math.Max(scr.WorkingArea.Left, centerX), Math.Max(scr.WorkingArea.Top, centerY))
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+
+                ' ✅ Boolean result
+                Dim isYes As Boolean = dlg.IsYesSelected
+
+                ' Example:
+                If isYes Then
+                    tbTest3.Text = "User selected YES"
+                Else
+                    tbTest3.Text = "User selected NO"
+                End If
+                UpdateOption(Sub()
+                                 _options.QaRunPromptTimeoutSeconds = dlg.TimeoutSeconds
+                                 _options.QaRunPromptAction = isYes
+                                 _options.QaRunPromptEnabled = dlg.PromptEnabled
+                             End Sub)
+
+            End If
+
+        End Using
+
+    End Sub
+
+    Private Sub lbFlavorsList_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lbFlavorsList.SelectedIndexChanged
+        UpdateApplyFlavorButtonText()
+    End Sub
+    Private Sub ReloadApplication()
+
+        Dim psi As New ProcessStartInfo(
+        Application.ExecutablePath)
+
+        ' Restart at the same elevation level
+        If IsRunningAsAdmin() Then
+            psi.Verb = "runas"
+        End If
+
+        Process.Start(psi)
+
+        Application.Exit()
+
+    End Sub
+
+    Private Sub btnConnectionProfiles_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnConnectionProfiles.Click
+
+        Using dlg As New ConnectionProfilesForm()
+
+            dlg.ShowDialog(Me)
+
+            If dlg.ConnectionChanged Then
+
+                ReloadApplication()
+            End If
+
+        End Using
+    End Sub
+    Private Sub btnInstallPathFallback_Click(sender As Object, e As EventArgs) Handles btnInstallPathFallback.Click
+
+        Using dlg As New FolderBrowserDialog()
+
+            dlg.Description = "Select the folder where installers are located"
+            dlg.ShowNewFolderButton = False
+
+            ' Optional: start at the previously saved folder
+            If _options IsNot Nothing AndAlso
+           Not String.IsNullOrWhiteSpace(_options.InstallFolderPath) AndAlso
+           IO.Directory.Exists(_options.InstallFolderPath) Then
+
+                dlg.SelectedPath = _options.InstallFolderPath
+            End If
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                Dim InstallFolderPath As String = dlg.SelectedPath
+
+                ' Update options object
+                UpdateOption(Sub() _options.InstallFolderPath = InstallFolderPath)
+
+                ' Optional: show in UI
+                tbInstallPathFallback.Text = InstallFolderPath
+
+            End If
+        End Using
+    End Sub
 End Class

@@ -18,7 +18,22 @@ Public Class AppOptions
     ' Persisted toggle: show services that are not installed
     Public Property ShowHiddenServices As Boolean = False
 
+    ' QA run button prompt and timeout settings
+    Public Property QaRunPromptAction As Boolean
+    Public Property QaRunPromptTimeoutSeconds As Integer
+    Public Property QaRunPromptEnabled As Boolean = True
 
+    Public Property RepoMainPromptAction As Boolean
+    Public Property RepoMainPromptTimeoutSeconds As Integer
+    Public Property RepoMainPromptEnabled As Boolean = True
+
+    Public Property RepoDiscardPromptAction As Boolean
+    Public Property RepoDiscardPromptTimeoutSeconds As Integer
+    Public Property RepoDiscardPromptEnabled As Boolean = True
+
+    Public Property SetupExistingVersionPromptEnabled As Boolean = True
+    Public Property SetupExistingVersionPromptAction As Boolean
+    Public Property SetupExistingVersionPromptTimeoutSeconds As Integer
     ' -------------------------------------------------
     ' Repository / paths
     ' -------------------------------------------------
@@ -40,7 +55,7 @@ Public Class AppOptions
     ' -------------------------------------------------
     ' Installer / setup defaults
     ' -------------------------------------------------
-
+    Public Property InstallFolderPath As String
     Public Property SetupSwitches As String
     Public Property StartDatabaseDefault As String
     Public Property ApplyFlavorDefault As String

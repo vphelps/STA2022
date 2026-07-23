@@ -424,4 +424,77 @@ Public Module CodeHelper
         Return Nothing
 
     End Function
+    Public Async Function KillQaScriptIfRunningAsync(fullCommand As String) As Task
+
+        If String.IsNullOrWhiteSpace(fullCommand) Then
+            Return
+        End If
+
+        Try
+            ' ✅ Parse command
+            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
+            Dim scriptPath = parsed.ScriptPath
+
+            ' ✅ Check if running
+            If Not QaScriptHelper.IsScriptRunning(scriptPath) Then
+                Return
+            End If
+
+            ' ✅ Kill script + PowerShell
+            Await Task.Run(Sub()
+                               QaScriptHelper.KillScriptProcesses(scriptPath)
+                           End Sub)
+
+        Catch
+            ' ✅ Silent fail (important for installer scenarios)
+        End Try
+
+    End Function
+    Public Sub AttachPromptDefaultsMenu(
+        targetButton As Button,
+        ownerForm As Form,
+        configureDialog As Action(Of PromptDefaultsForm),
+        onSave As Action(Of PromptDefaultsForm)
+    )
+
+        Dim cms As New ContextMenuStrip()
+        Dim mi As New ToolStripMenuItem("Configure Prompt Defaults...")
+
+        AddHandler mi.Click,
+            Sub()
+
+                Using dlg As New PromptDefaultsForm()
+
+                    ' ✅ Let caller configure dialog
+                    configureDialog(dlg)
+
+                    ' ✅ Ensure dialog opens on same screen as parent
+                    dlg.StartPosition = FormStartPosition.Manual
+
+                    Dim screen As Screen = Screen.FromControl(ownerForm)
+                    Dim working = screen.WorkingArea
+
+                    Dim centerX = working.Left + (working.Width - dlg.Width) \ 2
+                    Dim centerY = working.Top + (working.Height - dlg.Height) \ 2
+
+                    dlg.Location = New Point(
+                        Math.Max(working.Left, centerX),
+                        Math.Max(working.Top, centerY)
+                    )
+
+                    ' ✅ Show dialog
+                    If dlg.ShowDialog(ownerForm) = DialogResult.OK Then
+                        onSave(dlg)
+                    End If
+
+                End Using
+
+            End Sub
+
+        cms.Items.Add(mi)
+
+        targetButton.ContextMenuStrip = cms
+
+    End Sub
+
 End Module
