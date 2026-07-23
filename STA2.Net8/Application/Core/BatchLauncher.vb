@@ -16,35 +16,6 @@ Public Module BatchLauncher
 
     ' Keep last 5 run logs via rotation:
     '   batch-launch-1.log (newest), ... batch-launch-5.log (oldest)
-    Private Sub RotateLogs(logDir As String)
-        Try
-            If Not Directory.Exists(logDir) Then Return
-
-            ' Delete the oldest
-            Dim oldest = Path.Combine(logDir, "batch-launch-5.log")
-            If File.Exists(oldest) Then
-                Try : File.Delete(oldest) : Catch : End Try
-            End If
-
-            ' Shift 4->5, 3->4, 2->3, 1->2
-            For i As Integer = 4 To 1 Step -1
-                Dim src = Path.Combine(logDir, $"batch-launch-{i}.log")
-                Dim dst = Path.Combine(logDir, $"batch-launch-{i + 1}.log")
-
-                If File.Exists(src) Then
-                    Try
-                        ' Framework-compatible overwrite (Copy+Delete)
-                        File.Copy(src, dst, overwrite:=True)
-                        File.Delete(src)
-                    Catch
-                        ' keep rotation resilient
-                    End Try
-                End If
-            Next
-        Catch
-            ' never block batch on rotation issues
-        End Try
-    End Sub
 
     ' Thread-safe append (simple lock)
     Private ReadOnly _logSync As New Object()
@@ -72,14 +43,10 @@ Public Module BatchLauncher
 
         Try
             ' LOG SETUP WITH ROTATION (KEEP LAST 5 RUNS)
-            Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-            Dim logDir = Path.Combine(appData, "STA2", "Logs")
+            Dim logDir As String = GlobalErrorHandler.LogFolder
             Directory.CreateDirectory(logDir)
 
-            RotateLogs(logDir)
-
-            ' New run always logs to #1
-            logPath = Path.Combine(logDir, "batch-launch-1.log")
+            logPath = Path.Combine(logDir, $"BatchLaunch_{DateTime.Now:yyyyMMdd}.log")
 
             ' Header with caller + environment context
             Dim callerTag = NormalizeCaller(caller)

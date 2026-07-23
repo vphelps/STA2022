@@ -2203,7 +2203,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub ShowSelectedLogFileInUI()
 
         Dim logFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         Using ofd As New OpenFileDialog()
 
@@ -2213,7 +2213,7 @@ e As System.ComponentModel.CancelEventArgs
                 .InitialDirectory =
                 If(Directory.Exists(logFolder),
                    logFolder,
-                   AppDomain.CurrentDomain.BaseDirectory)
+                   GlobalErrorHandler.LogFolder)
                 .Multiselect = False
             End With
 
@@ -2227,9 +2227,8 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub ShowLatestLogInUI()
-
         Dim logFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         If Not Directory.Exists(logFolder) Then
             MessageBox.Show("Log folder does not exist yet.")
@@ -2298,7 +2297,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub btnLastLogBlock_Click(sender As Object, e As EventArgs) Handles btnLastLogBlock.Click
 
         Dim logFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         If Not Directory.Exists(logFolder) Then
             MessageBox.Show("Log folder does not exist yet.")
@@ -2414,9 +2413,8 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub btnLastFailed_Click(sender As Object, e As EventArgs) Handles btnLastFailed.Click
-
         Dim logFolder As String =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         If Not Directory.Exists(logFolder) Then
             MessageBox.Show("Log folder does not exist yet.")

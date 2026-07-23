@@ -5,7 +5,7 @@ Imports System.Windows.Forms
 
 Public Module GlobalErrorHandler
 
-    Private ReadOnly LogFolder As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    Public ReadOnly LogFolder As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "STA2", "Logs")
     Public Const LogRetentionDays As Integer = 5
 
     Public Event OnErrorLogged(ex As Exception, source As String)
