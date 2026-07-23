@@ -6,6 +6,7 @@ Imports System.Security.Principal
 Imports System.ServiceProcess
 Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
+Imports STA2.Net8.AppOptions
 'Imports STA2.AppData
 
 Public Class FormMain
@@ -419,7 +420,7 @@ Public Class FormMain
         DatabaseCoordinator.RefreshAdvantageData(Me)
         EnableDoubleBuffering(tblServices)
 
-
+        UpdateStartDatabaseButton()
         ' Load saved personal flavor if it exists
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
 
@@ -2153,7 +2154,7 @@ e As System.ComponentModel.CancelEventArgs
 
 
     Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
-        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(_options.ApplyFlavorDefault))
+        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
     End Sub
 
     Private Sub tbBackupPathOverride_TextChanged(sender As Object, e As EventArgs) Handles tbBackupPathOverride.TextChanged
@@ -2539,13 +2540,42 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private Async Sub btnRunDatabaseStartLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunDatabaseStartLive.Click
+    '    Private Async Sub btnRunDatabaseStartLive_Click(
+    '    sender As Object,
+    '    e As EventArgs
+    ') Handles btnRunDatabaseStartLive.Click
 
+    '        Dim flavors = GetSelectedAndDefaultFlavors()
+
+    '        If flavors.Count = 0 Then
+    '            MessageBox.Show(
+    '            "No default flavors are configured and no flavors are selected.",
+    '            "No Flavors",
+    '            MessageBoxButtons.OK,
+    '            MessageBoxIcon.Information)
+    '            Return
+    '        End If
+
+    '        Await RunScriptAsync(
+    '        scriptPath:=tbDatabaseStartDefault.Text,
+    '        trigger:=btnRunDatabaseStartLive,
+    '        statusText:="Starting database (live output)…",
+    '        flavors:=flavors,
+    '        useVersion:=cbDbUseVersion.Checked,
+    '        versionText:=tbDbUseVersion.Text
+    '    )
+
+    '        DatabaseCoordinator.EvaluateDatabaseAvailability(
+    '        form:=Me,
+    '        connectionString:=ConfigValues.ConnectionString,
+    '        configuredContainerName:=_options?.SqlContainerName
+    '    )
+
+    '        _uiStateController.Refresh()
+
+    '    End Sub
+    Private Async Function ExecuteStartDatabaseAsync() As Task
         Dim flavors = GetSelectedAndDefaultFlavors()
-
         If flavors.Count = 0 Then
             MessageBox.Show(
             "No default flavors are configured and no flavors are selected.",
@@ -2554,7 +2584,6 @@ e As System.ComponentModel.CancelEventArgs
             MessageBoxIcon.Information)
             Return
         End If
-
         Await RunScriptAsync(
         scriptPath:=tbDatabaseStartDefault.Text,
         trigger:=btnRunDatabaseStartLive,
@@ -2563,17 +2592,45 @@ e As System.ComponentModel.CancelEventArgs
         useVersion:=cbDbUseVersion.Checked,
         versionText:=tbDbUseVersion.Text
     )
-
         DatabaseCoordinator.EvaluateDatabaseAvailability(
         form:=Me,
         connectionString:=ConfigValues.ConnectionString,
         configuredContainerName:=_options?.SqlContainerName
     )
-
         _uiStateController.Refresh()
+    End Function
+    Private Sub CopyStartDatabaseCommandLine()
+        Dim commandLine As String = BuildStartDatabaseCommandLine()
+        commandLine = commandLine.Replace("""", "")
+        Clipboard.SetText(commandLine)
+
+
+        UIHelpers.TimedInfoPrompt(
+        message:="Command line copied to clipboard:" &
+                 Environment.NewLine &
+                 Environment.NewLine &
+                 commandLine,
+        title:="Copy Start Database Command",
+        timeoutSeconds:=10)
+    End Sub
+    Private Async Sub btnRunDatabaseStartLive_Click(
+    sender As Object,
+    e As EventArgs
+) Handles btnRunDatabaseStartLive.Click
+
+        Select Case _options.DatabaseButtonMode
+
+            Case StartDatabaseButtonMode.StartDatabase
+
+                Await ExecuteStartDatabaseAsync()
+
+            Case StartDatabaseButtonMode.CopyCommandLine
+
+                CopyStartDatabaseCommandLine()
+
+        End Select
 
     End Sub
-
     Private Async Sub btnRunApplyFlavorLive_Click(
     sender As Object,
     e As EventArgs
@@ -2746,35 +2803,10 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles tsmiCopyStartDbCommandLine.Click
 
-        '    Dim flavors = GetSelectedAndDefaultFlavors()
-
-        '    Dim cmdOptions As New ScriptCommandOptions With {
-        '    .ScriptPath = tbDatabaseStartDefault.Text,
-        '    .FlavorNames = flavors,
-        '    .UseVersion = cbDbUseVersion.Checked,
-        '    .VersionText = tbDbUseVersion.Text
-        '}
-
-        '    Dim args = _scriptController.BuildScriptArgs(cmdOptions)
-
-        '    Dim commandLine As String =
-        '$".\{Path.GetFileName(tbDatabaseStartDefault.Text)} {args}"
-
-        'Clipboard.SetText(commandLine)
-        Dim commandLine As String = BuildStartDatabaseCommandLine()
-        commandLine = commandLine.Replace("""", "")
-        Clipboard.SetText(commandLine)
-
-
-        UIHelpers.TimedInfoPrompt(
-        message:="Command line copied to clipboard:" &
-                 Environment.NewLine &
-                 Environment.NewLine &
-                 commandLine,
-        title:="Copy Start Database Command",
-        timeoutSeconds:=10)
+        CopyStartDatabaseCommandLine()
 
     End Sub
+
     Private Function BuildStartDatabaseCommandLine() As String
 
         Dim flavors = GetSelectedAndDefaultFlavors()
@@ -2787,6 +2819,7 @@ e As System.ComponentModel.CancelEventArgs
     }
 
         Dim args = _scriptController.BuildScriptArgs(cmdOptions)
+        MessageBox.Show(cmdOptions.UseVersion & "|" & cmdOptions.VersionText & "|" & args)
 
         Return $".\{Path.GetFileName(cmdOptions.ScriptPath)} {args}"
 
@@ -3427,5 +3460,85 @@ e As System.ComponentModel.CancelEventArgs
 
             End If
         End Using
+    End Sub
+
+    Private Sub UpdateStartDatabaseButton()
+        If _options Is Nothing Then Return
+        Dim strTemp As String
+
+        Dim isStartDefault =
+            _options.DatabaseButtonMode =
+            StartDatabaseButtonMode.StartDatabase
+
+        btnRunDatabaseStartLive.Text =
+            If(isStartDefault,
+               "Start Database",
+               "Copy Command Line")
+
+        tsmiStartDatabase.Visible = Not isStartDefault
+        tsmiCopyStartDbCommandLine.Visible = isStartDefault
+
+        tsmiDefaultStartDatabase.Checked = isStartDefault
+        tsmiDefaultCopyCommandLine.Checked = Not isStartDefault
+        If isStartDefault Then
+
+            strTemp =
+                "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
+                "Right Click for other Start Database options:" & Environment.NewLine &
+                " - Start with no flavors (raw)" & Environment.NewLine &
+                " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+                " - Backup the database to 00Pathfinder"
+
+        Else
+
+            strTemp =
+                "Copies the Start-Database PowerShell command line to the clipboard using the current Assistant settings." & Environment.NewLine &
+                "Current flavor and version selections are included." & Environment.NewLine &
+                Environment.NewLine &
+                "Right Click for other Start Database options:" & Environment.NewLine &
+                " - Start Database" & Environment.NewLine &
+                " - Start with no flavors (raw)" & Environment.NewLine &
+                " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+                " - Backup the database to 00Pathfinder"
+
+        End If
+
+        ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
+    End Sub
+    Private Sub tsmiDefaultStartDatabase_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles tsmiDefaultStartDatabase.Click
+
+        UpdateOption(
+            Sub()
+                _options.DatabaseButtonMode =
+                    StartDatabaseButtonMode.StartDatabase
+            End Sub)
+
+        UpdateStartDatabaseButton()
+
+    End Sub
+    Private Sub tsmiDefaultCopyCommandLine_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiDefaultCopyCommandLine.Click
+
+        UpdateOption(
+            Sub()
+                _options.DatabaseButtonMode =
+                    StartDatabaseButtonMode.CopyCommandLine
+            End Sub)
+
+        UpdateStartDatabaseButton()
+
+    End Sub
+    Private Async Sub tsmiStartDatabase_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiStartDatabase.Click
+
+        Await ExecuteStartDatabaseAsync()
+
     End Sub
 End Class

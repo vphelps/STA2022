@@ -234,6 +234,10 @@ Partial Class FormMain
         tsmiBackupDb = New ToolStripMenuItem()
         cmsDbStartSeparator2 = New ToolStripSeparator()
         tsmiCopyStartDbCommandLine = New ToolStripMenuItem()
+        tsmiStartDatabase = New ToolStripMenuItem()
+        tsmiSeparatorDefaultAction = New ToolStripSeparator()
+        tsmiDefaultStartDatabase = New ToolStripMenuItem()
+        tsmiDefaultCopyCommandLine = New ToolStripMenuItem()
         btnRunApplyFlavorLive = New Button()
         cmbboxAppLaunch = New ComboBox()
         btnComboAppLaunch = New Button()
@@ -2696,20 +2700,20 @@ Partial Class FormMain
         ' 
         ' cmsDbStart
         ' 
-        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb, cmsDbStartSeparator2, tsmiCopyStartDbCommandLine})
+        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb, cmsDbStartSeparator2, tsmiCopyStartDbCommandLine, tsmiStartDatabase, tsmiSeparatorDefaultAction, tsmiDefaultStartDatabase, tsmiDefaultCopyCommandLine})
         cmsDbStart.Name = "ContextMenuStrip1"
-        cmsDbStart.Size = New Size(288, 104)
+        cmsDbStart.Size = New Size(288, 260)
         ' 
         ' tsmiStartDbRaw
         ' 
         tsmiStartDbRaw.Name = "tsmiStartDbRaw"
-        tsmiStartDbRaw.Size = New Size(287, 22)
+        tsmiStartDbRaw.Size = New Size(287, 34)
         tsmiStartDbRaw.Text = "Start DB with no options (raw)"
         ' 
         ' tsmiStartDbBackup
         ' 
         tsmiStartDbBackup.Name = "tsmiStartDbBackup"
-        tsmiStartDbBackup.Size = New Size(287, 22)
+        tsmiStartDbBackup.Size = New Size(287, 34)
         tsmiStartDbBackup.Text = "Start Database with backup 00Pathfinder"
         ' 
         ' cmsDbStartSeparator1
@@ -2720,7 +2724,7 @@ Partial Class FormMain
         ' tsmiBackupDb
         ' 
         tsmiBackupDb.Name = "tsmiBackupDb"
-        tsmiBackupDb.Size = New Size(287, 22)
+        tsmiBackupDb.Size = New Size(287, 34)
         tsmiBackupDb.Text = "Backup Database to 00Pathfinder"
         ' 
         ' cmsDbStartSeparator2
@@ -2731,8 +2735,31 @@ Partial Class FormMain
         ' tsmiCopyStartDbCommandLine
         ' 
         tsmiCopyStartDbCommandLine.Name = "tsmiCopyStartDbCommandLine"
-        tsmiCopyStartDbCommandLine.Size = New Size(287, 22)
+        tsmiCopyStartDbCommandLine.Size = New Size(287, 34)
         tsmiCopyStartDbCommandLine.Text = "Copy Command Line"
+        ' 
+        ' tsmiStartDatabase
+        ' 
+        tsmiStartDatabase.Name = "tsmiStartDatabase"
+        tsmiStartDatabase.Size = New Size(287, 34)
+        tsmiStartDatabase.Text = "Start Database"
+        ' 
+        ' tsmiSeparatorDefaultAction
+        ' 
+        tsmiSeparatorDefaultAction.Name = "tsmiSeparatorDefaultAction"
+        tsmiSeparatorDefaultAction.Size = New Size(284, 6)
+        ' 
+        ' tsmiDefaultStartDatabase
+        ' 
+        tsmiDefaultStartDatabase.Name = "tsmiDefaultStartDatabase"
+        tsmiDefaultStartDatabase.Size = New Size(287, 34)
+        tsmiDefaultStartDatabase.Text = "Default Action: Start Database"
+        ' 
+        ' tsmiDefaultCopyCommandLine
+        ' 
+        tsmiDefaultCopyCommandLine.Name = "tsmiDefaultCopyCommandLine"
+        tsmiDefaultCopyCommandLine.Size = New Size(287, 34)
+        tsmiDefaultCopyCommandLine.Text = "Default Action: Copy Command Line" & vbCrLf
         ' 
         ' btnRunApplyFlavorLive
         ' 
@@ -3719,4 +3746,8 @@ Partial Class FormMain
     Friend WithEvents lblInstallPathFallback As Label
     Friend WithEvents cmsDbStartSeparator2 As ToolStripSeparator
     Friend WithEvents tsmiCopyStartDbCommandLine As ToolStripMenuItem
+    Friend WithEvents tsmiStartDatabase As ToolStripMenuItem
+    Friend WithEvents tsmiSeparatorDefaultAction As ToolStripSeparator
+    Friend WithEvents tsmiDefaultStartDatabase As ToolStripMenuItem
+    Friend WithEvents tsmiDefaultCopyCommandLine As ToolStripMenuItem
 End Class

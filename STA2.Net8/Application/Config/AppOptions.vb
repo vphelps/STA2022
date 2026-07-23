@@ -78,6 +78,16 @@ Public Class AppOptions
     ' IDs assigned to toolbar / quick buttons
     Public Property QuickLaunchButtonIds As List(Of String)
 
+    ' -------------------------------------------------
+    ' Form Control Configuration
+    ' -------------------------------------------------
+
+    Public Enum StartDatabaseButtonMode
+        StartDatabase = 0
+        CopyCommandLine = 1
+    End Enum
+
+    Public Property DatabaseButtonMode As StartDatabaseButtonMode = StartDatabaseButtonMode.StartDatabase
 
     ' -------------------------------------------------
     ' Constructor

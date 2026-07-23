@@ -62,7 +62,7 @@
             'Else
             '    scriptArgs = BuildScriptArgs(options, False)
             'End If
-            scriptArgs = BuildScriptArgs(options, options.UseVersion)
+            scriptArgs = BuildScriptArgs(options)
 
 
             ' ✅ Build full command (for logging)
@@ -119,11 +119,11 @@
 
     End Function
     Public Function BuildCommandLine(options As ScriptCommandOptions, Optional useVersion As Boolean = False) As String
-        Dim args = BuildScriptArgs(options, useVersion)
+        Dim args = BuildScriptArgs(options)
         Return $"powershell -ExecutionPolicy Bypass -File ""{options.ScriptPath}"" {args}".Trim()
     End Function
 
-    Public Function BuildScriptArgs(options As ScriptCommandOptions, Optional useVersion As Boolean = False) As String
+    Public Function BuildScriptArgs(options As ScriptCommandOptions) As String
 
         If options Is Nothing Then Return String.Empty
 
@@ -148,7 +148,7 @@
         End If
 
         ' ✅ Version
-        If options.UseVersion And useVersion Then
+        If options.UseVersion Then
             Dim versionText = options.VersionText?.Trim()
 
             If Not String.IsNullOrWhiteSpace(versionText) Then
