@@ -232,6 +232,8 @@ Partial Class FormMain
         tsmiStartDbBackup = New ToolStripMenuItem()
         cmsDbStartSeparator1 = New ToolStripSeparator()
         tsmiBackupDb = New ToolStripMenuItem()
+        cmsDbStartSeparator2 = New ToolStripSeparator()
+        tsmiCopyStartDbCommandLine = New ToolStripMenuItem()
         btnRunApplyFlavorLive = New Button()
         cmbboxAppLaunch = New ComboBox()
         btnComboAppLaunch = New Button()
@@ -2694,9 +2696,9 @@ Partial Class FormMain
         ' 
         ' cmsDbStart
         ' 
-        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb})
+        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb, cmsDbStartSeparator2, tsmiCopyStartDbCommandLine})
         cmsDbStart.Name = "ContextMenuStrip1"
-        cmsDbStart.Size = New Size(288, 76)
+        cmsDbStart.Size = New Size(288, 104)
         ' 
         ' tsmiStartDbRaw
         ' 
@@ -2720,6 +2722,17 @@ Partial Class FormMain
         tsmiBackupDb.Name = "tsmiBackupDb"
         tsmiBackupDb.Size = New Size(287, 22)
         tsmiBackupDb.Text = "Backup Database to 00Pathfinder"
+        ' 
+        ' cmsDbStartSeparator2
+        ' 
+        cmsDbStartSeparator2.Name = "cmsDbStartSeparator2"
+        cmsDbStartSeparator2.Size = New Size(284, 6)
+        ' 
+        ' tsmiCopyStartDbCommandLine
+        ' 
+        tsmiCopyStartDbCommandLine.Name = "tsmiCopyStartDbCommandLine"
+        tsmiCopyStartDbCommandLine.Size = New Size(287, 22)
+        tsmiCopyStartDbCommandLine.Text = "Copy Command Line"
         ' 
         ' btnRunApplyFlavorLive
         ' 
@@ -3704,4 +3717,6 @@ Partial Class FormMain
     Friend WithEvents tbInstallPathFallback As TextBox
     Friend WithEvents btnInstallPathFallback As Button
     Friend WithEvents lblInstallPathFallback As Label
+    Friend WithEvents cmsDbStartSeparator2 As ToolStripSeparator
+    Friend WithEvents tsmiCopyStartDbCommandLine As ToolStripMenuItem
 End Class

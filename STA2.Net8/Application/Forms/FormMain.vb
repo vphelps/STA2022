@@ -2741,7 +2741,56 @@ e As System.ComponentModel.CancelEventArgs
 
 
     End Sub
+    Private Sub tsmiCopyStartDbCommandLine_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiCopyStartDbCommandLine.Click
 
+        '    Dim flavors = GetSelectedAndDefaultFlavors()
+
+        '    Dim cmdOptions As New ScriptCommandOptions With {
+        '    .ScriptPath = tbDatabaseStartDefault.Text,
+        '    .FlavorNames = flavors,
+        '    .UseVersion = cbDbUseVersion.Checked,
+        '    .VersionText = tbDbUseVersion.Text
+        '}
+
+        '    Dim args = _scriptController.BuildScriptArgs(cmdOptions)
+
+        '    Dim commandLine As String =
+        '$".\{Path.GetFileName(tbDatabaseStartDefault.Text)} {args}"
+
+        'Clipboard.SetText(commandLine)
+        Dim commandLine As String = BuildStartDatabaseCommandLine()
+        commandLine = commandLine.Replace("""", "")
+        Clipboard.SetText(commandLine)
+
+
+        UIHelpers.TimedInfoPrompt(
+        message:="Command line copied to clipboard:" &
+                 Environment.NewLine &
+                 Environment.NewLine &
+                 commandLine,
+        title:="Copy Start Database Command",
+        timeoutSeconds:=10)
+
+    End Sub
+    Private Function BuildStartDatabaseCommandLine() As String
+
+        Dim flavors = GetSelectedAndDefaultFlavors()
+
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = tbDatabaseStartDefault.Text,
+        .FlavorNames = flavors,
+        .UseVersion = cbDbUseVersion.Checked,
+        .VersionText = tbDbUseVersion.Text
+    }
+
+        Dim args = _scriptController.BuildScriptArgs(cmdOptions)
+
+        Return $".\{Path.GetFileName(cmdOptions.ScriptPath)} {args}"
+
+    End Function
 
     Private Sub btnBackupScriptPath_Click(sender As Object, e As EventArgs) Handles btnBackupScriptPath.Click
 
