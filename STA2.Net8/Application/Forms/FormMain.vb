@@ -2540,40 +2540,6 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    '    Private Async Sub btnRunDatabaseStartLive_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnRunDatabaseStartLive.Click
-
-    '        Dim flavors = GetSelectedAndDefaultFlavors()
-
-    '        If flavors.Count = 0 Then
-    '            MessageBox.Show(
-    '            "No default flavors are configured and no flavors are selected.",
-    '            "No Flavors",
-    '            MessageBoxButtons.OK,
-    '            MessageBoxIcon.Information)
-    '            Return
-    '        End If
-
-    '        Await RunScriptAsync(
-    '        scriptPath:=tbDatabaseStartDefault.Text,
-    '        trigger:=btnRunDatabaseStartLive,
-    '        statusText:="Starting database (live output)…",
-    '        flavors:=flavors,
-    '        useVersion:=cbDbUseVersion.Checked,
-    '        versionText:=tbDbUseVersion.Text
-    '    )
-
-    '        DatabaseCoordinator.EvaluateDatabaseAvailability(
-    '        form:=Me,
-    '        connectionString:=ConfigValues.ConnectionString,
-    '        configuredContainerName:=_options?.SqlContainerName
-    '    )
-
-    '        _uiStateController.Refresh()
-
-    '    End Sub
     Private Async Function ExecuteStartDatabaseAsync() As Task
         Dim flavors = GetSelectedAndDefaultFlavors()
         If flavors.Count = 0 Then
@@ -2819,7 +2785,6 @@ e As System.ComponentModel.CancelEventArgs
     }
 
         Dim args = _scriptController.BuildScriptArgs(cmdOptions)
-        MessageBox.Show(cmdOptions.UseVersion & "|" & cmdOptions.VersionText & "|" & args)
 
         Return $".\{Path.GetFileName(cmdOptions.ScriptPath)} {args}"
 
