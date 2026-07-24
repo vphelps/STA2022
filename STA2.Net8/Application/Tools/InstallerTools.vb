@@ -510,13 +510,12 @@ Public Module InstallerTools
             End If
 
             Dim info As New InstallerVersionInfo With {
-            .Version = parsedVersion,
-            .VersionString = dirName,
-            .FolderPath = dirPath,
-            .CreationTime = Directory.GetCreationTime(dirPath),
-            .SizeBytes = GetDirectorySizeBytes(dirPath),
-            .Track = GetReleaseTrack(parsedVersion)
-        }
+    .Version = parsedVersion,
+    .VersionString = dirName,
+    .FolderPath = dirPath,
+    .CreationTime = Directory.GetCreationTime(dirPath),
+    .Track = GetReleaseTrack(parsedVersion)
+}
 
             results.Add(info)
 
@@ -790,6 +789,7 @@ Public Module InstallerTools
             Try
                 ' Final sanity check
                 If Directory.Exists(info.FolderPath) Then
+                    info.SizeBytes = GetDirectorySizeBytesRecursive(info.FolderPath)
                     Directory.Delete(info.FolderPath, recursive:=True)
                 End If
 
@@ -803,5 +803,23 @@ Public Module InstallerTools
 
         Return result
     End Function
+    Public Function GetDirectorySizeBytesRecursive(path As String) As Long
 
+        Dim total As Long = 0
+
+        For Each file In Directory.EnumerateFiles(
+            path,
+            "*",
+            SearchOption.AllDirectories)
+
+            Try
+                total += New FileInfo(file).Length
+            Catch
+            End Try
+
+        Next
+
+        Return total
+
+    End Function
 End Module

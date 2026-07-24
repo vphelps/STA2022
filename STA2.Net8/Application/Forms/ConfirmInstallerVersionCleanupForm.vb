@@ -26,9 +26,9 @@
     Private Sub PopulateUI()
 
         lblMessage.Text =
-            "You are about to permanently delete the following installer versions:" &
-            Environment.NewLine & Environment.NewLine &
-            "This action cannot be undone."
+        "You are about to permanently delete the following installer versions:" &
+        Environment.NewLine & Environment.NewLine &
+        "This action cannot be undone."
 
         lbVersions.Items.Clear()
 
@@ -37,15 +37,24 @@
         Next
 
         Dim totalBytes As Long =
-            _versionsToDelete.Sum(Function(v) v.SizeBytes)
+        _versionsToDelete.Sum(
+            Function(v)
+                Return InstallerTools.GetDirectorySizeBytesRecursive(v.FolderPath)
+            End Function)
 
-        Dim totalMb = totalBytes \ (1024 * 1024)
-        Dim totalGb = totalBytes / (1024.0 ^ 3)
+        Dim totalGb As Double =
+        totalBytes / (1024.0 * 1024.0 * 1024.0)
 
-        lblSpaceSummary.Text =
-            $"Selected cleanup will free approximately {totalGb:F2} GB of disk space."
+        If totalGb >= 1 Then
+
+            lblSpaceSummary.Text = $"Selected cleanup will free approximately {totalGb:F2} GB of disk space."
+        Else
+            Dim totalMb As Long = totalBytes \ (1024 * 1024)
+            lblSpaceSummary.Text = $"Selected cleanup will free approximately {totalMb:N0} MB of disk space."
+        End If
 
         btnConfirmDelete.Enabled = True
+
     End Sub
 
     ' -------------------------
@@ -70,5 +79,6 @@
         Close()
 
     End Sub
+
 
 End Class

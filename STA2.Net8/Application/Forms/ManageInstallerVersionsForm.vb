@@ -76,8 +76,6 @@ Public Class ManageInstallerVersionsForm
     ' -------------------------
     Private Function FormatDisplayText(info As InstallerVersionInfo) As String
 
-        Dim sizeMb = info.SizeBytes \ (1024 * 1024)
-
         Dim label As String
 
         ' ✅ Current = INSTALLED version, not highest
@@ -98,7 +96,7 @@ Public Class ManageInstallerVersionsForm
        "✅ ",
        If(info.CanDelete, "", "🔒 "))
 
-        Return $"{prefix}{info.VersionString,-28} {label,-12} {sizeMb,6} MB"
+        Return $"{prefix}{info.VersionString,-28} {label}"
 
     End Function    ' -------------------------
     ' CheckedListBox rendering
@@ -248,25 +246,22 @@ Public Class ManageInstallerVersionsForm
 
     End Function
 
-
     Private Sub UpdateSummary()
 
         Dim totalBytes As Long =
-        SelectedForCleanup.Sum(Function(v) v.SizeBytes)
-
-        Dim totalMb = totalBytes \ (1024 * 1024)
+        SelectedForCleanup.Sum(
+            Function(v)
+                Return InstallerTools.GetDirectorySizeBytesRecursive(v.FolderPath)
+            End Function)
 
         lblSummary.Text =
-        $"Selected cleanup will free: {totalMb} MB"
+        $"Selected cleanup will free: {FormatBytes(totalBytes)}"
 
-        ' ✅ Enable Cleanup only if something is selected
         btnCleanup.Enabled = SelectedForCleanup.Count > 0
         btnUnselectAll.Enabled = SelectedForCleanup.Count > 0
 
-        ' ✅ NEW: Enable "Select All Deletable" only if something CAN be deleted
         btnSelectAllDeletable.Enabled =
         _versions.Any(Function(v) v.CanDelete)
-
 
     End Sub
 
@@ -359,5 +354,21 @@ Public Class ManageInstallerVersionsForm
 
     End Sub
 
+    Private Function FormatBytes(bytes As Long) As String
 
+        Const KB As Double = 1024
+        Const MB As Double = KB * 1024
+        Const GB As Double = MB * 1024
+
+        If bytes >= GB Then
+            Return $"{bytes / GB:F2} GB"
+        End If
+
+        If bytes >= MB Then
+            Return $"{bytes / MB:N0} MB"
+        End If
+
+        Return $"{bytes / KB:N0} KB"
+
+    End Function
 End Class
