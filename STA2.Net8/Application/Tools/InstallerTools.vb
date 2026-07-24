@@ -648,6 +648,14 @@ Public Module InstallerTools
             AppData.UpgradePath,
             "AdvCoreService"
         )
+        ' --------------------------------------------------------
+        ' Resolve newest LTS version ONCE
+        ' --------------------------------------------------------
+        Dim latestLtsVersion As InstallerVersionInfo =
+    versions.
+        Where(Function(v) v.Track = ReleaseTrack.LongTermSupport).
+        OrderByDescending(Function(v) v.Version).
+        FirstOrDefault()
 
         Dim total As Integer = versions.Count
         Dim current As Integer = 0
@@ -702,9 +710,10 @@ Public Module InstallerTools
             End If
 
             ' ====================================================
-            ' RULE 2 — LTS
+            ' RULE 2 — LATEST LTS ONLY
             ' ====================================================
-            If v.Track = ReleaseTrack.LongTermSupport Then
+            If latestLtsVersion IsNot Nothing AndAlso
+   Object.ReferenceEquals(v, latestLtsVersion) Then
 
                 v.LockReason = VersionLockReason.LongTermSupport
 
