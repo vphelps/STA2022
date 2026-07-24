@@ -437,14 +437,18 @@ Public Module InstallerTools
     Public Function GetDirectorySizeBytes(path As String) As Long
         Dim total As Long = 0
 
-        For Each file In Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-            Try
-                total += New FileInfo(file).Length
-            Catch
-                ' Ignore inaccessible files
-            End Try
-        Next
+        'For Each file In Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+        '    Try
+        '        total += New FileInfo(file).Length
+        '    Catch
+        '        ' Ignore inaccessible files
+        '    End Try
+        'Next
+        For Each file In Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly)
 
+            total += New FileInfo(file).Length
+
+        Next
         Return total
     End Function
 
@@ -539,10 +543,14 @@ Public Module InstallerTools
         Try
 
             Dim files =
-            Directory.EnumerateFiles(
-                folderPath,
-                "*",
-                SearchOption.AllDirectories).ToList()
+             Directory.EnumerateFiles(
+            folderPath,
+            "*",
+            SearchOption.TopDirectoryOnly)
+            'Directory.EnumerateFiles(
+            '    folderPath,
+            '    "*",
+            '    SearchOption.AllDirectories).ToList()
 
 
             For Each filePath As String In files
