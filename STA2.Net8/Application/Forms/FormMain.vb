@@ -2907,6 +2907,7 @@ e As System.ComponentModel.CancelEventArgs
 
         Using ofd As New OpenFileDialog()
             ofd.Filter = "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*"
+            ofd.InitialDirectory = Path.GetDirectoryName(OptionsManager.GetOptionsPath())
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 Try
