@@ -27,6 +27,8 @@ Partial Class ConfirmInstallerVersionCleanupForm
         lblSpaceSummary = New Label()
         lblMessage = New Label()
         lbVersions = New ListBox()
+        lblVersionCount = New Label()
+        lblRange = New Label()
         SuspendLayout()
         ' 
         ' btnCancel
@@ -52,7 +54,7 @@ Partial Class ConfirmInstallerVersionCleanupForm
         ' lblSpaceSummary
         ' 
         lblSpaceSummary.AutoSize = True
-        lblSpaceSummary.Location = New Point(14, 269)
+        lblSpaceSummary.Location = New Point(14, 283)
         lblSpaceSummary.Margin = New Padding(4, 0, 4, 0)
         lblSpaceSummary.Name = "lblSpaceSummary"
         lblSpaceSummary.Size = New Size(102, 15)
@@ -79,11 +81,33 @@ Partial Class ConfirmInstallerVersionCleanupForm
         lbVersions.Size = New Size(412, 184)
         lbVersions.TabIndex = 12
         ' 
+        ' lblVersionCount
+        ' 
+        lblVersionCount.AutoSize = True
+        lblVersionCount.Location = New Point(14, 268)
+        lblVersionCount.Margin = New Padding(4, 0, 4, 0)
+        lblVersionCount.Name = "lblVersionCount"
+        lblVersionCount.Size = New Size(91, 15)
+        lblVersionCount.TabIndex = 13
+        lblVersionCount.Text = "lblVersionCount"
+        ' 
+        ' lblRange
+        ' 
+        lblRange.AutoSize = True
+        lblRange.Location = New Point(14, 298)
+        lblRange.Margin = New Padding(4, 0, 4, 0)
+        lblRange.Name = "lblRange"
+        lblRange.Size = New Size(53, 15)
+        lblRange.TabIndex = 14
+        lblRange.Text = "lblRange"
+        ' 
         ' ConfirmInstallerVersionCleanupForm
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(540, 297)
+        ClientSize = New Size(540, 322)
+        Controls.Add(lblRange)
+        Controls.Add(lblVersionCount)
         Controls.Add(lbVersions)
         Controls.Add(btnCancel)
         Controls.Add(btnConfirmDelete)
@@ -106,4 +130,6 @@ Partial Class ConfirmInstallerVersionCleanupForm
     Friend WithEvents lblSpaceSummary As Label
     Friend WithEvents lblMessage As Label
     Friend WithEvents lbVersions As ListBox
+    Friend WithEvents lblVersionCount As Label
+    Friend WithEvents lblRange As Label
 End Class

@@ -35,6 +35,8 @@
         For Each v In _versionsToDelete
             lbVersions.Items.Add(v.VersionString)
         Next
+        Dim selectedCount As Integer = _versionsToDelete.Count
+        lblVersionCount.Text = $"Versions selected: {selectedCount}"
 
         Dim totalBytes As Long =
         _versionsToDelete.Sum(
@@ -52,6 +54,10 @@
             Dim totalMb As Long = totalBytes \ (1024 * 1024)
             lblSpaceSummary.Text = $"Selected cleanup will free approximately {totalMb:N0} MB of disk space."
         End If
+
+        Dim oldest = _versionsToDelete.OrderBy(Function(v) v.Version).First()
+        Dim newest = _versionsToDelete.OrderByDescending(Function(v) v.Version).First()
+        lblRange.Text = $"Version range: {oldest.VersionString} → {newest.VersionString}"
 
         btnConfirmDelete.Enabled = True
 
