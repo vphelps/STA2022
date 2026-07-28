@@ -2017,11 +2017,11 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnManageInstallerVersions.Click
-
+        Dim log As New StringBuilder()
         btnManageInstallerVersions.Enabled = False
 
         Try
-
+            log.AppendLine("Installer version management started")
             Dim installerPath As String
 
             Select Case Variables.CurrentDatabaseEnvironment
@@ -2029,7 +2029,8 @@ Public Class FormMain
                 Case DatabaseEnvironment.RemoteServer
 
                     installerPath = _options.InstallFolderPath
-
+                    log.AppendLine("Environment: RemoteServer")
+                    log.AppendLine($"Installer Path: {installerPath}")
 
                     Dim swDir As Stopwatch = Stopwatch.StartNew()
 
@@ -2041,6 +2042,8 @@ Public Class FormMain
 
                     installerPath = AppData.UpgradePath
 
+                    log.AppendLine("Environment: Local")
+                    log.AppendLine($"Installer Path: {installerPath}")
             End Select
 
 
@@ -2056,6 +2059,7 @@ Public Class FormMain
         Sub(msg)
             ProgressOverlayService.UpdateMessage(msg)
         End Sub)
+            log.AppendLine($"Discovered Versions: {versions.Count}")
 
             sw.Stop()
 
@@ -2087,6 +2091,7 @@ Public Class FormMain
 
                     End Sub)
             End Function)
+            log.AppendLine("Cleanup safety rules applied")
 
             sw.Stop()
 
@@ -2099,6 +2104,7 @@ Public Class FormMain
             Using dlg As New ManageInstallerVersionsForm(
             versions,
             installerPath)
+                log.AppendLine("Manage installer versions dialog opened")
 
                 sw.Stop()
 
@@ -2107,21 +2113,45 @@ Public Class FormMain
 
                     sw.Restart()
 
+                    log.AppendLine(
+                    $"Selected For Cleanup: {dlg.SelectedForCleanup.Count}")
+
                     Dim result =
                     InstallerTools.ExecuteInstallerVersionCleanup(
                         dlg.SelectedForCleanup)
+
+                    log.AppendLine(
+                    $"Deleted: {result.Deleted.Count}")
+
+                    log.AppendLine(
+                    $"Skipped: {result.Skipped.Count}")
+
+                    log.AppendLine(
+                    $"Failed: {result.Failed.Count}")
+
+                    log.AppendLine(
+                    $"Freed Space: {result.FreedBytes \ (1024 * 1024)} MB")
 
                     sw.Stop()
 
 
                     ShowCleanupSummary(result)
+                Else
+                    log.AppendLine("User cancelled cleanup dialog")
 
                 End If
 
             End Using
+        Catch ex As Exception
 
+            log.AppendLine(
+                $"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            Throw
         Finally
-
+            GlobalErrorHandler.LogAction(
+            "Manage Installer Versions",
+            log.ToString())
             btnManageInstallerVersions.Enabled = True
 
         End Try
