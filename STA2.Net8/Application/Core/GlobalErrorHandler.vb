@@ -38,13 +38,25 @@ Public Module GlobalErrorHandler
         End If
 
     End Sub
+    Private Function GetActivityLogFile() As String
+
+        Directory.CreateDirectory(LogFolder)
+
+        CleanupLogsOlderThan(LogRetentionDays)
+
+        Return Path.Combine(
+        LogFolder,
+        $"Activity_{DateTime.Now:yyyyMMdd}.log")
+
+    End Function
 
     Public Sub LogScriptResult(
         commandLine As String,
         scriptPath As String,
         scriptArgs As String,
         success As Boolean,
-        Optional ex As Exception = Nothing)
+        Optional ex As Exception = Nothing,
+        Optional Prefix As String = Nothing)
 
         Try
             Directory.CreateDirectory(LogFolder)
@@ -52,13 +64,13 @@ Public Module GlobalErrorHandler
             ' ✅ Enforce retention
             CleanupLogsOlderThan(LogRetentionDays)
 
-            Dim logFile As String =
-                Path.Combine(LogFolder,
-                    $"ScriptRun_{DateTime.Now:yyyyMMdd}.log")
+            Dim logFile As String = GetActivityLogFile()
 
             Using sw As New StreamWriter(logFile, True, Encoding.UTF8)
                 sw.WriteLine("----------------------------------------------------")
                 sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                sw.WriteLine("Type: Script Execution")
+                sw.WriteLine(If(String.IsNullOrWhiteSpace(Prefix), "No start data", Prefix))
                 sw.WriteLine("CommandLine: " & If(String.IsNullOrWhiteSpace(commandLine), "(none)", commandLine))
                 sw.WriteLine("ScriptPath: " & If(String.IsNullOrWhiteSpace(scriptPath), "(none)", scriptPath))
                 sw.WriteLine("ScriptArgs: " & If(String.IsNullOrWhiteSpace(scriptArgs), "(none)", scriptArgs))
@@ -188,6 +200,34 @@ Public Module GlobalErrorHandler
         End Try
 
     End Sub
+    Public Sub ClearTodayActivityLog()
+
+        Try
+
+            Dim logFile As String = Path.Combine(
+            LogFolder,
+            $"Activity_{DateTime.Now:yyyyMMdd}.log")
+
+            If File.Exists(logFile) Then
+                File.Delete(logFile)
+            End If
+
+            File.WriteAllText(
+            logFile,
+            $"Activity log cleared on {DateTime.Now:yyyy-MM-dd HH:mm:ss}{Environment.NewLine}{Environment.NewLine}")
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+            $"Unable to clear activity log.{Environment.NewLine}{ex.Message}",
+            "Clear Activity Log",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        End Try
+
+    End Sub
+
     Public Sub LogAction(actionName As String,
                      Optional details As String = Nothing)
 
@@ -196,14 +236,13 @@ Public Module GlobalErrorHandler
 
             CleanupLogsOlderThan(LogRetentionDays)
 
-            Dim logFile As String =
-                Path.Combine(LogFolder,
-                    $"Action_{DateTime.Now:yyyyMMdd}.log")
+            Dim logFile As String = GetActivityLogFile()
 
             Using sw As New StreamWriter(logFile, True, Encoding.UTF8)
 
                 sw.WriteLine("----------------------------------------------------")
                 sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                sw.WriteLine("Type: Action")
                 sw.WriteLine("Action: " & actionName)
 
                 If Not String.IsNullOrWhiteSpace(details) Then

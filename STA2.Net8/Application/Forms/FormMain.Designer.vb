@@ -133,6 +133,7 @@ Partial Class FormMain
         btnOpenLogFile = New Button()
         btnLastLogBlock = New Button()
         btnLastFailed = New Button()
+        btnClearActivityLog = New Button()
         tpFlavor = New TabPage()
         Panel3 = New Panel()
         tbFlavorHints = New TextBox()
@@ -1568,6 +1569,7 @@ Partial Class FormMain
         flpAppLogsButtons.Controls.Add(btnOpenLogFile)
         flpAppLogsButtons.Controls.Add(btnLastLogBlock)
         flpAppLogsButtons.Controls.Add(btnLastFailed)
+        flpAppLogsButtons.Controls.Add(btnClearActivityLog)
         flpAppLogsButtons.Dock = DockStyle.Fill
         flpAppLogsButtons.Location = New Point(3, 556)
         flpAppLogsButtons.Name = "flpAppLogsButtons"
@@ -1613,6 +1615,16 @@ Partial Class FormMain
         btnLastFailed.TabIndex = 36
         btnLastFailed.Text = "Last Failed"
         btnLastFailed.UseVisualStyleBackColor = True
+        ' 
+        ' btnClearActivityLog
+        ' 
+        btnClearActivityLog.Location = New Point(424, 3)
+        btnClearActivityLog.Margin = New Padding(4, 3, 4, 3)
+        btnClearActivityLog.Name = "btnClearActivityLog"
+        btnClearActivityLog.Size = New Size(97, 59)
+        btnClearActivityLog.TabIndex = 37
+        btnClearActivityLog.Text = "Clear Today's Activity Log"
+        btnClearActivityLog.UseVisualStyleBackColor = True
         ' 
         ' tpFlavor
         ' 
@@ -3750,4 +3762,5 @@ Partial Class FormMain
     Friend WithEvents tsmiSeparatorDefaultAction As ToolStripSeparator
     Friend WithEvents tsmiDefaultStartDatabase As ToolStripMenuItem
     Friend WithEvents tsmiDefaultCopyCommandLine As ToolStripMenuItem
+    Friend WithEvents btnClearActivityLog As Button
 End Class

@@ -1816,36 +1816,6 @@ Public Class FormMain
 
     End Sub
 
-    'Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
-
-    '    Dim baseInstallerPath As String = AppData.UpgradePath
-
-    '    Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
-    '    If latestFolder Is Nothing Then
-    '        MessageBox.Show("No valid installer folders found.")
-    '        Return
-    '    End If
-
-    '    Dim installerPath = FindInstallerFile(latestFolder)
-    '    If String.IsNullOrWhiteSpace(installerPath) OrElse
-    '   Not IO.File.Exists(installerPath) Then
-
-    '        MessageBox.Show("Installer not found in: " & latestFolder.FullName)
-    '        Return
-    '    End If
-
-    '    ' Optional: run as admin
-    '    Dim psi As New ProcessStartInfo(installerPath) With {
-    '    .UseShellExecute = True,
-    '    .Arguments = tbSetupSwitches.Text,
-    '    .Verb = "runas"
-    '}
-    '    Process.Start(psi)
-
-    '    _uiStateController.Refresh()
-
-
-    'End Sub
     Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
 
         Dim log As New System.Text.StringBuilder()
@@ -2157,13 +2127,23 @@ _options)
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
+        Dim log As New System.Text.StringBuilder()
         Dim Executable As String = "AdvUpgrade"
         Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
-
-        If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
-        If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
-
         Dim temp As String = ""
+
+        If Version = AppInstallState.InstalledX86 Then
+            Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
+            temp = "x86"
+        End If
+        If Version = AppInstallState.InstalledX64 Then
+            Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
+            temp = "x64"
+        End If
+        log.AppendLine($"Version detected is {temp}")
+        log.AppendLine($"Exexutable path is {Executable}")
+
+        temp = ""
         Dim startinfo As ProcessStartInfo = New ProcessStartInfo(Executable)
         startinfo.Arguments = ""
         startinfo.FileName = Executable
@@ -2172,9 +2152,15 @@ _options)
         If cbAdvUpgradeQuiet.Checked Then temp += AdvUpgradeConstants.Quiet + " "
         If cbAdvUpgradeNoSetup.Checked Then temp += AdvUpgradeConstants.NoSetup
         startinfo.Arguments = temp
+        log.AppendLine($"Arguments are {temp}")
 
 
         Process.Start(startinfo)
+
+        GlobalErrorHandler.LogAction(
+           "Launch AdvUpgrade",
+           log.ToString())
+
     End Sub
 
     Private Sub btnSaveApplicationInfoCSV_Click(sender As Object, e As EventArgs) Handles btnSaveApplicationInfoCSV.Click, btnSaveWebOptionsCSV.Click, btnSaveAppotionsCSV.Click
@@ -2775,15 +2761,16 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub btnUpdateShiftDate_Click(sender As Object, e As EventArgs) Handles btnUpdateShiftDate.Click
+        Dim log As New System.Text.StringBuilder()
 
         Try
+            log.AppendLine("Executing ChangeShiftDate stored procedure")
             Dim connectionString = ConfigValues.ConnectionString()
 
             DatabaseCoordinator.ExecuteStoredProcedure(
             connectionString,
             "ChangeShiftDate"
         )
-
         Catch ex As SqlException
 
             ' ✅ ONLY handle expected case
@@ -2791,8 +2778,10 @@ e As System.ComponentModel.CancelEventArgs
 
                 If ex.Message.Contains("PK_InvSnapShot") Then
                     MessageBox.Show("Conflict in InvSnapShot Table", "Docker Data")
+                    log.AppendLine("ERROR: InvSnapShot table conflict - " & Environment.NewLine & ex.Message)
                 Else
-                    MessageBox.Show("Shift date already exists.", "Duplicate")
+                    MessageBox.Show("Shift Date already exists.", "Duplicate")
+                    log.AppendLine("ERROR: Shift Date already exists - " & Environment.NewLine & ex.Message)
                 End If
 
                 Return ' ✅ stop propagation ONLY for this case
@@ -2801,7 +2790,11 @@ e As System.ComponentModel.CancelEventArgs
 
             ' ✅ IMPORTANT: let everything else go to GlobalErrorHandler
             Throw
+        Finally
 
+            GlobalErrorHandler.LogAction(
+            "SQL Transaction (EXEC ChangeShiftDate)",
+            log.ToString())
         End Try
 
     End Sub
@@ -3771,6 +3764,28 @@ e As System.ComponentModel.CancelEventArgs
 ) Handles tsmiStartDatabase.Click
 
         Await ExecuteStartDatabaseAsync()
+
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+        Dim x As Integer = 0
+        Dim y As Integer = 1 / x
+
+    End Sub
+
+    Private Sub btnClearActivityLog_Click(
+    sender As Object,
+    e As EventArgs) Handles btnClearActivityLog.Click
+
+
+
+        GlobalErrorHandler.ClearTodayActivityLog()
+
+        UIHelpers.TimedInfoPrompt(
+message:="Today's activity log has been cleared.",
+title:="Activity Log",
+timeoutSeconds:=10)
 
     End Sub
 End Class

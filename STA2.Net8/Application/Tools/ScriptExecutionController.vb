@@ -26,6 +26,9 @@
     triggerButton As Button,
     runningStatusText As String
 ) As Task
+        Dim strTemp As String = ""
+        Dim startTime As DateTime = DateTime.Now
+        Dim endTime As DateTime
 
         _scriptRunning = True
         _statusLocked = True
@@ -57,19 +60,17 @@
 
             Dim scriptArgs As String
             ' ✅ Build args
-            'If triggerButton.Equals(_form.btnRunDatabaseStartLive) Then
-            '    scriptArgs = BuildScriptArgs(options, True)
-            'Else
-            '    scriptArgs = BuildScriptArgs(options, False)
-            'End If
-            scriptArgs = BuildScriptArgs(options)
 
+            scriptArgs = BuildScriptArgs(options)
 
             ' ✅ Build full command (for logging)
             Dim fullCommandLine As String = BuildCommandLine(options)
 
             Try
                 ' ✅ Execute script
+                startTime = DateTime.Now
+                strTemp = $"Script started at {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}{Environment.NewLine}"
+
                 Await PowerShellRunner.RunLiveScriptAsync(
                 options:=_options,
                 liveOutputManager:=_liveOutputManager,
@@ -82,11 +83,15 @@
             )
 
                 ' ✅ SUCCESS LOG
+                endTime = DateTime.Now
+                Dim seconds As Double = (endTime - startTime).TotalSeconds
+                strTemp &= $"Script completed successfully at {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} (Duration: {seconds:F2} seconds)"
                 STA2.Net8.GlobalErrorHandler.LogScriptResult(
                 commandLine:=fullCommandLine,
                 scriptPath:=options.ScriptPath,
                 scriptArgs:=scriptArgs,
-                success:=True
+                success:=True,
+                Prefix:=strTemp
             )
 
             Catch ex As Exception
