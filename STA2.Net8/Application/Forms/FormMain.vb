@@ -1485,13 +1485,150 @@ Public Class FormMain
             End If
         End Using
     End Sub
+    '    Private Sub btnRepoMain_Click(
+    '    sender As Object,
+    '    e As EventArgs
+    ') Handles btnRepoMain.Click
+
+    '        Try
+    '            If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
+
+    '                Dim response As DialogResult
+
+    '                If _options.RepoMainPromptEnabled Then
+
+    '                    response = UIHelpers.TimedYesNoPrompt(
+    '                    message:=
+    '                        "There are uncommitted changes." & Environment.NewLine &
+    '                        "Discard them and switch to main?",
+    '                    title:="Confirm",
+    '                    timeoutSeconds:=If(_options.RepoMainPromptTimeoutSeconds > 0,
+    '                                       _options.RepoMainPromptTimeoutSeconds,
+    '                                       10),
+    '                    defaultChoice:=If(_options.RepoMainPromptAction,
+    '                                      DialogResult.Yes,
+    '                                      DialogResult.No))
+
+    '                Else
+    '                    ' ✅ Prompt disabled → auto-confirm
+    '                    response = DialogResult.Yes
+
+    '                End If
+
+    '                If response <> DialogResult.Yes Then
+    '                    Return
+    '                End If
+
+    '                RepoTools.DiscardAllChanges(_options.RepoFolderPath)
+    '            End If
+
+    '            RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
+
+    '            UIHelpers.TimedInfoPrompt(
+    '            message:="Switched to main branch.",
+    '            title:="Repository",
+    '            timeoutSeconds:=10)
+
+    '        Catch ex As Exception
+    '            UIHelpers.TimedErrorPrompt(
+    '            message:="Git Error",
+    '            title:="Repository")
+    '        End Try
+
+    '    End Sub
+
+    '    Private Sub btnRepoDiscardChanges_Click(
+    '    sender As Object,
+    '    e As EventArgs
+    ') Handles btnRepoDiscardChanges.Click
+
+    '        If _options Is Nothing OrElse
+    '       String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+    '            MessageBox.Show(
+    '            "Repository path is not configured.",
+    '            "Discard Changes",
+    '            MessageBoxButtons.OK,
+    '            MessageBoxIcon.Warning)
+    '            Return
+    '        End If
+
+    '        Dim repoPath As String = _options.RepoFolderPath
+
+    '        ' Optional preview
+    '        Dim preview As String = RepoTools.PreviewDiscard(repoPath)
+
+    '        Dim message As String =
+    '        "This will permanently discard ALL local changes in the repository:" &
+    '        Environment.NewLine & Environment.NewLine &
+    '        repoPath & Environment.NewLine & Environment.NewLine &
+    '        If(String.IsNullOrWhiteSpace(preview),
+    '           "No untracked files will be removed.",
+    '           "The following untracked files will be deleted:" &
+    '           Environment.NewLine & preview) &
+    '        Environment.NewLine & Environment.NewLine &
+    '        "This action CANNOT be undone." &
+    '        Environment.NewLine & Environment.NewLine &
+    '        "Continue?"
+
+    '        Dim response As DialogResult
+
+    '        If _options.RepoDiscardPromptEnabled Then
+
+    '            response = UIHelpers.TimedYesNoPrompt(
+    '            message:=message,
+    '            title:="Discard All Changes",
+    '            timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
+    '                               _options.RepoDiscardPromptTimeoutSeconds,
+    '                               30),
+    '            defaultChoice:=If(_options.RepoDiscardPromptAction,
+    '                              DialogResult.Yes,
+    '                              DialogResult.No))
+
+    '        Else
+    '            ' ✅ Prompt disabled → automatically approve action
+    '            response = DialogResult.Yes
+    '        End If
+
+    '        If response <> DialogResult.Yes Then Return
+
+    '        Try
+    '            Cursor.Current = Cursors.WaitCursor
+    '            btnRepoDiscardChanges.Enabled = False
+
+    '            RepoTools.DiscardAllChanges(repoPath)
+
+    '            UIHelpers.TimedInfoPrompt(
+    '            message:="All local changes were discarded successfully.",
+    '            title:="Discard Complete",
+    '            timeoutSeconds:=10)
+
+    '        Catch ex As Exception
+    '            UIHelpers.TimedErrorPrompt(
+    '            message:="Git Error",
+    '            title:="Repository")
+
+    '        Finally
+    '            btnRepoDiscardChanges.Enabled = True
+    '            Cursor.Current = Cursors.Default
+    '        End Try
+
+    '    End Sub
     Private Sub btnRepoMain_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRepoMain.Click
 
+        GlobalErrorHandler.LogAction(
+        "Repo Main",
+        $"Requested switch to main branch. Repo={_options.RepoFolderPath}")
+
         Try
+
             If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
+
+                GlobalErrorHandler.LogAction(
+                "Repo Main",
+                "Uncommitted changes detected.")
 
                 Dim response As DialogResult
 
@@ -1510,19 +1647,38 @@ Public Class FormMain
                                       DialogResult.No))
 
                 Else
-                    ' ✅ Prompt disabled → auto-confirm
+
                     response = DialogResult.Yes
+
+                    GlobalErrorHandler.LogAction(
+                    "Repo Main",
+                    "Prompt disabled. Auto-approved.")
 
                 End If
 
                 If response <> DialogResult.Yes Then
+
+                    GlobalErrorHandler.LogAction(
+                    "Repo Main",
+                    "User cancelled operation.")
+
                     Return
+
                 End If
 
+                GlobalErrorHandler.LogAction(
+                "Repo Main",
+                "Discarding local changes before switching branch.")
+
                 RepoTools.DiscardAllChanges(_options.RepoFolderPath)
+
             End If
 
             RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
+
+            GlobalErrorHandler.LogAction(
+            "Repo Main",
+            "Successfully switched to main branch.")
 
             UIHelpers.TimedInfoPrompt(
             message:="Switched to main branch.",
@@ -1530,13 +1686,21 @@ Public Class FormMain
             timeoutSeconds:=10)
 
         Catch ex As Exception
+
+            GlobalErrorHandler.LogScriptResult(
+            commandLine:="Repository Action",
+            scriptPath:="btnRepoMain_Click",
+            scriptArgs:=$"Repo={_options.RepoFolderPath}",
+            success:=False,
+            ex:=ex)
+
             UIHelpers.TimedErrorPrompt(
             message:="Git Error",
             title:="Repository")
+
         End Try
 
     End Sub
-
     Private Sub btnRepoDiscardChanges_Click(
     sender As Object,
     e As EventArgs
@@ -1544,38 +1708,48 @@ Public Class FormMain
 
         If _options Is Nothing OrElse
        String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+
+            GlobalErrorHandler.LogAction(
+            "Repo Discard Changes",
+            "Repository path not configured.")
+
             MessageBox.Show(
             "Repository path is not configured.",
             "Discard Changes",
             MessageBoxButtons.OK,
             MessageBoxIcon.Warning)
+
             Return
+
         End If
 
         Dim repoPath As String = _options.RepoFolderPath
 
-        ' Optional preview
+        GlobalErrorHandler.LogAction(
+        "Repo Discard Changes",
+        $"Requested discard. Repo={repoPath}")
+
         Dim preview As String = RepoTools.PreviewDiscard(repoPath)
 
-        Dim message As String =
-        "This will permanently discard ALL local changes in the repository:" &
-        Environment.NewLine & Environment.NewLine &
-        repoPath & Environment.NewLine & Environment.NewLine &
-        If(String.IsNullOrWhiteSpace(preview),
-           "No untracked files will be removed.",
-           "The following untracked files will be deleted:" &
-           Environment.NewLine & preview) &
-        Environment.NewLine & Environment.NewLine &
-        "This action CANNOT be undone." &
-        Environment.NewLine & Environment.NewLine &
-        "Continue?"
-
+        ' existing message code
+        Dim promptMessage As String =
+    "This will permanently discard ALL local changes in the repository:" &
+    Environment.NewLine & Environment.NewLine &
+    repoPath & Environment.NewLine & Environment.NewLine &
+    If(String.IsNullOrWhiteSpace(preview),
+       "No untracked files will be removed.",
+       "The following untracked files will be deleted:" &
+       Environment.NewLine & preview) &
+    Environment.NewLine & Environment.NewLine &
+    "This action CANNOT be undone." &
+    Environment.NewLine & Environment.NewLine &
+    "Continue?"
         Dim response As DialogResult
 
         If _options.RepoDiscardPromptEnabled Then
 
             response = UIHelpers.TimedYesNoPrompt(
-            message:=message,
+            message:=promptMessage,
             title:="Discard All Changes",
             timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
                                _options.RepoDiscardPromptTimeoutSeconds,
@@ -1585,17 +1759,35 @@ Public Class FormMain
                               DialogResult.No))
 
         Else
-            ' ✅ Prompt disabled → automatically approve action
+
             response = DialogResult.Yes
+
+            GlobalErrorHandler.LogAction(
+            "Repo Discard Changes",
+            "Prompt disabled. Auto-approved.")
+
         End If
 
-        If response <> DialogResult.Yes Then Return
+        If response <> DialogResult.Yes Then
+
+            GlobalErrorHandler.LogAction(
+            "Repo Discard Changes",
+            "User cancelled operation.")
+
+            Return
+
+        End If
 
         Try
+
             Cursor.Current = Cursors.WaitCursor
             btnRepoDiscardChanges.Enabled = False
 
             RepoTools.DiscardAllChanges(repoPath)
+
+            GlobalErrorHandler.LogAction(
+            "Repo Discard Changes",
+            "Repository changes discarded successfully.")
 
             UIHelpers.TimedInfoPrompt(
             message:="All local changes were discarded successfully.",
@@ -1603,46 +1795,120 @@ Public Class FormMain
             timeoutSeconds:=10)
 
         Catch ex As Exception
+
+            GlobalErrorHandler.LogScriptResult(
+            commandLine:="Repository Action",
+            scriptPath:="btnRepoDiscardChanges_Click",
+            scriptArgs:=$"Repo={repoPath}",
+            success:=False,
+            ex:=ex)
+
             UIHelpers.TimedErrorPrompt(
             message:="Git Error",
             title:="Repository")
 
         Finally
+
             btnRepoDiscardChanges.Enabled = True
             Cursor.Current = Cursors.Default
+
         End Try
 
     End Sub
+
+    'Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
+
+    '    Dim baseInstallerPath As String = AppData.UpgradePath
+
+    '    Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+    '    If latestFolder Is Nothing Then
+    '        MessageBox.Show("No valid installer folders found.")
+    '        Return
+    '    End If
+
+    '    Dim installerPath = FindInstallerFile(latestFolder)
+    '    If String.IsNullOrWhiteSpace(installerPath) OrElse
+    '   Not IO.File.Exists(installerPath) Then
+
+    '        MessageBox.Show("Installer not found in: " & latestFolder.FullName)
+    '        Return
+    '    End If
+
+    '    ' Optional: run as admin
+    '    Dim psi As New ProcessStartInfo(installerPath) With {
+    '    .UseShellExecute = True,
+    '    .Arguments = tbSetupSwitches.Text,
+    '    .Verb = "runas"
+    '}
+    '    Process.Start(psi)
+
+    '    _uiStateController.Refresh()
+
+
+    'End Sub
     Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
 
-        Dim baseInstallerPath As String = AppData.UpgradePath
+        Dim log As New System.Text.StringBuilder()
 
-        Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
-        If latestFolder Is Nothing Then
-            MessageBox.Show("No valid installer folders found.")
-            Return
-        End If
+        Try
 
-        Dim installerPath = FindInstallerFile(latestFolder)
-        If String.IsNullOrWhiteSpace(installerPath) OrElse
-       Not IO.File.Exists(installerPath) Then
+            log.AppendLine("Button clicked")
 
-            MessageBox.Show("Installer not found in: " & latestFolder.FullName)
-            Return
-        End If
+            Dim baseInstallerPath As String = AppData.UpgradePath
 
-        ' Optional: run as admin
-        Dim psi As New ProcessStartInfo(installerPath) With {
-        .UseShellExecute = True,
-        .Arguments = tbSetupSwitches.Text,
-        .Verb = "runas"
-    }
-        Process.Start(psi)
+            log.AppendLine($"Searching for installer in {baseInstallerPath}")
 
-        _uiStateController.Refresh()
+            Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+            If latestFolder Is Nothing Then
+                log.AppendLine("No valid installer folders found")
+                MessageBox.Show("No valid installer folders found.")
+                Return
+            End If
 
+            log.AppendLine($"Latest folder: {latestFolder.FullName}")
+
+            Dim installerPath = FindInstallerFile(latestFolder)
+            If String.IsNullOrWhiteSpace(installerPath) OrElse
+           Not IO.File.Exists(installerPath) Then
+                log.AppendLine($"Installer not found in: {latestFolder.FullName}")
+                MessageBox.Show("Installer not found in: " & latestFolder.FullName)
+                Return
+            End If
+
+            log.AppendLine($"Launching installer: {installerPath}")
+            log.AppendLine($"Arguments: {tbSetupSwitches.Text}")
+
+            Dim psi As New ProcessStartInfo(installerPath) With {
+            .UseShellExecute = True,
+            .Arguments = tbSetupSwitches.Text,
+            .Verb = "runas"
+        }
+            Process.Start(psi)
+
+            log.AppendLine("Installer launched successfully")
+
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            MessageBox.Show(
+            ex.Message,
+            "Installer Launch Failed",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Launch Latest Installer",
+            log.ToString())
+
+        End Try
 
     End Sub
+
     Private Async Sub btnSetupInstall_Click(
     sender As Object,
     e As EventArgs

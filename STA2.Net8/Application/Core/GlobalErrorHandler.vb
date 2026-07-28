@@ -188,5 +188,36 @@ Public Module GlobalErrorHandler
         End Try
 
     End Sub
+    Public Sub LogAction(actionName As String,
+                     Optional details As String = Nothing)
 
+        Try
+            Directory.CreateDirectory(LogFolder)
+
+            CleanupLogsOlderThan(LogRetentionDays)
+
+            Dim logFile As String =
+                Path.Combine(LogFolder,
+                    $"Action_{DateTime.Now:yyyyMMdd}.log")
+
+            Using sw As New StreamWriter(logFile, True, Encoding.UTF8)
+
+                sw.WriteLine("----------------------------------------------------")
+                sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                sw.WriteLine("Action: " & actionName)
+
+                If Not String.IsNullOrWhiteSpace(details) Then
+                    sw.WriteLine("Details: " & details)
+                End If
+
+                sw.WriteLine("----------------------------------------------------")
+                sw.WriteLine()
+
+            End Using
+
+        Catch
+            ' Never allow logging to throw
+        End Try
+
+    End Sub
 End Module
