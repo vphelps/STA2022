@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Text
 
 Public Class ConnectionProfilesForm
     Public Property ConnectionChanged As Boolean
@@ -64,6 +65,7 @@ Public Class ConnectionProfilesForm
     sender As Object,
     e As EventArgs
 ) Handles btnSaveCurrentAs.Click
+        Dim log As New StringBuilder()
 
         Dim profileName As String =
             InputBox(
@@ -80,6 +82,7 @@ Public Class ConnectionProfilesForm
                 SaveCurrentProfile(profileName)
 
             LoadProfiles()
+            log.AppendLine($"Created profile: {profileName}")
 
             MessageBox.Show(
                 $"Profile '{profileName}' created successfully.",
@@ -96,13 +99,15 @@ Public Class ConnectionProfilesForm
                 MessageBoxIcon.Warning)
 
         Catch ex As Exception
+            log.AppendLine($"ERROR: {ex.Message}")
 
             MessageBox.Show(
                 ex.Message,
                 "Unable to Save Profile",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
-
+        Finally
+            GlobalErrorHandler.LogAction("Save Connection Profile", log.ToString())
         End Try
 
     End Sub
@@ -110,6 +115,7 @@ Public Class ConnectionProfilesForm
     sender As Object,
     e As EventArgs
 ) Handles btnApply.Click
+        Dim log As New StringBuilder()
 
         If lstProfiles.SelectedItem Is Nothing Then
 
@@ -127,7 +133,7 @@ Public Class ConnectionProfilesForm
             lstProfiles.SelectedItem.ToString
 
         Try
-
+            log.AppendLine($"Activating profile: {profileName}")
             ConnectionProfileManager.ActivateProfile(profileName)
 
             RefreshCurrentConnection()
@@ -137,13 +143,17 @@ Public Class ConnectionProfilesForm
             Close()
 
         Catch ex As Exception
+            log.AppendLine($"ERROR: {ex.Message}")
 
             MessageBox.Show(
                 ex.Message,
                 "Activation Failed",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
-
+        Finally
+            GlobalErrorHandler.LogAction(
+            "Activate Connection Profile",
+            log.ToString())
         End Try
 
     End Sub
@@ -151,7 +161,7 @@ Public Class ConnectionProfilesForm
     sender As Object,
     e As EventArgs
 ) Handles btnDelete.Click
-
+        Dim log As New StringBuilder()
         If lstProfiles.SelectedItem Is Nothing Then
 
             MessageBox.Show(
@@ -203,6 +213,7 @@ Public Class ConnectionProfilesForm
         End If
 
         Try
+            log.AppendLine($"Delete profile: {profileName}")
 
             ConnectionProfileManager.DeleteProfile(profileName)
 
@@ -223,7 +234,10 @@ Public Class ConnectionProfilesForm
                 "Delete Failed",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
-
+        Finally
+            GlobalErrorHandler.LogAction(
+    "Delete Connection Profile",
+    log.ToString())
         End Try
 
     End Sub
@@ -364,9 +378,13 @@ Public Class ConnectionProfilesForm
             Return
 
         End If
+        Dim log As New StringBuilder()
 
         Try
 
+            log.AppendLine($"Rename requested")
+            log.AppendLine($"Old Name: {oldName}")
+            log.AppendLine($"New Name: {newName}")
             ConnectionProfileManager.RenameProfile(
                 oldName,
                 newName)
@@ -403,9 +421,10 @@ Public Class ConnectionProfilesForm
                 "Rename Failed",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
-
+            log.AppendLine($"Error renaming connection profile: {ex.Message}")
+        Finally
+            GlobalErrorHandler.LogAction("Rename Connection Profile", log.ToString())
         End Try
-
     End Sub
 
 

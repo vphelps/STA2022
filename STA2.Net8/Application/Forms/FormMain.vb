@@ -4,6 +4,7 @@ Imports System.Management
 Imports System.Runtime.Intrinsics
 Imports System.Security.Principal
 Imports System.ServiceProcess
+Imports System.Text
 Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
 Imports STA2.Net8.AppOptions
@@ -3647,17 +3648,27 @@ e As System.ComponentModel.CancelEventArgs
     sender As Object,
     e As EventArgs
 ) Handles btnConnectionProfiles.Click
+        Dim log As New StringBuilder()
 
-        Using dlg As New ConnectionProfilesForm()
+        Try
+            Using dlg As New ConnectionProfilesForm()
+                dlg.ShowDialog(Me)
 
-            dlg.ShowDialog(Me)
+                If dlg.ConnectionChanged Then
+                    Dim strTemp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
-            If dlg.ConnectionChanged Then
+                    log.AppendLine($"TimeStamp:  {strTemp} | Restarting: {_options.WindowTitle} to apply new connection profile")
+                    GlobalErrorHandler.LogAction("Connection Profile (PFSConnect.ini) change", log.ToString())
 
-                ReloadApplication()
-            End If
+                    ReloadApplication()
+                End If
+            End Using
 
-        End Using
+        Catch ex As Exception
+            Throw
+
+        End Try
+
     End Sub
     Private Sub btnInstallPathFallback_Click(sender As Object, e As EventArgs) Handles btnInstallPathFallback.Click
 
@@ -3767,12 +3778,6 @@ e As System.ComponentModel.CancelEventArgs
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
-
-        Dim x As Integer = 0
-        Dim y As Integer = 1 / x
-
-    End Sub
 
     Private Sub btnClearActivityLog_Click(
     sender As Object,
@@ -3786,6 +3791,23 @@ e As System.ComponentModel.CancelEventArgs
 message:="Today's activity log has been cleared.",
 title:="Activity Log",
 timeoutSeconds:=10)
+
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+        Dim x As Integer = 0
+        Dim y As Integer = 1 / x
+
+    End Sub
+    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
+        Dim log As New StringBuilder()
+        Dim strTemp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+
+        log.AppendLine($"TimeStamp:  {strTemp} | Restarting: {_options.WindowTitle} to apply new connection profile")
+        GlobalErrorHandler.LogAction(
+            "Testing Button 2",
+            log.ToString())
 
     End Sub
 End Class

@@ -242,7 +242,6 @@ Public Module GlobalErrorHandler
 
                 sw.WriteLine("----------------------------------------------------")
                 sw.WriteLine("Time: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
-                sw.WriteLine("Type: Action")
                 sw.WriteLine("Action: " & actionName)
 
                 If Not String.IsNullOrWhiteSpace(details) Then
