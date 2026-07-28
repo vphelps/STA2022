@@ -1111,7 +1111,8 @@ Public Class FormMain
             BeginInvoke(Sub()
                             ForceLiveOutputRedraw()
                         End Sub)
-
+        ElseIf tcSTA.SelectedTab Is tpLogs Then
+            RefreshLogFromTabName()
         End If
 
     End Sub
@@ -4024,20 +4025,35 @@ timeoutSeconds:=10)
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+    Private Sub RefreshLogFromTabName()
 
-        Dim x As Integer = 0
-        Dim y As Integer = 1 / x
+        Const prefix As String = "Logs: "
+
+        If Not tpLogs.Text.StartsWith(prefix) Then Return
+        Dim fileName As String = tpLogs.Text.Substring(prefix.Length).Trim()
+
+        If String.IsNullOrWhiteSpace(fileName) Then Return
+        Dim fullPath As String = Path.Combine(GlobalErrorHandler.LogFolder, fileName)
+
+        If Not File.Exists(fullPath) Then Return
+
+        Try
+
+            Dim currentPosition = rtbLogs.SelectionStart
+
+            rtbLogs.Text = File.ReadAllText(fullPath)
+            rtbLogs.SelectionStart = Math.Min(currentPosition, rtbLogs.TextLength)
+            rtbLogs.ScrollToCaret()
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+            "Failed to refresh log file:" &
+            Environment.NewLine &
+            ex.Message)
+
+        End Try
 
     End Sub
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        Dim log As New StringBuilder()
-        Dim strTemp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
-        log.AppendLine($"TimeStamp:  {strTemp} | Restarting: {_options.WindowTitle} to apply new connection profile")
-        GlobalErrorHandler.LogAction(
-            "Testing Button 2",
-            log.ToString())
-
-    End Sub
 End Class
