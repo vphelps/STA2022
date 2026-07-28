@@ -1885,6 +1885,8 @@ Public Class FormMain
     e As EventArgs
 ) Handles btnSetupInstall.Click
 
+        Dim log As New System.Text.StringBuilder()
+
         btnSetupInstall.Enabled = False
 
         _executionStatusLocked = True
@@ -1904,19 +1906,27 @@ Public Class FormMain
         End Sub)
 
         Try
+
+            log.AppendLine("Setup installation started")
+
             ' ✅ Stop QA script before install (if running)
+            log.AppendLine("Stopping QA API if running")
+
             SetExecutionStatus("Stopping QA API (if running)...", force:=True)
 
             Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
 
-            ' Resolve setup.zip
+            log.AppendLine("QA API stop request completed")
 
+            ' Resolve setup.zip
             Dim zipPath As String =
             Await InstallerTools.ResolveSetupZipAsync(
                 zipPath:=AppData.UpgradePath,
                 promptForZip:=True)
 
-            ' Extract ZIP -> AppData.UpgradePath\Version <InstallerVersion>
+            log.AppendLine($"Setup ZIP: {zipPath}")
+
+            ' Extract ZIP
             SetExecutionStatus("Preparing extraction...", force:=True)
 
             Dim extractDir As String =
@@ -1926,46 +1936,59 @@ Public Class FormMain
                 installerName:="AdvantageSetup-x64.exe",
                 progressPercent:=percentProgress,
                 progressText:=textProgress,
-_options)
+                _options)
 
-            ' If user chose Run Existing, this path already existed
+            log.AppendLine($"Extract Directory: {extractDir}")
+
+            ' If user chose Run Existing
             If Directory.Exists(extractDir) AndAlso
-   extractDir.EndsWith("Version " & AppData.InstalledVersion, StringComparison.OrdinalIgnoreCase) Then
+           extractDir.EndsWith(
+                "Version " & AppData.InstalledVersion,
+                StringComparison.OrdinalIgnoreCase) Then
 
                 _runExistingVersionPath = extractDir
+
+                log.AppendLine("Using existing extracted version")
             End If
 
-            ' 🔒 stop queued extraction text updates
             showTextProgress = False
 
-            ' Locate installer in the versioned directory
+            ' Locate installer
             Dim installerPath As String =
             InstallerTools.FindInstaller(
                 baseDir:=extractDir,
                 installerName:="AdvantageSetup-x64.exe",
                 recursive:=True)
 
-            ' Stable installer-running text
+            log.AppendLine($"Installer Path: {installerPath}")
+
             SetExecutionStatus("Running Installer", force:=True)
 
-            ' Allow UI repaint before UAC / installer steals focus
             Await Task.Yield()
 
-            ' Run installer asynchronously
+            log.AppendLine("Launching installer")
+
             Await InstallerTools.RunInstallerAsync(
             installerPath,
             "-skipcoreservicescan -skipcloudsyncservicescan PERFORMDBUPGRADE=1",
             elevate:=True,
             progressText:=textProgress)
 
+            log.AppendLine("Installer completed successfully")
+
             SetExecutionStatus("Installation complete.", force:=True)
             Await Task.Delay(1500)
 
         Catch ex As FileNotFoundException
-            ' User canceled ZIP selection → silent exit
+
+            log.AppendLine("Installation cancelled by user during ZIP selection")
 
         Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.Message}")
+
             SetExecutionStatus("Installation failed.", force:=True)
+
             MessageBox.Show(
             ex.Message,
             "Setup Installation Error",
@@ -1973,12 +1996,19 @@ _options)
             MessageBoxIcon.Error)
 
         Finally
+
+            GlobalErrorHandler.LogAction(
+            "Setup Installation",
+            log.ToString())
+
             showTextProgress = False
             _executionStatusLocked = False
 
             SetExecutionStatus("", force:=True)
             btnSetupInstall.Enabled = True
+
         End Try
+
         _uiStateController.Refresh()
 
     End Sub
@@ -2857,10 +2887,7 @@ e As System.ComponentModel.CancelEventArgs
         End Select
 
     End Sub
-    Private Async Sub btnRunApplyFlavorLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunApplyFlavorLive.Click
+    Private Async Sub btnRunApplyFlavorLive_Click(sender As Object, e As EventArgs) Handles btnRunApplyFlavorLive.Click
 
         Dim flavors = GetSelectedAndDefaultFlavors()
 
@@ -3068,65 +3095,136 @@ e As System.ComponentModel.CancelEventArgs
         End If
     End Sub
 
-    Private Async Sub tsmiStartDbBackup_Click(sender As Object, e As EventArgs) Handles tsmiStartDbBackup.Click
-        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
-            MessageBox.Show(
+    Private Async Sub tsmiStartDbBackup_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiStartDbBackup.Click
+
+        Dim log As New System.Text.StringBuilder()
+
+        Try
+
+            log.AppendLine("Database start with backup requested")
+
+            If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+
+                log.AppendLine("Missing backup path")
+
+                MessageBox.Show(
                 "Please enter a backup path.",
                 "Missing Backup Path",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning)
-            Return
-        End If
 
-        Dim backupPath As String = tbBackupPathOverride.Text.Trim()
-        backupPath = String.Join("\", backupPath, "00Pathfinder.bak")
+                Return
 
-        ' Build argument string (Backup + Training DB)
-        Dim args As String = $"-BackupPath ""{backupPath}"" -IncludeTrainingDB"
+            End If
 
+            Dim backupPath As String = tbBackupPathOverride.Text.Trim()
+            backupPath = String.Join("\", backupPath, "00Pathfinder.bak")
 
-        Await RunScriptAsync(
+            log.AppendLine($"Backup Path: {backupPath}")
+
+            ' Build argument string (Backup + Training DB)
+            Dim args As String =
+            $"-BackupPath ""{backupPath}"" -IncludeTrainingDB"
+
+            log.AppendLine($"Arguments: {args}")
+
+            Await RunScriptAsync(
             scriptPath:=tbDatabaseStartDefault.Text,
             trigger:=btnTest1,
             statusText:="Starting database (test with backup + training DB)…",
             overrideArgs:=args
         )
 
-        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            log.AppendLine("RunScriptAsync completed successfully")
+
+            DatabaseCoordinator.EvaluateDatabaseAvailability(
             form:=Me,
             connectionString:=ConfigValues.ConnectionString,
             configuredContainerName:=_options?.SqlContainerName
         )
 
-        _uiStateController.Refresh()
+            log.AppendLine("Database availability evaluated")
+
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            Throw
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Start Database With Backup",
+            log.ToString())
+
+        End Try
 
     End Sub
+    Private Async Sub tsmiBackupDb_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiBackupDb.Click
 
-    Private Async Sub tsmiBackupDb_Click(sender As Object, e As EventArgs) Handles tsmiBackupDb.Click
-        Dim script As String = _options.BackupScriptPath
+        Dim log As New System.Text.StringBuilder()
 
+        Try
 
-        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
-            MessageBox.Show(
-            "Please enter a backup directory.",
-            "Missing Directory",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Warning)
-            Return
-        End If
+            log.AppendLine("Database backup requested")
 
-        Dim directoryPath As String = tbBackupPathOverride.Text.Trim()
+            Dim script As String = _options.BackupScriptPath
 
-        ' Build argument string
-        Dim args As String = $"-Directory ""{directoryPath}"""
+            log.AppendLine($"Script: {script}")
 
-        Await RunScriptAsync(
-        scriptPath:=script,  ' or use a textbox if you have one
-        trigger:=btnTest2,
-        statusText:="Backing up database (force)…",
-        flavors:=Nothing,
-        overrideArgs:=args
-    )
+            If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+
+                log.AppendLine("Missing backup directory")
+
+                MessageBox.Show(
+                "Please enter a backup directory.",
+                "Missing Directory",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+
+                Return
+
+            End If
+
+            Dim directoryPath As String = tbBackupPathOverride.Text.Trim()
+
+            log.AppendLine($"Directory: {directoryPath}")
+
+            Dim args As String = $"-Directory ""{directoryPath}"""
+
+            log.AppendLine($"Arguments: {args}")
+
+            Await RunScriptAsync(
+            scriptPath:=script,
+            trigger:=btnTest2,
+            statusText:="Backing up database (force)…",
+            flavors:=Nothing,
+            overrideArgs:=args
+        )
+
+            log.AppendLine("Database backup completed successfully")
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            Throw
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Backup Database",
+            log.ToString())
+
+        End Try
 
     End Sub
 
@@ -3374,62 +3472,98 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles btnRunQaApi.Click
 
+        Dim log As New System.Text.StringBuilder()
+
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
-
         If String.IsNullOrWhiteSpace(fullCommand) Then
+
+            log.AppendLine("QA API launch requested")
+            log.AppendLine("No QA command line configured")
+
+            GlobalErrorHandler.LogAction(
+            "Run QA API",
+            log.ToString())
+
             MessageBox.Show(
             "No QA command line configured.",
             "Missing Command",
             MessageBoxButtons.OK,
             MessageBoxIcon.Warning)
+
             Return
+
         End If
 
         Try
+
+            log.AppendLine("QA API launch requested")
+            log.AppendLine($"Command: {fullCommand}")
+
             btnRunQaApi.Enabled = False
 
-            ' ✅ STEP 1: Parse command FIRST
-
+            ' Parse command
             Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
 
             Dim scriptPath = parsed.ScriptPath
             Dim args = parsed.Args
 
-            ' ✅ STEP 2: NOW detection works correctly
+            log.AppendLine($"Script Path: {scriptPath}")
+            log.AppendLine($"Arguments: {args}")
+
+            ' Check for existing instance
             If QaScriptHelper.IsScriptRunning(scriptPath) Then
 
+                log.AppendLine("Script already running")
+
                 UIHelpers.TimedWarningPrompt(
-            owner:=Me,
-            message:="The QA API script is already running." & Environment.NewLine &
-                     "Stop the existing instance before starting a new one.",
-            title:="Already Running",
-            timeoutSeconds:=10)
+                owner:=Me,
+                message:="The QA API script is already running." &
+                         Environment.NewLine &
+                         "Stop the existing instance before starting a new one.",
+                title:="Already Running",
+                timeoutSeconds:=10)
 
                 Return
+
             End If
 
-            ' ✅ STEP 3: Stop service
+            ' Stop service
+            Const serviceName As String = "AdvApiServer"
 
-            Dim serviceName As String = "AdvApiServer"
+            log.AppendLine($"Stopping service: {serviceName}")
 
-            Await Task.Run(Sub()
-                               Try
-                                   Using sc As New ServiceController(serviceName)
-                                       If sc.Status = ServiceControllerStatus.Running OrElse
-                   sc.Status = ServiceControllerStatus.StartPending Then
+            Await Task.Run(
+            Sub()
+                Try
 
-                                           sc.Stop()
-                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
-                                       End If
-                                   End Using
-                               Catch ex As InvalidOperationException
-                               End Try
-                           End Sub)
+                    Using sc As New ServiceController(serviceName)
 
-            ' ✅ STEP 3: Launch PowerShell (separate window, persistent)
+                        If sc.Status = ServiceControllerStatus.Running OrElse
+                           sc.Status = ServiceControllerStatus.StartPending Then
+
+                            sc.Stop()
+                            sc.WaitForStatus(
+                                ServiceControllerStatus.Stopped,
+                                TimeSpan.FromSeconds(15))
+
+                        End If
+
+                    End Using
+
+                Catch ex As InvalidOperationException
+
+                    ' Service not installed/not found
+                End Try
+            End Sub)
+
+            log.AppendLine("Service stop completed")
+
+            ' Launch PowerShell
             Dim psCommand As String =
             $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            log.AppendLine("Launching PowerShell process")
 
             Dim psi As New ProcessStartInfo With {
             .FileName = "powershell.exe",
@@ -3440,16 +3574,28 @@ e As System.ComponentModel.CancelEventArgs
 
             Process.Start(psi)
 
+            log.AppendLine("QA API launched successfully")
+
         Catch ex As Exception
 
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
             MessageBox.Show(
-            "Failed to launch QA script:" & Environment.NewLine & ex.Message,
+            "Failed to launch QA script:" &
+            Environment.NewLine &
+            ex.Message,
             "Execution Error",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error)
 
         Finally
+
+            GlobalErrorHandler.LogAction(
+            "Run QA API",
+            log.ToString())
+
             btnRunQaApi.Enabled = True
+
         End Try
 
     End Sub
@@ -3461,24 +3607,43 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles tsmiRunQaApiRerunScript.Click
 
+        Dim log As New StringBuilder()
+
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
         If String.IsNullOrWhiteSpace(fullCommand) Then
+
+            log.AppendLine("QA API restart requested")
+            log.AppendLine("No QA command line configured")
+
+            GlobalErrorHandler.LogAction(
+            "Restart QA API",
+            log.ToString())
+
             MessageBox.Show(
             "No QA command line configured.",
             "Missing Command",
             MessageBoxButtons.OK,
             MessageBoxIcon.Warning)
+
             Return
+
         End If
 
         Try
+
+            log.AppendLine("QA API restart requested")
+            log.AppendLine($"Command: {fullCommand}")
+
             tsmiRunQaApiRerunScript.Enabled = False
 
             ' ✅ STEP 1: Parse command
             Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
             Dim scriptPath = parsed.ScriptPath
             Dim args = parsed.Args
+
+            log.AppendLine($"Script Path: {scriptPath}")
+            log.AppendLine($"Arguments: {args}")
 
             ' ✅ STEP 2: Confirm restart
             Dim confirm As DialogResult
@@ -3498,21 +3663,35 @@ e As System.ComponentModel.CancelEventArgs
                 defaultChoice:=If(_options.QaRunPromptAction,
                                   DialogResult.Yes,
                                   DialogResult.No))
-
             Else
-                ' ✅ Prompt disabled → always proceed
+
+                log.AppendLine("Prompt disabled - auto approved")
+
                 confirm = DialogResult.Yes
+
             End If
 
             If confirm <> DialogResult.Yes Then
+
+                log.AppendLine("User cancelled restart")
+
                 Return
+
             End If
 
+            log.AppendLine("Restart approved")
+
             ' ✅ STEP 3: Kill running script instances
+            log.AppendLine("Stopping existing QA API script instances")
+
             Await CodeHelper.KillQaScriptIfRunningAsync(fullCommand)
+
+            log.AppendLine("Existing script instances stopped")
 
             ' ✅ STEP 4: Stop Windows service
             Dim serviceName As String = "AdvApiServer"
+
+            log.AppendLine($"Stopping service: {serviceName}")
 
             Await Task.Run(
             Sub()
@@ -3523,19 +3702,26 @@ e As System.ComponentModel.CancelEventArgs
                            sc.Status = ServiceControllerStatus.StartPending Then
 
                             sc.Stop()
-                            sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                            sc.WaitForStatus(
+                                ServiceControllerStatus.Stopped,
+                                TimeSpan.FromSeconds(15))
 
                         End If
 
                     End Using
+
                 Catch
                     ' Ignore if not installed
                 End Try
             End Sub)
 
+            log.AppendLine("Service stop completed")
+
             ' ✅ STEP 5: Launch fresh instance
             Dim psCommand As String =
             $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            log.AppendLine("Launching fresh QA API instance")
 
             Dim psi As New ProcessStartInfo With {
             .FileName = "powershell.exe",
@@ -3546,29 +3732,41 @@ e As System.ComponentModel.CancelEventArgs
 
             Process.Start(psi)
 
+            log.AppendLine("QA API restarted successfully")
+
         Catch ex As Exception
 
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
             MessageBox.Show(
-            "Failed to restart QA script:" & Environment.NewLine & ex.Message,
+            "Failed to restart QA script:" &
+            Environment.NewLine &
+            ex.Message,
             "Execution Error",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error)
 
         Finally
+
+            GlobalErrorHandler.LogAction(
+            "Restart QA API",
+            log.ToString())
+
             tsmiRunQaApiRerunScript.Enabled = True
+
         End Try
 
     End Sub
 
-    Private Async Sub tsmiQaScriptKill_Click(
-    sender As Object,
-    e As EventArgs
-) Handles tsmiQaScriptKill.Click
+    Private Async Sub tsmiQaScriptKill_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptKill.Click
+        Dim log As New System.Text.StringBuilder()
+        Dim timeStamp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
         Try
             tsmiQaScriptKill.Enabled = False
 
             Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
+            log.AppendLine($"[{timeStamp}] QA script kill requested and executed.")
 
         Catch ex As Exception
             MessageBox.Show(
@@ -3578,6 +3776,10 @@ e As System.ComponentModel.CancelEventArgs
             MessageBoxIcon.Error)
         Finally
             tsmiQaScriptKill.Enabled = True
+            GlobalErrorHandler.LogAction(
+            "Backup Database",
+            log.ToString())
+
         End Try
 
     End Sub
@@ -3779,13 +3981,10 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
 
-    Private Sub btnClearActivityLog_Click(
-    sender As Object,
-    e As EventArgs) Handles btnClearActivityLog.Click
-
-
+    Private Sub btnClearActivityLog_Click(sender As Object, e As EventArgs) Handles btnClearActivityLog.Click
 
         GlobalErrorHandler.ClearTodayActivityLog()
+        ShowLatestLogInUI()
 
         UIHelpers.TimedInfoPrompt(
 message:="Today's activity log has been cleared.",
