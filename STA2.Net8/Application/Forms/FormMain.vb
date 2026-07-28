@@ -103,6 +103,7 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
         ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
         ToolTip1.SetToolTip(btnConnectionProfiles, "Manage saved PFSConnect.ini connection configurations")
+        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
 
         strTemp =
             "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
@@ -189,7 +190,7 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file For today To see the latest log entries")
         ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log In a message box")
         ToolTip1.SetToolTip(btnLastFailed, "Displays the last Error encountered In a message box")
-        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
+        ToolTip1.SetToolTip(btnClearActivityLog, "Deletes the contents of the log file For today and creates an entry to note it in the log file")
 
         ' ✅ Hover hints for Personal Flavor Tab
         ToolTip1.SetToolTip(btnFlavorLoad, "Opens a file dialog box to load a set of SQL queries from a selected SQL file ")
