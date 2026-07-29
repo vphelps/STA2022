@@ -7,6 +7,7 @@ Imports System.ServiceProcess
 Imports System.Text
 Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
+Imports Microsoft.VisualBasic.Logging
 Imports STA2.Net8.AppOptions
 'Imports STA2.AppData
 
@@ -1970,6 +1971,10 @@ Public Class FormMain
 
                 sw.Stop()
 
+                dlg.LogMessage =
+                    Sub(message)
+                        log.AppendLine(message)
+                    End Sub
 
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
 

@@ -2,7 +2,7 @@
 Imports System.Windows.Forms.Design.AxImporter
 
 Public Class ManageInstallerVersionsForm
-
+    Public Property LogMessage As Action(Of String)
     Private ReadOnly _versions As List(Of InstallerVersionInfo)
     Private _suppressSelection As Boolean
     Private _options As AppOptions
@@ -40,6 +40,11 @@ Public Class ManageInstallerVersionsForm
 
         PopulateList()
         UpdateSummary()
+    End Sub
+    Private Sub AddToLog(message As String)
+
+        LogMessage?.Invoke(message)
+
     End Sub
 
     ' -------------------------
@@ -208,6 +213,8 @@ Public Class ManageInstallerVersionsForm
         Finally
             _suppressSelection = False
         End Try
+        Dim count = SelectedForCleanup.Count
+        AddToLog($"Selected all deletable versions ({count} selected)")
 
         ' ✅ Update summary once after changes
         UpdateSummary()
@@ -280,10 +287,13 @@ Public Class ManageInstallerVersionsForm
         Using confirm As New ConfirmInstallerVersionCleanupForm(selected)
 
             If confirm.ShowDialog(Me) = DialogResult.OK Then
-                ' ✅ User explicitly approved deletion
-                ' 🔜 Step E will perform the actual cleanup
+
                 DialogResult = DialogResult.OK
                 Close()
+                AddToLog($"Cleanup requested for {selected.Count} version(s)")
+                AddToLog("Cleanup confirmed: " & String.Join(", ", selected.Select(Function(v) v.VersionString)))
+            Else
+                AddToLog("Cleanup confirmation cancelled")
             End If
 
         End Using
@@ -293,7 +303,7 @@ Public Class ManageInstallerVersionsForm
         sender As Object,
         e As EventArgs
     ) Handles btnCancel.Click
-
+        AddToLog("User cancelled installer version management")
         DialogResult = DialogResult.Cancel
         Close()
 
@@ -304,6 +314,7 @@ Public Class ManageInstallerVersionsForm
         For i As Integer = 0 To clbVersions.Items.Count - 1
             clbVersions.SetItemChecked(i, False)
         Next
+        AddToLog("Cleared all cleanup selections")
         UpdateSummary()
     End Sub
 
@@ -317,7 +328,7 @@ Public Class ManageInstallerVersionsForm
 
         Dim info = TryCast(clbVersions.Items(index), InstallerVersionInfo)
         If info Is Nothing Then Return
-
+        AddToLog($"Installer launch requested: {info.VersionString}")
         LaunchInstaller(info)
 
     End Sub
