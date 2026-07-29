@@ -1488,150 +1488,20 @@ Public Class FormMain
             End If
         End Using
     End Sub
-    '    Private Sub btnRepoMain_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnRepoMain.Click
 
-    '        Try
-    '            If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
-
-    '                Dim response As DialogResult
-
-    '                If _options.RepoMainPromptEnabled Then
-
-    '                    response = UIHelpers.TimedYesNoPrompt(
-    '                    message:=
-    '                        "There are uncommitted changes." & Environment.NewLine &
-    '                        "Discard them and switch to main?",
-    '                    title:="Confirm",
-    '                    timeoutSeconds:=If(_options.RepoMainPromptTimeoutSeconds > 0,
-    '                                       _options.RepoMainPromptTimeoutSeconds,
-    '                                       10),
-    '                    defaultChoice:=If(_options.RepoMainPromptAction,
-    '                                      DialogResult.Yes,
-    '                                      DialogResult.No))
-
-    '                Else
-    '                    ' ✅ Prompt disabled → auto-confirm
-    '                    response = DialogResult.Yes
-
-    '                End If
-
-    '                If response <> DialogResult.Yes Then
-    '                    Return
-    '                End If
-
-    '                RepoTools.DiscardAllChanges(_options.RepoFolderPath)
-    '            End If
-
-    '            RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
-
-    '            UIHelpers.TimedInfoPrompt(
-    '            message:="Switched to main branch.",
-    '            title:="Repository",
-    '            timeoutSeconds:=10)
-
-    '        Catch ex As Exception
-    '            UIHelpers.TimedErrorPrompt(
-    '            message:="Git Error",
-    '            title:="Repository")
-    '        End Try
-
-    '    End Sub
-
-    '    Private Sub btnRepoDiscardChanges_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnRepoDiscardChanges.Click
-
-    '        If _options Is Nothing OrElse
-    '       String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
-    '            MessageBox.Show(
-    '            "Repository path is not configured.",
-    '            "Discard Changes",
-    '            MessageBoxButtons.OK,
-    '            MessageBoxIcon.Warning)
-    '            Return
-    '        End If
-
-    '        Dim repoPath As String = _options.RepoFolderPath
-
-    '        ' Optional preview
-    '        Dim preview As String = RepoTools.PreviewDiscard(repoPath)
-
-    '        Dim message As String =
-    '        "This will permanently discard ALL local changes in the repository:" &
-    '        Environment.NewLine & Environment.NewLine &
-    '        repoPath & Environment.NewLine & Environment.NewLine &
-    '        If(String.IsNullOrWhiteSpace(preview),
-    '           "No untracked files will be removed.",
-    '           "The following untracked files will be deleted:" &
-    '           Environment.NewLine & preview) &
-    '        Environment.NewLine & Environment.NewLine &
-    '        "This action CANNOT be undone." &
-    '        Environment.NewLine & Environment.NewLine &
-    '        "Continue?"
-
-    '        Dim response As DialogResult
-
-    '        If _options.RepoDiscardPromptEnabled Then
-
-    '            response = UIHelpers.TimedYesNoPrompt(
-    '            message:=message,
-    '            title:="Discard All Changes",
-    '            timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
-    '                               _options.RepoDiscardPromptTimeoutSeconds,
-    '                               30),
-    '            defaultChoice:=If(_options.RepoDiscardPromptAction,
-    '                              DialogResult.Yes,
-    '                              DialogResult.No))
-
-    '        Else
-    '            ' ✅ Prompt disabled → automatically approve action
-    '            response = DialogResult.Yes
-    '        End If
-
-    '        If response <> DialogResult.Yes Then Return
-
-    '        Try
-    '            Cursor.Current = Cursors.WaitCursor
-    '            btnRepoDiscardChanges.Enabled = False
-
-    '            RepoTools.DiscardAllChanges(repoPath)
-
-    '            UIHelpers.TimedInfoPrompt(
-    '            message:="All local changes were discarded successfully.",
-    '            title:="Discard Complete",
-    '            timeoutSeconds:=10)
-
-    '        Catch ex As Exception
-    '            UIHelpers.TimedErrorPrompt(
-    '            message:="Git Error",
-    '            title:="Repository")
-
-    '        Finally
-    '            btnRepoDiscardChanges.Enabled = True
-    '            Cursor.Current = Cursors.Default
-    '        End Try
-
-    '    End Sub
     Private Sub btnRepoMain_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRepoMain.Click
+        Dim log As New StringBuilder()
 
-        GlobalErrorHandler.LogAction(
-        "Repo Main",
-        $"Requested switch to main branch. Repo={_options.RepoFolderPath}")
+        log.AppendLine($"Requested switch to main branch. Repo={_options.RepoFolderPath}")
 
         Try
 
             If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
 
-                GlobalErrorHandler.LogAction(
-                "Repo Main",
-                "Uncommitted changes detected.")
+                log.AppendLine("Uncommitted changes detected.")
 
                 Dim response As DialogResult
 
@@ -1653,25 +1523,19 @@ Public Class FormMain
 
                     response = DialogResult.Yes
 
-                    GlobalErrorHandler.LogAction(
-                    "Repo Main",
-                    "Prompt disabled. Auto-approved.")
+                    log.AppendLine("Prompt disabled. Auto-approved.")
 
                 End If
 
                 If response <> DialogResult.Yes Then
 
-                    GlobalErrorHandler.LogAction(
-                    "Repo Main",
-                    "User cancelled operation.")
+                    log.AppendLine("User cancelled operation.")
 
                     Return
 
                 End If
 
-                GlobalErrorHandler.LogAction(
-                "Repo Main",
-                "Discarding local changes before switching branch.")
+                log.AppendLine("Discarding local changes before switching branch.")
 
                 RepoTools.DiscardAllChanges(_options.RepoFolderPath)
 
@@ -1679,9 +1543,7 @@ Public Class FormMain
 
             RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
 
-            GlobalErrorHandler.LogAction(
-            "Repo Main",
-            "Successfully switched to main branch.")
+            log.AppendLine("Successfully switched to main branch.")
 
             UIHelpers.TimedInfoPrompt(
             message:="Switched to main branch.",
@@ -1701,6 +1563,11 @@ Public Class FormMain
             message:="Git Error",
             title:="Repository")
 
+        Finally
+            GlobalErrorHandler.LogAction(
+            "Repo Main",
+           log.ToString())
+
         End Try
 
     End Sub
@@ -1708,13 +1575,12 @@ Public Class FormMain
     sender As Object,
     e As EventArgs
 ) Handles btnRepoDiscardChanges.Click
+        Dim log As New StringBuilder()
 
         If _options Is Nothing OrElse
        String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
 
-            GlobalErrorHandler.LogAction(
-            "Repo Discard Changes",
-            "Repository path not configured.")
+            log.AppendLine("Repository path not configured.")
 
             MessageBox.Show(
             "Repository path is not configured.",
@@ -1728,9 +1594,7 @@ Public Class FormMain
 
         Dim repoPath As String = _options.RepoFolderPath
 
-        GlobalErrorHandler.LogAction(
-        "Repo Discard Changes",
-        $"Requested discard. Repo={repoPath}")
+        log.AppendLine($"Requested discard. Repo={repoPath}")
 
         Dim preview As String = RepoTools.PreviewDiscard(repoPath)
 
@@ -1765,17 +1629,13 @@ Public Class FormMain
 
             response = DialogResult.Yes
 
-            GlobalErrorHandler.LogAction(
-            "Repo Discard Changes",
-            "Prompt disabled. Auto-approved.")
+            log.AppendLine("Prompt disabled. Auto-approved.")
 
         End If
 
         If response <> DialogResult.Yes Then
 
-            GlobalErrorHandler.LogAction(
-            "Repo Discard Changes",
-            "User cancelled operation.")
+            log.AppendLine("User cancelled operation.")
 
             Return
 
@@ -1788,9 +1648,7 @@ Public Class FormMain
 
             RepoTools.DiscardAllChanges(repoPath)
 
-            GlobalErrorHandler.LogAction(
-            "Repo Discard Changes",
-            "Repository changes discarded successfully.")
+            log.AppendLine("Repository changes discarded successfully.")
 
             UIHelpers.TimedInfoPrompt(
             message:="All local changes were discarded successfully.",
@@ -1811,7 +1669,9 @@ Public Class FormMain
             title:="Repository")
 
         Finally
-
+            GlobalErrorHandler.LogAction(
+            "Discard Repo Changes",
+            log.ToString())
             btnRepoDiscardChanges.Enabled = True
             Cursor.Current = Cursors.Default
 
@@ -3863,7 +3723,7 @@ e As System.ComponentModel.CancelEventArgs
         Finally
             tsmiQaScriptKill.Enabled = True
             GlobalErrorHandler.LogAction(
-            "Backup Database",
+            "Kill QA Script",
             log.ToString())
 
         End Try
