@@ -1,4 +1,5 @@
-﻿Imports System.Threading.Tasks
+﻿Imports System.Threading
+Imports System.Threading.Tasks
 Imports System.Windows.Forms
 
 ''' <summary>
@@ -7,16 +8,52 @@ Imports System.Windows.Forms
 Public NotInheritable Class ProgressOverlayService
 
     Private Shared _overlay As ProgressOverlayForm
+    Private Shared _cts As CancellationTokenSource
+
+    Public Shared ReadOnly Property CancellationToken As CancellationToken
+        Get
+            If _cts Is Nothing Then
+                Return Threading.CancellationToken.None
+            End If
+
+            Return _cts.Token
+        End Get
+    End Property
 
     Private Sub New()
         ' Static-only service
     End Sub
 
-    ''' <summary>
-    ''' Runs an asynchronous operation while displaying a progress overlay.
-    ''' </summary>
+    Private Shared Sub Show(
+       owner As Form,
+       title As String,
+       message As String
+   )
+        If _overlay IsNot Nothing Then Return
+        _cts = New CancellationTokenSource()
+
+        _overlay = New ProgressOverlayForm(
+            title, message) With {.Size = owner.ClientSize, .Location = owner.PointToScreen(Point.Empty)}
+        AddHandler _overlay.CancelRequested,
+            Sub()
+
+                If _cts IsNot Nothing AndAlso
+                Not _cts.IsCancellationRequested Then
+                    _cts.Cancel()
+                End If
+            End Sub
+
+        _overlay.SetProgress(0)
+
+        _overlay.Show(owner)
+        _overlay.BringToFront()
+        _overlay.Refresh()
+
+    End Sub
+
     Public Shared Async Function RunWithOverlayAsync(
         owner As Form,
+        title As String,
         message As String,
         work As Func(Of Task)
     ) As Task
@@ -29,7 +66,7 @@ Public NotInheritable Class ProgressOverlayService
             Throw New ArgumentNullException(NameOf(work))
         End If
 
-        Show(owner, message)
+        Show(owner, title, message)
 
         Try
 
@@ -43,69 +80,74 @@ Public NotInheritable Class ProgressOverlayService
 
     End Function
 
-    ''' <summary>
-    ''' Updates the overlay message while work is running.
-    ''' Safe to call from background threads.
-    ''' </summary>
     Public Shared Sub UpdateMessage(message As String)
 
         If _overlay Is Nothing Then Return
 
         Try
-
             If _overlay.IsDisposed Then Return
-
             If _overlay.InvokeRequired Then
-
                 _overlay.BeginInvoke(
                     New Action(
                         Sub()
-
                             If _overlay IsNot Nothing AndAlso
                                Not _overlay.IsDisposed Then
-
                                 _overlay.SetMessage(message)
-
                             End If
-
                         End Sub))
-
             Else
-
                 _overlay.SetMessage(message)
-
             End If
-
         Catch
             ' Overlay update failures are non-fatal
         End Try
 
     End Sub
+    Public Shared Sub UpdateProgress(value As Integer)
 
-    ''' <summary>
-    ''' Displays the overlay on top of the specified form.
-    ''' </summary>
-    Private Shared Sub Show(
-        owner As Form,
-        message As String
-    )
+        If _overlay Is Nothing Then Return
 
-        If _overlay IsNot Nothing Then Return
+        Try
+            If _overlay.IsDisposed Then Return
+            If _overlay.InvokeRequired Then
+                _overlay.BeginInvoke(
+                New Action(
+                    Sub()
+                        If _overlay IsNot Nothing AndAlso
+                           Not _overlay.IsDisposed Then
+                            _overlay.SetProgress(value)
+                        End If
+                    End Sub))
+            Else
+                _overlay.SetProgress(value)
+            End If
+        Catch
+            ' Non-fatal
+        End Try
 
-        _overlay = New ProgressOverlayForm(message) With {
-            .Size = owner.ClientSize,
-            .Location = owner.PointToScreen(Point.Empty)
-        }
+    End Sub
+    Public Shared Sub UpdateTitle(title As String)
+        If _overlay Is Nothing Then Return
 
-        _overlay.Show(owner)
-        _overlay.BringToFront()
-        _overlay.Refresh()
+        Try
+            If _overlay.IsDisposed Then Return
+            If _overlay.InvokeRequired Then
+                _overlay.BeginInvoke(
+                New Action(
+                    Sub()
+                        If _overlay IsNot Nothing AndAlso
+                           Not _overlay.IsDisposed Then
+                            _overlay.SetTitle(title)
+                        End If
+                    End Sub))
+            Else
+                _overlay.SetTitle(title)
+            End If
+        Catch
+        End Try
 
     End Sub
 
-    ''' <summary>
-    ''' Closes and disposes the overlay.
-    ''' </summary>
     Private Shared Sub Hide()
 
         If _overlay Is Nothing Then Return
@@ -120,6 +162,9 @@ Public NotInheritable Class ProgressOverlayService
             ' Overlay cleanup failures are non-fatal
 
         Finally
+
+            _cts?.Dispose()
+            _cts = Nothing
 
             _overlay = Nothing
 

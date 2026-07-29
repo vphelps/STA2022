@@ -998,21 +998,21 @@ Public Class FormMain
     ' =============================
     ' Progress overlay helper
     ' =============================
-    Private Function ShowProgressOverlay(message As String) As ProgressOverlayForm
+    'Private Function ShowProgressOverlay(title As String, message As String) As ProgressOverlayForm
 
-        Dim overlay As New ProgressOverlayForm(message)
+    '    Dim overlay As New ProgressOverlayForm(message)
 
-        ' Match FormMain client area
-        overlay.Size = Me.ClientSize
-        overlay.Location = Me.PointToScreen(Point.Empty)
+    '    ' Match FormMain client area
+    '    overlay.Size = Me.ClientSize
+    '    overlay.Location = Me.PointToScreen(Point.Empty)
 
-        overlay.Show(Me)
-        overlay.BringToFront()
-        overlay.Refresh()
+    '    overlay.Show(Me)
+    '    overlay.BringToFront()
+    '    overlay.Refresh()
 
-        Return overlay
+    '    Return overlay
 
-    End Function
+    'End Function
     Protected Overrides Function ProcessCmdKey(
     ByRef msg As Message,
     keyData As Keys
@@ -1931,32 +1931,58 @@ Public Class FormMain
             ' ApplyCleanupSafetyRules timing
             ' --------------------------------------------------
             sw.Restart()
+            Dim scanCompleted As Boolean = False
+            Try
 
-            Await ProgressOverlayService.RunWithOverlayAsync(
-            Me,
-            "Scanning installed installer versions..." &
-            Environment.NewLine &
-            "Please wait.",
-            Function()
-                Return Task.Run(
-                    Sub()
+                Await ProgressOverlayService.RunWithOverlayAsync(
+    Me,
+    $"Scanning installer versions in: {installerPath}",
+    "Initializing scan...",
+    Function()
 
-                        Dim swSafety As Stopwatch = Stopwatch.StartNew()
+        Return Task.Run(
+            Sub()
 
-                        InstallerTools.ApplyCleanupSafetyRules(
-    versions,
-    runExistingVersionPath:=_runExistingVersionPath,
-    progress:=Sub(msg)
-                  ProgressOverlayService.UpdateMessage(msg)
-              End Sub)
+                scanCompleted =
+                    InstallerTools.ApplyCleanupSafetyRules(
+                        versions,
+                        runExistingVersionPath:=_runExistingVersionPath,
+                        progress:=Sub(msg)
+                                      ProgressOverlayService.UpdateMessage(msg)
+                                  End Sub,
+                        progressPercent:=Sub(p)
+                                             ProgressOverlayService.UpdateProgress(p)
+                                         End Sub)
 
-                        swSafety.Stop()
+            End Sub)
 
-                    End Sub)
-            End Function)
-            log.AppendLine("Cleanup safety rules applied")
+    End Function)
+                If Not scanCompleted Then
 
-            sw.Stop()
+                    log.AppendLine("Installer version scan cancelled by user")
+
+                    '            MessageBox.Show(
+                    '"The scan was cancelled.",
+                    '"Cancelled",
+                    'MessageBoxButtons.OK,
+                    'MessageBoxIcon.Information)
+                    UIHelpers.TimedInfoPrompt("The scan was cancelled.", "Installer Manager", 5)
+
+                    Return
+
+                End If
+                log.AppendLine("Cleanup safety rules applied")
+
+                sw.Stop()
+            Catch ex As OperationCanceledException
+                log.AppendLine("Installer version scan cancelled by user")
+                MessageBox.Show(
+                    "The scan was cancelled.",
+                    "Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information)
+                Return
+            End Try
 
 
             ' --------------------------------------------------

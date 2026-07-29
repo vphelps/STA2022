@@ -641,12 +641,12 @@ Public Module InstallerTools
         Return False
     End Function
 
-    Public Sub ApplyCleanupSafetyRules(
+    Public Function ApplyCleanupSafetyRules(
     versions As List(Of InstallerVersionInfo),
     Optional runExistingVersionPath As String = Nothing,
-    Optional progress As Action(Of String) = Nothing
-)
-
+    Optional progress As Action(Of String) = Nothing,
+    Optional progressPercent As Action(Of Integer) = Nothing
+) As Boolean
         ' --------------------------------------------------------
         ' Resolve installed installer folder ONCE
         ' --------------------------------------------------------
@@ -668,7 +668,10 @@ Public Module InstallerTools
         Dim current As Integer = 0
 
         For Each v In versions
-
+            If ProgressOverlayService.CancellationToken.IsCancellationRequested Then
+                progress?.Invoke("Scan cancelled.")
+                Return False
+            End If
             current += 1
 
             Dim percent As Integer
@@ -678,16 +681,18 @@ Public Module InstallerTools
             Else
                 percent = 0
             End If
-
+            If progressPercent IsNot Nothing Then
+                progressPercent.Invoke(percent)
+            End If
             If progress IsNot Nothing Then
 
-                progress.Invoke(
-                "Evaluating installer versions..." &
-                Environment.NewLine &
-                $"{current} of {total} ({percent}%)" &
-                Environment.NewLine &
-                v.VersionString)
-
+                'progress.Invoke(
+                '"Evaluating installer versions..." &
+                'Environment.NewLine &
+                '$"{current} of {total} ({percent}%)" &
+                'Environment.NewLine &
+                'v.VersionString)
+                progress.Invoke($"Checking installer version {current} of {total}")
             End If
 
             ' ====================================================
@@ -770,8 +775,8 @@ Public Module InstallerTools
             v.LockReason = VersionLockReason.None
 
         Next
-
-    End Sub
+        Return True
+    End Function
     Public Function ExecuteInstallerVersionCleanup(
         versionsToDelete As List(Of InstallerVersionInfo)
     ) As InstallerCleanupResult
