@@ -133,6 +133,7 @@ Partial Class FormMain
         btnOpenLogFile = New Button()
         btnLastLogBlock = New Button()
         btnLastFailed = New Button()
+        btnClearActivityLog = New Button()
         tpFlavor = New TabPage()
         Panel3 = New Panel()
         tbFlavorHints = New TextBox()
@@ -232,6 +233,12 @@ Partial Class FormMain
         tsmiStartDbBackup = New ToolStripMenuItem()
         cmsDbStartSeparator1 = New ToolStripSeparator()
         tsmiBackupDb = New ToolStripMenuItem()
+        cmsDbStartSeparator2 = New ToolStripSeparator()
+        tsmiCopyStartDbCommandLine = New ToolStripMenuItem()
+        tsmiStartDatabase = New ToolStripMenuItem()
+        tsmiSeparatorDefaultAction = New ToolStripSeparator()
+        tsmiDefaultStartDatabase = New ToolStripMenuItem()
+        tsmiDefaultCopyCommandLine = New ToolStripMenuItem()
         btnRunApplyFlavorLive = New Button()
         cmbboxAppLaunch = New ComboBox()
         btnComboAppLaunch = New Button()
@@ -1562,6 +1569,7 @@ Partial Class FormMain
         flpAppLogsButtons.Controls.Add(btnOpenLogFile)
         flpAppLogsButtons.Controls.Add(btnLastLogBlock)
         flpAppLogsButtons.Controls.Add(btnLastFailed)
+        flpAppLogsButtons.Controls.Add(btnClearActivityLog)
         flpAppLogsButtons.Dock = DockStyle.Fill
         flpAppLogsButtons.Location = New Point(3, 556)
         flpAppLogsButtons.Name = "flpAppLogsButtons"
@@ -1607,6 +1615,16 @@ Partial Class FormMain
         btnLastFailed.TabIndex = 36
         btnLastFailed.Text = "Last Failed"
         btnLastFailed.UseVisualStyleBackColor = True
+        ' 
+        ' btnClearActivityLog
+        ' 
+        btnClearActivityLog.Location = New Point(424, 3)
+        btnClearActivityLog.Margin = New Padding(4, 3, 4, 3)
+        btnClearActivityLog.Name = "btnClearActivityLog"
+        btnClearActivityLog.Size = New Size(97, 59)
+        btnClearActivityLog.TabIndex = 37
+        btnClearActivityLog.Text = "Clear Today's Activity Log"
+        btnClearActivityLog.UseVisualStyleBackColor = True
         ' 
         ' tpFlavor
         ' 
@@ -2694,20 +2712,20 @@ Partial Class FormMain
         ' 
         ' cmsDbStart
         ' 
-        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb})
+        cmsDbStart.Items.AddRange(New ToolStripItem() {tsmiStartDbRaw, tsmiStartDbBackup, cmsDbStartSeparator1, tsmiBackupDb, cmsDbStartSeparator2, tsmiCopyStartDbCommandLine, tsmiStartDatabase, tsmiSeparatorDefaultAction, tsmiDefaultStartDatabase, tsmiDefaultCopyCommandLine})
         cmsDbStart.Name = "ContextMenuStrip1"
-        cmsDbStart.Size = New Size(288, 76)
+        cmsDbStart.Size = New Size(288, 260)
         ' 
         ' tsmiStartDbRaw
         ' 
         tsmiStartDbRaw.Name = "tsmiStartDbRaw"
-        tsmiStartDbRaw.Size = New Size(287, 22)
+        tsmiStartDbRaw.Size = New Size(287, 34)
         tsmiStartDbRaw.Text = "Start DB with no options (raw)"
         ' 
         ' tsmiStartDbBackup
         ' 
         tsmiStartDbBackup.Name = "tsmiStartDbBackup"
-        tsmiStartDbBackup.Size = New Size(287, 22)
+        tsmiStartDbBackup.Size = New Size(287, 34)
         tsmiStartDbBackup.Text = "Start Database with backup 00Pathfinder"
         ' 
         ' cmsDbStartSeparator1
@@ -2718,8 +2736,42 @@ Partial Class FormMain
         ' tsmiBackupDb
         ' 
         tsmiBackupDb.Name = "tsmiBackupDb"
-        tsmiBackupDb.Size = New Size(287, 22)
+        tsmiBackupDb.Size = New Size(287, 34)
         tsmiBackupDb.Text = "Backup Database to 00Pathfinder"
+        ' 
+        ' cmsDbStartSeparator2
+        ' 
+        cmsDbStartSeparator2.Name = "cmsDbStartSeparator2"
+        cmsDbStartSeparator2.Size = New Size(284, 6)
+        ' 
+        ' tsmiCopyStartDbCommandLine
+        ' 
+        tsmiCopyStartDbCommandLine.Name = "tsmiCopyStartDbCommandLine"
+        tsmiCopyStartDbCommandLine.Size = New Size(287, 34)
+        tsmiCopyStartDbCommandLine.Text = "Copy Command Line"
+        ' 
+        ' tsmiStartDatabase
+        ' 
+        tsmiStartDatabase.Name = "tsmiStartDatabase"
+        tsmiStartDatabase.Size = New Size(287, 34)
+        tsmiStartDatabase.Text = "Start Database"
+        ' 
+        ' tsmiSeparatorDefaultAction
+        ' 
+        tsmiSeparatorDefaultAction.Name = "tsmiSeparatorDefaultAction"
+        tsmiSeparatorDefaultAction.Size = New Size(284, 6)
+        ' 
+        ' tsmiDefaultStartDatabase
+        ' 
+        tsmiDefaultStartDatabase.Name = "tsmiDefaultStartDatabase"
+        tsmiDefaultStartDatabase.Size = New Size(287, 34)
+        tsmiDefaultStartDatabase.Text = "Default Action: Start Database"
+        ' 
+        ' tsmiDefaultCopyCommandLine
+        ' 
+        tsmiDefaultCopyCommandLine.Name = "tsmiDefaultCopyCommandLine"
+        tsmiDefaultCopyCommandLine.Size = New Size(287, 34)
+        tsmiDefaultCopyCommandLine.Text = "Default Action: Copy Command Line" & vbCrLf
         ' 
         ' btnRunApplyFlavorLive
         ' 
@@ -3704,4 +3756,11 @@ Partial Class FormMain
     Friend WithEvents tbInstallPathFallback As TextBox
     Friend WithEvents btnInstallPathFallback As Button
     Friend WithEvents lblInstallPathFallback As Label
+    Friend WithEvents cmsDbStartSeparator2 As ToolStripSeparator
+    Friend WithEvents tsmiCopyStartDbCommandLine As ToolStripMenuItem
+    Friend WithEvents tsmiStartDatabase As ToolStripMenuItem
+    Friend WithEvents tsmiSeparatorDefaultAction As ToolStripSeparator
+    Friend WithEvents tsmiDefaultStartDatabase As ToolStripMenuItem
+    Friend WithEvents tsmiDefaultCopyCommandLine As ToolStripMenuItem
+    Friend WithEvents btnClearActivityLog As Button
 End Class

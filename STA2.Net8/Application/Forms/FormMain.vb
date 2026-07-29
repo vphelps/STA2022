@@ -4,8 +4,11 @@ Imports System.Management
 Imports System.Runtime.Intrinsics
 Imports System.Security.Principal
 Imports System.ServiceProcess
+Imports System.Text
 Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
+Imports Microsoft.VisualBasic.Logging
+Imports STA2.Net8.AppOptions
 'Imports STA2.AppData
 
 Public Class FormMain
@@ -101,6 +104,7 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
         ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
         ToolTip1.SetToolTip(btnConnectionProfiles, "Manage saved PFSConnect.ini connection configurations")
+        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
 
         strTemp =
             "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
@@ -187,7 +191,7 @@ Public Class FormMain
         ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file For today To see the latest log entries")
         ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log In a message box")
         ToolTip1.SetToolTip(btnLastFailed, "Displays the last Error encountered In a message box")
-        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
+        ToolTip1.SetToolTip(btnClearActivityLog, "Deletes the contents of the log file For today and creates an entry to note it in the log file")
 
         ' ✅ Hover hints for Personal Flavor Tab
         ToolTip1.SetToolTip(btnFlavorLoad, "Opens a file dialog box to load a set of SQL queries from a selected SQL file ")
@@ -419,7 +423,7 @@ Public Class FormMain
         DatabaseCoordinator.RefreshAdvantageData(Me)
         EnableDoubleBuffering(tblServices)
 
-
+        UpdateStartDatabaseButton()
         ' Load saved personal flavor if it exists
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
 
@@ -994,21 +998,21 @@ Public Class FormMain
     ' =============================
     ' Progress overlay helper
     ' =============================
-    Private Function ShowProgressOverlay(message As String) As ProgressOverlayForm
+    'Private Function ShowProgressOverlay(title As String, message As String) As ProgressOverlayForm
 
-        Dim overlay As New ProgressOverlayForm(message)
+    '    Dim overlay As New ProgressOverlayForm(message)
 
-        ' Match FormMain client area
-        overlay.Size = Me.ClientSize
-        overlay.Location = Me.PointToScreen(Point.Empty)
+    '    ' Match FormMain client area
+    '    overlay.Size = Me.ClientSize
+    '    overlay.Location = Me.PointToScreen(Point.Empty)
 
-        overlay.Show(Me)
-        overlay.BringToFront()
-        overlay.Refresh()
+    '    overlay.Show(Me)
+    '    overlay.BringToFront()
+    '    overlay.Refresh()
 
-        Return overlay
+    '    Return overlay
 
-    End Function
+    'End Function
     Protected Overrides Function ProcessCmdKey(
     ByRef msg As Message,
     keyData As Keys
@@ -1108,7 +1112,8 @@ Public Class FormMain
             BeginInvoke(Sub()
                             ForceLiveOutputRedraw()
                         End Sub)
-
+        ElseIf tcSTA.SelectedTab Is tpLogs Then
+            RefreshLogFromTabName()
         End If
 
     End Sub
@@ -1484,13 +1489,20 @@ Public Class FormMain
             End If
         End Using
     End Sub
+
     Private Sub btnRepoMain_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRepoMain.Click
+        Dim log As New StringBuilder()
+
+        log.AppendLine($"Requested switch to main branch. Repo={_options.RepoFolderPath}")
 
         Try
+
             If RepoTools.HasUncommittedChanges(_options.RepoFolderPath) Then
+
+                log.AppendLine("Uncommitted changes detected.")
 
                 Dim response As DialogResult
 
@@ -1509,19 +1521,30 @@ Public Class FormMain
                                       DialogResult.No))
 
                 Else
-                    ' ✅ Prompt disabled → auto-confirm
+
                     response = DialogResult.Yes
+
+                    log.AppendLine("Prompt disabled. Auto-approved.")
 
                 End If
 
                 If response <> DialogResult.Yes Then
+
+                    log.AppendLine("User cancelled operation.")
+
                     Return
+
                 End If
 
+                log.AppendLine("Discarding local changes before switching branch.")
+
                 RepoTools.DiscardAllChanges(_options.RepoFolderPath)
+
             End If
 
             RepoTools.SwitchToMainBranch(_options.RepoFolderPath)
+
+            log.AppendLine("Successfully switched to main branch.")
 
             UIHelpers.TimedInfoPrompt(
             message:="Switched to main branch.",
@@ -1529,52 +1552,72 @@ Public Class FormMain
             timeoutSeconds:=10)
 
         Catch ex As Exception
+
+            GlobalErrorHandler.LogScriptResult(
+            commandLine:="Repository Action",
+            scriptPath:="btnRepoMain_Click",
+            scriptArgs:=$"Repo={_options.RepoFolderPath}",
+            success:=False,
+            ex:=ex)
+
             UIHelpers.TimedErrorPrompt(
             message:="Git Error",
             title:="Repository")
+
+        Finally
+            GlobalErrorHandler.LogAction(
+            "Repo Main",
+           log.ToString())
+
         End Try
 
     End Sub
-
     Private Sub btnRepoDiscardChanges_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnRepoDiscardChanges.Click
+        Dim log As New StringBuilder()
 
         If _options Is Nothing OrElse
        String.IsNullOrWhiteSpace(_options.RepoFolderPath) Then
+
+            log.AppendLine("Repository path not configured.")
+
             MessageBox.Show(
             "Repository path is not configured.",
             "Discard Changes",
             MessageBoxButtons.OK,
             MessageBoxIcon.Warning)
+
             Return
+
         End If
 
         Dim repoPath As String = _options.RepoFolderPath
 
-        ' Optional preview
+        log.AppendLine($"Requested discard. Repo={repoPath}")
+
         Dim preview As String = RepoTools.PreviewDiscard(repoPath)
 
-        Dim message As String =
-        "This will permanently discard ALL local changes in the repository:" &
-        Environment.NewLine & Environment.NewLine &
-        repoPath & Environment.NewLine & Environment.NewLine &
-        If(String.IsNullOrWhiteSpace(preview),
-           "No untracked files will be removed.",
-           "The following untracked files will be deleted:" &
-           Environment.NewLine & preview) &
-        Environment.NewLine & Environment.NewLine &
-        "This action CANNOT be undone." &
-        Environment.NewLine & Environment.NewLine &
-        "Continue?"
-
+        ' existing message code
+        Dim promptMessage As String =
+    "This will permanently discard ALL local changes in the repository:" &
+    Environment.NewLine & Environment.NewLine &
+    repoPath & Environment.NewLine & Environment.NewLine &
+    If(String.IsNullOrWhiteSpace(preview),
+       "No untracked files will be removed.",
+       "The following untracked files will be deleted:" &
+       Environment.NewLine & preview) &
+    Environment.NewLine & Environment.NewLine &
+    "This action CANNOT be undone." &
+    Environment.NewLine & Environment.NewLine &
+    "Continue?"
         Dim response As DialogResult
 
         If _options.RepoDiscardPromptEnabled Then
 
             response = UIHelpers.TimedYesNoPrompt(
-            message:=message,
+            message:=promptMessage,
             title:="Discard All Changes",
             timeoutSeconds:=If(_options.RepoDiscardPromptTimeoutSeconds > 0,
                                _options.RepoDiscardPromptTimeoutSeconds,
@@ -1584,17 +1627,29 @@ Public Class FormMain
                               DialogResult.No))
 
         Else
-            ' ✅ Prompt disabled → automatically approve action
+
             response = DialogResult.Yes
+
+            log.AppendLine("Prompt disabled. Auto-approved.")
+
         End If
 
-        If response <> DialogResult.Yes Then Return
+        If response <> DialogResult.Yes Then
+
+            log.AppendLine("User cancelled operation.")
+
+            Return
+
+        End If
 
         Try
+
             Cursor.Current = Cursors.WaitCursor
             btnRepoDiscardChanges.Enabled = False
 
             RepoTools.DiscardAllChanges(repoPath)
+
+            log.AppendLine("Repository changes discarded successfully.")
 
             UIHelpers.TimedInfoPrompt(
             message:="All local changes were discarded successfully.",
@@ -1602,50 +1657,98 @@ Public Class FormMain
             timeoutSeconds:=10)
 
         Catch ex As Exception
+
+            GlobalErrorHandler.LogScriptResult(
+            commandLine:="Repository Action",
+            scriptPath:="btnRepoDiscardChanges_Click",
+            scriptArgs:=$"Repo={repoPath}",
+            success:=False,
+            ex:=ex)
+
             UIHelpers.TimedErrorPrompt(
             message:="Git Error",
             title:="Repository")
 
         Finally
+            GlobalErrorHandler.LogAction(
+            "Discard Repo Changes",
+            log.ToString())
             btnRepoDiscardChanges.Enabled = True
             Cursor.Current = Cursors.Default
+
         End Try
 
     End Sub
+
     Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
 
-        Dim baseInstallerPath As String = AppData.UpgradePath
+        Dim log As New System.Text.StringBuilder()
 
-        Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
-        If latestFolder Is Nothing Then
-            MessageBox.Show("No valid installer folders found.")
-            Return
-        End If
+        Try
 
-        Dim installerPath = FindInstallerFile(latestFolder)
-        If String.IsNullOrWhiteSpace(installerPath) OrElse
-       Not IO.File.Exists(installerPath) Then
+            log.AppendLine("Button clicked")
 
-            MessageBox.Show("Installer not found in: " & latestFolder.FullName)
-            Return
-        End If
+            Dim baseInstallerPath As String = AppData.UpgradePath
 
-        ' Optional: run as admin
-        Dim psi As New ProcessStartInfo(installerPath) With {
-        .UseShellExecute = True,
-        .Arguments = tbSetupSwitches.Text,
-        .Verb = "runas"
-    }
-        Process.Start(psi)
+            log.AppendLine($"Searching for installer in {baseInstallerPath}")
 
-        _uiStateController.Refresh()
+            Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+            If latestFolder Is Nothing Then
+                log.AppendLine("No valid installer folders found")
+                MessageBox.Show("No valid installer folders found.")
+                Return
+            End If
 
+            log.AppendLine($"Latest folder: {latestFolder.FullName}")
+
+            Dim installerPath = FindInstallerFile(latestFolder)
+            If String.IsNullOrWhiteSpace(installerPath) OrElse
+           Not IO.File.Exists(installerPath) Then
+                log.AppendLine($"Installer not found in: {latestFolder.FullName}")
+                MessageBox.Show("Installer not found in: " & latestFolder.FullName)
+                Return
+            End If
+
+            log.AppendLine($"Launching installer: {installerPath}")
+            log.AppendLine($"Arguments: {tbSetupSwitches.Text}")
+
+            Dim psi As New ProcessStartInfo(installerPath) With {
+            .UseShellExecute = True,
+            .Arguments = tbSetupSwitches.Text,
+            .Verb = "runas"
+        }
+            Process.Start(psi)
+
+            log.AppendLine("Installer launched successfully")
+
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            MessageBox.Show(
+            ex.Message,
+            "Installer Launch Failed",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Launch Latest Installer",
+            log.ToString())
+
+        End Try
 
     End Sub
+
     Private Async Sub btnSetupInstall_Click(
     sender As Object,
     e As EventArgs
 ) Handles btnSetupInstall.Click
+
+        Dim log As New System.Text.StringBuilder()
 
         btnSetupInstall.Enabled = False
 
@@ -1666,19 +1769,27 @@ Public Class FormMain
         End Sub)
 
         Try
+
+            log.AppendLine("Setup installation started")
+
             ' ✅ Stop QA script before install (if running)
+            log.AppendLine("Stopping QA API if running")
+
             SetExecutionStatus("Stopping QA API (if running)...", force:=True)
 
             Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
 
-            ' Resolve setup.zip
+            log.AppendLine("QA API stop request completed")
 
+            ' Resolve setup.zip
             Dim zipPath As String =
             Await InstallerTools.ResolveSetupZipAsync(
                 zipPath:=AppData.UpgradePath,
                 promptForZip:=True)
 
-            ' Extract ZIP -> AppData.UpgradePath\Version <InstallerVersion>
+            log.AppendLine($"Setup ZIP: {zipPath}")
+
+            ' Extract ZIP
             SetExecutionStatus("Preparing extraction...", force:=True)
 
             Dim extractDir As String =
@@ -1688,46 +1799,59 @@ Public Class FormMain
                 installerName:="AdvantageSetup-x64.exe",
                 progressPercent:=percentProgress,
                 progressText:=textProgress,
-_options)
+                _options)
 
-            ' If user chose Run Existing, this path already existed
+            log.AppendLine($"Extract Directory: {extractDir}")
+
+            ' If user chose Run Existing
             If Directory.Exists(extractDir) AndAlso
-   extractDir.EndsWith("Version " & AppData.InstalledVersion, StringComparison.OrdinalIgnoreCase) Then
+           extractDir.EndsWith(
+                "Version " & AppData.InstalledVersion,
+                StringComparison.OrdinalIgnoreCase) Then
 
                 _runExistingVersionPath = extractDir
+
+                log.AppendLine("Using existing extracted version")
             End If
 
-            ' 🔒 stop queued extraction text updates
             showTextProgress = False
 
-            ' Locate installer in the versioned directory
+            ' Locate installer
             Dim installerPath As String =
             InstallerTools.FindInstaller(
                 baseDir:=extractDir,
                 installerName:="AdvantageSetup-x64.exe",
                 recursive:=True)
 
-            ' Stable installer-running text
+            log.AppendLine($"Installer Path: {installerPath}")
+
             SetExecutionStatus("Running Installer", force:=True)
 
-            ' Allow UI repaint before UAC / installer steals focus
             Await Task.Yield()
 
-            ' Run installer asynchronously
+            log.AppendLine("Launching installer")
+
             Await InstallerTools.RunInstallerAsync(
             installerPath,
             "-skipcoreservicescan -skipcloudsyncservicescan PERFORMDBUPGRADE=1",
             elevate:=True,
             progressText:=textProgress)
 
+            log.AppendLine("Installer completed successfully")
+
             SetExecutionStatus("Installation complete.", force:=True)
             Await Task.Delay(1500)
 
         Catch ex As FileNotFoundException
-            ' User canceled ZIP selection → silent exit
+
+            log.AppendLine("Installation cancelled by user during ZIP selection")
 
         Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.Message}")
+
             SetExecutionStatus("Installation failed.", force:=True)
+
             MessageBox.Show(
             ex.Message,
             "Setup Installation Error",
@@ -1735,12 +1859,19 @@ _options)
             MessageBoxIcon.Error)
 
         Finally
+
+            GlobalErrorHandler.LogAction(
+            "Setup Installation",
+            log.ToString())
+
             showTextProgress = False
             _executionStatusLocked = False
 
             SetExecutionStatus("", force:=True)
             btnSetupInstall.Enabled = True
+
         End Try
+
         _uiStateController.Refresh()
 
     End Sub
@@ -1749,11 +1880,11 @@ _options)
     sender As Object,
     e As EventArgs
 ) Handles btnManageInstallerVersions.Click
-
+        Dim log As New StringBuilder()
         btnManageInstallerVersions.Enabled = False
 
         Try
-
+            log.AppendLine("Installer version management started")
             Dim installerPath As String
 
             Select Case Variables.CurrentDatabaseEnvironment
@@ -1761,7 +1892,8 @@ _options)
                 Case DatabaseEnvironment.RemoteServer
 
                     installerPath = _options.InstallFolderPath
-
+                    log.AppendLine("Environment: RemoteServer")
+                    log.AppendLine($"Installer Path: {installerPath}")
 
                     Dim swDir As Stopwatch = Stopwatch.StartNew()
 
@@ -1773,6 +1905,8 @@ _options)
 
                     installerPath = AppData.UpgradePath
 
+                    log.AppendLine("Environment: Local")
+                    log.AppendLine($"Installer Path: {installerPath}")
             End Select
 
 
@@ -1788,6 +1922,7 @@ _options)
         Sub(msg)
             ProgressOverlayService.UpdateMessage(msg)
         End Sub)
+            log.AppendLine($"Discovered Versions: {versions.Count}")
 
             sw.Stop()
 
@@ -1796,31 +1931,58 @@ _options)
             ' ApplyCleanupSafetyRules timing
             ' --------------------------------------------------
             sw.Restart()
+            Dim scanCompleted As Boolean = False
+            Try
 
-            Await ProgressOverlayService.RunWithOverlayAsync(
-            Me,
-            "Scanning installed installer versions..." &
-            Environment.NewLine &
-            "Please wait.",
-            Function()
-                Return Task.Run(
-                    Sub()
+                Await ProgressOverlayService.RunWithOverlayAsync(
+    Me,
+    $"Scanning installer versions in: {installerPath}",
+    "Initializing scan...",
+    Function()
 
-                        Dim swSafety As Stopwatch = Stopwatch.StartNew()
+        Return Task.Run(
+            Sub()
 
-                        InstallerTools.ApplyCleanupSafetyRules(
-    versions,
-    runExistingVersionPath:=_runExistingVersionPath,
-    progress:=Sub(msg)
-                  ProgressOverlayService.UpdateMessage(msg)
-              End Sub)
+                scanCompleted =
+                    InstallerTools.ApplyCleanupSafetyRules(
+                        versions,
+                        runExistingVersionPath:=_runExistingVersionPath,
+                        progress:=Sub(msg)
+                                      ProgressOverlayService.UpdateMessage(msg)
+                                  End Sub,
+                        progressPercent:=Sub(p)
+                                             ProgressOverlayService.UpdateProgress(p)
+                                         End Sub)
 
-                        swSafety.Stop()
+            End Sub)
 
-                    End Sub)
-            End Function)
+    End Function)
+                If Not scanCompleted Then
 
-            sw.Stop()
+                    log.AppendLine("Installer version scan cancelled by user")
+
+                    '            MessageBox.Show(
+                    '"The scan was cancelled.",
+                    '"Cancelled",
+                    'MessageBoxButtons.OK,
+                    'MessageBoxIcon.Information)
+                    UIHelpers.TimedInfoPrompt("The scan was cancelled.", "Installer Manager", 5)
+
+                    Return
+
+                End If
+                log.AppendLine("Cleanup safety rules applied")
+
+                sw.Stop()
+            Catch ex As OperationCanceledException
+                log.AppendLine("Installer version scan cancelled by user")
+                MessageBox.Show(
+                    "The scan was cancelled.",
+                    "Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information)
+                Return
+            End Try
 
 
             ' --------------------------------------------------
@@ -1831,29 +1993,58 @@ _options)
             Using dlg As New ManageInstallerVersionsForm(
             versions,
             installerPath)
+                log.AppendLine("Manage installer versions dialog opened")
 
                 sw.Stop()
 
+                dlg.LogMessage =
+                    Sub(message)
+                        log.AppendLine(message)
+                    End Sub
 
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
 
                     sw.Restart()
 
+                    log.AppendLine(
+                    $"Selected For Cleanup: {dlg.SelectedForCleanup.Count}")
+
                     Dim result =
                     InstallerTools.ExecuteInstallerVersionCleanup(
                         dlg.SelectedForCleanup)
+
+                    log.AppendLine(
+                    $"Deleted: {result.Deleted.Count}")
+
+                    log.AppendLine(
+                    $"Skipped: {result.Skipped.Count}")
+
+                    log.AppendLine(
+                    $"Failed: {result.Failed.Count}")
+
+                    log.AppendLine(
+                    $"Freed Space: {result.FreedBytes \ (1024 * 1024)} MB")
 
                     sw.Stop()
 
 
                     ShowCleanupSummary(result)
+                Else
+                    log.AppendLine("User cancelled cleanup dialog")
 
                 End If
 
             End Using
+        Catch ex As Exception
 
+            log.AppendLine(
+                $"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            Throw
         Finally
-
+            GlobalErrorHandler.LogAction(
+            "Manage Installer Versions",
+            log.ToString())
             btnManageInstallerVersions.Enabled = True
 
         End Try
@@ -1890,13 +2081,23 @@ _options)
     End Sub
 
     Private Sub btnAdvUpgrade_Click(sender As Object, e As EventArgs) Handles btnAdvUpgrade.Click
+        Dim log As New System.Text.StringBuilder()
         Dim Executable As String = "AdvUpgrade"
         Dim Version As Integer = CodeHelper.AdvExeCheck(Executable)
-
-        If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
-        If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
-
         Dim temp As String = ""
+
+        If Version = AppInstallState.InstalledX86 Then
+            Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
+            temp = "x86"
+        End If
+        If Version = AppInstallState.InstalledX64 Then
+            Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
+            temp = "x64"
+        End If
+        log.AppendLine($"Version detected is {temp}")
+        log.AppendLine($"Exexutable path is {Executable}")
+
+        temp = ""
         Dim startinfo As ProcessStartInfo = New ProcessStartInfo(Executable)
         startinfo.Arguments = ""
         startinfo.FileName = Executable
@@ -1905,9 +2106,15 @@ _options)
         If cbAdvUpgradeQuiet.Checked Then temp += AdvUpgradeConstants.Quiet + " "
         If cbAdvUpgradeNoSetup.Checked Then temp += AdvUpgradeConstants.NoSetup
         startinfo.Arguments = temp
+        log.AppendLine($"Arguments are {temp}")
 
 
         Process.Start(startinfo)
+
+        GlobalErrorHandler.LogAction(
+           "Launch AdvUpgrade",
+           log.ToString())
+
     End Sub
 
     Private Sub btnSaveApplicationInfoCSV_Click(sender As Object, e As EventArgs) Handles btnSaveApplicationInfoCSV.Click, btnSaveWebOptionsCSV.Click, btnSaveAppotionsCSV.Click
@@ -2153,7 +2360,7 @@ e As System.ComponentModel.CancelEventArgs
 
 
     Private Sub tbApplyFlavorDefault_TextChanged(sender As Object, e As EventArgs) Handles tbApplyFlavorDefault.TextChanged
-        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(_options.ApplyFlavorDefault))
+        UpdateOption(Sub() _options.ApplyFlavorDefault = Trim(tbApplyFlavorDefault.Text))
     End Sub
 
     Private Sub tbBackupPathOverride_TextChanged(sender As Object, e As EventArgs) Handles tbBackupPathOverride.TextChanged
@@ -2203,7 +2410,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub ShowSelectedLogFileInUI()
 
         Dim logFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         Using ofd As New OpenFileDialog()
 
@@ -2213,7 +2420,7 @@ e As System.ComponentModel.CancelEventArgs
                 .InitialDirectory =
                 If(Directory.Exists(logFolder),
                    logFolder,
-                   AppDomain.CurrentDomain.BaseDirectory)
+                   GlobalErrorHandler.LogFolder)
                 .Multiselect = False
             End With
 
@@ -2227,9 +2434,8 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub ShowLatestLogInUI()
-
         Dim logFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         If Not Directory.Exists(logFolder) Then
             MessageBox.Show("Log folder does not exist yet.")
@@ -2298,7 +2504,7 @@ e As System.ComponentModel.CancelEventArgs
     Private Sub btnLastLogBlock_Click(sender As Object, e As EventArgs) Handles btnLastLogBlock.Click
 
         Dim logFolder As String =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         If Not Directory.Exists(logFolder) Then
             MessageBox.Show("Log folder does not exist yet.")
@@ -2414,9 +2620,8 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub btnLastFailed_Click(sender As Object, e As EventArgs) Handles btnLastFailed.Click
-
         Dim logFolder As String =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")
+    GlobalErrorHandler.LogFolder
 
         If Not Directory.Exists(logFolder) Then
             MessageBox.Show("Log folder does not exist yet.")
@@ -2510,15 +2715,16 @@ e As System.ComponentModel.CancelEventArgs
     End Sub
 
     Private Sub btnUpdateShiftDate_Click(sender As Object, e As EventArgs) Handles btnUpdateShiftDate.Click
+        Dim log As New System.Text.StringBuilder()
 
         Try
+            log.AppendLine("Executing ChangeShiftDate stored procedure")
             Dim connectionString = ConfigValues.ConnectionString()
 
             DatabaseCoordinator.ExecuteStoredProcedure(
             connectionString,
             "ChangeShiftDate"
         )
-
         Catch ex As SqlException
 
             ' ✅ ONLY handle expected case
@@ -2526,8 +2732,10 @@ e As System.ComponentModel.CancelEventArgs
 
                 If ex.Message.Contains("PK_InvSnapShot") Then
                     MessageBox.Show("Conflict in InvSnapShot Table", "Docker Data")
+                    log.AppendLine("ERROR: InvSnapShot table conflict - " & Environment.NewLine & ex.Message)
                 Else
-                    MessageBox.Show("Shift date already exists.", "Duplicate")
+                    MessageBox.Show("Shift Date already exists.", "Duplicate")
+                    log.AppendLine("ERROR: Shift Date already exists - " & Environment.NewLine & ex.Message)
                 End If
 
                 Return ' ✅ stop propagation ONLY for this case
@@ -2536,18 +2744,17 @@ e As System.ComponentModel.CancelEventArgs
 
             ' ✅ IMPORTANT: let everything else go to GlobalErrorHandler
             Throw
+        Finally
 
+            GlobalErrorHandler.LogAction(
+            "SQL Transaction (EXEC ChangeShiftDate)",
+            log.ToString())
         End Try
 
     End Sub
 
-    Private Async Sub btnRunDatabaseStartLive_Click(
-    sender As Object,
-    e As EventArgs
-) Handles btnRunDatabaseStartLive.Click
-
+    Private Async Function ExecuteStartDatabaseAsync() As Task
         Dim flavors = GetSelectedAndDefaultFlavors()
-
         If flavors.Count = 0 Then
             MessageBox.Show(
             "No default flavors are configured and no flavors are selected.",
@@ -2556,7 +2763,6 @@ e As System.ComponentModel.CancelEventArgs
             MessageBoxIcon.Information)
             Return
         End If
-
         Await RunScriptAsync(
         scriptPath:=tbDatabaseStartDefault.Text,
         trigger:=btnRunDatabaseStartLive,
@@ -2565,21 +2771,46 @@ e As System.ComponentModel.CancelEventArgs
         useVersion:=cbDbUseVersion.Checked,
         versionText:=tbDbUseVersion.Text
     )
-
         DatabaseCoordinator.EvaluateDatabaseAvailability(
         form:=Me,
         connectionString:=ConfigValues.ConnectionString,
         configuredContainerName:=_options?.SqlContainerName
     )
-
         _uiStateController.Refresh()
+    End Function
+    Private Sub CopyStartDatabaseCommandLine()
+        Dim commandLine As String = BuildStartDatabaseCommandLine()
+        commandLine = commandLine.Replace("""", "")
+        Clipboard.SetText(commandLine)
 
+
+        UIHelpers.TimedInfoPrompt(
+        message:="Command line copied to clipboard:" &
+                 Environment.NewLine &
+                 Environment.NewLine &
+                 commandLine,
+        title:="Copy Start Database Command",
+        timeoutSeconds:=10)
     End Sub
-
-    Private Async Sub btnRunApplyFlavorLive_Click(
+    Private Async Sub btnRunDatabaseStartLive_Click(
     sender As Object,
     e As EventArgs
-) Handles btnRunApplyFlavorLive.Click
+) Handles btnRunDatabaseStartLive.Click
+
+        Select Case _options.DatabaseButtonMode
+
+            Case StartDatabaseButtonMode.StartDatabase
+
+                Await ExecuteStartDatabaseAsync()
+
+            Case StartDatabaseButtonMode.CopyCommandLine
+
+                CopyStartDatabaseCommandLine()
+
+        End Select
+
+    End Sub
+    Private Async Sub btnRunApplyFlavorLive_Click(sender As Object, e As EventArgs) Handles btnRunApplyFlavorLive.Click
 
         Dim flavors = GetSelectedAndDefaultFlavors()
 
@@ -2743,7 +2974,31 @@ e As System.ComponentModel.CancelEventArgs
 
 
     End Sub
+    Private Sub tsmiCopyStartDbCommandLine_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiCopyStartDbCommandLine.Click
 
+        CopyStartDatabaseCommandLine()
+
+    End Sub
+
+    Private Function BuildStartDatabaseCommandLine() As String
+
+        Dim flavors = GetSelectedAndDefaultFlavors()
+
+        Dim cmdOptions As New ScriptCommandOptions With {
+        .ScriptPath = tbDatabaseStartDefault.Text,
+        .FlavorNames = flavors,
+        .UseVersion = cbDbUseVersion.Checked,
+        .VersionText = tbDbUseVersion.Text
+    }
+
+        Dim args = _scriptController.BuildScriptArgs(cmdOptions)
+
+        Return $".\{Path.GetFileName(cmdOptions.ScriptPath)} {args}"
+
+    End Function
 
     Private Sub btnBackupScriptPath_Click(sender As Object, e As EventArgs) Handles btnBackupScriptPath.Click
 
@@ -2763,65 +3018,136 @@ e As System.ComponentModel.CancelEventArgs
         End If
     End Sub
 
-    Private Async Sub tsmiStartDbBackup_Click(sender As Object, e As EventArgs) Handles tsmiStartDbBackup.Click
-        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
-            MessageBox.Show(
+    Private Async Sub tsmiStartDbBackup_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiStartDbBackup.Click
+
+        Dim log As New System.Text.StringBuilder()
+
+        Try
+
+            log.AppendLine("Database start with backup requested")
+
+            If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+
+                log.AppendLine("Missing backup path")
+
+                MessageBox.Show(
                 "Please enter a backup path.",
                 "Missing Backup Path",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning)
-            Return
-        End If
 
-        Dim backupPath As String = tbBackupPathOverride.Text.Trim()
-        backupPath = String.Join("\", backupPath, "00Pathfinder.bak")
+                Return
 
-        ' Build argument string (Backup + Training DB)
-        Dim args As String = $"-BackupPath ""{backupPath}"" -IncludeTrainingDB"
+            End If
 
+            Dim backupPath As String = tbBackupPathOverride.Text.Trim()
+            backupPath = String.Join("\", backupPath, "00Pathfinder.bak")
 
-        Await RunScriptAsync(
+            log.AppendLine($"Backup Path: {backupPath}")
+
+            ' Build argument string (Backup + Training DB)
+            Dim args As String =
+            $"-BackupPath ""{backupPath}"" -IncludeTrainingDB"
+
+            log.AppendLine($"Arguments: {args}")
+
+            Await RunScriptAsync(
             scriptPath:=tbDatabaseStartDefault.Text,
             trigger:=btnTest1,
             statusText:="Starting database (test with backup + training DB)…",
             overrideArgs:=args
         )
 
-        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            log.AppendLine("RunScriptAsync completed successfully")
+
+            DatabaseCoordinator.EvaluateDatabaseAvailability(
             form:=Me,
             connectionString:=ConfigValues.ConnectionString,
             configuredContainerName:=_options?.SqlContainerName
         )
 
-        _uiStateController.Refresh()
+            log.AppendLine("Database availability evaluated")
+
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            Throw
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Start Database With Backup",
+            log.ToString())
+
+        End Try
 
     End Sub
+    Private Async Sub tsmiBackupDb_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiBackupDb.Click
 
-    Private Async Sub tsmiBackupDb_Click(sender As Object, e As EventArgs) Handles tsmiBackupDb.Click
-        Dim script As String = _options.BackupScriptPath
+        Dim log As New System.Text.StringBuilder()
 
+        Try
 
-        If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
-            MessageBox.Show(
-            "Please enter a backup directory.",
-            "Missing Directory",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Warning)
-            Return
-        End If
+            log.AppendLine("Database backup requested")
 
-        Dim directoryPath As String = tbBackupPathOverride.Text.Trim()
+            Dim script As String = _options.BackupScriptPath
 
-        ' Build argument string
-        Dim args As String = $"-Directory ""{directoryPath}"""
+            log.AppendLine($"Script: {script}")
 
-        Await RunScriptAsync(
-        scriptPath:=script,  ' or use a textbox if you have one
-        trigger:=btnTest2,
-        statusText:="Backing up database (force)…",
-        flavors:=Nothing,
-        overrideArgs:=args
-    )
+            If String.IsNullOrWhiteSpace(tbBackupPathOverride.Text) Then
+
+                log.AppendLine("Missing backup directory")
+
+                MessageBox.Show(
+                "Please enter a backup directory.",
+                "Missing Directory",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+
+                Return
+
+            End If
+
+            Dim directoryPath As String = tbBackupPathOverride.Text.Trim()
+
+            log.AppendLine($"Directory: {directoryPath}")
+
+            Dim args As String = $"-Directory ""{directoryPath}"""
+
+            log.AppendLine($"Arguments: {args}")
+
+            Await RunScriptAsync(
+            scriptPath:=script,
+            trigger:=btnTest2,
+            statusText:="Backing up database (force)…",
+            flavors:=Nothing,
+            overrideArgs:=args
+        )
+
+            log.AppendLine("Database backup completed successfully")
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            Throw
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Backup Database",
+            log.ToString())
+
+        End Try
 
     End Sub
 
@@ -2862,6 +3188,7 @@ e As System.ComponentModel.CancelEventArgs
 
         Using ofd As New OpenFileDialog()
             ofd.Filter = "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*"
+            ofd.InitialDirectory = Path.GetDirectoryName(OptionsManager.GetOptionsPath())
 
             If ofd.ShowDialog() = DialogResult.OK Then
                 Try
@@ -2954,66 +3281,114 @@ e As System.ComponentModel.CancelEventArgs
 
     Private Sub btnFlavorFileCopy_Click(sender As Object, e As EventArgs) Handles btnFlavorFileCopy.Click
 
-        If _options Is Nothing OrElse String.IsNullOrWhiteSpace(_options.FlavorFolderPath) Then
-            MessageBox.Show(
-            "Flavor folder path is not configured.",
-            "Configuration Error",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Warning)
-            Return
-        End If
+        Dim log As New StringBuilder()
 
-        If Not Directory.Exists(_options.FlavorFolderPath) Then
-            MessageBox.Show(
-            "Flavor folder does not exist.",
-            "Missing Folder",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Warning)
-            Return
-        End If
+        Try
 
-        Using ofd As New OpenFileDialog()
+            log.AppendLine("Flavor file import requested")
 
-            ofd.Title = "Select SQL Flavor Files"
-            ofd.Filter = "SQL Files (*.sql)|*.sql"
-            ofd.Multiselect = True
+            If _options Is Nothing OrElse
+           String.IsNullOrWhiteSpace(_options.FlavorFolderPath) Then
 
-            If ofd.ShowDialog() = DialogResult.OK Then
+                log.AppendLine("Flavor folder path is not configured")
+
+                MessageBox.Show(
+                "Flavor folder path is not configured.",
+                "Configuration Error",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+
+                Return
+
+            End If
+
+            If Not Directory.Exists(_options.FlavorFolderPath) Then
+
+                log.AppendLine("Flavor folder does not exist")
+
+                MessageBox.Show(
+                "Flavor folder does not exist.",
+                "Missing Folder",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning)
+
+                Return
+
+            End If
+
+            Using ofd As New OpenFileDialog()
+
+                ofd.Title = "Select SQL Flavor Files"
+                ofd.Filter = "SQL Files (*.sql)|*.sql"
+                ofd.Multiselect = True
+
+                If ofd.ShowDialog() <> DialogResult.OK Then
+
+                    log.AppendLine("User cancelled file selection")
+                    Return
+
+                End If
+                Dim sourceFolder As String = Path.GetDirectoryName(ofd.FileNames(0))
+
+                log.AppendLine($"Source Folder: {sourceFolder}")
+                log.AppendLine($"Destination(Flavors) Folder: {_options.FlavorFolderPath}")
+                log.AppendLine($"Files Selected: {ofd.FileNames.Length}")
 
                 Dim copiedCount As Integer = 0
 
                 For Each file In ofd.FileNames
 
                     Try
+
                         Dim fileName = Path.GetFileName(file)
                         Dim destPath = Path.Combine(_options.FlavorFolderPath, fileName)
 
-                        If System.IO.File.Exists(destPath) Then
-                            Dim result = MessageBox.Show(
-                $"File '{fileName}' already exists. Overwrite?",
-                "Confirm",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question)
+                        log.AppendLine($"Processing: {fileName}")
 
-                            If result <> DialogResult.Yes Then Continue For
+                        If System.IO.File.Exists(destPath) Then
+
+                            Dim result = MessageBox.Show(
+                            $"File '{fileName}' already exists. Overwrite?",
+                            "Confirm",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question)
+
+                            If result <> DialogResult.Yes Then
+
+                                log.AppendLine($"Skipped overwrite: {fileName}")
+                                Continue For
+
+                            End If
+
+                            log.AppendLine($"Overwrite approved: {fileName}")
+
                         End If
 
                         System.IO.File.Copy(file, destPath, True)
+
                         copiedCount += 1
 
+                        log.AppendLine($"Copied: {fileName}")
+
                     Catch ex As Exception
+
+                        log.AppendLine(
+                        $"ERROR copying {Path.GetFileName(file)}: {ex.Message}")
+
                         MessageBox.Show(
-            $"Failed to copy: {file}{Environment.NewLine}{ex.Message}",
-            "Copy Error",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error)
+                        $"Failed to copy: {file}{Environment.NewLine}{ex.Message}",
+                        "Copy Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+
                     End Try
 
                 Next
 
-                ' ✅ Refresh flavors list
                 _flavorManager.RefreshPreservingSelection()
                 SyncFlavorsListMirror()
+
+                log.AppendLine($"Files Copied: {copiedCount}")
 
                 MessageBox.Show(
                 $"{copiedCount} file(s) added to flavors.",
@@ -3021,9 +3396,15 @@ e As System.ComponentModel.CancelEventArgs
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information)
 
-            End If
+            End Using
 
-        End Using
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Import Flavor Files",
+            log.ToString())
+
+        End Try
 
     End Sub
 
@@ -3068,62 +3449,98 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles btnRunQaApi.Click
 
+        Dim log As New System.Text.StringBuilder()
+
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
-
         If String.IsNullOrWhiteSpace(fullCommand) Then
+
+            log.AppendLine("QA API launch requested")
+            log.AppendLine("No QA command line configured")
+
+            GlobalErrorHandler.LogAction(
+            "Run QA API",
+            log.ToString())
+
             MessageBox.Show(
             "No QA command line configured.",
             "Missing Command",
             MessageBoxButtons.OK,
             MessageBoxIcon.Warning)
+
             Return
+
         End If
 
         Try
+
+            log.AppendLine("QA API launch requested")
+            log.AppendLine($"Command: {fullCommand}")
+
             btnRunQaApi.Enabled = False
 
-            ' ✅ STEP 1: Parse command FIRST
-
+            ' Parse command
             Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
 
             Dim scriptPath = parsed.ScriptPath
             Dim args = parsed.Args
 
-            ' ✅ STEP 2: NOW detection works correctly
+            log.AppendLine($"Script Path: {scriptPath}")
+            log.AppendLine($"Arguments: {args}")
+
+            ' Check for existing instance
             If QaScriptHelper.IsScriptRunning(scriptPath) Then
 
+                log.AppendLine("Script already running")
+
                 UIHelpers.TimedWarningPrompt(
-            owner:=Me,
-            message:="The QA API script is already running." & Environment.NewLine &
-                     "Stop the existing instance before starting a new one.",
-            title:="Already Running",
-            timeoutSeconds:=10)
+                owner:=Me,
+                message:="The QA API script is already running." &
+                         Environment.NewLine &
+                         "Stop the existing instance before starting a new one.",
+                title:="Already Running",
+                timeoutSeconds:=10)
 
                 Return
+
             End If
 
-            ' ✅ STEP 3: Stop service
+            ' Stop service
+            Const serviceName As String = "AdvApiServer"
 
-            Dim serviceName As String = "AdvApiServer"
+            log.AppendLine($"Stopping service: {serviceName}")
 
-            Await Task.Run(Sub()
-                               Try
-                                   Using sc As New ServiceController(serviceName)
-                                       If sc.Status = ServiceControllerStatus.Running OrElse
-                   sc.Status = ServiceControllerStatus.StartPending Then
+            Await Task.Run(
+            Sub()
+                Try
 
-                                           sc.Stop()
-                                           sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
-                                       End If
-                                   End Using
-                               Catch ex As InvalidOperationException
-                               End Try
-                           End Sub)
+                    Using sc As New ServiceController(serviceName)
 
-            ' ✅ STEP 3: Launch PowerShell (separate window, persistent)
+                        If sc.Status = ServiceControllerStatus.Running OrElse
+                           sc.Status = ServiceControllerStatus.StartPending Then
+
+                            sc.Stop()
+                            sc.WaitForStatus(
+                                ServiceControllerStatus.Stopped,
+                                TimeSpan.FromSeconds(15))
+
+                        End If
+
+                    End Using
+
+                Catch ex As InvalidOperationException
+
+                    ' Service not installed/not found
+                End Try
+            End Sub)
+
+            log.AppendLine("Service stop completed")
+
+            ' Launch PowerShell
             Dim psCommand As String =
             $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            log.AppendLine("Launching PowerShell process")
 
             Dim psi As New ProcessStartInfo With {
             .FileName = "powershell.exe",
@@ -3134,16 +3551,28 @@ e As System.ComponentModel.CancelEventArgs
 
             Process.Start(psi)
 
+            log.AppendLine("QA API launched successfully")
+
         Catch ex As Exception
 
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
             MessageBox.Show(
-            "Failed to launch QA script:" & Environment.NewLine & ex.Message,
+            "Failed to launch QA script:" &
+            Environment.NewLine &
+            ex.Message,
             "Execution Error",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error)
 
         Finally
+
+            GlobalErrorHandler.LogAction(
+            "Run QA API",
+            log.ToString())
+
             btnRunQaApi.Enabled = True
+
         End Try
 
     End Sub
@@ -3155,24 +3584,43 @@ e As System.ComponentModel.CancelEventArgs
     e As EventArgs
 ) Handles tsmiRunQaApiRerunScript.Click
 
+        Dim log As New StringBuilder()
+
         Dim fullCommand As String = tbRunQaCmdLine.Text
 
         If String.IsNullOrWhiteSpace(fullCommand) Then
+
+            log.AppendLine("QA API restart requested")
+            log.AppendLine("No QA command line configured")
+
+            GlobalErrorHandler.LogAction(
+            "Restart QA API",
+            log.ToString())
+
             MessageBox.Show(
             "No QA command line configured.",
             "Missing Command",
             MessageBoxButtons.OK,
             MessageBoxIcon.Warning)
+
             Return
+
         End If
 
         Try
+
+            log.AppendLine("QA API restart requested")
+            log.AppendLine($"Command: {fullCommand}")
+
             tsmiRunQaApiRerunScript.Enabled = False
 
             ' ✅ STEP 1: Parse command
             Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
             Dim scriptPath = parsed.ScriptPath
             Dim args = parsed.Args
+
+            log.AppendLine($"Script Path: {scriptPath}")
+            log.AppendLine($"Arguments: {args}")
 
             ' ✅ STEP 2: Confirm restart
             Dim confirm As DialogResult
@@ -3192,21 +3640,35 @@ e As System.ComponentModel.CancelEventArgs
                 defaultChoice:=If(_options.QaRunPromptAction,
                                   DialogResult.Yes,
                                   DialogResult.No))
-
             Else
-                ' ✅ Prompt disabled → always proceed
+
+                log.AppendLine("Prompt disabled - auto approved")
+
                 confirm = DialogResult.Yes
+
             End If
 
             If confirm <> DialogResult.Yes Then
+
+                log.AppendLine("User cancelled restart")
+
                 Return
+
             End If
 
+            log.AppendLine("Restart approved")
+
             ' ✅ STEP 3: Kill running script instances
+            log.AppendLine("Stopping existing QA API script instances")
+
             Await CodeHelper.KillQaScriptIfRunningAsync(fullCommand)
+
+            log.AppendLine("Existing script instances stopped")
 
             ' ✅ STEP 4: Stop Windows service
             Dim serviceName As String = "AdvApiServer"
+
+            log.AppendLine($"Stopping service: {serviceName}")
 
             Await Task.Run(
             Sub()
@@ -3217,19 +3679,26 @@ e As System.ComponentModel.CancelEventArgs
                            sc.Status = ServiceControllerStatus.StartPending Then
 
                             sc.Stop()
-                            sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15))
+                            sc.WaitForStatus(
+                                ServiceControllerStatus.Stopped,
+                                TimeSpan.FromSeconds(15))
 
                         End If
 
                     End Using
+
                 Catch
                     ' Ignore if not installed
                 End Try
             End Sub)
 
+            log.AppendLine("Service stop completed")
+
             ' ✅ STEP 5: Launch fresh instance
             Dim psCommand As String =
             $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
+
+            log.AppendLine("Launching fresh QA API instance")
 
             Dim psi As New ProcessStartInfo With {
             .FileName = "powershell.exe",
@@ -3240,29 +3709,41 @@ e As System.ComponentModel.CancelEventArgs
 
             Process.Start(psi)
 
+            log.AppendLine("QA API restarted successfully")
+
         Catch ex As Exception
 
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
             MessageBox.Show(
-            "Failed to restart QA script:" & Environment.NewLine & ex.Message,
+            "Failed to restart QA script:" &
+            Environment.NewLine &
+            ex.Message,
             "Execution Error",
             MessageBoxButtons.OK,
             MessageBoxIcon.Error)
 
         Finally
+
+            GlobalErrorHandler.LogAction(
+            "Restart QA API",
+            log.ToString())
+
             tsmiRunQaApiRerunScript.Enabled = True
+
         End Try
 
     End Sub
 
-    Private Async Sub tsmiQaScriptKill_Click(
-    sender As Object,
-    e As EventArgs
-) Handles tsmiQaScriptKill.Click
+    Private Async Sub tsmiQaScriptKill_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptKill.Click
+        Dim log As New System.Text.StringBuilder()
+        Dim timeStamp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
         Try
             tsmiQaScriptKill.Enabled = False
 
             Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
+            log.AppendLine($"[{timeStamp}] QA script kill requested and executed.")
 
         Catch ex As Exception
             MessageBox.Show(
@@ -3272,6 +3753,10 @@ e As System.ComponentModel.CancelEventArgs
             MessageBoxIcon.Error)
         Finally
             tsmiQaScriptKill.Enabled = True
+            GlobalErrorHandler.LogAction(
+            "Kill QA Script",
+            log.ToString())
+
         End Try
 
     End Sub
@@ -3342,17 +3827,27 @@ e As System.ComponentModel.CancelEventArgs
     sender As Object,
     e As EventArgs
 ) Handles btnConnectionProfiles.Click
+        Dim log As New StringBuilder()
 
-        Using dlg As New ConnectionProfilesForm()
+        Try
+            Using dlg As New ConnectionProfilesForm()
+                dlg.ShowDialog(Me)
 
-            dlg.ShowDialog(Me)
+                If dlg.ConnectionChanged Then
+                    Dim strTemp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
 
-            If dlg.ConnectionChanged Then
+                    log.AppendLine($"TimeStamp:  {strTemp} | Restarting: {_options.WindowTitle} to apply new connection profile")
+                    GlobalErrorHandler.LogAction("Connection Profile (PFSConnect.ini) change", log.ToString())
 
-                ReloadApplication()
-            End If
+                    ReloadApplication()
+                End If
+            End Using
 
-        End Using
+        Catch ex As Exception
+            Throw
+
+        End Try
+
     End Sub
     Private Sub btnInstallPathFallback_Click(sender As Object, e As EventArgs) Handles btnInstallPathFallback.Click
 
@@ -3381,4 +3876,129 @@ e As System.ComponentModel.CancelEventArgs
             End If
         End Using
     End Sub
+
+    Private Sub UpdateStartDatabaseButton()
+        If _options Is Nothing Then Return
+        Dim strTemp As String
+
+        Dim isStartDefault =
+            _options.DatabaseButtonMode =
+            StartDatabaseButtonMode.StartDatabase
+
+        btnRunDatabaseStartLive.Text =
+            If(isStartDefault,
+               "Start Database",
+               "Copy Command Line")
+
+        tsmiStartDatabase.Visible = Not isStartDefault
+        tsmiCopyStartDbCommandLine.Visible = isStartDefault
+
+        tsmiDefaultStartDatabase.Checked = isStartDefault
+        tsmiDefaultCopyCommandLine.Checked = Not isStartDefault
+        If isStartDefault Then
+
+            strTemp =
+                "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
+                "Right Click for other Start Database options:" & Environment.NewLine &
+                " - Start with no flavors (raw)" & Environment.NewLine &
+                " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+                " - Backup the database to 00Pathfinder"
+
+        Else
+
+            strTemp =
+                "Copies the Start-Database PowerShell command line to the clipboard using the current Assistant settings." & Environment.NewLine &
+                "Current flavor and version selections are included." & Environment.NewLine &
+                Environment.NewLine &
+                "Right Click for other Start Database options:" & Environment.NewLine &
+                " - Start Database" & Environment.NewLine &
+                " - Start with no flavors (raw)" & Environment.NewLine &
+                " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
+                " - Backup the database to 00Pathfinder"
+
+        End If
+
+        ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
+    End Sub
+    Private Sub tsmiDefaultStartDatabase_Click(
+        sender As Object,
+        e As EventArgs
+    ) Handles tsmiDefaultStartDatabase.Click
+
+        UpdateOption(
+            Sub()
+                _options.DatabaseButtonMode =
+                    StartDatabaseButtonMode.StartDatabase
+            End Sub)
+
+        UpdateStartDatabaseButton()
+
+    End Sub
+    Private Sub tsmiDefaultCopyCommandLine_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiDefaultCopyCommandLine.Click
+
+        UpdateOption(
+            Sub()
+                _options.DatabaseButtonMode =
+                    StartDatabaseButtonMode.CopyCommandLine
+            End Sub)
+
+        UpdateStartDatabaseButton()
+
+    End Sub
+    Private Async Sub tsmiStartDatabase_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiStartDatabase.Click
+
+        Await ExecuteStartDatabaseAsync()
+
+    End Sub
+
+
+    Private Sub btnClearActivityLog_Click(sender As Object, e As EventArgs) Handles btnClearActivityLog.Click
+
+        GlobalErrorHandler.ClearTodayActivityLog()
+        ShowLatestLogInUI()
+
+        UIHelpers.TimedInfoPrompt(
+message:="Today's activity log has been cleared.",
+title:="Activity Log",
+timeoutSeconds:=10)
+
+    End Sub
+
+    Private Sub RefreshLogFromTabName()
+
+        Const prefix As String = "Logs: "
+
+        If Not tpLogs.Text.StartsWith(prefix) Then Return
+        Dim fileName As String = tpLogs.Text.Substring(prefix.Length).Trim()
+
+        If String.IsNullOrWhiteSpace(fileName) Then Return
+        Dim fullPath As String = Path.Combine(GlobalErrorHandler.LogFolder, fileName)
+
+        If Not File.Exists(fullPath) Then Return
+
+        Try
+
+            Dim currentPosition = rtbLogs.SelectionStart
+
+            rtbLogs.Text = File.ReadAllText(fullPath)
+            rtbLogs.SelectionStart = Math.Min(currentPosition, rtbLogs.TextLength)
+            rtbLogs.ScrollToCaret()
+
+        Catch ex As Exception
+
+            MessageBox.Show(
+            "Failed to refresh log file:" &
+            Environment.NewLine &
+            ex.Message)
+
+        End Try
+
+    End Sub
+
 End Class

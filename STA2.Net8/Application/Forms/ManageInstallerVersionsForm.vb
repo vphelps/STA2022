@@ -2,7 +2,7 @@
 Imports System.Windows.Forms.Design.AxImporter
 
 Public Class ManageInstallerVersionsForm
-
+    Public Property LogMessage As Action(Of String)
     Private ReadOnly _versions As List(Of InstallerVersionInfo)
     Private _suppressSelection As Boolean
     Private _options As AppOptions
@@ -41,6 +41,11 @@ Public Class ManageInstallerVersionsForm
         PopulateList()
         UpdateSummary()
     End Sub
+    Private Sub AddToLog(message As String)
+
+        LogMessage?.Invoke(message)
+
+    End Sub
 
     ' -------------------------
     ' Populate version list
@@ -76,8 +81,6 @@ Public Class ManageInstallerVersionsForm
     ' -------------------------
     Private Function FormatDisplayText(info As InstallerVersionInfo) As String
 
-        Dim sizeMb = info.SizeBytes \ (1024 * 1024)
-
         Dim label As String
 
         ' ✅ Current = INSTALLED version, not highest
@@ -98,7 +101,7 @@ Public Class ManageInstallerVersionsForm
        "✅ ",
        If(info.CanDelete, "", "🔒 "))
 
-        Return $"{prefix}{info.VersionString,-28} {label,-12} {sizeMb,6} MB"
+        Return $"{prefix}{info.VersionString,-28} {label}"
 
     End Function    ' -------------------------
     ' CheckedListBox rendering
@@ -210,6 +213,8 @@ Public Class ManageInstallerVersionsForm
         Finally
             _suppressSelection = False
         End Try
+        Dim count = SelectedForCleanup.Count
+        AddToLog($"Selected all deletable versions ({count} selected)")
 
         ' ✅ Update summary once after changes
         UpdateSummary()
@@ -248,25 +253,22 @@ Public Class ManageInstallerVersionsForm
 
     End Function
 
-
     Private Sub UpdateSummary()
 
         Dim totalBytes As Long =
-        SelectedForCleanup.Sum(Function(v) v.SizeBytes)
-
-        Dim totalMb = totalBytes \ (1024 * 1024)
+        SelectedForCleanup.Sum(
+            Function(v)
+                Return InstallerTools.GetDirectorySizeBytesRecursive(v.FolderPath)
+            End Function)
 
         lblSummary.Text =
-        $"Selected cleanup will free: {totalMb} MB"
+        $"Selected cleanup will free: {FormatBytes(totalBytes)}"
 
-        ' ✅ Enable Cleanup only if something is selected
         btnCleanup.Enabled = SelectedForCleanup.Count > 0
         btnUnselectAll.Enabled = SelectedForCleanup.Count > 0
 
-        ' ✅ NEW: Enable "Select All Deletable" only if something CAN be deleted
         btnSelectAllDeletable.Enabled =
         _versions.Any(Function(v) v.CanDelete)
-
 
     End Sub
 
@@ -285,10 +287,13 @@ Public Class ManageInstallerVersionsForm
         Using confirm As New ConfirmInstallerVersionCleanupForm(selected)
 
             If confirm.ShowDialog(Me) = DialogResult.OK Then
-                ' ✅ User explicitly approved deletion
-                ' 🔜 Step E will perform the actual cleanup
+
                 DialogResult = DialogResult.OK
                 Close()
+                AddToLog($"Cleanup requested for {selected.Count} version(s)")
+                AddToLog("Cleanup confirmed: " & String.Join(", ", selected.Select(Function(v) v.VersionString)))
+            Else
+                AddToLog("Cleanup confirmation cancelled")
             End If
 
         End Using
@@ -298,7 +303,7 @@ Public Class ManageInstallerVersionsForm
         sender As Object,
         e As EventArgs
     ) Handles btnCancel.Click
-
+        AddToLog("User cancelled installer version management")
         DialogResult = DialogResult.Cancel
         Close()
 
@@ -309,6 +314,7 @@ Public Class ManageInstallerVersionsForm
         For i As Integer = 0 To clbVersions.Items.Count - 1
             clbVersions.SetItemChecked(i, False)
         Next
+        AddToLog("Cleared all cleanup selections")
         UpdateSummary()
     End Sub
 
@@ -322,7 +328,7 @@ Public Class ManageInstallerVersionsForm
 
         Dim info = TryCast(clbVersions.Items(index), InstallerVersionInfo)
         If info Is Nothing Then Return
-
+        AddToLog($"Installer launch requested: {info.VersionString}")
         LaunchInstaller(info)
 
     End Sub
@@ -359,5 +365,21 @@ Public Class ManageInstallerVersionsForm
 
     End Sub
 
+    Private Function FormatBytes(bytes As Long) As String
 
+        Const KB As Double = 1024
+        Const MB As Double = KB * 1024
+        Const GB As Double = MB * 1024
+
+        If bytes >= GB Then
+            Return $"{bytes / GB:F2} GB"
+        End If
+
+        If bytes >= MB Then
+            Return $"{bytes / MB:N0} MB"
+        End If
+
+        Return $"{bytes / KB:N0} KB"
+
+    End Function
 End Class

@@ -437,14 +437,18 @@ Public Module InstallerTools
     Public Function GetDirectorySizeBytes(path As String) As Long
         Dim total As Long = 0
 
-        For Each file In Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-            Try
-                total += New FileInfo(file).Length
-            Catch
-                ' Ignore inaccessible files
-            End Try
-        Next
+        'For Each file In Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+        '    Try
+        '        total += New FileInfo(file).Length
+        '    Catch
+        '        ' Ignore inaccessible files
+        '    End Try
+        'Next
+        For Each file In Directory.EnumerateFiles(path, "*", SearchOption.TopDirectoryOnly)
 
+            total += New FileInfo(file).Length
+
+        Next
         Return total
     End Function
 
@@ -506,13 +510,12 @@ Public Module InstallerTools
             End If
 
             Dim info As New InstallerVersionInfo With {
-            .Version = parsedVersion,
-            .VersionString = dirName,
-            .FolderPath = dirPath,
-            .CreationTime = Directory.GetCreationTime(dirPath),
-            .SizeBytes = GetDirectorySizeBytes(dirPath),
-            .Track = GetReleaseTrack(parsedVersion)
-        }
+    .Version = parsedVersion,
+    .VersionString = dirName,
+    .FolderPath = dirPath,
+    .CreationTime = Directory.GetCreationTime(dirPath),
+    .Track = GetReleaseTrack(parsedVersion)
+}
 
             results.Add(info)
 
@@ -539,10 +542,14 @@ Public Module InstallerTools
         Try
 
             Dim files =
-            Directory.EnumerateFiles(
-                folderPath,
-                "*",
-                SearchOption.AllDirectories).ToList()
+             Directory.EnumerateFiles(
+            folderPath,
+            "*",
+            SearchOption.TopDirectoryOnly)
+            'Directory.EnumerateFiles(
+            '    folderPath,
+            '    "*",
+            '    SearchOption.AllDirectories).ToList()
 
 
             For Each filePath As String In files
@@ -634,12 +641,12 @@ Public Module InstallerTools
         Return False
     End Function
 
-    Public Sub ApplyCleanupSafetyRules(
+    Public Function ApplyCleanupSafetyRules(
     versions As List(Of InstallerVersionInfo),
     Optional runExistingVersionPath As String = Nothing,
-    Optional progress As Action(Of String) = Nothing
-)
-
+    Optional progress As Action(Of String) = Nothing,
+    Optional progressPercent As Action(Of Integer) = Nothing
+) As Boolean
         ' --------------------------------------------------------
         ' Resolve installed installer folder ONCE
         ' --------------------------------------------------------
@@ -648,12 +655,23 @@ Public Module InstallerTools
             AppData.UpgradePath,
             "AdvCoreService"
         )
+        ' --------------------------------------------------------
+        ' Resolve newest LTS version ONCE
+        ' --------------------------------------------------------
+        Dim latestLtsVersion As InstallerVersionInfo =
+    versions.
+        Where(Function(v) v.Track = ReleaseTrack.LongTermSupport).
+        OrderByDescending(Function(v) v.Version).
+        FirstOrDefault()
 
         Dim total As Integer = versions.Count
         Dim current As Integer = 0
 
         For Each v In versions
-
+            If ProgressOverlayService.CancellationToken.IsCancellationRequested Then
+                progress?.Invoke("Scan cancelled.")
+                Return False
+            End If
             current += 1
 
             Dim percent As Integer
@@ -663,16 +681,18 @@ Public Module InstallerTools
             Else
                 percent = 0
             End If
-
+            If progressPercent IsNot Nothing Then
+                progressPercent.Invoke(percent)
+            End If
             If progress IsNot Nothing Then
 
-                progress.Invoke(
-                "Evaluating installer versions..." &
-                Environment.NewLine &
-                $"{current} of {total} ({percent}%)" &
-                Environment.NewLine &
-                v.VersionString)
-
+                'progress.Invoke(
+                '"Evaluating installer versions..." &
+                'Environment.NewLine &
+                '$"{current} of {total} ({percent}%)" &
+                'Environment.NewLine &
+                'v.VersionString)
+                progress.Invoke($"Checking installer version {current} of {total}")
             End If
 
             ' ====================================================
@@ -702,9 +722,10 @@ Public Module InstallerTools
             End If
 
             ' ====================================================
-            ' RULE 2 — LTS
+            ' RULE 2 — LATEST LTS ONLY
             ' ====================================================
-            If v.Track = ReleaseTrack.LongTermSupport Then
+            If latestLtsVersion IsNot Nothing AndAlso
+   Object.ReferenceEquals(v, latestLtsVersion) Then
 
                 v.LockReason = VersionLockReason.LongTermSupport
 
@@ -754,8 +775,8 @@ Public Module InstallerTools
             v.LockReason = VersionLockReason.None
 
         Next
-
-    End Sub
+        Return True
+    End Function
     Public Function ExecuteInstallerVersionCleanup(
         versionsToDelete As List(Of InstallerVersionInfo)
     ) As InstallerCleanupResult
@@ -773,6 +794,7 @@ Public Module InstallerTools
             Try
                 ' Final sanity check
                 If Directory.Exists(info.FolderPath) Then
+                    info.SizeBytes = GetDirectorySizeBytesRecursive(info.FolderPath)
                     Directory.Delete(info.FolderPath, recursive:=True)
                 End If
 
@@ -786,5 +808,23 @@ Public Module InstallerTools
 
         Return result
     End Function
+    Public Function GetDirectorySizeBytesRecursive(path As String) As Long
 
+        Dim total As Long = 0
+
+        For Each file In Directory.EnumerateFiles(
+            path,
+            "*",
+            SearchOption.AllDirectories)
+
+            Try
+                total += New FileInfo(file).Length
+            Catch
+            End Try
+
+        Next
+
+        Return total
+
+    End Function
 End Module
