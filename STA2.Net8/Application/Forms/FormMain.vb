@@ -4034,4 +4034,13 @@ timeoutSeconds:=10)
 
     End Sub
 
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+
+        Using dlg As New QAScriptConfigForm(_options)
+            dlg.FormBorderStyle = FormBorderStyle.FixedToolWindow
+            dlg.ShowDialog(Me)
+
+        End Using
+
+    End Sub
 End Class
