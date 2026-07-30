@@ -115,4 +115,17 @@ Public Class QaScriptHelper
         End If
 
     End Sub
+    Public Shared Function IsQaApiRunning(
+    commandLine As String
+) As Boolean
+
+        If String.IsNullOrWhiteSpace(commandLine) Then
+            Return False
+        End If
+
+        Dim parsed = ParseCommand(commandLine)
+
+        Return IsScriptRunning(parsed.ScriptPath)
+
+    End Function
 End Class

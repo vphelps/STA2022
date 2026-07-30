@@ -207,6 +207,7 @@ Public Class FormMain
 
 
     End Sub
+
     Private Async Function RunScriptAsync(
     scriptPath As String,
     trigger As Button,
@@ -2073,9 +2074,41 @@ Public Class FormMain
         Dim caller = DirectCast(sender, Button)
         Dim Executable = caller.Name.Replace("btn", "")
         Dim Version As Integer = AdvExeCheck(Executable)
+        Dim log As New System.Text.StringBuilder()
 
         If Version = AppInstallState.InstalledX86 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath86, Executable)
         If Version = AppInstallState.InstalledX64 Then Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
+        Try
+
+            Dim qaApiRunning As Boolean = QaScriptHelper.IsQaApiRunning(tbRunQaCmdLine.Text)
+            If caller.Name <> "btnAdvReportEditor" Then
+                If qaApiRunning Then
+                    ' Future QA-running behavior
+                    log.AppendLine($"QA API is running. Executing {Executable} with QA API.")
+                    log.AppendLine("QA API Is running, Applications should work")
+                    log.AppendLine("Since QA API is running, the application will be launched")
+                    MessageBox.Show("QA API Is running, Applications should work", "QA API Running", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Else
+                    ' Future QA-not-running behavior
+                    log.AppendLine($"QA API Is Not running. Executing {Executable} without QA API.")
+                    log.AppendLine("QA API Is Not running, Applications errors will occur")
+                    log.AppendLine("Since QA API is not running, the application will not be started")
+                    MessageBox.Show("QA API Is Not running, Applications errors will occur", "QA API Not Running", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End If
+            Else
+                ' Future Report Editor behavior
+                log.AppendLine("Report Editor does Not require QA API To be running")
+                MessageBox.Show("Firing Report Editor", "Advantage Report Editor button", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            End If
+        Catch ex As Exception
+        Finally
+            GlobalErrorHandler.LogAction(
+            "Advantage Buttons",
+            log.ToString())
+        End Try
+
+        Exit Sub
+
 
         Process.Start(Executable)
     End Sub
@@ -2094,8 +2127,8 @@ Public Class FormMain
             Executable = String.Format("{0}{1}.exe", AppData.CEPath64, Executable)
             temp = "x64"
         End If
-        log.AppendLine($"Version detected is {temp}")
-        log.AppendLine($"Exexutable path is {Executable}")
+        log.AppendLine($"Version detected Is {temp}")
+        log.AppendLine($"Exexutable path Is {Executable}")
 
         temp = ""
         Dim startinfo As ProcessStartInfo = New ProcessStartInfo(Executable)
