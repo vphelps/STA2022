@@ -26,13 +26,15 @@ Partial Class QAScriptConfigForm
         gbQaService = New GroupBox()
         rbQaServiceDeny = New RadioButton()
         rbQaServiceAllow = New RadioButton()
-        lblTest1 = New Label()
+        cbQaScriptStartWithApp = New CheckBox()
+        btnOk = New Button()
         gbQaService.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnCancel
         ' 
-        btnCancel.Location = New Point(704, 415)
+        btnCancel.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        btnCancel.Location = New Point(227, 141)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(75, 23)
         btnCancel.TabIndex = 0
@@ -72,23 +74,36 @@ Partial Class QAScriptConfigForm
         rbQaServiceAllow.Text = "Yes"
         rbQaServiceAllow.UseVisualStyleBackColor = True
         ' 
-        ' lblTest1
+        ' cbQaScriptStartWithApp
         ' 
-        lblTest1.AutoSize = True
-        lblTest1.Location = New Point(149, 299)
-        lblTest1.Name = "lblTest1"
-        lblTest1.Size = New Size(41, 15)
-        lblTest1.TabIndex = 2
-        lblTest1.Text = "Label1"
+        cbQaScriptStartWithApp.AutoSize = True
+        cbQaScriptStartWithApp.Location = New Point(34, 96)
+        cbQaScriptStartWithApp.Name = "cbQaScriptStartWithApp"
+        cbQaScriptStartWithApp.Size = New Size(179, 19)
+        cbQaScriptStartWithApp.TabIndex = 4
+        cbQaScriptStartWithApp.Text = "Start QA Script if not running"
+        cbQaScriptStartWithApp.UseVisualStyleBackColor = True
+        ' 
+        ' btnOk
+        ' 
+        btnOk.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        btnOk.Location = New Point(146, 141)
+        btnOk.Name = "btnOk"
+        btnOk.Size = New Size(75, 23)
+        btnOk.TabIndex = 5
+        btnOk.Text = "Ok"
+        btnOk.UseVisualStyleBackColor = True
         ' 
         ' QAScriptConfigForm
         ' 
+        AcceptButton = btnOk
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnCancel
-        ClientSize = New Size(800, 450)
+        ClientSize = New Size(323, 176)
         ControlBox = False
-        Controls.Add(lblTest1)
+        Controls.Add(btnOk)
+        Controls.Add(cbQaScriptStartWithApp)
         Controls.Add(gbQaService)
         Controls.Add(btnCancel)
         FormBorderStyle = FormBorderStyle.FixedToolWindow
@@ -109,5 +124,6 @@ Partial Class QAScriptConfigForm
     Friend WithEvents gbQaService As GroupBox
     Friend WithEvents rbQaServiceDeny As RadioButton
     Friend WithEvents rbQaServiceAllow As RadioButton
-    Friend WithEvents lblTest1 As Label
+    Friend WithEvents cbQaScriptStartWithApp As CheckBox
+    Friend WithEvents btnOk As Button
 End Class
