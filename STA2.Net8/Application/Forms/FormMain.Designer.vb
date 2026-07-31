@@ -291,6 +291,7 @@ Partial Class FormMain
         tsmiQaScriptKill = New ToolStripMenuItem()
         cmsSeparator1 = New ToolStripSeparator()
         tsmiQaMenuPromptDefaults = New ToolStripMenuItem()
+        tsmiQaScriptOptions = New ToolStripMenuItem()
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
@@ -3271,9 +3272,9 @@ Partial Class FormMain
         ' 
         ' cmsRunQaApi
         ' 
-        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiRerunScript, tsmiQaScriptKill, cmsSeparator1, tsmiQaMenuPromptDefaults})
+        cmsRunQaApi.Items.AddRange(New ToolStripItem() {tsmiRunQaApiRerunScript, tsmiQaScriptKill, cmsSeparator1, tsmiQaMenuPromptDefaults, tsmiQaScriptOptions})
         cmsRunQaApi.Name = "cmsRunQaApi"
-        cmsRunQaApi.Size = New Size(289, 76)
+        cmsRunQaApi.Size = New Size(289, 98)
         ' 
         ' tsmiRunQaApiRerunScript
         ' 
@@ -3297,6 +3298,12 @@ Partial Class FormMain
         tsmiQaMenuPromptDefaults.Name = "tsmiQaMenuPromptDefaults"
         tsmiQaMenuPromptDefaults.Size = New Size(288, 22)
         tsmiQaMenuPromptDefaults.Text = "Set Prompt Defaults"
+        ' 
+        ' tsmiQaScriptOptions
+        ' 
+        tsmiQaScriptOptions.Name = "tsmiQaScriptOptions"
+        tsmiQaScriptOptions.Size = New Size(288, 22)
+        tsmiQaScriptOptions.Text = "Edit Qa Script/Application settings"
         ' 
         ' btnUpdateShiftDate
         ' 
@@ -3763,4 +3770,5 @@ Partial Class FormMain
     Friend WithEvents tsmiDefaultStartDatabase As ToolStripMenuItem
     Friend WithEvents tsmiDefaultCopyCommandLine As ToolStripMenuItem
     Friend WithEvents btnClearActivityLog As Button
+    Friend WithEvents tsmiQaScriptOptions As ToolStripMenuItem
 End Class

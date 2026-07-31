@@ -29,6 +29,8 @@ Public Enum DatabaseEnvironment
 End Enum
 Public Structure PCInfo
     Public Shared Name As String = ""
+    Public Shared IPv4Addresses As New List(Of String)
+    Public Shared IPv6Addresses As New List(Of String)
     Public Shared OpSys As String = ""
     Public Shared Ram As String = ""
     Public Shared FreeSpace As String = ""
@@ -101,31 +103,16 @@ Public Class ConfigValues
             Return csb.ConnectionString
         End Get
     End Property
-    '' ============================================================
-    '' Derived connection strings (used for detection)
-    '' ============================================================
+    Public Class DatabaseServerCheckResult
 
-    'Public Shared ReadOnly Property DockerConnectionString As String
-    '    Get
-    '        Dim csb As New SqlConnectionStringBuilder(ConnectionString)
+        Public Property IsDatabaseServer As Boolean
 
-    '        ' ✅ Force Docker endpoint (always port 1433)
-    '        csb.DataSource = "127.0.0.1,1433"
+        Public Property ServerValue As String
 
-    '        Return csb.ConnectionString
-    '    End Get
-    'End Property
+        Public Property MatchesIpv4 As Boolean
+        Public Property MatchesIpv6 As Boolean
+        Public Property MatchesMachineName As Boolean
+        Public Property MatchesLocalHost As Boolean
 
-
-    'Public Shared ReadOnly Property LocalSqlConnectionString As String
-    '    Get
-    '        Dim csb As New SqlConnectionStringBuilder(ConnectionString)
-
-    '        ' ✅ Force local instance
-    '        csb.DataSource = "localhost"
-
-    '        Return csb.ConnectionString
-    '    End Get
-    'End Property
-    Public Property CurrentDatabaseEnvironment As DatabaseEnvironment
+    End Class
 End Class

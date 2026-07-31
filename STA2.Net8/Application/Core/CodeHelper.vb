@@ -1,6 +1,9 @@
 ﻿Imports System.IO
+Imports System.Net.NetworkInformation
+Imports System.Net.Sockets
 Imports System.Windows.Forms
 Imports System.Windows.Forms.Design.AxImporter
+Imports STA2.Net8.ConfigValues
 
 Public Module CodeHelper
 
@@ -227,6 +230,7 @@ Public Module CodeHelper
 
         PCInfo.FreeSpace = $"{freeSpace} GB free of {totalSpace} GB ({pct:F2}% free)"
         PCInfo.Architecture = If(Environment.Is64BitOperatingSystem, "x64", "x86")
+        LoadIpAddresses()
     End Sub
 
     Public Function CeInfo() As String
@@ -497,4 +501,109 @@ Public Module CodeHelper
 
     End Sub
 
+
+    Public Sub LoadIpAddresses()
+
+        PCInfo.IPv4Addresses.Clear()
+        PCInfo.IPv6Addresses.Clear()
+
+        For Each nic As NetworkInterface In NetworkInterface.GetAllNetworkInterfaces()
+
+            If nic.OperationalStatus <> OperationalStatus.Up Then
+                Continue For
+            End If
+
+            If nic.NetworkInterfaceType = NetworkInterfaceType.Loopback Then
+                Continue For
+            End If
+
+            For Each ua In nic.GetIPProperties().UnicastAddresses
+
+                Select Case ua.Address.AddressFamily
+
+                    Case AddressFamily.InterNetwork
+
+                        Dim ip = ua.Address.ToString()
+
+                        If Not PCInfo.IPv4Addresses.Contains(ip) Then
+                            PCInfo.IPv4Addresses.Add(ip)
+                        End If
+
+                    Case AddressFamily.InterNetworkV6
+
+                        If Not ua.Address.IsIPv6LinkLocal Then
+
+                            Dim ip = ua.Address.ToString()
+
+                            If Not PCInfo.IPv6Addresses.Contains(ip) Then
+                                PCInfo.IPv6Addresses.Add(ip)
+                            End If
+
+                        End If
+
+                End Select
+
+            Next
+
+        Next
+        PCInfo.IPv4Addresses.Sort()
+        PCInfo.IPv6Addresses.Sort()
+    End Sub
+    Public Function CheckDatabaseServer() As DatabaseServerCheckResult
+
+        Dim result As New DatabaseServerCheckResult()
+
+        Dim serverValue As String = ConfigValues.Server
+
+        If String.IsNullOrWhiteSpace(serverValue) Then
+            Return result
+        End If
+
+        serverValue = serverValue.Trim()
+        serverValue = serverValue.Split(","c)(0).Trim()
+        serverValue = serverValue.Split("\"c)(0).Trim()
+
+        result.ServerValue = serverValue
+
+        result.MatchesIpv4 =
+        PCInfo.IPv4Addresses.Any(
+            Function(ip)
+                String.Equals(
+                    ip,
+                    serverValue,
+                    StringComparison.OrdinalIgnoreCase)
+            End Function)
+
+        result.MatchesIpv6 =
+        PCInfo.IPv6Addresses.Any(
+            Function(ip)
+                String.Equals(
+                    ip,
+                    serverValue,
+                    StringComparison.OrdinalIgnoreCase)
+            End Function)
+
+        result.MatchesMachineName =
+        String.Equals(
+            PCInfo.Name,
+            serverValue,
+            StringComparison.OrdinalIgnoreCase)
+
+        result.MatchesLocalHost =
+        String.Equals(
+            serverValue,
+            "localhost",
+            StringComparison.OrdinalIgnoreCase) OrElse
+        serverValue = "127.0.0.1" OrElse
+        serverValue = "::1"
+
+        result.IsDatabaseServer =
+        result.MatchesIpv4 OrElse
+        result.MatchesIpv6 OrElse
+        result.MatchesMachineName OrElse
+        result.MatchesLocalHost
+
+        Return result
+
+    End Function
 End Module

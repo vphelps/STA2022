@@ -81,11 +81,14 @@ Public Class AppOptions
     ' -------------------------------------------------
     ' Form Control Configuration
     ' -------------------------------------------------
+    Public Property QaApiAllowService As Boolean = False
+    Public Property QaScriptStartWithApp As Boolean = False
 
     Public Enum StartDatabaseButtonMode
         StartDatabase = 0
         CopyCommandLine = 1
     End Enum
+
 
     Public Property DatabaseButtonMode As StartDatabaseButtonMode = StartDatabaseButtonMode.StartDatabase
 
