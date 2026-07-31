@@ -4253,7 +4253,7 @@ timeoutSeconds:=10)
             End If
 
             log.AppendLine("QA API startup timeout.")
-            ShowQaApiError("QA API did not become available.", "QA API Startup Timeout",
+            ShowQaApiError("QA API did not become available.", "QA API Startup Timeout")
 
 
             Return False
@@ -4265,28 +4265,13 @@ timeoutSeconds:=10)
         End Try
 
     End Function
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+    Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
 
         Using dlg As New QAScriptConfigForm(_options)
             dlg.FormBorderStyle = FormBorderStyle.FixedToolWindow
             dlg.ShowDialog(Me)
-
         End Using
 
-    End Sub
-
-    Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        Dim result = CodeHelper.CheckDatabaseServer()
-
-        tbTest1.Text = result.IsDatabaseServer
-
-        MessageBox.Show(
-    $"Server={result.ServerValue}" & Environment.NewLine &
-    $"IsDatabaseServer={result.IsDatabaseServer}" & Environment.NewLine &
-    $"IPv4={result.MatchesIpv4}" & Environment.NewLine &
-    $"IPv6={result.MatchesIpv6}" & Environment.NewLine &
-    $"Machine={result.MatchesMachineName}" & Environment.NewLine &
-    $"Localhost={result.MatchesLocalHost}")
     End Sub
 
 End Class
