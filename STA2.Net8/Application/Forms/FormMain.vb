@@ -2138,157 +2138,167 @@ Public Class FormMain
             Dim apiReady As Boolean =
             Await FormHelper.IsQaApiReadyAsync()
 
+            If Not _options.QaScriptStartWithApp Then
 
+                log.AppendLine("QaScriptStartWithApp=False")
+
+                log.AppendLine($"Launching application without QA API checks: {executable}")
+
+                Process.Start(executable)
+
+                Return
+
+            End If
 
             If Not apiReady Then
 
-                    _qaApiLaunchInProgress = True
+                _qaApiLaunchInProgress = True
 
-                    caller.Enabled = True
-                    caller.Text = "Starting QA..."
+                caller.Enabled = True
+                caller.Text = "Starting QA..."
 
-                    _qaApiWaitCts?.Dispose()
-                    _qaApiWaitCts = New CancellationTokenSource()
+                _qaApiWaitCts?.Dispose()
+                _qaApiWaitCts = New CancellationTokenSource()
 
-                    Try
+                Try
 
-                        If Not qaScriptRunning Then
-
-                            log.AppendLine(
-        "QA Script not running. Starting QA API.")
-
-                            Dim started As Boolean =
-        Await FormHelper.StartQaApiAsync(
-            tbRunQaCmdLine.Text,
-            log)
-
-                            If Not started Then
-
-                                MessageBox.Show(
-            "Unable to start the QA API.",
-            "QA API Startup Failed",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error)
-
-                                Return
-
-                            End If
-
-                        Else
-
-                            log.AppendLine(
-        "QA Script is running but API is not responding.")
-
-                            log.AppendLine(
-        "Restarting QA Script before waiting for API.")
-
-                            Dim restarted As Boolean =
-        Await FormHelper.RestartQaApiAsync(
-            tbRunQaCmdLine.Text,
-            log)
-
-                            If Not restarted Then
-
-                                MessageBox.Show(
-            "Unable to restart the QA API.",
-            "QA API Restart Failed",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error)
-
-                                Return
-
-                            End If
-
-                        End If
+                    If Not qaScriptRunning Then
 
                         log.AppendLine(
-                        "Waiting for QA API readiness.")
+    "QA Script not running. Starting QA API.")
 
-                        apiReady =
-                        Await FormHelper.WaitForQaApiReadyAsync(
-                            60,
-                            Sub(text)
-                                caller.Text =
-                                    $"{text} - Click To Restart"
-                            End Sub,
-                            _qaApiWaitCts.Token)
+                        Dim started As Boolean =
+    Await FormHelper.StartQaApiAsync(
+        tbRunQaCmdLine.Text,
+        log)
 
-                        If Not apiReady Then
-
-                            ' User clicked again while waiting
-                            If _qaApiRestartRequested Then
-
-                                log.AppendLine(
-                                "User requested QA API restart during startup wait.")
-
-                                _qaApiRestartRequested = False
-
-                                caller.Text = "Restarting QA..."
-
-                                Dim restarted As Boolean =
-                                Await FormHelper.RestartQaApiAsync(
-                                    tbRunQaCmdLine.Text,
-                                    log)
-
-                                If Not restarted Then
-
-                                    MessageBox.Show(
-                                    "Unable to restart the QA API.",
-                                    "QA API Restart Failed",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error)
-
-                                    Return
-
-                                End If
-
-                                log.AppendLine(
-                               "QA API restarted successfully.")
-
-                                _qaApiWaitCts?.Dispose()
-                                _qaApiWaitCts = Nothing
-
-                                BeginInvoke(
-                                Sub()
-                                    caller.PerformClick()
-                                End Sub)
-
-                                Return
-                            End If
-
-                            If _qaApiWaitCts IsNot Nothing AndAlso _qaApiWaitCts.IsCancellationRequested Then
-                                log.AppendLine("QA API wait interrupted.")
-                                Return
-                            End If
-
-                            log.AppendLine(
-                            "QA API startup timeout.")
+                        If Not started Then
 
                             MessageBox.Show(
-                            "QA API did not become available.",
-                            "QA API Startup Timeout",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning)
+        "Unable to start the QA API.",
+        "QA API Startup Failed",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Error)
 
                             Return
 
                         End If
 
+                    Else
+
                         log.AppendLine(
-                        "QA API is responding and ready.")
+    "QA Script is running but API is not responding.")
 
-                    Finally
+                        log.AppendLine(
+    "Restarting QA Script before waiting for API.")
 
-                        _qaApiLaunchInProgress = False
+                        Dim restarted As Boolean =
+    Await FormHelper.RestartQaApiAsync(
+        tbRunQaCmdLine.Text,
+        log)
 
-                    End Try
+                        If Not restarted Then
 
-                End If
+                            MessageBox.Show(
+        "Unable to restart the QA API.",
+        "QA API Restart Failed",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Error)
 
-                log.AppendLine(
-                $"Launching application: {executable}")
+                            Return
 
-                Process.Start(executable)
+                        End If
+
+                    End If
+
+                    log.AppendLine(
+                    "Waiting for QA API readiness.")
+
+                    apiReady =
+                    Await FormHelper.WaitForQaApiReadyAsync(
+                        60,
+                        Sub(text)
+                            caller.Text =
+                                $"{text} - Click To Restart"
+                        End Sub,
+                        _qaApiWaitCts.Token)
+
+                    If Not apiReady Then
+
+                        ' User clicked again while waiting
+                        If _qaApiRestartRequested Then
+
+                            log.AppendLine(
+                            "User requested QA API restart during startup wait.")
+
+                            _qaApiRestartRequested = False
+
+                            caller.Text = "Restarting QA..."
+
+                            Dim restarted As Boolean =
+                            Await FormHelper.RestartQaApiAsync(
+                                tbRunQaCmdLine.Text,
+                                log)
+
+                            If Not restarted Then
+
+                                MessageBox.Show(
+                                "Unable to restart the QA API.",
+                                "QA API Restart Failed",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error)
+
+                                Return
+
+                            End If
+
+                            log.AppendLine(
+                           "QA API restarted successfully.")
+
+                            _qaApiWaitCts?.Dispose()
+                            _qaApiWaitCts = Nothing
+
+                            BeginInvoke(
+                            Sub()
+                                caller.PerformClick()
+                            End Sub)
+
+                            Return
+                        End If
+
+                        If _qaApiWaitCts IsNot Nothing AndAlso _qaApiWaitCts.IsCancellationRequested Then
+                            log.AppendLine("QA API wait interrupted.")
+                            Return
+                        End If
+
+                        log.AppendLine(
+                        "QA API startup timeout.")
+
+                        MessageBox.Show(
+                        "QA API did not become available.",
+                        "QA API Startup Timeout",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning)
+
+                        Return
+
+                    End If
+
+                    log.AppendLine(
+                    "QA API is responding and ready.")
+
+                Finally
+
+                    _qaApiLaunchInProgress = False
+
+                End Try
+
+            End If
+
+            log.AppendLine(
+            $"Launching application: {executable}")
+
+            Process.Start(executable)
 
 
 
@@ -4286,6 +4296,17 @@ timeoutSeconds:=10)
     End Sub
 
     Private Sub btnTest2_Click(sender As Object, e As EventArgs) Handles btnTest2.Click
-        _qaApiWaitCts?.Cancel()
+        Dim result = CodeHelper.CheckDatabaseServer()
+
+        tbTest1.Text = result.IsDatabaseServer
+
+        MessageBox.Show(
+    $"Server={result.ServerValue}" & Environment.NewLine &
+    $"IsDatabaseServer={result.IsDatabaseServer}" & Environment.NewLine &
+    $"IPv4={result.MatchesIpv4}" & Environment.NewLine &
+    $"IPv6={result.MatchesIpv6}" & Environment.NewLine &
+    $"Machine={result.MatchesMachineName}" & Environment.NewLine &
+    $"Localhost={result.MatchesLocalHost}")
     End Sub
+
 End Class
