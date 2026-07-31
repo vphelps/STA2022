@@ -51,6 +51,7 @@ Partial Class QAScriptConfigForm
         gbQaService.TabIndex = 1
         gbQaService.TabStop = False
         gbQaService.Text = "Allow API Server as Service"
+        gbQaService.Visible = False
         ' 
         ' rbQaServiceDeny
         ' 
