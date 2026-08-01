@@ -4220,14 +4220,10 @@ timeoutSeconds:=10)
                 End If
 
             End If
-
             apiReady = Await WaitForQaApiAsync(caller, log)
 
             If apiReady Then
-
-                log.AppendLine("QA API is responding and ready.")
                 Return True
-
             End If
 
             If _qaApiRestartRequested Then
@@ -4316,19 +4312,17 @@ timeoutSeconds:=10)
 
         End If
 
-        log.AppendLine("Waiting for QA API readiness.")
-
-        Dim apiReady As Boolean = Await FormHelper.WaitForQaApiReadyAsync(60)
+        Dim apiReady As Boolean =
+    Await WaitForQaApiAsync(log)
 
         If Not apiReady Then
 
-            log.AppendLine("Service started but API not available.")
+            log.AppendLine(
+        "Service started but API not available.")
 
             Return False
 
         End If
-
-        log.AppendLine("QA API is responding and ready.")
 
         Return True
 
@@ -4353,7 +4347,26 @@ timeoutSeconds:=10)
         End Select
 
     End Function
+    Private Async Function WaitForQaApiAsync(
+    log As StringBuilder
+) As Task(Of Boolean)
 
+        log.AppendLine(
+        "Waiting for QA API readiness.")
+
+        Dim apiReady As Boolean =
+        Await FormHelper.WaitForQaApiReadyAsync(60)
+
+        If apiReady Then
+
+            log.AppendLine(
+            "QA API is responding and ready.")
+
+        End If
+
+        Return apiReady
+
+    End Function
     Private Async Function WaitForQaApiAsync(
     caller As Button,
     log As StringBuilder
@@ -4376,11 +4389,9 @@ timeoutSeconds:=10)
             log.AppendLine(
             "QA API is responding and ready.")
 
-            Return True
-
         End If
 
-        Return False
+        Return apiReady
 
     End Function
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
