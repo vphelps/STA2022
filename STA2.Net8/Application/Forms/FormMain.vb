@@ -4063,6 +4063,8 @@ timeoutSeconds:=10)
 
                 Dim started As Boolean = Await FormHelper.StartQaApiAsync(tbRunQaCmdLine.Text, log)
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+                log.AppendLine($"ServiceRunning={status.ServiceRunning}")
+                log.AppendLine($"ApiReady={status.ApiReady}")
 
                 If Not started Then
 
@@ -4076,6 +4078,8 @@ timeoutSeconds:=10)
 
                 Dim restarted As Boolean = Await FormHelper.RestartQaApiAsync(tbRunQaCmdLine.Text, log)
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+                log.AppendLine($"ServiceRunning={status.ServiceRunning}")
+                log.AppendLine($"ApiReady={status.ApiReady}")
 
                 If Not restarted Then
 
@@ -4090,6 +4094,9 @@ timeoutSeconds:=10)
             apiReady = Await WaitForQaApiAsync(caller, log)
             If apiReady Then
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+                log.AppendLine($"ServiceRunning={status.ServiceRunning}")
+                log.AppendLine($"ApiReady={status.ApiReady}")
+
                 Return True
                 log.AppendLine(
                     $"Final ApiReady={status.ApiReady}")
@@ -4150,6 +4157,9 @@ timeoutSeconds:=10)
 ) As Task(Of Boolean)
 
         Const serviceName As String = "AdvApiServer"
+        log.AppendLine($"ServiceInstalled={status.ServiceInstalled}")
+        log.AppendLine($"ServiceRunning={status.ServiceRunning}")
+        log.AppendLine($"ApiReady={status.ApiReady}")
 
         If Not status.ServiceInstalled Then
 
@@ -4164,18 +4174,22 @@ timeoutSeconds:=10)
         If Not status.ServiceRunning Then
 
             log.AppendLine("QA service is stopped.")
-
+            log.AppendLine("Service startup required.")
             If Not _options.QaStartServiceWithApp Then
 
                 log.AppendLine("Automatic service startup disabled.")
-
+                log.AppendLine("Cannot continue because service is stopped.")
                 Return False
 
             End If
 
+            log.AppendLine($"Starting service: {serviceName}")
+
             Dim started As Boolean =
             Await FormHelper.StartQaServiceAsync(serviceName, log)
             Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+            log.AppendLine($"ServiceRunning={status.ServiceRunning}")
+            log.AppendLine($"ApiReady={status.ApiReady}")
 
             If Not started Then
 
@@ -4184,7 +4198,8 @@ timeoutSeconds:=10)
                 Return False
 
             End If
-
+        Else
+            log.AppendLine("QA service already running.")
         End If
 
         Dim apiReady As Boolean =
@@ -4202,6 +4217,9 @@ timeoutSeconds:=10)
         Await CodeHelper.RefreshQaHostStatusAsync(
             status,
             tbRunQaCmdLine.Text)
+        log.AppendLine($"ServiceRunning={status.ServiceRunning}")
+        log.AppendLine($"ApiReady={status.ApiReady}")
+
         log.AppendLine(
     $"Final ApiReady={status.ApiReady}")
 
@@ -4210,6 +4228,8 @@ timeoutSeconds:=10)
 
         log.AppendLine(
     $"Final ServiceRunning={status.ServiceRunning}")
+
+
         Return True
     End Function
     Private Async Function EnsureQaHostReadyAsync(
