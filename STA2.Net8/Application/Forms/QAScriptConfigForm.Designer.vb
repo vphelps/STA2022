@@ -28,13 +28,17 @@ Partial Class QAScriptConfigForm
         rbQaServiceAllow = New RadioButton()
         cbQaScriptStartWithApp = New CheckBox()
         btnOk = New Button()
+        cmbQaHostingMode = New ComboBox()
+        chkQaStartServiceWithApp = New CheckBox()
+        pnlScriptOptions = New Panel()
+        pnlServiceOptions = New Panel()
         gbQaService.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnCancel
         ' 
         btnCancel.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnCancel.Location = New Point(227, 141)
+        btnCancel.Location = New Point(808, 300)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(75, 23)
         btnCancel.TabIndex = 0
@@ -88,12 +92,45 @@ Partial Class QAScriptConfigForm
         ' btnOk
         ' 
         btnOk.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnOk.Location = New Point(146, 141)
+        btnOk.Location = New Point(727, 300)
         btnOk.Name = "btnOk"
         btnOk.Size = New Size(75, 23)
         btnOk.TabIndex = 5
         btnOk.Text = "Ok"
         btnOk.UseVisualStyleBackColor = True
+        ' 
+        ' cmbQaHostingMode
+        ' 
+        cmbQaHostingMode.FormattingEnabled = True
+        cmbQaHostingMode.Items.AddRange(New Object() {"None", "Script", "Service"})
+        cmbQaHostingMode.Location = New Point(50, 241)
+        cmbQaHostingMode.Name = "cmbQaHostingMode"
+        cmbQaHostingMode.Size = New Size(233, 23)
+        cmbQaHostingMode.TabIndex = 6
+        ' 
+        ' chkQaStartServiceWithApp
+        ' 
+        chkQaStartServiceWithApp.AutoSize = True
+        chkQaStartServiceWithApp.Location = New Point(50, 202)
+        chkQaStartServiceWithApp.Name = "chkQaStartServiceWithApp"
+        chkQaStartServiceWithApp.Size = New Size(279, 19)
+        chkQaStartServiceWithApp.TabIndex = 7
+        chkQaStartServiceWithApp.Text = "Automatically start QA Service with applications"
+        chkQaStartServiceWithApp.UseVisualStyleBackColor = True
+        ' 
+        ' pnlScriptOptions
+        ' 
+        pnlScriptOptions.Location = New Point(573, 12)
+        pnlScriptOptions.Name = "pnlScriptOptions"
+        pnlScriptOptions.Size = New Size(200, 100)
+        pnlScriptOptions.TabIndex = 8
+        ' 
+        ' pnlServiceOptions
+        ' 
+        pnlServiceOptions.Location = New Point(573, 121)
+        pnlServiceOptions.Name = "pnlServiceOptions"
+        pnlServiceOptions.Size = New Size(200, 100)
+        pnlServiceOptions.TabIndex = 9
         ' 
         ' QAScriptConfigForm
         ' 
@@ -101,8 +138,12 @@ Partial Class QAScriptConfigForm
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnCancel
-        ClientSize = New Size(323, 176)
+        ClientSize = New Size(904, 335)
         ControlBox = False
+        Controls.Add(pnlServiceOptions)
+        Controls.Add(pnlScriptOptions)
+        Controls.Add(chkQaStartServiceWithApp)
+        Controls.Add(cmbQaHostingMode)
         Controls.Add(btnOk)
         Controls.Add(cbQaScriptStartWithApp)
         Controls.Add(gbQaService)
@@ -127,4 +168,8 @@ Partial Class QAScriptConfigForm
     Friend WithEvents rbQaServiceAllow As RadioButton
     Friend WithEvents cbQaScriptStartWithApp As CheckBox
     Friend WithEvents btnOk As Button
+    Friend WithEvents cmbQaHostingMode As ComboBox
+    Friend WithEvents chkQaStartServiceWithApp As CheckBox
+    Friend WithEvents pnlScriptOptions As Panel
+    Friend WithEvents pnlServiceOptions As Panel
 End Class

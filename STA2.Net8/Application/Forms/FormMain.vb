@@ -2147,6 +2147,7 @@ Public Class FormMain
             log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
             log.AppendLine($"QaHostingMode={_options.QaHostingMode}")
             log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
+            log.AppendLine($"QaStartServiceWithApp={_options.QaStartServiceWithApp}")
             log.AppendLine($"HostingMode={qaStatus.HostingMode}")
             log.AppendLine($"RunQaChecks={runQaChecks}")
             log.AppendLine($"ApiReady={qaStatus.ApiReady}")

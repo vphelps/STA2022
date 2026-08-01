@@ -11,9 +11,21 @@ Public Class QAScriptConfigForm
         _options = options
 
     End Sub
+    Private Sub UpdateUiForHostingMode()
+
+        Dim mode = CType(cmbQaHostingMode.SelectedItem, QaHostingMode)
+
+        pnlScriptOptions.Enabled = mode = QaHostingMode.Script
+        pnlServiceOptions.Enabled = mode = QaHostingMode.Service
+
+    End Sub
     Private Sub QAScriptConfigForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         rbQaServiceAllow.Checked = _options.QaApiAllowService
         cbQaScriptStartWithApp.Checked = _options.QaScriptStartWithApp
+
+        cmbQaHostingMode.DataSource = [Enum].GetValues(GetType(QaHostingMode))
+        cmbQaHostingMode.SelectedItem = _options.QaHostingMode
+        chkQaStartServiceWithApp.Checked = _options.QaStartServiceWithApp
 
     End Sub
 
@@ -29,8 +41,16 @@ Public Class QAScriptConfigForm
     End Sub
 
     Private Sub btnOk_Click(sender As Object, e As EventArgs) Handles btnOk.Click
+        _options.QaHostingMode = CType(cmbQaHostingMode.SelectedItem, QaHostingMode)
+        _options.QaStartServiceWithApp = chkQaStartServiceWithApp.Checked
         OptionsManager.Save(_options)
+
         Me.Close()
+
+    End Sub
+
+    Private Sub cmbQaHostingMode_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbQaHostingMode.SelectedIndexChanged
+        UpdateUiForHostingMode()
 
     End Sub
 End Class
