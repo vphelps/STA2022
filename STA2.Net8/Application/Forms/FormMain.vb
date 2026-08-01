@@ -10,6 +10,7 @@ Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
 Imports Microsoft.VisualBasic.Logging
 Imports STA2.Net8.AppOptions
+Imports STA2.Net8.ConfigValues
 'Imports STA2.AppData
 
 Public Class FormMain
@@ -2144,7 +2145,7 @@ Public Class FormMain
             log.AppendLine($"ServiceRunning={qaStatus.ServiceRunning}")
 
             If runQaChecks Then
-                If Not Await EnsureQaHostReadyAsync(caller, log) Then Return
+                If Not Await EnsureQaHostReadyAsync(caller, qaStatus, log) Then Return
 
             Else
 
@@ -4162,11 +4163,9 @@ timeoutSeconds:=10)
         End Try
 
     End Sub
-    Private Async Function EnsureQaScriptReadyAsync(caller As Button, log As StringBuilder) As Task(Of Boolean)
-
-        Dim qaScriptRunning As Boolean = QaScriptHelper.IsQaApiRunning(tbRunQaCmdLine.Text)
-
-        Dim apiReady As Boolean = Await FormHelper.IsQaApiReadyAsync()
+    Private Async Function EnsureQaScriptReadyAsync(caller As Button, status As QaHostStatus, log As StringBuilder) As Task(Of Boolean)
+        Dim qaScriptRunning As Boolean = status.ScriptRunning
+        Dim apiReady As Boolean = status.ApiReady
 
         log.AppendLine($"QA Script Running={qaScriptRunning}")
         log.AppendLine($"QA API Ready={apiReady}")
@@ -4282,12 +4281,10 @@ timeoutSeconds:=10)
 
     End Function
     Private Async Function EnsureQaServiceReadyAsync(
-    log As StringBuilder
+   status As QaHostStatus, log As StringBuilder
 ) As Task(Of Boolean)
 
         Const serviceName As String = "AdvApiServer"
-
-        Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
 
         If Not status.ServiceInstalled Then
 
@@ -4341,17 +4338,20 @@ timeoutSeconds:=10)
         Return True
 
     End Function
-    Private Async Function EnsureQaHostReadyAsync(caller As Button, log As StringBuilder) As Task(Of Boolean)
-
+    Private Async Function EnsureQaHostReadyAsync(
+        caller As Button,
+        status As QaHostStatus,
+        log As StringBuilder
+    ) As Task(Of Boolean)
         Select Case _options.QaHostingMode
 
             Case QaHostingMode.None
                 log.AppendLine("QA hosting disabled.")
                 Return True
             Case QaHostingMode.Script
-                Return Await EnsureQaScriptReadyAsync(caller, log)
+                Return Await EnsureQaScriptReadyAsync(caller, status, log)
             Case QaHostingMode.Service
-                Return Await EnsureQaServiceReadyAsync(log)
+                Return Await EnsureQaServiceReadyAsync(status, log)
             Case Else
                 log.AppendLine("Unknown QA hosting mode.")
                 Return False
