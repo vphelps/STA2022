@@ -2156,14 +2156,9 @@ Public Class FormMain
             If runQaChecks Then
                 Select Case _options.QaHostingMode
                     Case QaHostingMode.Script
-                        If Not Await EnsureQaApiReadyAsync(caller, log) Then Return
+                        If Not Await EnsureQaScriptReadyAsync(caller, log) Then Return
                     Case QaHostingMode.Service
-                        log.AppendLine("Service hosting mode selected.")
-                        If Not qaStatus.ServiceRunning Then
-                            log.AppendLine("QA service is not running.")
-                        Else
-                            log.AppendLine("QA service is running.")
-                        End If
+                        If Not Await EnsureQaServiceReadyAsync(log) Then Return
                     Case QaHostingMode.None
                         log.AppendLine("QA hosting disabled.")
                 End Select
@@ -4176,7 +4171,7 @@ timeoutSeconds:=10)
         End Try
 
     End Sub
-    Private Async Function EnsureQaApiReadyAsync(caller As Button, log As StringBuilder) As Task(Of Boolean)
+    Private Async Function EnsureQaScriptReadyAsync(caller As Button, log As StringBuilder) As Task(Of Boolean)
 
         Dim qaScriptRunning As Boolean = QaScriptHelper.IsQaApiRunning(tbRunQaCmdLine.Text)
 
@@ -4293,6 +4288,24 @@ timeoutSeconds:=10)
             _qaApiLaunchInProgress = False
 
         End Try
+
+    End Function
+    Private Async Function EnsureQaServiceReadyAsync(log As StringBuilder) As Task(Of Boolean)
+
+        log.AppendLine("Service hosting mode selected.")
+
+        Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+
+        If status.ServiceRunning Then
+            log.AppendLine("QA service is running.")
+            Return True
+        End If
+
+        log.AppendLine("QA service is not running.")
+
+        ShowQaApiError("The QA service is not running.", "QA Service")
+
+        Return False
 
     End Function
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
