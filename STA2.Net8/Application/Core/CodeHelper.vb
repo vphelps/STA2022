@@ -635,17 +635,35 @@ Public Module CodeHelper
         Return status
 
     End Function
-    Public Function ShouldRunQaChecks(hostingMode As QaHostingMode, isDatabaseServer As Boolean) As Boolean
+    Public Function ShouldRunQaChecks(
+    hostingMode As QaHostingMode,
+    isDatabaseServer As Boolean,
+    qaScriptStartWithApp As Boolean,
+    qaStartServiceWithApp As Boolean
+) As Boolean
+
+        If Not isDatabaseServer Then
+            Return False
+        End If
 
         Select Case hostingMode
+
             Case QaHostingMode.None
+
                 Return False
+
             Case QaHostingMode.Script
-                Return isDatabaseServer
+
+                Return qaScriptStartWithApp
+
             Case QaHostingMode.Service
-                Return isDatabaseServer
+
+                Return qaStartServiceWithApp
+
             Case Else
+
                 Return False
+
         End Select
 
     End Function

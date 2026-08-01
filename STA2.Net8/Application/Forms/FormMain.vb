@@ -2127,19 +2127,7 @@ Public Class FormMain
         Dim dbResult = CodeHelper.CheckDatabaseServer()
         Dim isDatabaseServer As Boolean = dbResult.IsDatabaseServer
         Dim qaStatus = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
-        'Dim runQaChecks As Boolean = CodeHelper.ShouldRunQaChecks(_options.QaHostingMode, isDatabaseServer)
-        Dim runQaChecks As Boolean
-
-        Select Case _options.QaHostingMode
-            Case QaHostingMode.None
-                runQaChecks = False
-            Case QaHostingMode.Script
-                runQaChecks = isDatabaseServer AndAlso _options.QaScriptStartWithApp
-            Case QaHostingMode.Service
-                runQaChecks = isDatabaseServer
-            Case Else
-                runQaChecks = False
-        End Select
+        Dim runQaChecks As Boolean = CodeHelper.ShouldRunQaChecks(_options.QaHostingMode, isDatabaseServer, _options.QaScriptStartWithApp, _options.QaStartServiceWithApp)
 
         Try
             log.AppendLine($"Computer Name: {PCInfo.Name}")
@@ -2166,20 +2154,28 @@ Public Class FormMain
 
             Else
 
-                If Not _options.QaScriptStartWithApp Then
+                log.AppendLine("QA checks skipped.")
 
-                    log.AppendLine("QA checks skipped.")
-                    log.AppendLine("Reason: QaScriptStartWithApp=False")
+                Select Case _options.QaHostingMode
+                    Case QaHostingMode.None
+                        log.AppendLine("Reason: HostingMode=None")
+                    Case QaHostingMode.Script
+                        If Not isDatabaseServer Then
+                            log.AppendLine("Reason: Current machine is not the database server")
+                        Else
+                            log.AppendLine("Reason: QaScriptStartWithApp=False")
+                        End If
 
-                Else
+                    Case QaHostingMode.Service
+                        If Not isDatabaseServer Then
+                            log.AppendLine("Reason: Current machine is not the database server")
+                        Else
+                            log.AppendLine("Reason: QaStartServiceWithApp=False")
+                        End If
 
-                    log.AppendLine("QA checks skipped.")
-                    log.AppendLine("Reason: Current machine is not the database server")
-
-                End If
+                End Select
 
             End If
-
             log.AppendLine("Launch requirements satisfied.")
             log.AppendLine($"Launching application: {executable}")
 
