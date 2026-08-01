@@ -2142,15 +2142,9 @@ Public Class FormMain
             log.AppendLine($"ScriptRunning={qaStatus.ScriptRunning}")
             log.AppendLine($"ServiceInstalled={qaStatus.ServiceInstalled}")
             log.AppendLine($"ServiceRunning={qaStatus.ServiceRunning}")
+
             If runQaChecks Then
-                Select Case _options.QaHostingMode
-                    Case QaHostingMode.Script
-                        If Not Await EnsureQaScriptReadyAsync(caller, log) Then Return
-                    Case QaHostingMode.Service
-                        If Not Await EnsureQaServiceReadyAsync(log) Then Return
-                    Case QaHostingMode.None
-                        log.AppendLine("QA hosting disabled.")
-                End Select
+                If Not Await EnsureQaHostReadyAsync(caller, log) Then Return
 
             Else
 
@@ -4345,6 +4339,23 @@ timeoutSeconds:=10)
         log.AppendLine("QA API is responding and ready.")
 
         Return True
+
+    End Function
+    Private Async Function EnsureQaHostReadyAsync(caller As Button, log As StringBuilder) As Task(Of Boolean)
+
+        Select Case _options.QaHostingMode
+
+            Case QaHostingMode.None
+                log.AppendLine("QA hosting disabled.")
+                Return True
+            Case QaHostingMode.Script
+                Return Await EnsureQaScriptReadyAsync(caller, log)
+            Case QaHostingMode.Service
+                Return Await EnsureQaServiceReadyAsync(log)
+            Case Else
+                log.AppendLine("Unknown QA hosting mode.")
+                Return False
+        End Select
 
     End Function
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
