@@ -4195,6 +4195,7 @@ timeoutSeconds:=10)
                 log.AppendLine("QA Script not running. Starting QA API.")
 
                 Dim started As Boolean = Await FormHelper.StartQaApiAsync(tbRunQaCmdLine.Text, log)
+                Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
 
                 If Not started Then
 
@@ -4207,6 +4208,7 @@ timeoutSeconds:=10)
                 log.AppendLine("Restarting QA Script before waiting for API.")
 
                 Dim restarted As Boolean = Await FormHelper.RestartQaApiAsync(tbRunQaCmdLine.Text, log)
+                Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
 
                 If Not restarted Then
 
@@ -4310,6 +4312,7 @@ timeoutSeconds:=10)
 
             Dim started As Boolean =
             Await FormHelper.StartQaServiceAsync(serviceName, log)
+            Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
 
             If Not started Then
 

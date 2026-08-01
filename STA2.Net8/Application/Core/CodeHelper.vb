@@ -667,4 +667,35 @@ Public Module CodeHelper
         End Select
 
     End Function
+    Public Async Function RefreshQaHostStatusAsync(
+    status As QaHostStatus,
+    qaCommandLine As String
+) As Task
+
+        status.ApiReady =
+            Await FormHelper.IsQaApiReadyAsync()
+
+        status.ScriptRunning =
+            QaScriptHelper.IsQaApiRunning(
+                qaCommandLine)
+
+        Try
+
+            Using sc As New ServiceController("AdvApiServer")
+
+                status.ServiceInstalled = True
+
+                status.ServiceRunning =
+                    sc.Status = ServiceControllerStatus.Running
+
+            End Using
+
+        Catch
+
+            status.ServiceInstalled = False
+            status.ServiceRunning = False
+
+        End Try
+
+    End Function
 End Module
