@@ -4221,15 +4221,7 @@ timeoutSeconds:=10)
 
             End If
 
-            log.AppendLine("Waiting for QA API readiness.")
-
-            apiReady =
-            Await FormHelper.WaitForQaApiReadyAsync(60,
-                Sub(text)
-                    caller.Text =
-                        $"{text} - Click To Restart"
-                End Sub,
-                _qaApiWaitCts.Token)
+            apiReady = Await WaitForQaApiAsync(caller, log)
 
             If apiReady Then
 
@@ -4359,6 +4351,36 @@ timeoutSeconds:=10)
                 log.AppendLine("Unknown QA hosting mode.")
                 Return False
         End Select
+
+    End Function
+
+    Private Async Function WaitForQaApiAsync(
+    caller As Button,
+    log As StringBuilder
+) As Task(Of Boolean)
+
+        log.AppendLine(
+        "Waiting for QA API readiness.")
+
+        Dim apiReady As Boolean =
+        Await FormHelper.WaitForQaApiReadyAsync(
+            60,
+            Sub(text)
+                caller.Text =
+                    $"{text} - Click To Restart"
+            End Sub,
+            _qaApiWaitCts.Token)
+
+        If apiReady Then
+
+            log.AppendLine(
+            "QA API is responding and ready.")
+
+            Return True
+
+        End If
+
+        Return False
 
     End Function
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
