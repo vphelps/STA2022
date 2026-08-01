@@ -4274,4 +4274,17 @@ timeoutSeconds:=10)
 
     End Sub
 
+    Private Async Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+
+        Dim msg As New StringBuilder()
+
+        msg.AppendLine($"HostingMode={status.HostingMode}")
+        msg.AppendLine($"ApiReady={status.ApiReady}")
+        msg.AppendLine($"ScriptRunning={status.ScriptRunning}")
+        msg.AppendLine($"ServiceInstalled={status.ServiceInstalled}")
+        msg.AppendLine($"ServiceRunning={status.ServiceRunning}")
+
+        MessageBox.Show(msg.ToString())
+    End Sub
 End Class

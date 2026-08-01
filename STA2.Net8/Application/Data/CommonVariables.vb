@@ -27,6 +27,11 @@ Public Enum DatabaseEnvironment
     RemoteServer = 3
 
 End Enum
+Public Enum QaHostingMode
+    None = 0
+    Script = 1
+    Service = 2
+End Enum
 Public Structure PCInfo
     Public Shared Name As String = ""
     Public Shared IPv4Addresses As New List(Of String)
@@ -114,5 +119,12 @@ Public Class ConfigValues
         Public Property MatchesMachineName As Boolean
         Public Property MatchesLocalHost As Boolean
 
+    End Class
+    Public Class QaHostStatus
+        Public Property HostingMode As QaHostingMode
+        Public Property ApiReady As Boolean
+        Public Property ScriptRunning As Boolean
+        Public Property ServiceInstalled As Boolean
+        Public Property ServiceRunning As Boolean
     End Class
 End Class

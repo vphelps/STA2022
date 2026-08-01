@@ -88,10 +88,9 @@ Public Class AppOptions
         StartDatabase = 0
         CopyCommandLine = 1
     End Enum
-
-
     Public Property DatabaseButtonMode As StartDatabaseButtonMode = StartDatabaseButtonMode.StartDatabase
 
+    Public Property QaHostingMode As QaHostingMode = QaHostingMode.Script
     ' -------------------------------------------------
     ' Constructor
     ' -------------------------------------------------

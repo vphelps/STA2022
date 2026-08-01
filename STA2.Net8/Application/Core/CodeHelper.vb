@@ -4,6 +4,7 @@ Imports System.Net.Sockets
 Imports System.Windows.Forms
 Imports System.Windows.Forms.Design.AxImporter
 Imports STA2.Net8.ConfigValues
+Imports System.ServiceProcess
 
 Public Module CodeHelper
 
@@ -604,6 +605,34 @@ Public Module CodeHelper
         result.MatchesLocalHost
 
         Return result
+
+    End Function
+    Public Async Function GetQaHostStatusAsync(
+    qaCommandLine As String,
+    hostingMode As QaHostingMode
+) As Task(Of QaHostStatus)
+
+        Dim status As New QaHostStatus()
+
+        status.HostingMode = hostingMode
+        status.ApiReady = Await FormHelper.IsQaApiReadyAsync()
+        status.ScriptRunning = QaScriptHelper.IsQaApiRunning(qaCommandLine)
+
+        Try
+            Using sc As New ServiceController("AdvApiServer")
+                status.ServiceInstalled = True
+                status.ServiceRunning = sc.Status = ServiceControllerStatus.Running
+
+            End Using
+
+        Catch
+
+            status.ServiceInstalled = False
+            status.ServiceRunning = False
+
+        End Try
+
+        Return status
 
     End Function
 End Module
