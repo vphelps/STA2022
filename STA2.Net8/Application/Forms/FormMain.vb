@@ -2147,12 +2147,12 @@ Public Class FormMain
             log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
             log.AppendLine($"QaHostingMode={_options.QaHostingMode}")
             log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
+            log.AppendLine($"HostingMode={qaStatus.HostingMode}")
             log.AppendLine($"RunQaChecks={runQaChecks}")
             log.AppendLine($"ApiReady={qaStatus.ApiReady}")
             log.AppendLine($"ScriptRunning={qaStatus.ScriptRunning}")
             log.AppendLine($"ServiceInstalled={qaStatus.ServiceInstalled}")
             log.AppendLine($"ServiceRunning={qaStatus.ServiceRunning}")
-
             If runQaChecks Then
                 Select Case _options.QaHostingMode
                     Case QaHostingMode.Script
@@ -4290,22 +4290,64 @@ timeoutSeconds:=10)
         End Try
 
     End Function
-    Private Async Function EnsureQaServiceReadyAsync(log As StringBuilder) As Task(Of Boolean)
+    Private Async Function EnsureQaServiceReadyAsync(
+    log As StringBuilder
+) As Task(Of Boolean)
 
-        log.AppendLine("Service hosting mode selected.")
+        Const serviceName As String = "AdvApiServer"
 
         Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
 
-        If status.ServiceRunning Then
-            log.AppendLine("QA service is running.")
-            Return True
+        If Not status.ServiceInstalled Then
+
+            log.AppendLine("QA service is not installed.")
+
+            ShowQaApiError("QA service is not installed.", "QA Service")
+
+            Return False
+
         End If
 
-        log.AppendLine("QA service is not running.")
+        If Not status.ServiceRunning Then
 
-        ShowQaApiError("The QA service is not running.", "QA Service")
+            log.AppendLine("QA service is stopped.")
 
-        Return False
+            If Not _options.QaStartServiceWithApp Then
+
+                log.AppendLine("Automatic service startup disabled.")
+
+                Return False
+
+            End If
+
+            Dim started As Boolean =
+            Await FormHelper.StartQaServiceAsync(serviceName, log)
+
+            If Not started Then
+
+                ShowQaApiError("Unable to start the QA service.", "QA Service")
+
+                Return False
+
+            End If
+
+        End If
+
+        log.AppendLine("Waiting for QA API readiness.")
+
+        Dim apiReady As Boolean = Await FormHelper.WaitForQaApiReadyAsync(60)
+
+        If Not apiReady Then
+
+            log.AppendLine("Service started but API not available.")
+
+            Return False
+
+        End If
+
+        log.AppendLine("QA API is responding and ready.")
+
+        Return True
 
     End Function
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
