@@ -615,8 +615,6 @@ Public Module CodeHelper
         Dim status As New QaHostStatus()
 
         status.HostingMode = hostingMode
-        status.ApiReady = Await FormHelper.IsQaApiReadyAsync()
-        status.ScriptRunning = QaScriptHelper.IsQaApiRunning(qaCommandLine)
 
         Try
             Using sc As New ServiceController("AdvApiServer")
@@ -671,13 +669,6 @@ Public Module CodeHelper
     status As QaHostStatus,
     qaCommandLine As String
 ) As Task
-
-        status.ApiReady =
-            Await FormHelper.IsQaApiReadyAsync()
-
-        status.ScriptRunning =
-            QaScriptHelper.IsQaApiRunning(
-                qaCommandLine)
 
         Try
 

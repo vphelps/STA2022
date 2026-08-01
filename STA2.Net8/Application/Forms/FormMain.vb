@@ -3571,138 +3571,6 @@ e As System.ComponentModel.CancelEventArgs
         End If
     End Sub
 
-    '    Private Async Sub btnRunQaApi_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnRunQaApi.Click
-
-    '        Dim log As New System.Text.StringBuilder()
-
-    '        Dim fullCommand As String = tbRunQaCmdLine.Text
-
-    '        If String.IsNullOrWhiteSpace(fullCommand) Then
-
-    '            log.AppendLine("QA API launch requested")
-    '            log.AppendLine("No QA command line configured")
-
-    '            GlobalErrorHandler.LogAction(
-    '            "Run QA API",
-    '            log.ToString())
-
-    '            MessageBox.Show(
-    '            "No QA command line configured.",
-    '            "Missing Command",
-    '            MessageBoxButtons.OK,
-    '            MessageBoxIcon.Warning)
-
-    '            Return
-
-    '        End If
-
-    '        Try
-
-    '            log.AppendLine("QA API launch requested")
-    '            log.AppendLine($"Command: {fullCommand}")
-
-    '            btnRunQaApi.Enabled = False
-
-    '            ' Parse command
-    '            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
-
-    '            Dim scriptPath = parsed.ScriptPath
-    '            Dim args = parsed.Args
-
-    '            log.AppendLine($"Script Path: {scriptPath}")
-    '            log.AppendLine($"Arguments: {args}")
-
-    '            ' Check for existing instance
-    '            If QaScriptHelper.IsScriptRunning(scriptPath) Then
-
-    '                log.AppendLine("Script already running")
-
-    '                UIHelpers.TimedWarningPrompt(
-    '                owner:=Me,
-    '                message:="The QA API script is already running." &
-    '                         Environment.NewLine &
-    '                         "Stop the existing instance before starting a new one.",
-    '                title:="Already Running",
-    '                timeoutSeconds:=10)
-
-    '                Return
-
-    '            End If
-
-    '            ' Stop service
-    '            Const serviceName As String = "AdvApiServer"
-
-    '            log.AppendLine($"Stopping service: {serviceName}")
-
-    '            Await Task.Run(
-    '            Sub()
-    '                Try
-
-    '                    Using sc As New ServiceController(serviceName)
-
-    '                        If sc.Status = ServiceControllerStatus.Running OrElse
-    '                           sc.Status = ServiceControllerStatus.StartPending Then
-
-    '                            sc.Stop()
-    '                            sc.WaitForStatus(
-    '                                ServiceControllerStatus.Stopped,
-    '                                TimeSpan.FromSeconds(15))
-
-    '                        End If
-
-    '                    End Using
-
-    '                Catch ex As InvalidOperationException
-
-    '                    ' Service not installed/not found
-    '                End Try
-    '            End Sub)
-
-    '            log.AppendLine("Service stop completed")
-
-    '            ' Launch PowerShell
-    '            Dim psCommand As String =
-    '            $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
-
-    '            log.AppendLine("Launching PowerShell process")
-
-    '            Dim psi As New ProcessStartInfo With {
-    '            .FileName = "powershell.exe",
-    '            .Arguments = psCommand,
-    '            .UseShellExecute = True,
-    '            .CreateNoWindow = False
-    '        }
-
-    '            Process.Start(psi)
-
-    '            log.AppendLine("QA API launched successfully")
-
-    '        Catch ex As Exception
-
-    '            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
-
-    '            MessageBox.Show(
-    '            "Failed to launch QA script:" &
-    '            Environment.NewLine &
-    '            ex.Message,
-    '            "Execution Error",
-    '            MessageBoxButtons.OK,
-    '            MessageBoxIcon.Error)
-
-    '        Finally
-
-    '            GlobalErrorHandler.LogAction(
-    '            "Run QA API",
-    '            log.ToString())
-
-    '            btnRunQaApi.Enabled = True
-
-    '        End Try
-
-    '    End Sub
     Private Async Sub btnRunQaApi_Click(
     sender As Object,
     e As EventArgs
@@ -3816,7 +3684,6 @@ e As System.ComponentModel.CancelEventArgs
                 log.AppendLine("User cancelled restart")
 
                 Return
-
             End If
 
             log.AppendLine("Restart approved")
@@ -4221,9 +4088,17 @@ timeoutSeconds:=10)
 
             End If
             apiReady = Await WaitForQaApiAsync(caller, log)
-
             If apiReady Then
+                Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
                 Return True
+                log.AppendLine(
+                    $"Final ApiReady={status.ApiReady}")
+
+                log.AppendLine(
+                    $"Final ScriptRunning={status.ScriptRunning}")
+
+                log.AppendLine(
+                    $"Final ServiceRunning={status.ServiceRunning}")
             End If
 
             If _qaApiRestartRequested Then
@@ -4318,14 +4193,24 @@ timeoutSeconds:=10)
         If Not apiReady Then
 
             log.AppendLine(
-        "Service started but API not available.")
+                "Service started but API not available.")
 
             Return False
 
         End If
 
-        Return True
+        Await CodeHelper.RefreshQaHostStatusAsync(
+            status,
+            tbRunQaCmdLine.Text)
+        log.AppendLine(
+    $"Final ApiReady={status.ApiReady}")
 
+        log.AppendLine(
+    $"Final ScriptRunning={status.ScriptRunning}")
+
+        log.AppendLine(
+    $"Final ServiceRunning={status.ServiceRunning}")
+        Return True
     End Function
     Private Async Function EnsureQaHostReadyAsync(
         caller As Button,
