@@ -2125,18 +2125,48 @@ Public Class FormMain
         If version = AppInstallState.InstalledX64 Then executable = $"{AppData.CEPath64}{executable}.exe"
 
 
-        Dim isDatabaseServer As Boolean = CodeHelper.CheckDatabaseServer().IsDatabaseServer
-        Dim runQaChecks As Boolean = _options.QaScriptStartWithApp AndAlso isDatabaseServer
+        Dim dbCheck = CodeHelper.CheckDatabaseServer()
+        Dim isDatabaseServer As Boolean = dbCheck.IsDatabaseServer
+        Dim qaStatus = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+        Dim runQaChecks As Boolean
+
+        Select Case _options.QaHostingMode
+            Case QaHostingMode.None
+                runQaChecks = False
+            Case QaHostingMode.Script
+                runQaChecks = isDatabaseServer AndAlso _options.QaScriptStartWithApp
+            Case QaHostingMode.Service
+                runQaChecks = isDatabaseServer
+            Case Else
+                runQaChecks = False
+        End Select
 
         Try
             log.AppendLine($"Computer Name: {PCInfo.Name}")
             log.AppendLine($"Configured Server: {ConfigValues.Server}")
             log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
+            log.AppendLine($"QaHostingMode={_options.QaHostingMode}")
             log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
             log.AppendLine($"RunQaChecks={runQaChecks}")
+            log.AppendLine($"ApiReady={qaStatus.ApiReady}")
+            log.AppendLine($"ScriptRunning={qaStatus.ScriptRunning}")
+            log.AppendLine($"ServiceInstalled={qaStatus.ServiceInstalled}")
+            log.AppendLine($"ServiceRunning={qaStatus.ServiceRunning}")
 
             If runQaChecks Then
-                If Not Await EnsureQaApiReadyAsync(caller, log) Then Return
+                Select Case _options.QaHostingMode
+                    Case QaHostingMode.Script
+                        If Not Await EnsureQaApiReadyAsync(caller, log) Then Return
+                    Case QaHostingMode.Service
+                        log.AppendLine("Service hosting mode selected.")
+                        If Not qaStatus.ServiceRunning Then
+                            log.AppendLine("QA service is not running.")
+                        Else
+                            log.AppendLine("QA service is running.")
+                        End If
+                    Case QaHostingMode.None
+                        log.AppendLine("QA hosting disabled.")
+                End Select
 
             Else
 
