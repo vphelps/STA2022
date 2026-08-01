@@ -635,4 +635,18 @@ Public Module CodeHelper
         Return status
 
     End Function
+    Public Function ShouldRunQaChecks(hostingMode As QaHostingMode, isDatabaseServer As Boolean) As Boolean
+
+        Select Case hostingMode
+            Case QaHostingMode.None
+                Return False
+            Case QaHostingMode.Script
+                Return isDatabaseServer
+            Case QaHostingMode.Service
+                Return isDatabaseServer
+            Case Else
+                Return False
+        End Select
+
+    End Function
 End Module

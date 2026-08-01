@@ -2124,10 +2124,10 @@ Public Class FormMain
         If version = AppInstallState.InstalledX86 Then executable = $"{AppData.CEPath86}{executable}.exe"
         If version = AppInstallState.InstalledX64 Then executable = $"{AppData.CEPath64}{executable}.exe"
 
-
-        Dim dbCheck = CodeHelper.CheckDatabaseServer()
-        Dim isDatabaseServer As Boolean = dbCheck.IsDatabaseServer
+        Dim dbResult = CodeHelper.CheckDatabaseServer()
+        Dim isDatabaseServer As Boolean = dbResult.IsDatabaseServer
         Dim qaStatus = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+        'Dim runQaChecks As Boolean = CodeHelper.ShouldRunQaChecks(_options.QaHostingMode, isDatabaseServer)
         Dim runQaChecks As Boolean
 
         Select Case _options.QaHostingMode
