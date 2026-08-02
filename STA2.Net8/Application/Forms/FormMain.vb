@@ -4141,7 +4141,6 @@ timeoutSeconds:=10)
    status As QaHostStatus, log As StringBuilder
 ) As Task(Of Boolean)
 
-        Const serviceName As String = "AdvApiServer"
         LogQaHostStatus(status, log)
 
         If Not status.ServiceInstalled Then
@@ -4166,10 +4165,10 @@ timeoutSeconds:=10)
 
             End If
 
-            log.AppendLine($"Starting service: {serviceName}")
+            log.AppendLine($"Starting service: {AdvantageConstants.ApiServiceName}")
 
             Dim started As Boolean =
-            Await FormHelper.StartQaServiceAsync(serviceName, log)
+            Await FormHelper.StartQaServiceAsync(AdvantageConstants.ApiServiceName, log)
             Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
             LogQaHostStatus(status, log)
 
