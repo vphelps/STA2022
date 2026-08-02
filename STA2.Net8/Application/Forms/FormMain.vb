@@ -2135,43 +2135,16 @@ Public Class FormMain
         Dim runQaChecks As Boolean = CodeHelper.ShouldRunQaChecks(_options.QaHostingMode, isDatabaseServer, _options.QaScriptStartWithApp, _options.QaStartServiceWithApp)
 
         Try
-            log.AppendLine($"Computer Name: {PCInfo.Name}")
-            log.AppendLine($"Configured Server: {ConfigValues.Server}")
-            log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
-            log.AppendLine($"QaHostingMode={_options.QaHostingMode}")
-            log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
-            log.AppendLine($"QaStartServiceWithApp={_options.QaStartServiceWithApp}")
-            log.AppendLine($"HostingMode={qaStatus.HostingMode}")
-            log.AppendLine($"RunQaChecks={runQaChecks}")
-            LogQaHostStatus(qaStatus, log)
+            LogQaLaunchContext(qaStatus, isDatabaseServer, runQaChecks, log)
 
             If runQaChecks Then
-                If Not Await EnsureQaHostReadyAsync(caller, qaStatus, log) Then Return
-
+                If Not Await EnsureQaHostReadyAsync(caller, qaStatus, log) Then
+                    Return
+                End If
             Else
-
-                log.AppendLine("QA checks skipped.")
-
-                Select Case _options.QaHostingMode
-                    Case QaHostingMode.None
-                        log.AppendLine("Reason: HostingMode=None")
-                    Case QaHostingMode.Script
-                        If Not isDatabaseServer Then
-                            log.AppendLine("Reason: Current machine is not the database server")
-                        Else
-                            log.AppendLine("Reason: QaScriptStartWithApp=False")
-                        End If
-
-                    Case QaHostingMode.Service
-                        If Not isDatabaseServer Then
-                            log.AppendLine("Reason: Current machine is not the database server")
-                        Else
-                            log.AppendLine("Reason: QaStartServiceWithApp=False")
-                        End If
-
-                End Select
-
+                LogQaChecksSkipped(isDatabaseServer, log)
             End If
+
             log.AppendLine("Launch requirements satisfied.")
             log.AppendLine($"Launching application: {executable}")
 
@@ -4315,6 +4288,42 @@ timeoutSeconds:=10)
         lblQaServiceRunning.Text = $"Service Running: {If(status.ServiceRunning, "Yes", "No")}"
 
     End Function
+    Private Sub LogQaLaunchContext(qaStatus As QaHostStatus, isDatabaseServer As Boolean, runQaChecks As Boolean, log As StringBuilder
+)
+
+        log.AppendLine($"Computer Name: {PCInfo.Name}")
+        log.AppendLine($"Configured Server: {ConfigValues.Server}")
+        log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
+        log.AppendLine($"QaHostingMode={_options.QaHostingMode}")
+        log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
+        log.AppendLine($"QaStartServiceWithApp={_options.QaStartServiceWithApp}")
+        log.AppendLine($"HostingMode={qaStatus.HostingMode}")
+        log.AppendLine($"RunQaChecks={runQaChecks}")
+        LogQaHostStatus(qaStatus, log)
+
+    End Sub
+    Private Sub LogQaChecksSkipped(isDatabaseServer As Boolean, log As StringBuilder)
+
+        log.AppendLine("QA checks skipped.")
+
+        Select Case _options.QaHostingMode
+            Case QaHostingMode.None
+                log.AppendLine("Reason: HostingMode=None")
+            Case QaHostingMode.Script
+                If Not isDatabaseServer Then
+                    log.AppendLine("Reason: Current machine is not the database server")
+                Else
+                    log.AppendLine("Reason: QaScriptStartWithApp=False")
+                End If
+            Case QaHostingMode.Service
+                If Not isDatabaseServer Then
+                    log.AppendLine("Reason: Current machine is not the database server")
+                Else
+                    log.AppendLine("Reason: QaStartServiceWithApp=False")
+                End If
+        End Select
+
+    End Sub
     Private Async Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
 
         Using dlg As New QaHostingConfigForm(_options)
