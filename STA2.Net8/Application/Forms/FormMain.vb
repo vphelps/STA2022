@@ -4007,9 +4007,7 @@ timeoutSeconds:=10)
     Private Async Function EnsureQaScriptReadyAsync(caller As Button, status As QaHostStatus, log As StringBuilder) As Task(Of Boolean)
         Dim qaScriptRunning As Boolean = status.ScriptRunning
         Dim apiReady As Boolean = status.ApiReady
-
-        log.AppendLine($"QA Script Running={qaScriptRunning}")
-        log.AppendLine($"QA API Ready={apiReady}")
+        LogQaHostStatus(status, log)
 
         If apiReady Then
             log.AppendLine("QA API already responding.")
@@ -4067,6 +4065,7 @@ timeoutSeconds:=10)
             If apiReady Then
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
                 LogQaHostStatus(status, log, "Final ")
+                Await RefreshQaHostStatusDisplayAsync()
                 Return True
             End If
 
@@ -4111,7 +4110,6 @@ timeoutSeconds:=10)
             _qaApiLaunchInProgress = False
 
         End Try
-        Await RefreshQaHostStatusDisplayAsync()
     End Function
     Private Async Function EnsureQaServiceReadyAsync(
    status As QaHostStatus, log As StringBuilder
@@ -4172,8 +4170,6 @@ timeoutSeconds:=10)
         End If
 
         Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
-        LogQaHostStatus(status, log)
-
         LogQaHostStatus(status, log, "Final ")
 
         Await RefreshQaHostStatusDisplayAsync()
