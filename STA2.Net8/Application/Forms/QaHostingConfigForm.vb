@@ -15,8 +15,8 @@ Public Class QaHostingConfigForm
 
         Dim mode = CType(cmbQaHostingMode.SelectedItem, QaHostingMode)
 
-        pnlScriptOptions.Enabled = mode = QaHostingMode.Script
-        pnlServiceOptions.Enabled = mode = QaHostingMode.Service
+        cbQaScriptStartWithApp.Enabled = mode = QaHostingMode.Script
+        chkQaStartServiceWithApp.Enabled = mode = QaHostingMode.Service
 
     End Sub
     Private Sub QaHostingConfigForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load

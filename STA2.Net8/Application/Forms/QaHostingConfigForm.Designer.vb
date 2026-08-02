@@ -96,7 +96,7 @@ Partial Class QaHostingConfigForm
         gbQaHostingModeOptions.Controls.Add(chkQaStartServiceWithApp)
         gbQaHostingModeOptions.Location = New Point(12, 35)
         gbQaHostingModeOptions.Name = "gbQaHostingModeOptions"
-        gbQaHostingModeOptions.Size = New Size(284, 100)
+        gbQaHostingModeOptions.Size = New Size(284, 76)
         gbQaHostingModeOptions.TabIndex = 9
         gbQaHostingModeOptions.TabStop = False
         gbQaHostingModeOptions.Text = "Hosting Mode Options"
