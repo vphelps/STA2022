@@ -615,9 +615,34 @@ Public Module CodeHelper
         Dim status As New QaHostStatus()
 
         status.HostingMode = hostingMode
-        status.ApiReady = Await FormHelper.IsQaApiReadyAsync()
+        status.HostingMode = hostingMode
 
-        status.ScriptRunning = QaScriptHelper.IsQaApiRunning(qaCommandLine)
+        status.ScriptRunning =
+    QaScriptHelper.IsQaApiRunning(qaCommandLine)
+
+        Select Case hostingMode
+
+            Case QaHostingMode.Script
+
+                If status.ScriptRunning Then
+
+                    status.ApiReady = Await FormHelper.IsQaApiReadyAsync()
+
+                Else
+
+                    status.ApiReady = False
+
+                End If
+
+            Case QaHostingMode.Service
+
+                status.ApiReady = False
+
+            Case Else
+
+                status.ApiReady = False
+
+        End Select
         Try
             Using sc As New ServiceController("AdvApiServer")
                 status.ServiceInstalled = True

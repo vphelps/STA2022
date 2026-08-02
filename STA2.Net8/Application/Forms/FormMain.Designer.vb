@@ -311,6 +311,7 @@ Partial Class FormMain
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
         staFolderBrowserDialog = New FolderBrowserDialog()
+        tmrQaStatus = New Timer(components)
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
@@ -3493,6 +3494,11 @@ Partial Class FormMain
         ToolTip1.ReshowDelay = 100
         ToolTip1.ShowAlways = True
         ' 
+        ' tmrQaStatus
+        ' 
+        tmrQaStatus.Enabled = True
+        tmrQaStatus.Interval = 15000
+        ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -3871,4 +3877,5 @@ Partial Class FormMain
     Friend WithEvents lblQaScriptRunning As Label
     Friend WithEvents lblQaApiReady As Label
     Friend WithEvents btnRefreshQaStatus As Button
+    Friend WithEvents tmrQaStatus As Timer
 End Class
