@@ -1204,13 +1204,14 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
+    Private Async Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
 
         Dim baseInstallerPath As String = AppData.UpgradePath
         Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
         Dim installerPath = FindInstallerFile(latestFolder)
 
         _uiStateController.Refresh()
+        Await RefreshQaHostStatusDisplayAsync()
 
     End Sub
 
