@@ -569,7 +569,7 @@ Public Module CodeHelper
         result.MatchesIpv4 =
         PCInfo.IPv4Addresses.Any(
             Function(ip)
-                String.Equals(
+                Return String.Equals(
                     ip,
                     serverValue,
                     StringComparison.OrdinalIgnoreCase)
@@ -578,7 +578,7 @@ Public Module CodeHelper
         result.MatchesIpv6 =
         PCInfo.IPv6Addresses.Any(
             Function(ip)
-                String.Equals(
+                Return String.Equals(
                     ip,
                     serverValue,
                     StringComparison.OrdinalIgnoreCase)

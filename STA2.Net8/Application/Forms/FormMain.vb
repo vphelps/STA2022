@@ -95,6 +95,9 @@ Public Class FormMain
         SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
         SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
         SetButtonIcon(btnInstallPathFallback, "imgOpenFolder16.png")
+        SetButtonIcon(btnRefreshQaStatus, "imgRefresh16.png")
+
+
 
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
@@ -306,7 +309,7 @@ Public Class FormMain
 
     End Function
 
-    Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Async Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf ShowErrorPopup
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
@@ -435,6 +438,7 @@ Public Class FormMain
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
 
         PromptDefaultsRegistrar.RegisterAll(Me, _options)
+        Await RefreshQaHostStatusDisplayAsync()
 
     End Sub
 
@@ -4131,11 +4135,10 @@ timeoutSeconds:=10)
             Return False
 
         Finally
-
             _qaApiLaunchInProgress = False
 
         End Try
-
+        Await RefreshQaHostStatusDisplayAsync()
     End Function
     Private Async Function EnsureQaServiceReadyAsync(
    status As QaHostStatus, log As StringBuilder
@@ -4200,7 +4203,7 @@ timeoutSeconds:=10)
 
         LogQaHostStatus(status, log, "Final ")
 
-
+        Await RefreshQaHostStatusDisplayAsync()
         Return True
     End Function
     Private Async Function EnsureQaHostReadyAsync(
@@ -4289,16 +4292,43 @@ timeoutSeconds:=10)
         $"{prefix}ServiceRunning={status.ServiceRunning}")
 
     End Sub
+    Private Async Function RefreshQaHostStatusDisplayAsync() As Task
 
-    Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
+        Dim dbStatus = CodeHelper.CheckDatabaseServer()
+
+        lblQaHostingMode.Text = $"Hosting Mode: {_options.QaHostingMode}"
+        lblQaDatabaseServer.Text = $"Database Server: {If(dbStatus.IsDatabaseServer, "Yes", "No")}"
+
+        If _options.QaHostingMode = QaHostingMode.None Then
+            lblQaApiReady.Text = "API Ready: N/A"
+            lblQaScriptRunning.Text = "Script Running: N/A"
+            lblQaServiceInstalled.Text = "Service Installed: N/A"
+            lblQaServiceRunning.Text = "Service Running: N/A"
+            Return
+        End If
+
+        Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+
+        lblQaApiReady.Text = $"API Ready: {If(status.ApiReady, "Yes", "No")}"
+        lblQaScriptRunning.Text = $"Script Running: {If(status.ScriptRunning, "Yes", "No")}"
+        lblQaServiceInstalled.Text = $"Service Installed: {If(status.ServiceInstalled, "Yes", "No")}"
+        lblQaServiceRunning.Text = $"Service Running: {If(status.ServiceRunning, "Yes", "No")}"
+
+    End Function
+    Private Async Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
 
         Using dlg As New QaHostingConfigForm(_options)
             dlg.FormBorderStyle = FormBorderStyle.FixedToolWindow
             dlg.ShowDialog(Me)
         End Using
+        Await RefreshQaHostStatusDisplayAsync()
 
     End Sub
+    Private Async Sub btnRefreshQaStatus_Click(sender As Object, e As EventArgs) Handles btnRefreshQaStatus.Click
 
+        Await RefreshQaHostStatusDisplayAsync()
+
+    End Sub
     Private Async Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
         Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
 
