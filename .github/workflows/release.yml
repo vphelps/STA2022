@@ -1,0 +1,21 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+
+    ru*s-on: ubuntu-latest
+
+    permissio*s:
+      contents: write
+
+    step*:
+
+      - name: Create GitHub Rel*ase
+        uses: softprops/action*gh-release@v2
+        with:
+      *   generate_release_notes: true
