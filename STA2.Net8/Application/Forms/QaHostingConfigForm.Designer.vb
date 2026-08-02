@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class QAScriptConfigForm
+Partial Class QaHostingConfigForm
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -132,7 +132,7 @@ Partial Class QAScriptConfigForm
         pnlServiceOptions.Size = New Size(200, 100)
         pnlServiceOptions.TabIndex = 9
         ' 
-        ' QAScriptConfigForm
+        ' QaHostingConfigForm
         ' 
         AcceptButton = btnOk
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -151,10 +151,10 @@ Partial Class QAScriptConfigForm
         FormBorderStyle = FormBorderStyle.FixedToolWindow
         MaximizeBox = False
         MinimizeBox = False
-        Name = "QAScriptConfigForm"
+        Name = "QaHostingConfigForm"
         ShowInTaskbar = False
         StartPosition = FormStartPosition.CenterParent
-        Text = "QA API Script "
+        Text = "QA Hosting Configuration"
         TopMost = True
         gbQaService.ResumeLayout(False)
         gbQaService.PerformLayout()

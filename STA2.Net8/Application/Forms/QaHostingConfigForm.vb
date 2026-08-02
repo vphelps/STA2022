@@ -1,6 +1,6 @@
 ﻿Imports System.ComponentModel
 
-Public Class QAScriptConfigForm
+Public Class QaHostingConfigForm
 
     Private ReadOnly _options As AppOptions
 
@@ -19,7 +19,7 @@ Public Class QAScriptConfigForm
         pnlServiceOptions.Enabled = mode = QaHostingMode.Service
 
     End Sub
-    Private Sub QAScriptConfigForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Sub QaHostingConfigForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         rbQaServiceAllow.Checked = _options.QaApiAllowService
         cbQaScriptStartWithApp.Checked = _options.QaScriptStartWithApp
 

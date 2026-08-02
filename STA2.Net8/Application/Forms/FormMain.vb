@@ -4293,7 +4293,7 @@ timeoutSeconds:=10)
 
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
 
-        Using dlg As New QAScriptConfigForm(_options)
+        Using dlg As New QaHostingConfigForm(_options)
             dlg.FormBorderStyle = FormBorderStyle.FixedToolWindow
             dlg.ShowDialog(Me)
         End Using
