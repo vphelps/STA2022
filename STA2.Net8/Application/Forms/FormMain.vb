@@ -77,7 +77,8 @@ Public Class FormMain
         ' Window title from options (if any)
         If _options IsNot Nothing AndAlso
    Not String.IsNullOrWhiteSpace(_options.WindowTitle) Then
-            Me.Text = _options.WindowTitle
+            Dim version = Application.ProductVersion.Split("+"c)(0)
+            Me.Text = $"{_options.WindowTitle} {version}"
         End If
 
     End Sub
