@@ -20,7 +20,6 @@ Public Class QaHostingConfigForm
 
     End Sub
     Private Sub QaHostingConfigForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        rbQaServiceAllow.Checked = _options.QaApiAllowService
         cbQaScriptStartWithApp.Checked = _options.QaScriptStartWithApp
 
         cmbQaHostingMode.DataSource = [Enum].GetValues(GetType(QaHostingMode))
@@ -29,10 +28,9 @@ Public Class QaHostingConfigForm
 
     End Sub
 
-    Private Sub rbQaServiceYes_CheckedChanged(sender As Object, e As EventArgs) Handles rbQaServiceAllow.CheckedChanged, rbQaServiceDeny.CheckedChanged
+    Private Sub rbQaServiceYes_CheckedChanged(sender As Object, e As EventArgs)
         If _options Is Nothing Then Return ' Constructor hasn't finished; ignore events fired during InitializeComponent
 
-        _options.QaApiAllowService = rbQaServiceAllow.Checked
     End Sub
 
     Private Sub cbQaScriptStartWithApp_CheckedChanged(sender As Object, e As EventArgs) Handles cbQaScriptStartWithApp.CheckedChanged

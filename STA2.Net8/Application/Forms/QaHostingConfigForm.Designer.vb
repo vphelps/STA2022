@@ -23,66 +23,29 @@ Partial Class QaHostingConfigForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         btnCancel = New Button()
-        gbQaService = New GroupBox()
-        rbQaServiceDeny = New RadioButton()
-        rbQaServiceAllow = New RadioButton()
         cbQaScriptStartWithApp = New CheckBox()
         btnOk = New Button()
         cmbQaHostingMode = New ComboBox()
         chkQaStartServiceWithApp = New CheckBox()
-        pnlScriptOptions = New Panel()
-        pnlServiceOptions = New Panel()
-        gbQaService.SuspendLayout()
+        lblQaHostingMode = New Label()
+        gbQaHostingModeOptions = New GroupBox()
+        gbQaHostingModeOptions.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnCancel
         ' 
         btnCancel.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnCancel.Location = New Point(808, 300)
+        btnCancel.Location = New Point(305, 157)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(75, 23)
         btnCancel.TabIndex = 0
         btnCancel.Text = "Cancel"
         btnCancel.UseVisualStyleBackColor = True
         ' 
-        ' gbQaService
-        ' 
-        gbQaService.Controls.Add(rbQaServiceDeny)
-        gbQaService.Controls.Add(rbQaServiceAllow)
-        gbQaService.Location = New Point(12, 12)
-        gbQaService.Name = "gbQaService"
-        gbQaService.Size = New Size(223, 78)
-        gbQaService.TabIndex = 1
-        gbQaService.TabStop = False
-        gbQaService.Text = "Allow API Server as Service"
-        gbQaService.Visible = False
-        ' 
-        ' rbQaServiceDeny
-        ' 
-        rbQaServiceDeny.AutoSize = True
-        rbQaServiceDeny.Checked = True
-        rbQaServiceDeny.Location = New Point(22, 47)
-        rbQaServiceDeny.Name = "rbQaServiceDeny"
-        rbQaServiceDeny.Size = New Size(41, 19)
-        rbQaServiceDeny.TabIndex = 1
-        rbQaServiceDeny.TabStop = True
-        rbQaServiceDeny.Text = "No"
-        rbQaServiceDeny.UseVisualStyleBackColor = True
-        ' 
-        ' rbQaServiceAllow
-        ' 
-        rbQaServiceAllow.AutoSize = True
-        rbQaServiceAllow.Location = New Point(22, 22)
-        rbQaServiceAllow.Name = "rbQaServiceAllow"
-        rbQaServiceAllow.Size = New Size(42, 19)
-        rbQaServiceAllow.TabIndex = 0
-        rbQaServiceAllow.Text = "Yes"
-        rbQaServiceAllow.UseVisualStyleBackColor = True
-        ' 
         ' cbQaScriptStartWithApp
         ' 
         cbQaScriptStartWithApp.AutoSize = True
-        cbQaScriptStartWithApp.Location = New Point(34, 96)
+        cbQaScriptStartWithApp.Location = New Point(6, 22)
         cbQaScriptStartWithApp.Name = "cbQaScriptStartWithApp"
         cbQaScriptStartWithApp.Size = New Size(179, 19)
         cbQaScriptStartWithApp.TabIndex = 4
@@ -92,7 +55,7 @@ Partial Class QaHostingConfigForm
         ' btnOk
         ' 
         btnOk.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
-        btnOk.Location = New Point(727, 300)
+        btnOk.Location = New Point(224, 157)
         btnOk.Name = "btnOk"
         btnOk.Size = New Size(75, 23)
         btnOk.TabIndex = 5
@@ -103,7 +66,7 @@ Partial Class QaHostingConfigForm
         ' 
         cmbQaHostingMode.FormattingEnabled = True
         cmbQaHostingMode.Items.AddRange(New Object() {"None", "Script", "Service"})
-        cmbQaHostingMode.Location = New Point(50, 241)
+        cmbQaHostingMode.Location = New Point(142, 6)
         cmbQaHostingMode.Name = "cmbQaHostingMode"
         cmbQaHostingMode.Size = New Size(233, 23)
         cmbQaHostingMode.TabIndex = 6
@@ -111,26 +74,32 @@ Partial Class QaHostingConfigForm
         ' chkQaStartServiceWithApp
         ' 
         chkQaStartServiceWithApp.AutoSize = True
-        chkQaStartServiceWithApp.Location = New Point(50, 202)
+        chkQaStartServiceWithApp.Location = New Point(6, 47)
         chkQaStartServiceWithApp.Name = "chkQaStartServiceWithApp"
         chkQaStartServiceWithApp.Size = New Size(279, 19)
         chkQaStartServiceWithApp.TabIndex = 7
         chkQaStartServiceWithApp.Text = "Automatically start QA Service with applications"
         chkQaStartServiceWithApp.UseVisualStyleBackColor = True
         ' 
-        ' pnlScriptOptions
+        ' lblQaHostingMode
         ' 
-        pnlScriptOptions.Location = New Point(573, 12)
-        pnlScriptOptions.Name = "pnlScriptOptions"
-        pnlScriptOptions.Size = New Size(200, 100)
-        pnlScriptOptions.TabIndex = 8
+        lblQaHostingMode.AutoSize = True
+        lblQaHostingMode.Location = New Point(12, 9)
+        lblQaHostingMode.Name = "lblQaHostingMode"
+        lblQaHostingMode.Size = New Size(124, 15)
+        lblQaHostingMode.TabIndex = 8
+        lblQaHostingMode.Text = "QA Api Hosting Mode"
         ' 
-        ' pnlServiceOptions
+        ' gbQaHostingModeOptions
         ' 
-        pnlServiceOptions.Location = New Point(573, 121)
-        pnlServiceOptions.Name = "pnlServiceOptions"
-        pnlServiceOptions.Size = New Size(200, 100)
-        pnlServiceOptions.TabIndex = 9
+        gbQaHostingModeOptions.Controls.Add(cbQaScriptStartWithApp)
+        gbQaHostingModeOptions.Controls.Add(chkQaStartServiceWithApp)
+        gbQaHostingModeOptions.Location = New Point(12, 35)
+        gbQaHostingModeOptions.Name = "gbQaHostingModeOptions"
+        gbQaHostingModeOptions.Size = New Size(284, 100)
+        gbQaHostingModeOptions.TabIndex = 9
+        gbQaHostingModeOptions.TabStop = False
+        gbQaHostingModeOptions.Text = "Hosting Mode Options"
         ' 
         ' QaHostingConfigForm
         ' 
@@ -138,15 +107,12 @@ Partial Class QaHostingConfigForm
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = btnCancel
-        ClientSize = New Size(904, 335)
+        ClientSize = New Size(401, 192)
         ControlBox = False
-        Controls.Add(pnlServiceOptions)
-        Controls.Add(pnlScriptOptions)
-        Controls.Add(chkQaStartServiceWithApp)
+        Controls.Add(gbQaHostingModeOptions)
+        Controls.Add(lblQaHostingMode)
         Controls.Add(cmbQaHostingMode)
         Controls.Add(btnOk)
-        Controls.Add(cbQaScriptStartWithApp)
-        Controls.Add(gbQaService)
         Controls.Add(btnCancel)
         FormBorderStyle = FormBorderStyle.FixedToolWindow
         MaximizeBox = False
@@ -156,20 +122,17 @@ Partial Class QaHostingConfigForm
         StartPosition = FormStartPosition.CenterParent
         Text = "QA Hosting Configuration"
         TopMost = True
-        gbQaService.ResumeLayout(False)
-        gbQaService.PerformLayout()
+        gbQaHostingModeOptions.ResumeLayout(False)
+        gbQaHostingModeOptions.PerformLayout()
         ResumeLayout(False)
         PerformLayout()
     End Sub
 
     Friend WithEvents btnCancel As Button
-    Friend WithEvents gbQaService As GroupBox
-    Friend WithEvents rbQaServiceDeny As RadioButton
-    Friend WithEvents rbQaServiceAllow As RadioButton
     Friend WithEvents cbQaScriptStartWithApp As CheckBox
     Friend WithEvents btnOk As Button
     Friend WithEvents cmbQaHostingMode As ComboBox
     Friend WithEvents chkQaStartServiceWithApp As CheckBox
-    Friend WithEvents pnlScriptOptions As Panel
-    Friend WithEvents pnlServiceOptions As Panel
+    Friend WithEvents lblQaHostingMode As Label
+    Friend WithEvents gbQaHostingModeOptions As GroupBox
 End Class

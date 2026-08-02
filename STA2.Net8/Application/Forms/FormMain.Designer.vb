@@ -468,7 +468,7 @@ Partial Class FormMain
         ' 
         ' btnRefreshQaStatus
         ' 
-        btnRefreshQaStatus.Location = New Point(132, 13)
+        btnRefreshQaStatus.Location = New Point(140, 122)
         btnRefreshQaStatus.Margin = New Padding(4, 3, 4, 3)
         btnRefreshQaStatus.Name = "btnRefreshQaStatus"
         btnRefreshQaStatus.Size = New Size(35, 27)

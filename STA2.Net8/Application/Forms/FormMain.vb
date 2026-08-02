@@ -4055,9 +4055,6 @@ timeoutSeconds:=10)
 
                     ShowQaApiError("Unable to restart the QA API.", "QA API Restart Failed")
                     Return False
-
-                    Return False
-
                 End If
 
             End If
