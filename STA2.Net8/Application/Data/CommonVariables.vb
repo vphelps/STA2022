@@ -1,5 +1,6 @@
 ﻿Imports System.ServiceProcess
 Imports Microsoft.Data.SqlClient
+Imports System.Linq
 
 Public Class AppData
     Public Shared dbAppOptions As New DataSet
@@ -14,9 +15,25 @@ Public Class AppData
 
 End Class
 Public Class Variables
+
     Public Shared LoggedIn As Boolean = False
     Public Shared OfflineMode As Boolean = False
+
     Public Shared Property CurrentDatabaseEnvironment As DatabaseEnvironment
+
+    Public Shared ReadOnly ServiceNames As IReadOnlyList(Of String) =
+{
+    "AdvApiServer",
+    "AdvCoreService",
+    "AdvantageCloudSyncService",
+    "AdvCreditService",
+    "AdvLicService",
+    "AdvSignageService",
+    "AdvTurnstileEngine",
+    "AdvNotifyService",
+    "AdvantageUpgradeService",
+    "AdvRelayClient"
+}.OrderBy(Function(s) s).ToArray()
 
 End Class
 Public Enum DatabaseEnvironment

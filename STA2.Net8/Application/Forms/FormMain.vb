@@ -32,20 +32,6 @@ Public Class FormMain
     Private _qaApiRestartRequested As Boolean
     Private _qaStatusRefreshInProgress As Boolean
 
-    Private ReadOnly _serviceNames As String() =
-    {
-        "AdvApiServer",
-        "AdvCoreService",
-        "AdvantageCloudSyncService",
-        "AdvCreditService",
-        "AdvLicService",
-        "AdvSignageService",
-        "AdvTurnstileEngine",
-        "AdvNotifyService",
-        "AdvantageUpgradeService",
-        "AdvRelayClient"
-    }.OrderBy(Function(s) s).ToArray()
-
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
     Public Enum AppInstallState
@@ -82,142 +68,6 @@ Public Class FormMain
         End If
 
     End Sub
-    Private Sub InitializeUIEnhancements()
-        Dim strTemp As String
-
-
-        ' ✅ Button images
-        SetButtonIcon(btnCopyScriptOutput, "imgCopy16.png")
-        SetButtonIcon(btnRepoFolder, "imgOpenFolder16.png")
-        SetButtonIcon(btnBrowseStartScript, "imgOpenFolder16.png")
-        SetButtonIcon(btnBrowseApplyScript, "imgOpenFolder16.png")
-        SetButtonIcon(btnBackupPathOverride, "imgOpenFolder16.png")
-        SetButtonIcon(btnBackupScriptPath, "imgOpenFolder16.png")
-        SetButtonIcon(btnFlavorsListRefresh, "imgRefresh16.png")
-        SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
-        SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
-        SetButtonIcon(btnInstallPathFallback, "imgOpenFolder16.png")
-        SetButtonIcon(btnRefreshQaStatus, "imgRefresh16.png")
-
-
-
-        ' ✅ Hover hints for buttons
-        ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
-        ToolTip1.SetToolTip(btnOpenLogFile, "Browse And open any log file")
-        ToolTip1.SetToolTip(btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
-        ToolTip1.SetToolTip(btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
-        ToolTip1.SetToolTip(btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
-        ToolTip1.SetToolTip(btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
-        ToolTip1.SetToolTip(btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
-        ToolTip1.SetToolTip(btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
-        ToolTip1.SetToolTip(btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
-        ToolTip1.SetToolTip(btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
-        ToolTip1.SetToolTip(btnExit, "Exit the Assistant")
-        ToolTip1.SetToolTip(btnComboAppLaunch, "Launch the selected application showing on the drop down list")
-        ToolTip1.SetToolTip(btnConnectionProfiles, "Manage saved PFSConnect.ini connection configurations")
-        ToolTip1.SetToolTip(btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
-
-        strTemp =
-            "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &
-            "Right Click for other Start Database options:" & Environment.NewLine &
-            " - Start with no flavors (raw)" & Environment.NewLine &
-            " - Start with an existing 00Pathfinder backup" & Environment.NewLine &
-            " - Backup the database to 00Pathfinder"
-
-        ToolTip1.SetToolTip(btnRunDatabaseStartLive, strTemp)
-        strTemp =
-            "Launch the QA API in a separate PowerShell window." & Environment.NewLine &
-            "Stops the AdvApiServer service If running, Then starts the configured script." & Environment.NewLine &
-            "Prevents duplicate instances if already active."
-        ToolTip1.SetToolTip(btnRunQaApi, strTemp)
-
-
-        ' System tools
-        ToolTip1.SetToolTip(btnCalc, "Open the Calculator included With Windows")
-        ToolTip1.SetToolTip(btnTaskmgr, "Open the Windows Task Manager")
-        ToolTip1.SetToolTip(btnAppWiz, "Open the Control Panel > Programs And Features window")
-        ToolTip1.SetToolTip(btnEventViewer, "Open the Windows Event Viewer")
-        ToolTip1.SetToolTip(btnDevices, "Open the Control Panel > Devices And Printers window")
-        ToolTip1.SetToolTip(btnServices, "Open the Windows Services window")
-
-        ' Advantage apps
-        ToolTip1.SetToolTip(btnAdvManager, "Run Advantage Manager Console")
-        ToolTip1.SetToolTip(btnPos, "Run Advantage POS")
-        ToolTip1.SetToolTip(btnAdvGroups, "Run Advantage Groups")
-        ToolTip1.SetToolTip(btnAdvKioskSetup, "Run Advantage Legacy Kiosk Setup")
-        ToolTip1.SetToolTip(btnAdvReportEditor, "Run Advantage Report Editor")
-        ToolTip1.SetToolTip(btnAdvRedeem, "Run Advantage Redemption")
-        ToolTip1.SetToolTip(btnAdvCardTech, "DESCRIPTION")
-        ToolTip1.SetToolTip(btnAdvKiosk, "Run Advantage Legacy Kiosk")
-        ToolTip1.SetToolTip(btnAdvUpgrade, "Run Advantage Upgrade (AdvUpgrade.exe)")
-
-        ' ✅ Hover hints
-        ToolTip1.SetToolTip(
-            lbFlavorsList,
-            "🖱 Right-click → Apply selected flavors" & vbCrLf &
-            "⚡ Double-click → Apply highlighted"
-        )
-        ToolTip1.SetToolTip(btnFlavorsListRefresh, "Refresh the list Of flavors from the configured flavor folder")
-        ToolTip1.SetToolTip(btnFlavorFileCopy, "Copy SQL Files into the Repo's flavor folder (Determined by the Repo Folder on the Options tab")
-
-        ToolTip1.SetToolTip(tbDbUseVersion, "Enter a database version to use with Start-Database to set the database version.  Example:  26.1.1")
-        ToolTip1.SetToolTip(cbDbUseVersion, "Enable the Use Database version option for Start-Database")
-        ToolTip1.SetToolTip(cmbboxAppLaunch, "Click to drop down applications that can be opened with the Launch button.  Applications in the list are set on the Options tab but are not assigned to a Quick Launch button")
-
-        ' ✅ Hover hints for Options Tab
-        ToolTip1.SetToolTip(tbWindowTitle, "You can set a name for the application here that will display in the title bar.  Example:  My Assistant")
-        ToolTip1.SetToolTip(tbRepoFolder, "Select your repository root folder")
-        ToolTip1.SetToolTip(tbSetupSwitches, "Specify the command line switches to use when running the Advantage Installer")
-        ToolTip1.SetToolTip(cbShowHiddenServices, "Check this box to show all Advantage services in the Services List even if they are not installed.  Unchecked only the installed services will show")
-        ToolTip1.SetToolTip(tbDatabaseStartDefault, "This is the path to the script to start the docker database (Start-Database.ps1)")
-        ToolTip1.SetToolTip(tbApplyFlavorDefault, "This is the path to the script to apply flavors to the running docker database (Apply-Flavors.ps1)")
-        ToolTip1.SetToolTip(lstPrograms, "List of applications configured to be used from Assistant App for the Quick Launch buttons, the launch list, and the Batch Launch button")
-        ToolTip1.SetToolTip(clbSqlFiles, "This is the list of flavors detected in the Repo's flavor folder.  You can check the flavors' checkbox to add it to the list of defaults used by the Apply Default Flavors and Start Database buttons")
-        ToolTip1.SetToolTip(tbBackupPathOverride, "This is the path to the folder that contains backup files like 00Pathfinder.bak")
-        ToolTip1.SetToolTip(tbBackupScriptPath, "This is the path to the script to backup the database to the backup folder (Backup-Database.ps1)")
-
-        ToolTip1.SetToolTip(tbRunQaCmdLine, "Enter the QA API script path and any command line switches." & Environment.NewLine & "The script will be launched In a separate PowerShell window.")
-        ToolTip1.SetToolTip(btnRunQaCmdLine, "Browse And select a QA API script." & Environment.NewLine & "You will be prompted to enter optional command line switches after selection.")
-        ToolTip1.SetToolTip(btnInstallPathFallback, "Select a fallback folder patch that installers are saved to if this is a station and not a server")
-
-        ToolTip1.SetToolTip(btnAdd, "Add a New application To the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnEdit, "Edit the program selected In the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnDelete, "Delete the program selected In the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnLaunch, "Launch the program selected In the Application Launcher Settings")
-        ToolTip1.SetToolTip(btnResetFlavorDefaults, "Resets the list Of Default Flavors Selections To the defaults that were previously saved")
-        ToolTip1.SetToolTip(btnSaveFlavorDefaults, "Save the currently selected flavors In the Default Flavors Selection list As the New Default selections")
-
-        ToolTip1.SetToolTip(cbAdvUpgradeNoBackup, "Run the Advantage Upgrade without creating a database backup file during the process")
-        ToolTip1.SetToolTip(cbAdvUpgradeNoSetup, "Run the Advantage Upgrade without running the Advantage Setup When the database upgrade has finished")
-        ToolTip1.SetToolTip(cbAdvUpgradeQuiet, "Run the Advantage Upgrade In a command prompt without a window")
-        ToolTip1.SetToolTip(tbAdvupgrade, "Example Of the command line that will be used With the selected switches")
-        ToolTip1.SetToolTip(btnRepoFolder, "Select the base folder For the Advantage Repo.  This Is the folder that contains the 'tests' folder and the 'flavors' folder")
-        ToolTip1.SetToolTip(btnBrowseApplyScript, "Select the script to apply flavors to the running database (Apply-Flavors.ps1)")
-        ToolTip1.SetToolTip(btnBrowseStartScript, "Select the script to start the database (Start-Database.ps1)")
-        ToolTip1.SetToolTip(btnBackupScriptPath, "Select the script to start the database (Backup-Database.ps1)")
-        ToolTip1.SetToolTip(btnBackupPathOverride, "Select the folder to store database backup files in.  If not set default to the database value from AppOptions")
-
-        ' ✅ Hover hints for Logs Tab
-        ToolTip1.SetToolTip(btnOpenLogFile, "Opens the folder containing the log files In a Open File box To Select a log file")
-        ToolTip1.SetToolTip(btnViewLatestLog, "Opens the log file For today To see the latest log entries")
-        ToolTip1.SetToolTip(btnLastLogBlock, "Displays the very last script execution log In a message box")
-        ToolTip1.SetToolTip(btnLastFailed, "Displays the last Error encountered In a message box")
-        ToolTip1.SetToolTip(btnClearActivityLog, "Deletes the contents of the log file For today and creates an entry to note it in the log file")
-
-        ' ✅ Hover hints for Personal Flavor Tab
-        ToolTip1.SetToolTip(btnFlavorLoad, "Opens a file dialog box to load a set of SQL queries from a selected SQL file ")
-        ToolTip1.SetToolTip(btnFlavorSave, "Opens a file dialog box to save the queries in the window to a SQL file for use as a personal flavor")
-        ToolTip1.SetToolTip(btnFlavorClear, "Clears the contents of the text entry")
-        ToolTip1.SetToolTip(btnFlavorPaste, "Paste queries to the text entry from the Clipboard")
-        ToolTip1.SetToolTip(tbFlavor, "One or more SQL queries to be used as a 'Personal Flavor' that can be applied with the Apply Personal Flavor button")
-
-
-
-
-        ToolTip1.SetToolTip(btnRefreshAdvDataTab, "Refresh the Advantage Data shown above from the tables ApplicationInfo, AppOptions, and WebOptions")
-
-
-    End Sub
 
     Private Async Function RunScriptAsync(
     scriptPath As String,
@@ -244,76 +94,15 @@ Public Class FormMain
     )
 
     End Function
-    Private Sub ShowErrorPopup(ex As Exception, source As String)
-        If ex Is Nothing Then Return
 
-        Dim sb As New Text.StringBuilder()
-        sb.AppendLine("Message:")
-        sb.AppendLine(ex.Message)
-        sb.AppendLine()
-        sb.AppendLine("Source:")
-        sb.AppendLine(source)
-        sb.AppendLine()
-        sb.AppendLine("Time:")
-        sb.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
-
-        Dim summary As String = sb.ToString()
-
-
-        Dim result = UIHelpers.TimedErrorPrompt(
-    owner:=Me,
-    message:=summary,
-    title:="Application Error",
-    timeoutSeconds:=15,
-    button1Text:="Dismiss",
-    button1Result:=DialogResult.No,
-    button2Text:="View Logs",
-    button2Result:=DialogResult.Yes
-)
-
-        If result = DialogResult.Yes Then
-            ShowLatestLogInUI()
-        End If
-
+    Private Sub HandleErrorLogged(ex As Exception, source As String)
+        FormHelper.ShowErrorPopup(owner:=Me, ex:=ex, source:=source, viewLogsAction:=AddressOf ShowLatestLogInUI)
 
     End Sub
-    Private Function GetLastFailedLogBlock(content As String) As String
-
-        If String.IsNullOrWhiteSpace(content) Then Return Nothing
-
-        Dim separator As String = "===================================================="
-
-        ' ✅ Split based on your REAL separator
-        Dim parts As String() =
-        content.Split(New String() {separator}, StringSplitOptions.None)
-
-        Dim failedBlock As String = Nothing
-
-        For Each part As String In parts
-
-            If String.IsNullOrWhiteSpace(part) Then Continue For
-
-            ' ✅ Detect failure via exception presence
-            If part.Contains("Exception Type:", StringComparison.OrdinalIgnoreCase) OrElse
-   part.Contains("StackTrace:", StringComparison.OrdinalIgnoreCase) Then
-                failedBlock = part.Trim()
-            End If
-
-        Next
-
-        If String.IsNullOrWhiteSpace(failedBlock) Then
-            Return Nothing
-        End If
-
-        Return separator & Environment.NewLine &
-           failedBlock & Environment.NewLine &
-           separator
-
-    End Function
-
     Private Async Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf ShowErrorPopup
-        InitializeUIEnhancements()
+        AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf HandleErrorLogged
+
+        FormHelper.InitializeUIEnhancements(Me, ToolTip1)
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
         lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
@@ -459,7 +248,7 @@ Public Class FormMain
 
             Dim nameColWidth As Integer =
         ServicesDisplay.MeasureMaxServiceNameWidth(
-            _serviceNames,
+            Variables.ServiceNames,
             nameFont
         )
 
@@ -552,7 +341,7 @@ Public Class FormMain
         ' Start background service polling
         ' -------------------------------------------------
         _serviceManager.StartPolling(
-            serviceNames:=_serviceNames,
+            serviceNames:=Variables.ServiceNames,
             intervalMilliseconds:=5000
         )
 
@@ -640,7 +429,7 @@ Public Class FormMain
 
         ' ✅ Step 3: Resolve display names and sort by DisplayName
         Dim services =
-        _serviceNames.
+        Variables.ServiceNames.
             Select(Function(sn)
                        Dim display = GetServiceDisplayName(sn)
                        Return New With {
@@ -707,10 +496,7 @@ Public Class FormMain
             End Sub
 
     End Sub
-    Private Sub SetButtonIcon(btn As Button, imageName As String)
-        btn.Image = ResourceHelper.LoadImage(imageName)
-        btn.ImageAlign = ContentAlignment.MiddleCenter
-    End Sub
+
 
     Private Function GetServiceRow(serviceName As String) As ServiceRowControl
         Return _serviceRows.
@@ -2749,8 +2535,7 @@ e As System.ComponentModel.CancelEventArgs
             Dim content As String = File.ReadAllText(latestFile.FullName)
 
             ' ✅ Extract LAST FAILED block
-            Dim failedBlock As String = GetLastFailedLogBlock(content)
-
+            Dim failedBlock = FormHelper.GetLastFailedLogBlock(content)
             ' ✅ FIRST: check if anything was found
             If String.IsNullOrWhiteSpace(failedBlock) Then
                 UIHelpers.TimedInfoPrompt(
