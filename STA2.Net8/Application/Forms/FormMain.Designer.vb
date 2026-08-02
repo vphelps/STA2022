@@ -40,6 +40,14 @@ Partial Class FormMain
         SplitContainer1 = New SplitContainer()
         tcSTA = New TabControl()
         tpGeneral = New TabPage()
+        gbQaHostStatus = New GroupBox()
+        btnRefreshQaStatus = New Button()
+        lblQaServiceRunning = New Label()
+        lblQaServiceInstalled = New Label()
+        lblQaScriptRunning = New Label()
+        lblQaApiReady = New Label()
+        lblQaDatabaseServer = New Label()
+        lblQaHostingMode = New Label()
         gpLicInfo = New GroupBox()
         lblPcDbInfo = New Label()
         tbPcDbInfo = New TextBox()
@@ -303,12 +311,14 @@ Partial Class FormMain
         ofdStartScript = New OpenFileDialog()
         ToolTip1 = New ToolTip(components)
         staFolderBrowserDialog = New FolderBrowserDialog()
+        tmrQaStatus = New Timer(components)
         CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer1.Panel1.SuspendLayout()
         SplitContainer1.Panel2.SuspendLayout()
         SplitContainer1.SuspendLayout()
         tcSTA.SuspendLayout()
         tpGeneral.SuspendLayout()
+        gbQaHostStatus.SuspendLayout()
         gpLicInfo.SuspendLayout()
         gbLiveOutput.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
@@ -427,6 +437,7 @@ Partial Class FormMain
         ' tpGeneral
         ' 
         tpGeneral.BackColor = Color.Gray
+        tpGeneral.Controls.Add(gbQaHostStatus)
         tpGeneral.Controls.Add(gpLicInfo)
         tpGeneral.Controls.Add(gbLiveOutput)
         tpGeneral.Controls.Add(pnlServicesContainer)
@@ -438,6 +449,86 @@ Partial Class FormMain
         tpGeneral.Size = New Size(1182, 629)
         tpGeneral.TabIndex = 0
         tpGeneral.Text = "General"
+        ' 
+        ' gbQaHostStatus
+        ' 
+        gbQaHostStatus.BackColor = Color.LightGray
+        gbQaHostStatus.Controls.Add(btnRefreshQaStatus)
+        gbQaHostStatus.Controls.Add(lblQaServiceRunning)
+        gbQaHostStatus.Controls.Add(lblQaServiceInstalled)
+        gbQaHostStatus.Controls.Add(lblQaScriptRunning)
+        gbQaHostStatus.Controls.Add(lblQaApiReady)
+        gbQaHostStatus.Controls.Add(lblQaDatabaseServer)
+        gbQaHostStatus.Controls.Add(lblQaHostingMode)
+        gbQaHostStatus.Location = New Point(749, 466)
+        gbQaHostStatus.Name = "gbQaHostStatus"
+        gbQaHostStatus.Size = New Size(182, 155)
+        gbQaHostStatus.TabIndex = 36
+        gbQaHostStatus.TabStop = False
+        gbQaHostStatus.Text = "QA Host Status"
+        ' 
+        ' btnRefreshQaStatus
+        ' 
+        btnRefreshQaStatus.Location = New Point(140, 122)
+        btnRefreshQaStatus.Margin = New Padding(4, 3, 4, 3)
+        btnRefreshQaStatus.Name = "btnRefreshQaStatus"
+        btnRefreshQaStatus.Size = New Size(35, 27)
+        btnRefreshQaStatus.TabIndex = 38
+        btnRefreshQaStatus.UseVisualStyleBackColor = True
+        ' 
+        ' lblQaServiceRunning
+        ' 
+        lblQaServiceRunning.AutoSize = True
+        lblQaServiceRunning.Location = New Point(6, 117)
+        lblQaServiceRunning.Name = "lblQaServiceRunning"
+        lblQaServiceRunning.Size = New Size(114, 15)
+        lblQaServiceRunning.TabIndex = 5
+        lblQaServiceRunning.Text = "Service Running: No"
+        ' 
+        ' lblQaServiceInstalled
+        ' 
+        lblQaServiceInstalled.AutoSize = True
+        lblQaServiceInstalled.Location = New Point(6, 102)
+        lblQaServiceInstalled.Name = "lblQaServiceInstalled"
+        lblQaServiceInstalled.Size = New Size(114, 15)
+        lblQaServiceInstalled.TabIndex = 4
+        lblQaServiceInstalled.Text = "Service Installed: Yes"
+        ' 
+        ' lblQaScriptRunning
+        ' 
+        lblQaScriptRunning.AutoSize = True
+        lblQaScriptRunning.Location = New Point(6, 79)
+        lblQaScriptRunning.Name = "lblQaScriptRunning"
+        lblQaScriptRunning.Size = New Size(108, 15)
+        lblQaScriptRunning.TabIndex = 3
+        lblQaScriptRunning.Text = "Script Running: Yes"
+        ' 
+        ' lblQaApiReady
+        ' 
+        lblQaApiReady.AutoSize = True
+        lblQaApiReady.Location = New Point(6, 62)
+        lblQaApiReady.Name = "lblQaApiReady"
+        lblQaApiReady.Size = New Size(83, 15)
+        lblQaApiReady.TabIndex = 2
+        lblQaApiReady.Text = "API Ready: Yes"
+        ' 
+        ' lblQaDatabaseServer
+        ' 
+        lblQaDatabaseServer.AutoSize = True
+        lblQaDatabaseServer.Location = New Point(6, 34)
+        lblQaDatabaseServer.Name = "lblQaDatabaseServer"
+        lblQaDatabaseServer.Size = New Size(113, 15)
+        lblQaDatabaseServer.TabIndex = 1
+        lblQaDatabaseServer.Text = "Database Server: Yes"
+        ' 
+        ' lblQaHostingMode
+        ' 
+        lblQaHostingMode.AutoSize = True
+        lblQaHostingMode.Location = New Point(6, 19)
+        lblQaHostingMode.Name = "lblQaHostingMode"
+        lblQaHostingMode.Size = New Size(119, 15)
+        lblQaHostingMode.TabIndex = 0
+        lblQaHostingMode.Text = "Hosting Mode: Script" & vbLf
         ' 
         ' gpLicInfo
         ' 
@@ -680,7 +771,7 @@ Partial Class FormMain
         pnlServicesContainer.Location = New Point(749, 3)
         pnlServicesContainer.Margin = New Padding(4, 3, 4, 3)
         pnlServicesContainer.Name = "pnlServicesContainer"
-        pnlServicesContainer.Size = New Size(408, 616)
+        pnlServicesContainer.Size = New Size(408, 456)
         pnlServicesContainer.TabIndex = 1
         ' 
         ' tblServices
@@ -716,7 +807,7 @@ Partial Class FormMain
         tbServicesButtonsHelpMessage.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
         tbServicesButtonsHelpMessage.Enabled = False
         tbServicesButtonsHelpMessage.Font = New Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        tbServicesButtonsHelpMessage.Location = New Point(115, 511)
+        tbServicesButtonsHelpMessage.Location = New Point(36, 354)
         tbServicesButtonsHelpMessage.Margin = New Padding(4, 3, 4, 3)
         tbServicesButtonsHelpMessage.Multiline = True
         tbServicesButtonsHelpMessage.Name = "tbServicesButtonsHelpMessage"
@@ -3403,6 +3494,11 @@ Partial Class FormMain
         ToolTip1.ReshowDelay = 100
         ToolTip1.ShowAlways = True
         ' 
+        ' tmrQaStatus
+        ' 
+        tmrQaStatus.Enabled = True
+        tmrQaStatus.Interval = 15000
+        ' 
         ' FormMain
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -3424,6 +3520,8 @@ Partial Class FormMain
         SplitContainer1.ResumeLayout(False)
         tcSTA.ResumeLayout(False)
         tpGeneral.ResumeLayout(False)
+        gbQaHostStatus.ResumeLayout(False)
+        gbQaHostStatus.PerformLayout()
         gpLicInfo.ResumeLayout(False)
         gpLicInfo.PerformLayout()
         gbLiveOutput.ResumeLayout(False)
@@ -3771,4 +3869,13 @@ Partial Class FormMain
     Friend WithEvents tsmiDefaultCopyCommandLine As ToolStripMenuItem
     Friend WithEvents btnClearActivityLog As Button
     Friend WithEvents tsmiQaScriptOptions As ToolStripMenuItem
+    Friend WithEvents gbQaHostStatus As GroupBox
+    Friend WithEvents lblQaDatabaseServer As Label
+    Friend WithEvents lblQaHostingMode As Label
+    Friend WithEvents lblQaServiceRunning As Label
+    Friend WithEvents lblQaServiceInstalled As Label
+    Friend WithEvents lblQaScriptRunning As Label
+    Friend WithEvents lblQaApiReady As Label
+    Friend WithEvents btnRefreshQaStatus As Button
+    Friend WithEvents tmrQaStatus As Timer
 End Class

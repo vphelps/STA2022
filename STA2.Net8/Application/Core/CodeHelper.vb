@@ -4,6 +4,7 @@ Imports System.Net.Sockets
 Imports System.Windows.Forms
 Imports System.Windows.Forms.Design.AxImporter
 Imports STA2.Net8.ConfigValues
+Imports System.ServiceProcess
 
 Public Module CodeHelper
 
@@ -568,7 +569,7 @@ Public Module CodeHelper
         result.MatchesIpv4 =
         PCInfo.IPv4Addresses.Any(
             Function(ip)
-                String.Equals(
+                Return String.Equals(
                     ip,
                     serverValue,
                     StringComparison.OrdinalIgnoreCase)
@@ -577,7 +578,7 @@ Public Module CodeHelper
         result.MatchesIpv6 =
         PCInfo.IPv6Addresses.Any(
             Function(ip)
-                String.Equals(
+                Return String.Equals(
                     ip,
                     serverValue,
                     StringComparison.OrdinalIgnoreCase)
@@ -604,6 +605,118 @@ Public Module CodeHelper
         result.MatchesLocalHost
 
         Return result
+
+    End Function
+    Public Async Function GetQaHostStatusAsync(
+    qaCommandLine As String,
+    hostingMode As QaHostingMode
+) As Task(Of QaHostStatus)
+
+        Dim status As New QaHostStatus()
+
+        status.HostingMode = hostingMode
+        status.HostingMode = hostingMode
+
+        status.ScriptRunning =
+    QaScriptHelper.IsQaApiRunning(qaCommandLine)
+
+        Select Case hostingMode
+
+            Case QaHostingMode.Script
+
+                If status.ScriptRunning Then
+
+                    status.ApiReady = Await FormHelper.IsQaApiReadyAsync()
+
+                Else
+
+                    status.ApiReady = False
+
+                End If
+
+            Case QaHostingMode.Service
+
+                status.ApiReady = False
+
+            Case Else
+
+                status.ApiReady = False
+
+        End Select
+        Try
+            Using sc As New ServiceController("AdvApiServer")
+                status.ServiceInstalled = True
+                status.ServiceRunning = sc.Status = ServiceControllerStatus.Running
+
+            End Using
+
+        Catch
+
+            status.ServiceInstalled = False
+            status.ServiceRunning = False
+
+        End Try
+
+        Return status
+
+    End Function
+    Public Function ShouldRunQaChecks(
+    hostingMode As QaHostingMode,
+    isDatabaseServer As Boolean,
+    qaScriptStartWithApp As Boolean,
+    qaStartServiceWithApp As Boolean
+) As Boolean
+
+        If Not isDatabaseServer Then
+            Return False
+        End If
+
+        Select Case hostingMode
+
+            Case QaHostingMode.None
+
+                Return False
+
+            Case QaHostingMode.Script
+
+                Return qaScriptStartWithApp
+
+            Case QaHostingMode.Service
+
+                Return qaStartServiceWithApp
+
+            Case Else
+
+                Return False
+
+        End Select
+
+    End Function
+    Public Async Function RefreshQaHostStatusAsync(
+    status As QaHostStatus,
+    qaCommandLine As String
+) As Task
+        status.ApiReady = Await FormHelper.IsQaApiReadyAsync()
+
+        status.ScriptRunning = QaScriptHelper.IsQaApiRunning(qaCommandLine)
+
+        Try
+
+            Using sc As New ServiceController("AdvApiServer")
+
+                status.ServiceInstalled = True
+
+                status.ServiceRunning =
+                    sc.Status = ServiceControllerStatus.Running
+
+            End Using
+
+        Catch
+
+            status.ServiceInstalled = False
+            status.ServiceRunning = False
+
+        End Try
 
     End Function
 End Module

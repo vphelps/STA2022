@@ -10,6 +10,7 @@ Imports System.Threading.Tasks
 Imports Microsoft.Data.SqlClient
 Imports Microsoft.VisualBasic.Logging
 Imports STA2.Net8.AppOptions
+Imports STA2.Net8.ConfigValues
 'Imports STA2.AppData
 
 Public Class FormMain
@@ -29,6 +30,7 @@ Public Class FormMain
     Private _qaApiWaitCts As CancellationTokenSource
     Private _qaApiLaunchInProgress As Boolean
     Private _qaApiRestartRequested As Boolean
+    Private _qaStatusRefreshInProgress As Boolean
 
     Private ReadOnly _serviceNames As String() =
     {
@@ -94,6 +96,9 @@ Public Class FormMain
         SetButtonIcon(btnFlavorFileCopy, "imgCopyToFolder16.png")
         SetButtonIcon(btnRunQaCmdLine, "imgOpenFolder16.png")
         SetButtonIcon(btnInstallPathFallback, "imgOpenFolder16.png")
+        SetButtonIcon(btnRefreshQaStatus, "imgRefresh16.png")
+
+
 
         ' ✅ Hover hints for buttons
         ToolTip1.SetToolTip(btnRunApplyFlavorLive, "Applies your configured Default flavors")
@@ -305,7 +310,7 @@ Public Class FormMain
 
     End Function
 
-    Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private Async Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf ShowErrorPopup
         InitializeUIEnhancements()
         _uiStateController = New UIStateController(Me, _options)
@@ -434,6 +439,7 @@ Public Class FormMain
         tbFlavor.Text = OptionsManager.LoadPersonalFlavor()
 
         PromptDefaultsRegistrar.RegisterAll(Me, _options)
+        Await RefreshQaHostStatusDisplaySafeAsync()
 
     End Sub
 
@@ -1206,6 +1212,7 @@ Public Class FormMain
         Dim installerPath = FindInstallerFile(latestFolder)
 
         _uiStateController.Refresh()
+        'Await RefreshQaHostStatusDisplaySafeAsync()
 
     End Sub
 
@@ -2124,34 +2131,20 @@ Public Class FormMain
         If version = AppInstallState.InstalledX86 Then executable = $"{AppData.CEPath86}{executable}.exe"
         If version = AppInstallState.InstalledX64 Then executable = $"{AppData.CEPath64}{executable}.exe"
 
-
-        Dim isDatabaseServer As Boolean = CodeHelper.CheckDatabaseServer().IsDatabaseServer
-        Dim runQaChecks As Boolean = _options.QaScriptStartWithApp AndAlso isDatabaseServer
+        Dim dbResult = CodeHelper.CheckDatabaseServer()
+        Dim isDatabaseServer As Boolean = dbResult.IsDatabaseServer
+        Dim qaStatus = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+        Dim runQaChecks As Boolean = CodeHelper.ShouldRunQaChecks(_options.QaHostingMode, isDatabaseServer, _options.QaScriptStartWithApp, _options.QaStartServiceWithApp)
 
         Try
-            log.AppendLine($"Computer Name: {PCInfo.Name}")
-            log.AppendLine($"Configured Server: {ConfigValues.Server}")
-            log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
-            log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
-            log.AppendLine($"RunQaChecks={runQaChecks}")
+            LogQaLaunchContext(qaStatus, isDatabaseServer, runQaChecks, log)
 
             If runQaChecks Then
-                If Not Await EnsureQaApiReadyAsync(caller, log) Then Return
-
-            Else
-
-                If Not _options.QaScriptStartWithApp Then
-
-                    log.AppendLine("QA checks skipped.")
-                    log.AppendLine("Reason: QaScriptStartWithApp=False")
-
-                Else
-
-                    log.AppendLine("QA checks skipped.")
-                    log.AppendLine("Reason: Current machine is not the database server")
-
+                If Not Await EnsureQaHostReadyAsync(caller, qaStatus, log) Then
+                    Return
                 End If
-
+            Else
+                LogQaChecksSkipped(isDatabaseServer, log)
             End If
 
             log.AppendLine("Launch requirements satisfied.")
@@ -3554,138 +3547,6 @@ e As System.ComponentModel.CancelEventArgs
         End If
     End Sub
 
-    '    Private Async Sub btnRunQaApi_Click(
-    '    sender As Object,
-    '    e As EventArgs
-    ') Handles btnRunQaApi.Click
-
-    '        Dim log As New System.Text.StringBuilder()
-
-    '        Dim fullCommand As String = tbRunQaCmdLine.Text
-
-    '        If String.IsNullOrWhiteSpace(fullCommand) Then
-
-    '            log.AppendLine("QA API launch requested")
-    '            log.AppendLine("No QA command line configured")
-
-    '            GlobalErrorHandler.LogAction(
-    '            "Run QA API",
-    '            log.ToString())
-
-    '            MessageBox.Show(
-    '            "No QA command line configured.",
-    '            "Missing Command",
-    '            MessageBoxButtons.OK,
-    '            MessageBoxIcon.Warning)
-
-    '            Return
-
-    '        End If
-
-    '        Try
-
-    '            log.AppendLine("QA API launch requested")
-    '            log.AppendLine($"Command: {fullCommand}")
-
-    '            btnRunQaApi.Enabled = False
-
-    '            ' Parse command
-    '            Dim parsed = QaScriptHelper.ParseCommand(fullCommand)
-
-    '            Dim scriptPath = parsed.ScriptPath
-    '            Dim args = parsed.Args
-
-    '            log.AppendLine($"Script Path: {scriptPath}")
-    '            log.AppendLine($"Arguments: {args}")
-
-    '            ' Check for existing instance
-    '            If QaScriptHelper.IsScriptRunning(scriptPath) Then
-
-    '                log.AppendLine("Script already running")
-
-    '                UIHelpers.TimedWarningPrompt(
-    '                owner:=Me,
-    '                message:="The QA API script is already running." &
-    '                         Environment.NewLine &
-    '                         "Stop the existing instance before starting a new one.",
-    '                title:="Already Running",
-    '                timeoutSeconds:=10)
-
-    '                Return
-
-    '            End If
-
-    '            ' Stop service
-    '            Const serviceName As String = "AdvApiServer"
-
-    '            log.AppendLine($"Stopping service: {serviceName}")
-
-    '            Await Task.Run(
-    '            Sub()
-    '                Try
-
-    '                    Using sc As New ServiceController(serviceName)
-
-    '                        If sc.Status = ServiceControllerStatus.Running OrElse
-    '                           sc.Status = ServiceControllerStatus.StartPending Then
-
-    '                            sc.Stop()
-    '                            sc.WaitForStatus(
-    '                                ServiceControllerStatus.Stopped,
-    '                                TimeSpan.FromSeconds(15))
-
-    '                        End If
-
-    '                    End Using
-
-    '                Catch ex As InvalidOperationException
-
-    '                    ' Service not installed/not found
-    '                End Try
-    '            End Sub)
-
-    '            log.AppendLine("Service stop completed")
-
-    '            ' Launch PowerShell
-    '            Dim psCommand As String =
-    '            $"-ExecutionPolicy Bypass -Command ""& {{ $host.UI.RawUI.WindowTitle = 'QA API Server'; & '{scriptPath}' {args} }}"""
-
-    '            log.AppendLine("Launching PowerShell process")
-
-    '            Dim psi As New ProcessStartInfo With {
-    '            .FileName = "powershell.exe",
-    '            .Arguments = psCommand,
-    '            .UseShellExecute = True,
-    '            .CreateNoWindow = False
-    '        }
-
-    '            Process.Start(psi)
-
-    '            log.AppendLine("QA API launched successfully")
-
-    '        Catch ex As Exception
-
-    '            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
-
-    '            MessageBox.Show(
-    '            "Failed to launch QA script:" &
-    '            Environment.NewLine &
-    '            ex.Message,
-    '            "Execution Error",
-    '            MessageBoxButtons.OK,
-    '            MessageBoxIcon.Error)
-
-    '        Finally
-
-    '            GlobalErrorHandler.LogAction(
-    '            "Run QA API",
-    '            log.ToString())
-
-    '            btnRunQaApi.Enabled = True
-
-    '        End Try
-
-    '    End Sub
     Private Async Sub btnRunQaApi_Click(
     sender As Object,
     e As EventArgs
@@ -3705,10 +3566,14 @@ e As System.ComponentModel.CancelEventArgs
             If Not started Then
 
                 MessageBox.Show(
-                "Failed to start QA API.",
-                "Startup Failed",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
+        "Failed to start QA API.",
+        "Startup Failed",
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Error)
+
+            Else
+
+                Await RefreshQaHostStatusDisplaySafeAsync()
 
             End If
 
@@ -3799,7 +3664,6 @@ e As System.ComponentModel.CancelEventArgs
                 log.AppendLine("User cancelled restart")
 
                 Return
-
             End If
 
             log.AppendLine("Restart approved")
@@ -3808,6 +3672,7 @@ e As System.ComponentModel.CancelEventArgs
             log.AppendLine("Stopping existing QA API script instances")
 
             Await CodeHelper.KillQaScriptIfRunningAsync(fullCommand)
+            SetQaApiNotReady()
 
             log.AppendLine("Existing script instances stopped")
 
@@ -3856,6 +3721,7 @@ e As System.ComponentModel.CancelEventArgs
             Process.Start(psi)
 
             log.AppendLine("QA API restarted successfully")
+            Await RefreshQaHostStatusDisplaySafeAsync()
 
         Catch ex As Exception
 
@@ -3889,7 +3755,9 @@ e As System.ComponentModel.CancelEventArgs
             tsmiQaScriptKill.Enabled = False
 
             Await CodeHelper.KillQaScriptIfRunningAsync(tbRunQaCmdLine.Text)
+            SetQaApiNotReady()
             log.AppendLine($"[{timeStamp}] QA script kill requested and executed.")
+            Await RefreshQaHostStatusDisplaySafeAsync()
 
         Catch ex As Exception
             MessageBox.Show(
@@ -4146,14 +4014,10 @@ timeoutSeconds:=10)
         End Try
 
     End Sub
-    Private Async Function EnsureQaApiReadyAsync(caller As Button, log As StringBuilder) As Task(Of Boolean)
-
-        Dim qaScriptRunning As Boolean = QaScriptHelper.IsQaApiRunning(tbRunQaCmdLine.Text)
-
-        Dim apiReady As Boolean = Await FormHelper.IsQaApiReadyAsync()
-
-        log.AppendLine($"QA Script Running={qaScriptRunning}")
-        log.AppendLine($"QA API Ready={apiReady}")
+    Private Async Function EnsureQaScriptReadyAsync(caller As Button, status As QaHostStatus, log As StringBuilder) As Task(Of Boolean)
+        Dim qaScriptRunning As Boolean = status.ScriptRunning
+        Dim apiReady As Boolean = status.ApiReady
+        LogQaHostStatus(status, log)
 
         If apiReady Then
             log.AppendLine("QA API already responding.")
@@ -4180,6 +4044,9 @@ timeoutSeconds:=10)
                 log.AppendLine("QA Script not running. Starting QA API.")
 
                 Dim started As Boolean = Await FormHelper.StartQaApiAsync(tbRunQaCmdLine.Text, log)
+                SetQaApiNotReady()
+                Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+                LogQaHostStatus(status, log)
 
                 If Not started Then
 
@@ -4192,33 +4059,23 @@ timeoutSeconds:=10)
                 log.AppendLine("Restarting QA Script before waiting for API.")
 
                 Dim restarted As Boolean = Await FormHelper.RestartQaApiAsync(tbRunQaCmdLine.Text, log)
+                SetQaApiNotReady()
+                Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+                LogQaHostStatus(status, log)
 
                 If Not restarted Then
 
                     ShowQaApiError("Unable to restart the QA API.", "QA API Restart Failed")
                     Return False
-
-                    Return False
-
                 End If
 
             End If
-
-            log.AppendLine("Waiting for QA API readiness.")
-
-            apiReady =
-            Await FormHelper.WaitForQaApiReadyAsync(60,
-                Sub(text)
-                    caller.Text =
-                        $"{text} - Click To Restart"
-                End Sub,
-                _qaApiWaitCts.Token)
-
+            apiReady = Await WaitForQaApiAsync(caller, log)
             If apiReady Then
-
-                log.AppendLine("QA API is responding and ready.")
+                Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+                LogQaHostStatus(status, log, "Final ")
+                Await RefreshQaHostStatusDisplaySafeAsync()
                 Return True
-
             End If
 
             If _qaApiRestartRequested Then
@@ -4259,19 +4116,255 @@ timeoutSeconds:=10)
             Return False
 
         Finally
-
             _qaApiLaunchInProgress = False
+
+        End Try
+    End Function
+    Private Async Function EnsureQaServiceReadyAsync(
+    status As QaHostStatus,
+    log As StringBuilder
+) As Task(Of Boolean)
+
+        LogQaHostStatus(status, log)
+
+        If Not status.ServiceInstalled Then
+            log.AppendLine("API Service is not installed.")
+            ShowQaApiError("API Service is not installed.", "API Service")
+            Return False
+
+        End If
+
+        If Not status.ServiceRunning Then
+            log.AppendLine("API Service is stopped.")
+            log.AppendLine("Service validation required.")
+            If Not _options.QaStartServiceWithApp Then
+                log.AppendLine("Automatic service startup disabled.")
+                log.AppendLine("Cannot continue because service is stopped.")
+                Return False
+            End If
+
+            log.AppendLine($"Starting service: {AdvantageConstants.ApiServiceName}")
+
+            Dim started As Boolean = Await FormHelper.StartQaServiceAsync(AdvantageConstants.ApiServiceName, log)
+
+            If Not started Then
+                ShowQaApiError("Unable to start the API Service.", "API Service")
+                Return False
+            End If
+
+            log.AppendLine("API Service started successfully.")
+
+            Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+
+            LogQaHostStatus(status, log)
+
+        Else
+            log.AppendLine("API Service already running.")
+        End If
+
+        Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+
+        LogQaHostStatus(status, log, "Final ")
+
+        Await RefreshQaHostStatusDisplaySafeAsync()
+
+        Return True
+
+    End Function
+    Private Async Function EnsureQaHostReadyAsync(
+        caller As Button,
+        status As QaHostStatus,
+        log As StringBuilder
+    ) As Task(Of Boolean)
+        Select Case _options.QaHostingMode
+
+            Case QaHostingMode.None
+                log.AppendLine("QA hosting disabled.")
+                Return True
+            Case QaHostingMode.Script
+                Return Await EnsureQaScriptReadyAsync(caller, status, log)
+            Case QaHostingMode.Service
+                Return Await EnsureQaServiceReadyAsync(status, log)
+            Case Else
+                log.AppendLine("Unknown QA hosting mode.")
+                Return False
+        End Select
+
+    End Function
+    Private Async Function WaitForQaApiAsync(
+    log As StringBuilder
+) As Task(Of Boolean)
+
+        log.AppendLine(
+        "Waiting for QA API readiness.")
+
+        Dim apiReady As Boolean =
+        Await FormHelper.WaitForQaApiReadyAsync(60)
+
+        If apiReady Then
+
+            log.AppendLine(
+            "QA API is responding and ready.")
+
+        End If
+
+        Return apiReady
+
+    End Function
+    Private Async Function WaitForQaApiAsync(
+    caller As Button,
+    log As StringBuilder
+) As Task(Of Boolean)
+
+        log.AppendLine(
+        "Waiting for QA API readiness.")
+
+        Dim apiReady As Boolean =
+        Await FormHelper.WaitForQaApiReadyAsync(
+            60,
+            Sub(text)
+                caller.Text =
+                    $"{text} - Click To Restart"
+            End Sub,
+            _qaApiWaitCts.Token)
+
+        If apiReady Then
+
+            log.AppendLine(
+            "QA API is responding and ready.")
+
+        End If
+
+        Return apiReady
+
+    End Function
+    Private Sub LogQaHostStatus(
+    status As QaHostStatus,
+    log As StringBuilder,
+    Optional prefix As String = ""
+)
+
+        log.AppendLine(
+        $"{prefix}ApiReady={status.ApiReady}")
+
+        log.AppendLine(
+        $"{prefix}ScriptRunning={status.ScriptRunning}")
+
+        log.AppendLine(
+        $"{prefix}ServiceInstalled={status.ServiceInstalled}")
+
+        log.AppendLine(
+        $"{prefix}ServiceRunning={status.ServiceRunning}")
+
+    End Sub
+    Private Async Function RefreshQaHostStatusDisplayAsync() As Task
+
+        Dim dbStatus = CodeHelper.CheckDatabaseServer()
+        SetQaApiNotReady()
+        lblQaHostingMode.Text = $"Hosting Mode: {_options.QaHostingMode}"
+        lblQaDatabaseServer.Text = $"Database Server: {If(dbStatus.IsDatabaseServer, "Yes", "No")}"
+
+        If _options.QaHostingMode = QaHostingMode.None Then
+            lblQaApiReady.Text = "API Ready: N/A"
+            lblQaScriptRunning.Text = "Script Running: N/A"
+            lblQaServiceInstalled.Text = "Service Installed: N/A"
+            lblQaServiceRunning.Text = "Service Running: N/A"
+            Return
+        End If
+
+        Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+
+
+        lblQaApiReady.Text = $"API Ready: {If(status.ApiReady, "Yes", "No")}"
+        If _options.QaHostingMode = QaHostingMode.Service Then lblQaApiReady.Text = "API Ready: N/A"
+        lblQaScriptRunning.Text = $"Script Running: {If(status.ScriptRunning, "Yes", "No")}"
+        lblQaServiceInstalled.Text = $"Service Installed: {If(status.ServiceInstalled, "Yes", "No")}"
+        lblQaServiceRunning.Text = $"Service Running: {If(status.ServiceRunning, "Yes", "No")}"
+
+    End Function
+    Private Async Function RefreshQaHostStatusDisplaySafeAsync() As Task
+
+        If _qaStatusRefreshInProgress Then Return
+
+        Try
+            _qaStatusRefreshInProgress = True
+            Await RefreshQaHostStatusDisplayAsync()
+
+        Catch ex As Exception
+
+            GlobalErrorHandler.LogAction("QA Status Refresh", ex.ToString())
+
+        Finally
+            _qaStatusRefreshInProgress = False
 
         End Try
 
     End Function
-    Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
+    Private Sub SetQaApiNotReady()
 
-        Using dlg As New QAScriptConfigForm(_options)
+        'If _options.QaHostingMode <> QaHostingMode.Script Then Return
+        lblQaApiReady.Text = "API Ready: No"
+    End Sub
+
+    Private Sub SetQaScriptStopped()
+        lblQaApiReady.Text = "API Ready: No"
+        lblQaScriptRunning.Text = "Script Running: No"
+    End Sub
+    Private Sub LogQaLaunchContext(qaStatus As QaHostStatus, isDatabaseServer As Boolean, runQaChecks As Boolean, log As StringBuilder
+)
+
+        log.AppendLine($"Computer Name: {PCInfo.Name}")
+        log.AppendLine($"Configured Server: {ConfigValues.Server}")
+        log.AppendLine($"IsDatabaseServer={isDatabaseServer}")
+        log.AppendLine($"QaHostingMode={_options.QaHostingMode}")
+        log.AppendLine($"QaScriptStartWithApp={_options.QaScriptStartWithApp}")
+        log.AppendLine($"QaStartServiceWithApp={_options.QaStartServiceWithApp}")
+        log.AppendLine($"HostingMode={qaStatus.HostingMode}")
+        log.AppendLine($"RunQaChecks={runQaChecks}")
+        LogQaHostStatus(qaStatus, log)
+
+    End Sub
+    Private Sub LogQaChecksSkipped(isDatabaseServer As Boolean, log As StringBuilder)
+
+        log.AppendLine("QA checks skipped.")
+
+        Select Case _options.QaHostingMode
+            Case QaHostingMode.None
+                log.AppendLine("Reason: HostingMode=None")
+            Case QaHostingMode.Script
+                If Not isDatabaseServer Then
+                    log.AppendLine("Reason: Current machine is not the database server")
+                Else
+                    log.AppendLine("Reason: QaScriptStartWithApp=False")
+                End If
+            Case QaHostingMode.Service
+                If Not isDatabaseServer Then
+                    log.AppendLine("Reason: Current machine is not the database server")
+                Else
+                    log.AppendLine("Reason: QaStartServiceWithApp=False")
+                End If
+        End Select
+
+    End Sub
+    Private Async Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
+
+        Using dlg As New QaHostingConfigForm(_options)
             dlg.FormBorderStyle = FormBorderStyle.FixedToolWindow
             dlg.ShowDialog(Me)
         End Using
+        Await RefreshQaHostStatusDisplaySafeAsync()
+
+    End Sub
+    Private Async Sub btnRefreshQaStatus_Click(sender As Object, e As EventArgs) Handles btnRefreshQaStatus.Click
+
+        Await RefreshQaHostStatusDisplaySafeAsync()
 
     End Sub
 
+
+    Private Async Sub tmrQaStatus_Tick(sender As Object, e As EventArgs) Handles tmrQaStatus.Tick
+
+        Await RefreshQaHostStatusDisplaySafeAsync()
+
+    End Sub
 End Class

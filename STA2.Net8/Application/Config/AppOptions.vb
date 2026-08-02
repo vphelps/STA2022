@@ -83,15 +83,14 @@ Public Class AppOptions
     ' -------------------------------------------------
     Public Property QaApiAllowService As Boolean = False
     Public Property QaScriptStartWithApp As Boolean = False
-
+    Public Property QaStartServiceWithApp As Boolean = True
     Public Enum StartDatabaseButtonMode
         StartDatabase = 0
         CopyCommandLine = 1
     End Enum
-
-
     Public Property DatabaseButtonMode As StartDatabaseButtonMode = StartDatabaseButtonMode.StartDatabase
 
+    Public Property QaHostingMode As QaHostingMode = QaHostingMode.Script
     ' -------------------------------------------------
     ' Constructor
     ' -------------------------------------------------

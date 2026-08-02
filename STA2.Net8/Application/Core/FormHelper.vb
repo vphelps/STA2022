@@ -234,4 +234,51 @@ Public Module FormHelper
         End Try
 
     End Function
+    Public Async Function StartQaServiceAsync(
+    serviceName As String,
+    log As StringBuilder
+) As Task(Of Boolean)
+
+        Try
+
+            Using sc As New ServiceController(serviceName)
+
+                If sc.Status =
+                    ServiceControllerStatus.Running Then
+
+                    log.AppendLine("API Service already running.")
+
+                    Return True
+
+                End If
+
+                log.AppendLine($"Starting service: {serviceName}")
+
+                sc.Start()
+
+                Await Task.Run(
+                    Sub()
+
+                        sc.WaitForStatus(
+                            ServiceControllerStatus.Running,
+                            TimeSpan.FromSeconds(30))
+
+                    End Sub)
+
+                log.AppendLine("API Service started successfully.")
+
+                Return True
+
+            End Using
+
+        Catch ex As Exception
+
+            log.AppendLine($"Service start failed: {ex.Message}")
+
+            Return False
+
+        End Try
+
+    End Function
+
 End Module
