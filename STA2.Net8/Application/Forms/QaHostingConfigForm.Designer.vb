@@ -78,7 +78,7 @@ Partial Class QaHostingConfigForm
         chkQaStartServiceWithApp.Name = "chkQaStartServiceWithApp"
         chkQaStartServiceWithApp.Size = New Size(279, 19)
         chkQaStartServiceWithApp.TabIndex = 7
-        chkQaStartServiceWithApp.Text = "Automatically start QA Service with applications"
+        chkQaStartServiceWithApp.Text = "Automatically start API Service with applications"
         chkQaStartServiceWithApp.UseVisualStyleBackColor = True
         ' 
         ' lblQaHostingMode

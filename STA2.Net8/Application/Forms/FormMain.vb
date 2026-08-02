@@ -4117,14 +4117,14 @@ timeoutSeconds:=10)
         LogQaHostStatus(status, log)
 
         If Not status.ServiceInstalled Then
-            log.AppendLine("QA service is not installed.")
-            ShowQaApiError("QA service is not installed.", "QA Service")
+            log.AppendLine("API Service is not installed.")
+            ShowQaApiError("API Service is not installed.", "API Service")
             Return False
 
         End If
 
         If Not status.ServiceRunning Then
-            log.AppendLine("QA service is stopped.")
+            log.AppendLine("API Service is stopped.")
             log.AppendLine("Service validation required.")
             If Not _options.QaStartServiceWithApp Then
                 log.AppendLine("Automatic service startup disabled.")
@@ -4137,18 +4137,18 @@ timeoutSeconds:=10)
             Dim started As Boolean = Await FormHelper.StartQaServiceAsync(AdvantageConstants.ApiServiceName, log)
 
             If Not started Then
-                ShowQaApiError("Unable to start the QA service.", "QA Service")
+                ShowQaApiError("Unable to start the API Service.", "API Service")
                 Return False
             End If
 
-            log.AppendLine("QA service started successfully.")
+            log.AppendLine("API Service started successfully.")
 
             Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
 
             LogQaHostStatus(status, log)
 
         Else
-            log.AppendLine("QA service already running.")
+            log.AppendLine("API Service already running.")
         End If
 
         Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)

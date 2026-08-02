@@ -246,7 +246,7 @@ Public Module FormHelper
                 If sc.Status =
                     ServiceControllerStatus.Running Then
 
-                    log.AppendLine("QA service already running.")
+                    log.AppendLine("API Service already running.")
 
                     Return True
 
@@ -265,7 +265,7 @@ Public Module FormHelper
 
                     End Sub)
 
-                log.AppendLine("QA service started successfully.")
+                log.AppendLine("API Service started successfully.")
 
                 Return True
 
