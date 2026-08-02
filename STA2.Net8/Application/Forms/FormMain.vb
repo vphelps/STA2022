@@ -2139,10 +2139,7 @@ Public Class FormMain
             log.AppendLine($"QaStartServiceWithApp={_options.QaStartServiceWithApp}")
             log.AppendLine($"HostingMode={qaStatus.HostingMode}")
             log.AppendLine($"RunQaChecks={runQaChecks}")
-            log.AppendLine($"ApiReady={qaStatus.ApiReady}")
-            log.AppendLine($"ScriptRunning={qaStatus.ScriptRunning}")
-            log.AppendLine($"ServiceInstalled={qaStatus.ServiceInstalled}")
-            log.AppendLine($"ServiceRunning={qaStatus.ServiceRunning}")
+            LogQaHostStatus(qaStatus, log)
 
             If runQaChecks Then
                 If Not Await EnsureQaHostReadyAsync(caller, qaStatus, log) Then Return
@@ -4063,8 +4060,7 @@ timeoutSeconds:=10)
 
                 Dim started As Boolean = Await FormHelper.StartQaApiAsync(tbRunQaCmdLine.Text, log)
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
-                log.AppendLine($"ServiceRunning={status.ServiceRunning}")
-                log.AppendLine($"ApiReady={status.ApiReady}")
+                LogQaHostStatus(status, log)
 
                 If Not started Then
 
@@ -4078,8 +4074,7 @@ timeoutSeconds:=10)
 
                 Dim restarted As Boolean = Await FormHelper.RestartQaApiAsync(tbRunQaCmdLine.Text, log)
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
-                log.AppendLine($"ServiceRunning={status.ServiceRunning}")
-                log.AppendLine($"ApiReady={status.ApiReady}")
+                LogQaHostStatus(status, log)
 
                 If Not restarted Then
 
@@ -4094,18 +4089,8 @@ timeoutSeconds:=10)
             apiReady = Await WaitForQaApiAsync(caller, log)
             If apiReady Then
                 Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
-                log.AppendLine($"ServiceRunning={status.ServiceRunning}")
-                log.AppendLine($"ApiReady={status.ApiReady}")
-
+                LogQaHostStatus(status, log, "Final ")
                 Return True
-                log.AppendLine(
-                    $"Final ApiReady={status.ApiReady}")
-
-                log.AppendLine(
-                    $"Final ScriptRunning={status.ScriptRunning}")
-
-                log.AppendLine(
-                    $"Final ServiceRunning={status.ServiceRunning}")
             End If
 
             If _qaApiRestartRequested Then
@@ -4157,9 +4142,7 @@ timeoutSeconds:=10)
 ) As Task(Of Boolean)
 
         Const serviceName As String = "AdvApiServer"
-        log.AppendLine($"ServiceInstalled={status.ServiceInstalled}")
-        log.AppendLine($"ServiceRunning={status.ServiceRunning}")
-        log.AppendLine($"ApiReady={status.ApiReady}")
+        LogQaHostStatus(status, log)
 
         If Not status.ServiceInstalled Then
 
@@ -4188,8 +4171,7 @@ timeoutSeconds:=10)
             Dim started As Boolean =
             Await FormHelper.StartQaServiceAsync(serviceName, log)
             Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
-            log.AppendLine($"ServiceRunning={status.ServiceRunning}")
-            log.AppendLine($"ApiReady={status.ApiReady}")
+            LogQaHostStatus(status, log)
 
             If Not started Then
 
@@ -4214,20 +4196,10 @@ timeoutSeconds:=10)
 
         End If
 
-        Await CodeHelper.RefreshQaHostStatusAsync(
-            status,
-            tbRunQaCmdLine.Text)
-        log.AppendLine($"ServiceRunning={status.ServiceRunning}")
-        log.AppendLine($"ApiReady={status.ApiReady}")
+        Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+        LogQaHostStatus(status, log)
 
-        log.AppendLine(
-    $"Final ApiReady={status.ApiReady}")
-
-        log.AppendLine(
-    $"Final ScriptRunning={status.ScriptRunning}")
-
-        log.AppendLine(
-    $"Final ServiceRunning={status.ServiceRunning}")
+        LogQaHostStatus(status, log, "Final ")
 
 
         Return True
@@ -4299,6 +4271,26 @@ timeoutSeconds:=10)
         Return apiReady
 
     End Function
+    Private Sub LogQaHostStatus(
+    status As QaHostStatus,
+    log As StringBuilder,
+    Optional prefix As String = ""
+)
+
+        log.AppendLine(
+        $"{prefix}ApiReady={status.ApiReady}")
+
+        log.AppendLine(
+        $"{prefix}ScriptRunning={status.ScriptRunning}")
+
+        log.AppendLine(
+        $"{prefix}ServiceInstalled={status.ServiceInstalled}")
+
+        log.AppendLine(
+        $"{prefix}ServiceRunning={status.ServiceRunning}")
+
+    End Sub
+
     Private Sub tsmiQaScriptOptions_Click(sender As Object, e As EventArgs) Handles tsmiQaScriptOptions.Click
 
         Using dlg As New QAScriptConfigForm(_options)
