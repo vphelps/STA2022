@@ -1204,14 +1204,14 @@ Public Class FormMain
 
     End Sub
 
-    Private Async Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
+    Private Sub tmr1Sec_Tick(sender As Object, e As EventArgs) Handles tmr1Sec.Tick
 
         Dim baseInstallerPath As String = AppData.UpgradePath
         Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
         Dim installerPath = FindInstallerFile(latestFolder)
 
         _uiStateController.Refresh()
-        Await RefreshQaHostStatusDisplayAsync()
+        'Await RefreshQaHostStatusDisplayAsync()
 
     End Sub
 
@@ -4110,68 +4110,55 @@ timeoutSeconds:=10)
         End Try
     End Function
     Private Async Function EnsureQaServiceReadyAsync(
-   status As QaHostStatus, log As StringBuilder
+    status As QaHostStatus,
+    log As StringBuilder
 ) As Task(Of Boolean)
 
         LogQaHostStatus(status, log)
 
         If Not status.ServiceInstalled Then
-
             log.AppendLine("QA service is not installed.")
-
             ShowQaApiError("QA service is not installed.", "QA Service")
-
             Return False
 
         End If
 
         If Not status.ServiceRunning Then
-
             log.AppendLine("QA service is stopped.")
-            log.AppendLine("Service startup required.")
+            log.AppendLine("Service validation required.")
             If Not _options.QaStartServiceWithApp Then
-
                 log.AppendLine("Automatic service startup disabled.")
                 log.AppendLine("Cannot continue because service is stopped.")
                 Return False
-
             End If
 
             log.AppendLine($"Starting service: {AdvantageConstants.ApiServiceName}")
 
-            Dim started As Boolean =
-            Await FormHelper.StartQaServiceAsync(AdvantageConstants.ApiServiceName, log)
-            Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
-            LogQaHostStatus(status, log)
+            Dim started As Boolean = Await FormHelper.StartQaServiceAsync(AdvantageConstants.ApiServiceName, log)
 
             If Not started Then
-
                 ShowQaApiError("Unable to start the QA service.", "QA Service")
-
                 Return False
-
             End If
+
+            log.AppendLine("QA service started successfully.")
+
+            Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+
+            LogQaHostStatus(status, log)
+
         Else
             log.AppendLine("QA service already running.")
         End If
 
-        Dim apiReady As Boolean =
-    Await WaitForQaApiAsync(log)
-
-        If Not apiReady Then
-
-            log.AppendLine(
-                "Service started but API not available.")
-
-            Return False
-
-        End If
-
         Await CodeHelper.RefreshQaHostStatusAsync(status, tbRunQaCmdLine.Text)
+
         LogQaHostStatus(status, log, "Final ")
 
         Await RefreshQaHostStatusDisplayAsync()
+
         Return True
+
     End Function
     Private Async Function EnsureQaHostReadyAsync(
         caller As Button,
@@ -4277,6 +4264,7 @@ timeoutSeconds:=10)
         Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
 
         lblQaApiReady.Text = $"API Ready: {If(status.ApiReady, "Yes", "No")}"
+        If _options.QaHostingMode = QaHostingMode.Service Then lblQaApiReady.Text = "API Ready: N/A"
         lblQaScriptRunning.Text = $"Script Running: {If(status.ScriptRunning, "Yes", "No")}"
         lblQaServiceInstalled.Text = $"Service Installed: {If(status.ServiceInstalled, "Yes", "No")}"
         lblQaServiceRunning.Text = $"Service Running: {If(status.ServiceRunning, "Yes", "No")}"
