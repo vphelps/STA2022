@@ -2,6 +2,7 @@
 Imports System.ServiceProcess
 Imports System.Text
 Imports System.Threading
+Imports System.Windows.Forms.Design.AxImporter
 
 Public Module FormHelper
 
@@ -101,7 +102,7 @@ Public Module FormHelper
 
 
     Public Async Function WaitForQaApiReadyAsync(
-    Optional timeoutSeconds As Integer = 60,
+    Optional timeoutSeconds As Integer = 120,
     Optional updateText As Action(Of String) = Nothing,
     Optional cancellationToken As CancellationToken = Nothing
 ) As Task(Of Boolean)

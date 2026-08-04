@@ -3985,7 +3985,7 @@ timeoutSeconds:=10)
         "Waiting for QA API readiness.")
 
         Dim apiReady As Boolean =
-        Await FormHelper.WaitForQaApiReadyAsync(60)
+        Await FormHelper.WaitForQaApiReadyAsync(_options.QaScriptStartupTimeoutSeconds)
 
         If apiReady Then
 
@@ -4007,7 +4007,7 @@ timeoutSeconds:=10)
 
         Dim apiReady As Boolean =
         Await FormHelper.WaitForQaApiReadyAsync(
-            60,
+            _options.QaScriptStartupTimeoutSeconds,
             Sub(text)
                 caller.Text =
                     $"{text} - Click To Restart"
@@ -4139,6 +4139,7 @@ timeoutSeconds:=10)
             dlg.ShowDialog(Me)
         End Using
         Await RefreshQaHostStatusDisplaySafeAsync()
+        tbTest1.Text = _options.QaScriptStartupTimeoutSeconds.ToString()
 
     End Sub
     Private Async Sub btnRefreshQaStatus_Click(sender As Object, e As EventArgs) Handles btnRefreshQaStatus.Click
@@ -4152,5 +4153,14 @@ timeoutSeconds:=10)
 
         Await RefreshQaHostStatusDisplaySafeAsync()
 
+    End Sub
+
+    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        UIHelpers.TimedErrorPrompt(
+            Me,
+            "Test Error",
+            "This is a test error message.",
+            30
+        )
     End Sub
 End Class

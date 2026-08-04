@@ -29,7 +29,11 @@ Partial Class QaHostingConfigForm
         chkQaStartServiceWithApp = New CheckBox()
         lblQaHostingMode = New Label()
         gbQaHostingModeOptions = New GroupBox()
+        lblQaScriptStartupTimeoutSeconds = New Label()
+        nudQaScriptStartupTimeoutSeconds = New NumericUpDown()
+        lblTimeoutRange = New Label()
         gbQaHostingModeOptions.SuspendLayout()
+        CType(nudQaScriptStartupTimeoutSeconds, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' btnCancel
@@ -76,7 +80,7 @@ Partial Class QaHostingConfigForm
         chkQaStartServiceWithApp.AutoSize = True
         chkQaStartServiceWithApp.Location = New Point(6, 47)
         chkQaStartServiceWithApp.Name = "chkQaStartServiceWithApp"
-        chkQaStartServiceWithApp.Size = New Size(279, 19)
+        chkQaStartServiceWithApp.Size = New Size(280, 19)
         chkQaStartServiceWithApp.TabIndex = 7
         chkQaStartServiceWithApp.Text = "Automatically start API Service with applications"
         chkQaStartServiceWithApp.UseVisualStyleBackColor = True
@@ -101,6 +105,34 @@ Partial Class QaHostingConfigForm
         gbQaHostingModeOptions.TabStop = False
         gbQaHostingModeOptions.Text = "Hosting Mode Options"
         ' 
+        ' lblQaScriptStartupTimeoutSeconds
+        ' 
+        lblQaScriptStartupTimeoutSeconds.AutoSize = True
+        lblQaScriptStartupTimeoutSeconds.Location = New Point(11, 124)
+        lblQaScriptStartupTimeoutSeconds.Name = "lblQaScriptStartupTimeoutSeconds"
+        lblQaScriptStartupTimeoutSeconds.Size = New Size(123, 15)
+        lblQaScriptStartupTimeoutSeconds.TabIndex = 10
+        lblQaScriptStartupTimeoutSeconds.Text = "Timeout (in Seconds):"
+        ' 
+        ' nudQaScriptStartupTimeoutSeconds
+        ' 
+        nudQaScriptStartupTimeoutSeconds.Location = New Point(142, 122)
+        nudQaScriptStartupTimeoutSeconds.Maximum = New Decimal(New Integer() {600, 0, 0, 0})
+        nudQaScriptStartupTimeoutSeconds.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        nudQaScriptStartupTimeoutSeconds.Name = "nudQaScriptStartupTimeoutSeconds"
+        nudQaScriptStartupTimeoutSeconds.Size = New Size(91, 23)
+        nudQaScriptStartupTimeoutSeconds.TabIndex = 11
+        nudQaScriptStartupTimeoutSeconds.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        ' 
+        ' lblTimeoutRange
+        ' 
+        lblTimeoutRange.AutoSize = True
+        lblTimeoutRange.Location = New Point(12, 148)
+        lblTimeoutRange.Name = "lblTimeoutRange"
+        lblTimeoutRange.Size = New Size(141, 15)
+        lblTimeoutRange.TabIndex = 12
+        lblTimeoutRange.Text = "Range is 1 to 600 seconds"
+        ' 
         ' QaHostingConfigForm
         ' 
         AcceptButton = btnOk
@@ -109,6 +141,9 @@ Partial Class QaHostingConfigForm
         CancelButton = btnCancel
         ClientSize = New Size(401, 192)
         ControlBox = False
+        Controls.Add(lblTimeoutRange)
+        Controls.Add(nudQaScriptStartupTimeoutSeconds)
+        Controls.Add(lblQaScriptStartupTimeoutSeconds)
         Controls.Add(gbQaHostingModeOptions)
         Controls.Add(lblQaHostingMode)
         Controls.Add(cmbQaHostingMode)
@@ -124,6 +159,7 @@ Partial Class QaHostingConfigForm
         TopMost = True
         gbQaHostingModeOptions.ResumeLayout(False)
         gbQaHostingModeOptions.PerformLayout()
+        CType(nudQaScriptStartupTimeoutSeconds, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -135,4 +171,7 @@ Partial Class QaHostingConfigForm
     Friend WithEvents chkQaStartServiceWithApp As CheckBox
     Friend WithEvents lblQaHostingMode As Label
     Friend WithEvents gbQaHostingModeOptions As GroupBox
+    Friend WithEvents lblQaScriptStartupTimeoutSeconds As Label
+    Friend WithEvents nudQaScriptStartupTimeoutSeconds As NumericUpDown
+    Friend WithEvents lblTimeoutRange As Label
 End Class

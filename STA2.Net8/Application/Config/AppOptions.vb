@@ -84,6 +84,8 @@ Public Class AppOptions
     Public Property QaApiAllowService As Boolean = False
     Public Property QaScriptStartWithApp As Boolean = False
     Public Property QaStartServiceWithApp As Boolean = True
+    Public Property QaScriptStartupTimeoutSeconds As Integer = 30
+
     Public Enum StartDatabaseButtonMode
         StartDatabase = 0
         CopyCommandLine = 1
