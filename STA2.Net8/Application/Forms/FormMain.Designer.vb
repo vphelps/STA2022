@@ -205,6 +205,7 @@ Partial Class FormMain
         cbAdvUpgradeNoSetup = New CheckBox()
         cbAdvUpgradeQuiet = New CheckBox()
         pnlButtonCollection = New Panel()
+        btnCancelQaStartup = New Button()
         btnTest3 = New Button()
         gpDBStartVersion = New GroupBox()
         cbDbUseVersion = New CheckBox()
@@ -2414,6 +2415,7 @@ Partial Class FormMain
         ' 
         ' pnlButtonCollection
         ' 
+        pnlButtonCollection.Controls.Add(btnCancelQaStartup)
         pnlButtonCollection.Controls.Add(btnTest3)
         pnlButtonCollection.Controls.Add(gpDBStartVersion)
         pnlButtonCollection.Controls.Add(btnTest2)
@@ -2428,6 +2430,17 @@ Partial Class FormMain
         pnlButtonCollection.Name = "pnlButtonCollection"
         pnlButtonCollection.Size = New Size(1190, 191)
         pnlButtonCollection.TabIndex = 0
+        ' 
+        ' btnCancelQaStartup
+        ' 
+        btnCancelQaStartup.Location = New Point(156, 164)
+        btnCancelQaStartup.Margin = New Padding(4, 3, 4, 3)
+        btnCancelQaStartup.Name = "btnCancelQaStartup"
+        btnCancelQaStartup.Size = New Size(211, 27)
+        btnCancelQaStartup.TabIndex = 38
+        btnCancelQaStartup.Text = "Cancel QA Startup"
+        btnCancelQaStartup.UseVisualStyleBackColor = True
+        btnCancelQaStartup.Visible = False
         ' 
         ' btnTest3
         ' 
@@ -3878,4 +3891,5 @@ Partial Class FormMain
     Friend WithEvents lblQaApiReady As Label
     Friend WithEvents btnRefreshQaStatus As Button
     Friend WithEvents tmrQaStatus As Timer
+    Friend WithEvents btnCancelQaStartup As Button
 End Class
