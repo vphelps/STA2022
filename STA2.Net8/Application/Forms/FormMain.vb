@@ -3822,6 +3822,7 @@ timeoutSeconds:=10)
 
         _qaApiWaitCts?.Dispose()
         _qaApiWaitCts = New CancellationTokenSource()
+        btnCancelQaStartup.Visible = True
 
         Try
 
@@ -3888,7 +3889,7 @@ timeoutSeconds:=10)
             End If
 
             If _qaApiWaitCts?.IsCancellationRequested Then
-
+                log.AppendLine("User cancelled QA startup.")
                 log.AppendLine("QA API wait interrupted.")
 
                 Return False
@@ -3903,7 +3904,7 @@ timeoutSeconds:=10)
 
         Finally
             _qaApiLaunchInProgress = False
-
+            btnCancelQaStartup.Visible = False
         End Try
     End Function
     Private Async Function EnsureQaServiceReadyAsync(
@@ -4162,5 +4163,37 @@ timeoutSeconds:=10)
             "This is a test error message.",
             30
         )
+    End Sub
+
+    Private Async Sub btnCancelQaStartup_Click(sender As Object, e As EventArgs) Handles btnCancelQaStartup.Click
+
+        Try
+
+            ' Stop the startup wait loop
+            _qaApiWaitCts?.Cancel()
+
+            ' Check current QA status
+            Dim status = Await CodeHelper.GetQaHostStatusAsync(tbRunQaCmdLine.Text, _options.QaHostingMode)
+
+            ' Only kill the startup script if:
+            ' 1. The script is running
+            ' 2. The API is NOT ready
+            If status.ScriptRunning AndAlso
+           Not status.ApiReady Then
+
+                QaScriptHelper.KillScriptProcesses(QaScriptHelper.ParseCommand(tbRunQaCmdLine.Text).ScriptPath)
+
+            End If
+
+        Catch ex As Exception
+
+            GlobalErrorHandler.LogAction("Cancel QA Startup", ex.ToString())
+
+        Finally
+
+            btnCancelQaStartup.Visible = False
+
+        End Try
+
     End Sub
 End Class
