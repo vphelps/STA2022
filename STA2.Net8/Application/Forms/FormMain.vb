@@ -1480,68 +1480,6 @@ Public Class FormMain
 
     End Sub
 
-    Private Sub btnLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles btnLaunchLatestInstaller.Click
-
-        Dim log As New System.Text.StringBuilder()
-
-        Try
-
-            log.AppendLine("Button clicked")
-
-            Dim baseInstallerPath As String = AppData.UpgradePath
-
-            log.AppendLine($"Searching for installer in {baseInstallerPath}")
-
-            Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
-            If latestFolder Is Nothing Then
-                log.AppendLine("No valid installer folders found")
-                MessageBox.Show("No valid installer folders found.")
-                Return
-            End If
-
-            log.AppendLine($"Latest folder: {latestFolder.FullName}")
-
-            Dim installerPath = FindInstallerFile(latestFolder)
-            If String.IsNullOrWhiteSpace(installerPath) OrElse
-           Not IO.File.Exists(installerPath) Then
-                log.AppendLine($"Installer not found in: {latestFolder.FullName}")
-                MessageBox.Show("Installer not found in: " & latestFolder.FullName)
-                Return
-            End If
-
-            log.AppendLine($"Launching installer: {installerPath}")
-            log.AppendLine($"Arguments: {tbSetupSwitches.Text}")
-
-            Dim psi As New ProcessStartInfo(installerPath) With {
-            .UseShellExecute = True,
-            .Arguments = tbSetupSwitches.Text,
-            .Verb = "runas"
-        }
-            Process.Start(psi)
-
-            log.AppendLine("Installer launched successfully")
-
-            _uiStateController.Refresh()
-
-        Catch ex As Exception
-
-            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
-
-            MessageBox.Show(
-            ex.Message,
-            "Installer Launch Failed",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error)
-
-        Finally
-
-            GlobalErrorHandler.LogAction(
-            "Launch Latest Installer",
-            log.ToString())
-
-        End Try
-
-    End Sub
 
     Private Async Sub btnSetupInstall_Click(
     sender As Object,
@@ -4156,14 +4094,7 @@ timeoutSeconds:=10)
 
     End Sub
 
-    Private Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
-        UIHelpers.TimedErrorPrompt(
-            Me,
-            "Test Error",
-            "This is a test error message.",
-            30
-        )
-    End Sub
+
 
     Private Async Sub btnCancelQaStartup_Click(sender As Object, e As EventArgs) Handles btnCancelQaStartup.Click
 
@@ -4196,4 +4127,252 @@ timeoutSeconds:=10)
         End Try
 
     End Sub
+
+    Private Sub tsmiLaunchLatestInstaller_Click(sender As Object, e As EventArgs) Handles tsmiLaunchLatestInstaller.Click
+        Dim log As New System.Text.StringBuilder()
+
+        Try
+
+            log.AppendLine("Button clicked")
+
+            Dim baseInstallerPath As String = CodeHelper.ResolveBackupPath()
+
+            log.AppendLine($"Searching for installer in {baseInstallerPath}")
+
+            Dim latestFolder = GetLatestVersionFolder(baseInstallerPath)
+            If latestFolder Is Nothing Then
+                log.AppendLine("No valid installer folders found")
+                MessageBox.Show("No valid installer folders found.")
+                Return
+            End If
+
+            log.AppendLine($"Latest folder: {latestFolder.FullName}")
+
+            Dim installerPath = FindInstallerFile(latestFolder)
+            If String.IsNullOrWhiteSpace(installerPath) OrElse
+           Not IO.File.Exists(installerPath) Then
+                log.AppendLine($"Installer not found in: {latestFolder.FullName}")
+                MessageBox.Show("Installer not found in: " & latestFolder.FullName)
+                Return
+            End If
+
+            log.AppendLine($"Launching installer: {installerPath}")
+            log.AppendLine($"Arguments: {tbSetupSwitches.Text}")
+
+            Dim psi As New ProcessStartInfo(installerPath) With {
+            .UseShellExecute = True,
+            .Arguments = tbSetupSwitches.Text,
+            .Verb = "runas"
+        }
+            Process.Start(psi)
+
+            log.AppendLine("Installer launched successfully")
+
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            MessageBox.Show(
+            ex.Message,
+            "Installer Launch Failed",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error)
+
+        Finally
+
+            GlobalErrorHandler.LogAction(
+            "Launch Latest Installer",
+            log.ToString())
+
+        End Try
+    End Sub
+
+    Private Sub tsmiLaunchCurrentVersionInstaller_Click(
+    sender As Object,
+    e As EventArgs
+) Handles tsmiLaunchCurrentVersionInstaller.Click
+
+        Dim log As New System.Text.StringBuilder()
+
+        Try
+
+            log.AppendLine("Button clicked")
+
+            Dim baseInstallerPath As String = CodeHelper.ResolveBackupPath()
+
+            log.AppendLine($"Searching for installer in {baseInstallerPath}")
+
+            log.AppendLine($"Installed Version: {ServiceIntrospection.GetInstalledVersionString()}")
+
+            Dim versionFolderPath As String = InstalledVersionParsing.FindInstalledInstallerFolder(baseInstallerPath, "AdvCoreService")
+
+            If String.IsNullOrWhiteSpace(versionFolderPath) Then
+                log.AppendLine("Unable to locate installer folder for installed version")
+
+                MessageBox.Show("Unable to locate installer folder for the installed version.")
+                Return
+
+            End If
+
+            Dim versionFolder As New DirectoryInfo(versionFolderPath)
+
+            log.AppendLine($"Installed version folder: {versionFolder.FullName}")
+
+            Dim installerPath = FindInstallerFile(versionFolder)
+
+            If String.IsNullOrWhiteSpace(installerPath) OrElse Not IO.File.Exists(installerPath) Then
+                log.AppendLine($"Installer not found in: {versionFolder.FullName}")
+                MessageBox.Show("Installer not found in: " & versionFolder.FullName)
+                Return
+
+            End If
+
+            log.AppendLine($"Launching installer: {installerPath}")
+
+            log.AppendLine($"Arguments: {tbSetupSwitches.Text}")
+
+            Dim psi As New ProcessStartInfo(installerPath) With {.UseShellExecute = True, .Arguments = tbSetupSwitches.Text, .Verb = "runas"}
+
+            Process.Start(psi)
+
+            log.AppendLine("Installer launched successfully")
+
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+
+            MessageBox.Show(ex.Message, "Installer Launch Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+        Finally
+
+            GlobalErrorHandler.LogAction("Launch Current Version Installer", log.ToString())
+
+        End Try
+
+    End Sub
+
+
+
+    Private Sub tsmiConfigureInstallerPromptDefaults_Click(sender As Object, e As EventArgs) Handles tsmiConfigureInstallerPromptDefaults.Click
+
+        Using dlg As New PromptDefaultsForm()
+
+            dlg.Text = "Extract and Install Prompt Defaults"
+            dlg.YesText = "Overwrite automatically"
+            dlg.NoText = "Run existing version"
+
+            dlg.PromptEnabled =
+                _options.SetupExistingVersionPromptEnabled
+
+            dlg.TimeoutSeconds =
+                _options.SetupExistingVersionPromptTimeoutSeconds
+
+            dlg.IsYesSelected =
+                _options.SetupExistingVersionPromptAction
+
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+
+                UpdateOption(
+                    Sub()
+                        _options.SetupExistingVersionPromptEnabled =
+                            dlg.PromptEnabled
+
+                        _options.SetupExistingVersionPromptAction =
+                            dlg.IsYesSelected
+
+                        _options.SetupExistingVersionPromptTimeoutSeconds =
+                            dlg.TimeoutSeconds
+                    End Sub)
+
+            End If
+
+        End Using
+
+    End Sub
+    Private Sub tsmiLaunchDatabaseVersionInstaller_Click(sender As Object, e As EventArgs) Handles tsmiLaunchDatabaseVersionInstaller.Click
+
+        Dim log As New System.Text.StringBuilder()
+
+        Try
+
+            log.AppendLine("Button clicked")
+
+            Dim baseInstallerPath As String = CodeHelper.ResolveBackupPath()
+            Dim databaseVersion As String = PCInfo.DatabaseVersion
+
+            log.AppendLine($"Database Version: {databaseVersion}")
+
+            Dim matchingFolders As List(Of String) =
+    InstalledVersionParsing.FindInstallerFoldersForVersion(
+        baseInstallerPath,
+        databaseVersion)
+            If matchingFolders.Count = 0 Then
+
+                log.AppendLine($"Installer folder not found for database version: {databaseVersion}")
+
+                MessageBox.Show($"Installer folder not found for database version: {databaseVersion}")
+
+                Return
+
+            End If
+            Dim versionFolderPath As String
+            If matchingFolders.Count = 1 Then
+
+                versionFolderPath = matchingFolders(0)
+
+            Else
+
+                Using dlg As New SelectInstallerVersionForm()
+
+                    dlg.LoadVersions(matchingFolders.Select(Function(x) IO.Path.GetFileName(x)))
+                    If dlg.ShowDialog(Me) <> DialogResult.OK Then
+                        log.AppendLine("User cancelled installer selection.")
+                        Return
+
+                    End If
+
+                    log.AppendLine($"Selected Version: {dlg.SelectedVersion}")
+                    versionFolderPath = matchingFolders.First(Function(x) IO.Path.GetFileName(x) = dlg.SelectedVersion)
+
+                End Using
+
+            End If
+            Dim versionFolder As New DirectoryInfo(versionFolderPath)
+
+            log.AppendLine($"Database version folder: {versionFolder.FullName}")
+
+            Dim installerPath = FindInstallerFile(versionFolder)
+
+            If String.IsNullOrWhiteSpace(installerPath) OrElse Not IO.File.Exists(installerPath) Then
+                log.AppendLine($"Installer not found in: {versionFolder.FullName}")
+                MessageBox.Show("Installer not found in: " & versionFolder.FullName)
+                Return
+            End If
+
+            log.AppendLine($"Launching installer: {installerPath}")
+            log.AppendLine($"Arguments: {tbSetupSwitches.Text}")
+
+            Dim psi As New ProcessStartInfo(installerPath) With {.UseShellExecute = True, .Arguments = tbSetupSwitches.Text, .Verb = "runas"}
+            Process.Start(psi)
+
+            log.AppendLine("Installer launched successfully")
+            _uiStateController.Refresh()
+
+        Catch ex As Exception
+
+            log.AppendLine($"ERROR: {ex.GetType().Name}: {ex.Message}")
+            MessageBox.Show(ex.Message, "Installer Launch Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
+        Finally
+
+            GlobalErrorHandler.LogAction("Launch Database Version Installer", log.ToString())
+
+        End Try
+
+    End Sub
+
 End Class

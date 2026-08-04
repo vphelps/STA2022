@@ -304,7 +304,12 @@ Partial Class FormMain
         btnUpdateShiftDate = New Button()
         btnRepoMain = New Button()
         btnSetupInstall = New Button()
-        btnLaunchLatestInstaller = New Button()
+        cmsInstallerMenu = New ContextMenuStrip(components)
+        tsmiLaunchLatestInstaller = New ToolStripMenuItem()
+        tsmiLaunchCurrentVersionInstaller = New ToolStripMenuItem()
+        tsmiLaunchDatabaseVersionInstaller = New ToolStripMenuItem()
+        cmsInstallerSeparator1 = New ToolStripSeparator()
+        tsmiConfigureInstallerPromptDefaults = New ToolStripMenuItem()
         btnRepoDiscardChanges = New Button()
         btnManageInstallerVersions = New Button()
         btnApplyPersonalFlavor = New Button()
@@ -377,6 +382,7 @@ Partial Class FormMain
         pnlButtons.SuspendLayout()
         tlpButtons3.SuspendLayout()
         cmsRunQaApi.SuspendLayout()
+        cmsInstallerMenu.SuspendLayout()
         Panel2.SuspendLayout()
         SuspendLayout()
         ' 
@@ -3345,7 +3351,6 @@ Partial Class FormMain
         tlpButtons3.Controls.Add(btnRunApplyFlavorLive, 3, 0)
         tlpButtons3.Controls.Add(btnRepoMain, 1, 3)
         tlpButtons3.Controls.Add(btnSetupInstall, 1, 0)
-        tlpButtons3.Controls.Add(btnLaunchLatestInstaller, 1, 1)
         tlpButtons3.Controls.Add(btnRepoDiscardChanges, 1, 2)
         tlpButtons3.Controls.Add(btnManageInstallerVersions, 2, 0)
         tlpButtons3.Controls.Add(btnRunDatabaseStartLive, 3, 2)
@@ -3433,7 +3438,9 @@ Partial Class FormMain
         ' 
         ' btnSetupInstall
         ' 
+        btnSetupInstall.ContextMenuStrip = cmsInstallerMenu
         btnSetupInstall.Dock = DockStyle.Fill
+        btnSetupInstall.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         btnSetupInstall.Location = New Point(98, 2)
         btnSetupInstall.Margin = New Padding(0)
         btnSetupInstall.Name = "btnSetupInstall"
@@ -3442,16 +3449,40 @@ Partial Class FormMain
         btnSetupInstall.Text = "Extract and Install"
         btnSetupInstall.UseVisualStyleBackColor = True
         ' 
-        ' btnLaunchLatestInstaller
+        ' cmsInstallerMenu
         ' 
-        btnLaunchLatestInstaller.Dock = DockStyle.Fill
-        btnLaunchLatestInstaller.Location = New Point(98, 59)
-        btnLaunchLatestInstaller.Margin = New Padding(0)
-        btnLaunchLatestInstaller.Name = "btnLaunchLatestInstaller"
-        btnLaunchLatestInstaller.Size = New Size(94, 55)
-        btnLaunchLatestInstaller.TabIndex = 23
-        btnLaunchLatestInstaller.Text = "Latest Installer"
-        btnLaunchLatestInstaller.UseVisualStyleBackColor = True
+        cmsInstallerMenu.Items.AddRange(New ToolStripItem() {tsmiLaunchLatestInstaller, tsmiLaunchCurrentVersionInstaller, tsmiLaunchDatabaseVersionInstaller, cmsInstallerSeparator1, tsmiConfigureInstallerPromptDefaults})
+        cmsInstallerMenu.Name = "cmsInstallerMenu"
+        cmsInstallerMenu.Size = New Size(217, 98)
+        ' 
+        ' tsmiLaunchLatestInstaller
+        ' 
+        tsmiLaunchLatestInstaller.Name = "tsmiLaunchLatestInstaller"
+        tsmiLaunchLatestInstaller.Size = New Size(216, 22)
+        tsmiLaunchLatestInstaller.Text = "Latest Installer"
+        ' 
+        ' tsmiLaunchCurrentVersionInstaller
+        ' 
+        tsmiLaunchCurrentVersionInstaller.Name = "tsmiLaunchCurrentVersionInstaller"
+        tsmiLaunchCurrentVersionInstaller.Size = New Size(216, 22)
+        tsmiLaunchCurrentVersionInstaller.Text = "Current Version Installer"
+        ' 
+        ' tsmiLaunchDatabaseVersionInstaller
+        ' 
+        tsmiLaunchDatabaseVersionInstaller.Name = "tsmiLaunchDatabaseVersionInstaller"
+        tsmiLaunchDatabaseVersionInstaller.Size = New Size(216, 22)
+        tsmiLaunchDatabaseVersionInstaller.Text = "Database Version Installer"
+        ' 
+        ' cmsInstallerSeparator1
+        ' 
+        cmsInstallerSeparator1.Name = "cmsInstallerSeparator1"
+        cmsInstallerSeparator1.Size = New Size(213, 6)
+        ' 
+        ' tsmiConfigureInstallerPromptDefaults
+        ' 
+        tsmiConfigureInstallerPromptDefaults.Name = "tsmiConfigureInstallerPromptDefaults"
+        tsmiConfigureInstallerPromptDefaults.Size = New Size(216, 22)
+        tsmiConfigureInstallerPromptDefaults.Text = "Configure Prompt Defaults"
         ' 
         ' btnRepoDiscardChanges
         ' 
@@ -3609,6 +3640,7 @@ Partial Class FormMain
         pnlButtons.ResumeLayout(False)
         tlpButtons3.ResumeLayout(False)
         cmsRunQaApi.ResumeLayout(False)
+        cmsInstallerMenu.ResumeLayout(False)
         Panel2.ResumeLayout(False)
         ResumeLayout(False)
         PerformLayout()
@@ -3750,7 +3782,6 @@ Partial Class FormMain
     Friend WithEvents tbRepoFolder As TextBox
     Friend WithEvents lblRepoFolder As Label
     Friend WithEvents clbSqlFiles As CheckedListBox
-    Friend WithEvents btnLaunchLatestInstaller As Button
     Friend WithEvents tbSetupSwitches As TextBox
     Friend WithEvents lblSetupSwitches As Label
     Friend WithEvents btnSaveFlavorDefaults As Button
@@ -3892,4 +3923,10 @@ Partial Class FormMain
     Friend WithEvents btnRefreshQaStatus As Button
     Friend WithEvents tmrQaStatus As Timer
     Friend WithEvents btnCancelQaStartup As Button
+    Friend WithEvents cmsInstallerMenu As ContextMenuStrip
+    Friend WithEvents tsmiLaunchLatestInstaller As ToolStripMenuItem
+    Friend WithEvents tsmiLaunchCurrentVersionInstaller As ToolStripMenuItem
+    Friend WithEvents tsmiLaunchDatabaseVersionInstaller As ToolStripMenuItem
+    Friend WithEvents tsmiConfigureInstallerPromptDefaults As ToolStripMenuItem
+    Friend WithEvents cmsInstallerSeparator1 As ToolStripSeparator
 End Class

@@ -395,8 +395,6 @@ Public Module FormHelper
         toolTip.SetToolTip(form.btnDbUseAdvVersion, "Sets the 'Start DB on specific version' text box value to match your installed Advantage version")
         toolTip.SetToolTip(form.btnBatchLaunch, "Launches all programs in the Application list that have been included in the Batch Launch list")
         toolTip.SetToolTip(form.btnAdminRestart, "Relaunches the application in Admin Mode to enable elevated options like Services controls")
-        toolTip.SetToolTip(form.btnSetupInstall, "Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer")
-        toolTip.SetToolTip(form.btnLaunchLatestInstaller, "Run the installer with the highest version number that is found in the UpgradePath contained in the database AppOptions setting")
         toolTip.SetToolTip(form.btnRepoDiscardChanges, "Discard changes that were made to the Advantage Repo locally")
         toolTip.SetToolTip(form.btnRepoMain, "Discard Advantage repo changes and switch the branch back to 'main'")
         toolTip.SetToolTip(form.btnManageInstallerVersions, "Open the Advantage Installer Versions Management window where Installers in the UpgradePath location can be managed and run if needed")
@@ -404,6 +402,20 @@ Public Module FormHelper
         toolTip.SetToolTip(form.btnComboAppLaunch, "Launch the selected application showing on the drop down list")
         toolTip.SetToolTip(form.btnConnectionProfiles, "Manage saved PFSConnect.ini connection configurations")
         toolTip.SetToolTip(form.btnUpdateShiftDate, "Run database stored procedure To update the Advantage shift Date To today's date (exec ChangeShiftDate)")
+        strTemp =
+            "Extract and Install" & Environment.NewLine &
+        "	Extract downloaded ZIP file in UpgradePath location and then run the Advantage Installer" & Environment.NewLine &
+        Environment.NewLine &
+        "Launch Latest Installer" & Environment.NewLine &
+        "    Launches the newest installer version available in the upgrade repository." & Environment.NewLine &
+        Environment.NewLine &
+        "Launch Current Version Installer" & Environment.NewLine &
+        "    Launches the installer matching the currently installed Advantage version." & Environment.NewLine &
+        Environment.NewLine &
+        "Launch Database Version Installer" & Environment.NewLine &
+        "    Launches an installer matching the current database version. If multiple matching versions are available, you will be prompted to select one."
+
+        toolTip.SetToolTip(form.btnSetupInstall, strTemp)
 
         strTemp =
             "Starts the database with default flavors and optionally the value from Start DB Version box." & Environment.NewLine &

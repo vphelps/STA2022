@@ -407,27 +407,25 @@ Public Module CodeHelper
 
     End Function
     Public Function ResolveBackupPath() As String
+
         Dim Form = Startup.MainFormInstance
-        ' ✅ 1. AppOptions override (PRIMARY)
+
+        ' ✅ 1. Database UpgradePath (PRIMARY)
+        Dim dbValue = CodeHelper.GetOptionValueFromGrid(Form.dgvAppOptions, "UpgradePath")?.Trim()
+
+        If Not String.IsNullOrWhiteSpace(dbValue) Then
+            Return dbValue
+        End If
+
+        ' ✅ 2. AppOptions BackupPathOverride (OFFLINE FALLBACK)
         Dim optValue = Form._options?.BackupPathOverride?.Trim()
 
         If Not String.IsNullOrWhiteSpace(optValue) Then
             Return optValue
         End If
 
-        ' ✅ 2. DataGridView fallback (database value)
-        Dim dbValue = CodeHelper.GetOptionValueFromGrid(
-            Form.dgvAppOptions,
-            "BackupFolder"
-        )?.Trim()
-
-        If Not String.IsNullOrWhiteSpace(dbValue) Then
-            Return dbValue
-        End If
-
-        ' ✅ Final fallback (optional)
+        ' ✅ Final fallback
         Return Nothing
-
     End Function
     Public Async Function KillQaScriptIfRunningAsync(fullCommand As String) As Task
 

@@ -7,7 +7,6 @@
 
         RegisterRepoMain(form, options)
         RegisterRepoDiscardChanges(form, options)
-        RegisterExistingVersionPrompt(form, options)
 
         ' ✅ Add more here later:
         ' RegisterRunQaApi(form, options)

@@ -84,35 +84,88 @@ Public Module InstalledVersionParsing
         Return a.Build.CompareTo(b.Build)
 
     End Function
+
     Public Function FindInstalledInstallerFolder(
-        upgradePath As String,
-        serviceName As String
-    ) As String
+    upgradePath As String,
+    serviceName As String
+) As String
 
-        ' Get the installed (runtime) version
-        Dim installedText = GetInstalledVersionString()
-        Dim installed = ParseVersionPartsSafe(installedText)
+        Return FindInstallerFolderForVersion(
+        upgradePath,
+        GetInstalledVersionString())
 
-        If Not installed.HasValue Then
+    End Function
+    Public Function FindInstallerFolderForVersion(upgradePath As String, versionText As String) As String
+
+        Dim targetVersion =
+            ParseVersionPartsSafe(versionText)
+
+        If Not targetVersion.HasValue Then
             Return Nothing
         End If
 
-        ' Scan installer folders
-        For Each dirPath In IO.Directory.GetDirectories(upgradePath, "Version *")
+        For Each dirPath In IO.Directory.GetDirectories(
+            upgradePath,
+            "Version *")
+
             Dim folderName = IO.Path.GetFileName(dirPath)
-            Dim folderVersion = ParseInstallerFolderVersion(folderName)
+
+            Dim folderVersion =
+                ParseInstallerFolderVersion(folderName)
 
             If Not folderVersion.HasValue Then
                 Continue For
             End If
 
-            ' Exact match = installed version folder
-            If CompareVersions(installed.Value, folderVersion.Value) = 0 Then
+            If CompareVersions(
+                targetVersion.Value,
+                folderVersion.Value) = 0 Then
+
                 Return dirPath
+
             End If
 
         Next
 
         Return Nothing
+
+    End Function
+    Public Function FindInstallerFoldersForVersion(upgradePath As String, versionText As String) As List(Of String)
+
+        Dim results As New List(Of String)
+
+        Dim targetVersion =
+            ParseVersionPartsSafe(versionText)
+
+        If Not targetVersion.HasValue Then
+            Return results
+        End If
+
+        For Each dirPath In IO.Directory.GetDirectories(
+            upgradePath,
+            "Version *")
+
+            Dim folderName =
+                IO.Path.GetFileName(dirPath)
+
+            Dim folderVersion =
+                ParseInstallerFolderVersion(folderName)
+
+            If Not folderVersion.HasValue Then
+                Continue For
+            End If
+
+            If folderVersion.Value.Major = targetVersion.Value.Major AndAlso
+               folderVersion.Value.Minor = targetVersion.Value.Minor AndAlso
+               folderVersion.Value.Patch = targetVersion.Value.Patch Then
+
+                results.Add(dirPath)
+
+            End If
+
+        Next
+
+        Return results
+
     End Function
 End Module
