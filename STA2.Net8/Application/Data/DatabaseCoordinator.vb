@@ -1,13 +1,19 @@
-﻿Imports Microsoft.Data.SqlClient
-Imports System.Diagnostics
+﻿Imports System.Diagnostics
 Imports System.Drawing
+Imports System.Threading
 Imports System.Threading.Tasks
+Imports Microsoft.Data.SqlClient
 
 Public Module DatabaseCoordinator
 
     Private _evaluationInProgress As Boolean = False
     Private _lastKnownOnline As Boolean? = Nothing
     Private _lastKnownSource As String = Nothing
+
+    Private ReadOnly _databaseService As IDatabaseService =
+    New DatabaseService(
+        New DbConnectionFactory())
+
     Public Enum DatabaseEnvironment
 
         Offline = 0
@@ -142,22 +148,77 @@ Public Module DatabaseCoordinator
     End Sub
 
     Public Async Function EvaluateDatabaseAvailabilityAsync(
-        form As FormMain,
-        connectionString As String,
-        Optional configuredContainerName As String = Nothing
-    ) As Task
+    form As FormMain,
+    connectionString As String,
+    Optional configuredContainerName As String = Nothing
+) As Task
 
         If _evaluationInProgress Then Return
+
         _evaluationInProgress = True
 
         Try
-            Await Task.Run(
-                Sub()
-                    EvaluateDatabaseAvailability(form, connectionString, configuredContainerName)
-                End Sub)
+
+            Dim health =
+            Await _databaseService.
+                EvaluateDatabaseAvailabilityAsync(
+                    CancellationToken.None)
+
+            If health.IsOnline Then
+
+                Dim source As String
+
+                Select Case health.Environment
+
+                    Case DatabaseEnvironment.LocalServer
+                        source = "SQL Server (Local)"
+
+                    Case DatabaseEnvironment.RemoteServer
+                        source = "SQL Server (Remote)"
+
+                    Case DatabaseEnvironment.Docker
+                        source = "Docker"
+
+                    Case Else
+                        source = "Unknown"
+
+                End Select
+
+                If _lastKnownOnline <> True OrElse
+               _lastKnownSource <> source Then
+
+                    GoOnlineWithSource(
+                    form,
+                    source)
+
+                    _lastKnownOnline = True
+                    _lastKnownSource = source
+
+                End If
+
+            Else
+
+                If _lastKnownOnline <> False Then
+
+                    GoOffline(
+                    form,
+                    If(
+                        String.IsNullOrWhiteSpace(
+                            health.Details),
+                        "Database error",
+                        health.Details))
+
+                    _lastKnownOnline = False
+                    _lastKnownSource = Nothing
+
+                End If
+
+            End If
 
         Finally
+
             _evaluationInProgress = False
+
         End Try
 
     End Function
