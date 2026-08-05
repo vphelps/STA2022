@@ -164,6 +164,7 @@ Public Module ReliableSql
             b.InitialCatalog = ConfigValues.Database
             b.UserID = ConfigValues.UserID
             b.Password = ConfigValues.Password
+            b.ApplicationName = "STA2"
             Return b.ConnectionString
         Catch
             Return Nothing
