@@ -1,4 +1,6 @@
 ﻿Imports System.Data
+Imports System.Threading
+Imports System.Threading.Tasks
 
 Public Module SafeDb
 
@@ -37,6 +39,52 @@ Public Module SafeDb
 
     End Function
 
+    Public Async Function TryQueryAsync(
+    sql As String,
+    Optional ct As CancellationToken = Nothing
+) As Task(Of DataSet)
+
+        Try
+
+            Dim result As Object =
+            Await ReliableSql.QueryAsync(
+                sql,
+                ct)
+
+            ' Case 1: already a DataSet
+            If TypeOf result Is DataSet Then
+                Return DirectCast(result, DataSet)
+            End If
+
+            ' Case 2: scalar result -> wrap into DataSet
+            Dim ds As New DataSet()
+
+            Dim table As New DataTable("Result")
+
+            table.Columns.Add("Value")
+
+            Dim row = table.NewRow()
+
+            row("Value") =
+            If(result Is Nothing,
+               DBNull.Value,
+               result)
+
+            table.Rows.Add(row)
+
+            ds.Tables.Add(table)
+
+            Return ds
+
+        Catch ex As Exception
+
+            Throw New DatabaseOfflineException(
+            "Database connection lost.",
+            ex)
+
+        End Try
+
+    End Function
 
     ''' <summary>
     ''' Custom exception type used by SafeDb.
