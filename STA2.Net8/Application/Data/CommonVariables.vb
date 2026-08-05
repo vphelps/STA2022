@@ -121,6 +121,7 @@ Public Class ConfigValues
             csb.Encrypt = False
             csb.TrustServerCertificate = True
             csb.ConnectTimeout = 5
+            csb.ApplicationName = "STA2"
 
             Return csb.ConnectionString
         End Get
