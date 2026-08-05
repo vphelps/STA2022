@@ -52,13 +52,21 @@ Public Module ReliableSql
         Return ExecuteWithPauseRetry(Function() DBConnector.dbQuery(sql))
     End Function
     Public Async Function QueryAsync(
-    sql As String
+    sql As String,
+    Optional ct As CancellationToken = Nothing
 ) As Task(Of Object)
+
+        ct.ThrowIfCancellationRequested()
 
         Return Await Task.Run(
         Function()
+
+            ct.ThrowIfCancellationRequested()
+
             Return Query(sql)
-        End Function)
+
+        End Function,
+        ct)
 
     End Function
 
@@ -68,13 +76,21 @@ Public Module ReliableSql
         Return ExecuteWithPauseRetry(Function() DBConnector.dbExecute(sql))
     End Function
     Public Async Function ExecuteAsync(
-    sql As String
+    sql As String,
+    Optional ct As CancellationToken = Nothing
 ) As Task(Of Integer)
+
+        ct.ThrowIfCancellationRequested()
 
         Return Await Task.Run(
         Function()
+
+            ct.ThrowIfCancellationRequested()
+
             Return Execute(sql)
-        End Function)
+
+        End Function,
+        ct)
 
     End Function
 
@@ -83,13 +99,21 @@ Public Module ReliableSql
         Return ExecuteWithPauseRetry(Function() DBConnector.getValue(sql))
     End Function
     Public Async Function GetValueAsync(
-    sql As String
+    sql As String,
+    Optional ct As CancellationToken = Nothing
 ) As Task(Of Object)
+
+        ct.ThrowIfCancellationRequested()
 
         Return Await Task.Run(
         Function()
+
+            ct.ThrowIfCancellationRequested()
+
             Return GetValue(sql)
-        End Function)
+
+        End Function,
+        ct)
 
     End Function
     ' --- Core retry/pause logic ---
