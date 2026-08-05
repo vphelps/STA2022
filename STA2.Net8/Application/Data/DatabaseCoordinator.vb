@@ -315,13 +315,13 @@ Public Module DatabaseCoordinator
     ' ============================================================
     ' DATA REFRESH
     ' ============================================================
-    Public Sub RefreshAdvantageData(form As FormMain)
-
+    Public Async Function RefreshAdvantageData(
+        form As FormMain
+    ) As Task
         Try
             LoadAppOptions(form)
             LoadWebOptions(form)
-            LoadApplicationInfo(form)
-
+            Await LoadApplicationInfo(form)
         Catch ex As SafeDb.DatabaseOfflineException
             GoOffline(form, "Lost DB connection")
 
@@ -329,7 +329,7 @@ Public Module DatabaseCoordinator
             GoOffline(form, "Database error: " & ex.Message)
         End Try
 
-    End Sub
+    End Function
 
 
     ' ============================================================
@@ -371,16 +371,19 @@ Public Module DatabaseCoordinator
     End Sub
 
 
-    Private Sub LoadApplicationInfo(form As FormMain)
+    Private Async Function LoadApplicationInfo(
+    form As FormMain
+) As Task
 
         form.dgvApplicationInfo.Rows.Clear()
 
-        Dim ds = SafeDb.TryQuery("SELECT * FROM ApplicationInfo")
-
-        If ds Is Nothing OrElse ds.Tables.Count = 0 Then Exit Sub
+        Dim ds =
+    Await SafeDb.TryQueryAsync(
+        "SELECT * FROM ApplicationInfo")
+        If ds Is Nothing OrElse ds.Tables.Count = 0 Then Return
 
         Dim table = ds.Tables(0)
-        If table.Rows.Count = 0 Then Exit Sub
+        If table.Rows.Count = 0 Then Return
 
         Dim firstRow = table.Rows(0)
 
@@ -390,7 +393,7 @@ Public Module DatabaseCoordinator
                 firstRow(i).ToString())
         Next
 
-    End Sub
+    End Function
 
 
     ' ============================================================

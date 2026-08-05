@@ -1,6 +1,7 @@
 ﻿Imports System.Data
 Imports Microsoft.Data.SqlClient
 Imports System.Threading
+Imports System.Threading.Tasks
 Imports System.Windows.Forms
 
 ' Central wrapper for resilient SQL calls in a WinForms app.
@@ -50,17 +51,71 @@ Public Module ReliableSql
     Public Function Query(sql As String) As Object
         Return ExecuteWithPauseRetry(Function() DBConnector.dbQuery(sql))
     End Function
+    Public Async Function QueryAsync(
+    sql As String,
+    Optional ct As CancellationToken = Nothing
+) As Task(Of Object)
+
+        ct.ThrowIfCancellationRequested()
+
+        Return Await Task.Run(
+        Function()
+
+            ct.ThrowIfCancellationRequested()
+
+            Return Query(sql)
+
+        End Function,
+        ct)
+
+    End Function
+
 
     ' 2) Wrapper for DBConnector.dbExecute (affected rows)
     Public Function Execute(sql As String) As Integer
         Return ExecuteWithPauseRetry(Function() DBConnector.dbExecute(sql))
+    End Function
+    Public Async Function ExecuteAsync(
+    sql As String,
+    Optional ct As CancellationToken = Nothing
+) As Task(Of Integer)
+
+        ct.ThrowIfCancellationRequested()
+
+        Return Await Task.Run(
+        Function()
+
+            ct.ThrowIfCancellationRequested()
+
+            Return Execute(sql)
+
+        End Function,
+        ct)
+
     End Function
 
     ' 3) Wrapper for DBConnector.getValue (scalar-ish)
     Public Function GetValue(sql As String) As Object
         Return ExecuteWithPauseRetry(Function() DBConnector.getValue(sql))
     End Function
+    Public Async Function GetValueAsync(
+    sql As String,
+    Optional ct As CancellationToken = Nothing
+) As Task(Of Object)
 
+        ct.ThrowIfCancellationRequested()
+
+        Return Await Task.Run(
+        Function()
+
+            ct.ThrowIfCancellationRequested()
+
+            Return GetValue(sql)
+
+        End Function,
+        ct)
+
+    End Function
     ' --- Core retry/pause logic ---
 
     ' Runs the given operation; if a connection error occurs:
