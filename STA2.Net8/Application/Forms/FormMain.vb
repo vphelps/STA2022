@@ -4375,4 +4375,15 @@ timeoutSeconds:=10)
 
     End Sub
 
+    Private Async Sub btnTest1_Click(sender As Object, e As EventArgs) Handles btnTest1.Click
+        Dim svc As New DatabaseService(
+    New DbConnectionFactory())
+
+        Dim health = Await svc.EvaluateDatabaseAvailabilityAsync(CancellationToken.None)
+
+        MessageBox.Show(
+    $"Online: {health.IsOnline}" &
+    Environment.NewLine &
+    $"Environment: {health.Environment}")
+    End Sub
 End Class

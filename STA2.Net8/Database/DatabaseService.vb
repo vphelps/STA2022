@@ -15,33 +15,36 @@ Public Class DatabaseService
     End Sub
 
     Public Async Function EvaluateDatabaseAvailabilityAsync(
-        ct As CancellationToken
-    ) As Task(Of DatabaseHealth) _
-        Implements IDatabaseService.EvaluateDatabaseAvailabilityAsync
+    ct As CancellationToken
+) As Task(Of DatabaseHealth) _
+    Implements IDatabaseService.EvaluateDatabaseAvailabilityAsync
 
         Dim result As New DatabaseHealth()
 
         Try
 
             Using cn =
-                _connectionFactory.CreateConnection()
+            _connectionFactory.CreateConnection()
 
                 Await cn.OpenAsync(ct)
 
+                result.IsOnline = True
+                result.LastCheckedAt = DateTime.Now
+
                 Using cmd As New SqlCommand(
-                    "SELECT @@VERSION",
-                    cn)
+                "SELECT @@VERSION",
+                cn)
 
                     Dim version =
-                        Await cmd.ExecuteScalarAsync(ct)
+                    Await cmd.ExecuteScalarAsync(ct)
 
                     result.ServerVersion =
-                        version?.ToString()
+                    version?.ToString()
 
                 End Using
 
-                result.IsOnline = True
-                result.LastCheckedAt = DateTime.Now
+                result.Environment =
+                DetermineEnvironment(cn)
 
             End Using
 
@@ -50,11 +53,32 @@ Public Class DatabaseService
             result.IsOnline = False
             result.LastCheckedAt = DateTime.Now
             result.Details = ex.Message
+            result.Environment = DatabaseEnvironment.Offline
 
         End Try
 
         Return result
 
     End Function
+    Private Function DetermineEnvironment(
+    cn As SqlConnection
+) As DatabaseEnvironment
 
+        Dim dataSource As String =
+            cn.DataSource.
+                Split("\"c)(0).
+                Split(","c)(0).
+                Trim()
+
+        If dataSource.Equals(
+            Environment.MachineName,
+            StringComparison.OrdinalIgnoreCase) Then
+
+            Return DatabaseEnvironment.LocalServer
+
+        End If
+
+        Return DatabaseEnvironment.RemoteServer
+
+    End Function
 End Class

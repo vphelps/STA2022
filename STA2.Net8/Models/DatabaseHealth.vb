@@ -10,4 +10,6 @@
 
     Public Property Details As String
 
+    Public Property Environment As DatabaseEnvironment
+
 End Class
