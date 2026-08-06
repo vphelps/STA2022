@@ -241,17 +241,11 @@ Public Module ReliableSql
         End SyncLock
 
         Dim result As DialogResult = DialogResult.Retry
+
         Try
-            ' Show modal on the UI thread
-            Dim host As Form = Startup.MainFormInstance
-            If host IsNot Nothing AndAlso host.IsHandleCreated Then
-                host.Invoke(Sub()
-                                result = ShowPrompt()
-                            End Sub)
-            Else
-                ' No main form handle; show on current thread
-                result = ShowPrompt()
-            End If
+
+            result = ShowPrompt()
+
         Finally
             SyncLock _syncRoot
                 _promptOpen = False
