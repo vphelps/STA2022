@@ -5,6 +5,12 @@ Public Class DatabaseService
     Implements IDatabaseService
 
     Private ReadOnly _connectionFactory As IDbConnectionFactory
+    Private _cachedHealth As DatabaseHealth
+
+    Private _lastHealthCheck As DateTime?
+
+    Private Shared ReadOnly HealthCacheDuration As TimeSpan =
+    TimeSpan.FromSeconds(15)
 
     Public Sub New(
         connectionFactory As IDbConnectionFactory
@@ -13,11 +19,25 @@ Public Class DatabaseService
         _connectionFactory = connectionFactory
 
     End Sub
+    Public Sub InvalidateHealthCache()
+
+        _cachedHealth = Nothing
+        _lastHealthCheck = Nothing
+
+    End Sub
 
     Public Async Function EvaluateDatabaseAvailabilityAsync(
     ct As CancellationToken
 ) As Task(Of DatabaseHealth) _
     Implements IDatabaseService.EvaluateDatabaseAvailabilityAsync
+
+        If _cachedHealth IsNot Nothing AndAlso
+   _lastHealthCheck.HasValue AndAlso
+   DateTime.Now - _lastHealthCheck.Value < HealthCacheDuration Then
+
+            Return _cachedHealth
+
+        End If
 
         Dim result As New DatabaseHealth()
 
@@ -57,6 +77,8 @@ Public Class DatabaseService
 
         End Try
 
+        _cachedHealth = result
+        _lastHealthCheck = DateTime.Now
         Return result
 
     End Function
