@@ -235,8 +235,9 @@ Public Module DatabaseCoordinator
         InvokeOnUI(form,
             Sub()
 
-                EnableDatabaseSections(form)
+                Dim uiState As New UIStateController(form, form._options)
 
+                uiState.SetDatabaseOnlineState()
                 ' Refresh data
                 CodeHelper.GetPcInfo()
                 CodeHelper.FirstLoad()
@@ -266,7 +267,9 @@ Public Module DatabaseCoordinator
         InvokeOnUI(form,
             Sub()
 
-                DisableDatabaseSections(form)
+                Dim uiState As New UIStateController(form, form._options)
+
+                uiState.SetDatabaseOfflineState()
 
                 If form.tslblDbState IsNot Nothing Then
                     form.tslblDbState.Text = "OFFLINE"
