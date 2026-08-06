@@ -159,7 +159,7 @@ Public Class FormMain
     )
 
         If Variables.OfflineMode Then
-            DatabaseCoordinator.DisableDatabaseSections(Me)
+            _uiStateController.SetDatabaseOfflineState()
         End If
 
         CodeHelper.GetPcInfo()
