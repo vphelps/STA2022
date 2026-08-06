@@ -56,13 +56,13 @@ Public Class DatabaseViewController
             _form.dgvDbTableSize.DataSource = Nothing
 
         Catch ex As Exception
-            MessageBox.Show(
-                $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
-                "Database Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
-            _form.dgvDbTableSize.DataSource = Nothing
 
+            UIHelpers.TimedInfoPrompt(
+                _form,
+                $"Failed to refresh database info:{Environment.NewLine}{ex.Message}",
+                "Database Error")
+
+            _form.dgvDbTableSize.DataSource = Nothing
         Finally
             Cursor.Current = Cursors.Default
             _form.btnDbInfoRefresh.Enabled = True
@@ -145,13 +145,12 @@ Public Class DatabaseViewController
             DatabaseCoordinator.GoOffline(_form, "Lost DB connection during DbLogRefresh")
             _form.dgvDbLogCount.DataSource = Nothing
             _form.dgvDbLogData.DataSource = Nothing
-
         Catch ex As Exception
-            MessageBox.Show(
-                $"Database log refresh failed:{Environment.NewLine}{ex.Message}",
-                "Database Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error)
+
+            UIHelpers.TimedInfoPrompt(
+        _form,
+        $"Database log refresh failed:{Environment.NewLine}{ex.Message}",
+        "Database Error")
         End Try
 
     End Sub

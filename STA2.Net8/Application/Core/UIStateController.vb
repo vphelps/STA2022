@@ -142,6 +142,25 @@
         SetBold(_form.btnRunQaApi, _form.btnRunQaApi.Enabled)
 
     End Sub
+    Public Sub SetDatabaseOnlineState()
 
+        _form.tpAdvData.Enabled = True
+        _form.tpDbLogs.Enabled = True
+        _form.pnlDbData.Enabled = True
+        _form.pnlDbInfoButtons.Enabled = True
 
+        _form.tbPcDbInfo.Text = ""
+
+    End Sub
+    Public Sub SetDatabaseOfflineState()
+
+        _form.tbPcDbInfo.Text = "Offline"
+        _form.dgvAppOptions.DataSource = Nothing
+
+        _form.tpAdvData.Enabled = False
+        _form.tpDbLogs.Enabled = False
+        _form.pnlDbData.Enabled = False
+        _form.pnlDbInfoButtons.Enabled = False
+
+    End Sub
 End Class

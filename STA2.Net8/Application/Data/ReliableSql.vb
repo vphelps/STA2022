@@ -241,17 +241,11 @@ Public Module ReliableSql
         End SyncLock
 
         Dim result As DialogResult = DialogResult.Retry
+
         Try
-            ' Show modal on the UI thread
-            Dim host As Form = Startup.MainFormInstance
-            If host IsNot Nothing AndAlso host.IsHandleCreated Then
-                host.Invoke(Sub()
-                                result = ShowPrompt()
-                            End Sub)
-            Else
-                ' No main form handle; show on current thread
-                result = ShowPrompt()
-            End If
+
+            result = ShowPrompt()
+
         Finally
             SyncLock _syncRoot
                 _promptOpen = False
@@ -262,17 +256,32 @@ Public Module ReliableSql
         Return result
     End Function
 
-    ' Default prompt (MessageBox) or a custom handler if provided
     Private Function ShowPrompt() As DialogResult
+
         If PromptHandler IsNot Nothing Then
             Return PromptHandler.Invoke()
         End If
 
         Dim caption = "Database Connection Lost"
-        Dim text = "The connection to the database was lost." & Environment.NewLine &
-                   "Check your network/server, then click Retry." & Environment.NewLine &
-                   "Click Cancel to stop the current operation."
-        Return MessageBox.Show(text, caption, MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning)
+
+        Dim text =
+        "The connection to the database was lost." &
+        Environment.NewLine &
+        "Check your network/server, then click Retry." &
+        Environment.NewLine &
+        "Click Cancel to stop the current operation."
+
+        Return UIHelpers.TimedErrorPrompt(
+        message:=text,
+        title:=caption,
+        timeoutSeconds:=0,
+        button1Text:="Retry",
+        button1Result:=DialogResult.Retry,
+        button2Text:="Cancel",
+        button2Result:=DialogResult.Cancel,
+        defaultButtonIndex:=1,
+        cancelButtonIndex:=2)
+
     End Function
 
 End Module
