@@ -12,7 +12,7 @@ Public Module SafeDb
     Public Function TryQuery(sql As String) As DataSet
 
         Try
-            Dim result As Object = DBConnector.dbQuery(sql)
+            Dim result As Object = ReliableSql.Query(sql)
 
             ' ✅ Case 1: already a DataSet
             If TypeOf result Is DataSet Then
