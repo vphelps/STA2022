@@ -46,7 +46,7 @@ Public Module SafeDb
         End Try
 
     End Function
-    Private Function ConvertToDataSet(
+    Friend Function ConvertToDataSet(
     result As Object
 ) As DataSet
 
