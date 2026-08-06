@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "STA2.Net8", "STA2.Net8\STA2.Net8.vbproj", "{97FFE728-B52A-48E7-B68F-5E80FDEBD526}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "STA2.Tests", "STA2.Tests\STA2.Tests.vbproj", "{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug with Arguments|Any CPU = Debug with Arguments|Any CPU
@@ -23,6 +25,14 @@ Global
 		{97FFE728-B52A-48E7-B68F-5E80FDEBD526}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97FFE728-B52A-48E7-B68F-5E80FDEBD526}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97FFE728-B52A-48E7-B68F-5E80FDEBD526}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Debug with Arguments|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Debug with Arguments|Any CPU.Build.0 = Debug|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Debug with BatchLaunch|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Debug with BatchLaunch|Any CPU.Build.0 = Debug|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2BB4B4A-DAE0-48F3-930F-5817B5921F23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
