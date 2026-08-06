@@ -1,12 +1,25 @@
-﻿Imports Xunit
+﻿Imports System.Threading
+Imports STA2.Net8
+Imports Xunit
 
 Public Class DatabaseServiceTests
 
     <Fact>
-    Public Sub SampleTest()
+    Public Async Function ReturnsOffline_WhenConnectionFails() As Task
 
-        Assert.True(True)
+        ' Arrange
+        Dim factory As New FakeFailingConnectionFactory()
 
-    End Sub
+        Dim service As New DatabaseService(factory)
+
+        ' Act
+        Dim result =
+            Await service.EvaluateDatabaseAvailabilityAsync(
+                CancellationToken.None)
+
+        ' Assert
+        Assert.False(result.IsOnline)
+
+    End Function
 
 End Class
