@@ -14,23 +14,7 @@ Public Module SafeDb
         Try
             Dim result As Object = ReliableSql.Query(sql)
 
-            ' ✅ Case 1: already a DataSet
-            If TypeOf result Is DataSet Then
-                Return DirectCast(result, DataSet)
-            End If
-
-            ' ✅ Case 2: scalar result → wrap into DataSet
-            Dim ds As New DataSet()
-            Dim table As New DataTable("Result")
-            table.Columns.Add("Value")
-
-            Dim row = table.NewRow()
-            row("Value") = If(result Is Nothing, DBNull.Value, result)
-            table.Rows.Add(row)
-
-            ds.Tables.Add(table)
-
-            Return ds
+            Return ConvertToDataSet(result)
 
         Catch ex As Exception
             ' ✅ Only true failures reach here
@@ -51,30 +35,7 @@ Public Module SafeDb
                 sql,
                 ct)
 
-            ' Case 1: already a DataSet
-            If TypeOf result Is DataSet Then
-                Return DirectCast(result, DataSet)
-            End If
-
-            ' Case 2: scalar result -> wrap into DataSet
-            Dim ds As New DataSet()
-
-            Dim table As New DataTable("Result")
-
-            table.Columns.Add("Value")
-
-            Dim row = table.NewRow()
-
-            row("Value") =
-            If(result Is Nothing,
-               DBNull.Value,
-               result)
-
-            table.Rows.Add(row)
-
-            ds.Tables.Add(table)
-
-            Return ds
+            Return ConvertToDataSet(result)
 
         Catch ex As Exception
 
@@ -85,11 +46,35 @@ Public Module SafeDb
         End Try
 
     End Function
+    Private Function ConvertToDataSet(
+    result As Object
+) As DataSet
 
-    ''' <summary>
-    ''' Custom exception type used by SafeDb.
-    ''' FormMain catches this to switch into Offline Mode.
-    ''' </summary>
+        If TypeOf result Is DataSet Then
+            Return DirectCast(result, DataSet)
+        End If
+
+        Dim ds As New DataSet()
+
+        Dim table As New DataTable("Result")
+
+        table.Columns.Add("Value")
+
+        Dim row = table.NewRow()
+
+        row("Value") =
+        If(result Is Nothing,
+           DBNull.Value,
+           result)
+
+        table.Rows.Add(row)
+
+        ds.Tables.Add(table)
+
+        Return ds
+
+    End Function
+
     Public Class DatabaseOfflineException
         Inherits Exception
 
