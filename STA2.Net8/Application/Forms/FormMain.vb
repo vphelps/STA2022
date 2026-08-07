@@ -92,6 +92,15 @@ Public Class FormMain
         tbShiftDate.Text = "Database Error"
 
     End Sub
+    Public Sub UpdateDatabaseStatusDisplay(
+    sqlVersion As String,
+    databaseSize As String)
+
+        tbPcDbInfo.Text =
+        String.Join("/", sqlVersion, databaseSize)
+
+    End Sub
+
     Public Sub EnsureRefreshTimerRunning()
 
         If Not tmr10Seconds.Enabled Then

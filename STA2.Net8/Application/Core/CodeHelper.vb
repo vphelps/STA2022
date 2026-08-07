@@ -177,7 +177,12 @@ Public Module CodeHelper
                 PcSqlVersion = PCInfo.SqlVersion
             End If
         End If
-        frm.tbPcDbInfo.Text = String.Join("/", PcSqlVersion, PcDbSize)
+
+
+        frm.UpdateDatabaseStatusDisplay(
+            PcSqlVersion,
+            PcDbSize)
+
         If frm._options IsNot Nothing Then
             Dim uiState = New UIStateController(frm, frm._options)
             uiState.Refresh()
