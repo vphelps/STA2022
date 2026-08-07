@@ -99,9 +99,30 @@ Public Class FormMain
         FormHelper.ShowErrorPopup(owner:=Me, ex:=ex, source:=source, viewLogsAction:=AddressOf ShowLatestLogInUI)
 
     End Sub
+    Private Sub HandleDatabaseOnline(
+    sender As Object,
+    e As DatabaseStateEventArgs)
+
+        GlobalErrorHandler.LogAction(
+        $"Database online event received. Source={e.Source}")
+
+    End Sub
+    Private Sub HandleDatabaseOffline(
+    sender As Object,
+    e As DatabaseStateEventArgs)
+
+        GlobalErrorHandler.LogAction(
+        $"Database offline event received. Reason={e.Reason}")
+
+    End Sub
+
     Private Async Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf HandleErrorLogged
+        AddHandler DatabaseCoordinator.DatabaseOnline,
+    AddressOf HandleDatabaseOnline
 
+        AddHandler DatabaseCoordinator.DatabaseOffline,
+    AddressOf HandleDatabaseOffline
         FormHelper.InitializeUIEnhancements(Me, ToolTip1)
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)

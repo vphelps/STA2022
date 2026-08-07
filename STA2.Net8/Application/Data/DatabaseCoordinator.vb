@@ -235,7 +235,11 @@ Public Module DatabaseCoordinator
 
         Variables.OfflineMode = False
         PCInfo.ValidDatabase = True
-
+        RaiseEvent DatabaseOnline(
+    Nothing,
+    New DatabaseStateEventArgs With {
+        .Source = source
+    })
         InvokeOnUI(form,
             Sub()
 
@@ -267,7 +271,11 @@ Public Module DatabaseCoordinator
 
         Variables.OfflineMode = True
         PCInfo.ValidDatabase = False
-
+        RaiseEvent DatabaseOffline(
+            Nothing,
+    New DatabaseStateEventArgs With {
+        .Reason = reason
+    })
         InvokeOnUI(form,
             Sub()
 
