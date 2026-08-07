@@ -10,7 +10,6 @@ on:
       - master
 
 jobs:
-
   build:
 
     runs-on: windows-latest
@@ -31,22 +30,27 @@ jobs:
       - name: Build Solution
         run: dotnet build --configuration Release --no-restore
 
-- name: Run Unit Tests
-  run: dotnet test --configuration Release --no-build
+      - name: Run Unit Tests
+        run: dotnet test --configuration Release --no-build
 
-- name: Publish Single File Executable
-  run: >
-    dotnet publish
-    STA2.Net8/STA2.Net8.vbproj
-    --configuration Release
-    --runtime win-x64
-    --self-contained true
-    -p:PublishSingleFile=true
-    -p:IncludeNativeLibrariesForSelfExtract=true
-    --output publish
+      - name: Publish STA2
+        run: |
+          dotnet publish STA2.Net8/STA2.Net8.vbproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            --output publish
+        shell: pwsh
 
-- name: Upload Artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: STA2
-    path: publish/**
+      - name: Show Publish Contents
+        shell: pwsh
+        run: |
+          Get-ChildItem publish
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: STA2
+          path: publish/**
