@@ -76,6 +76,15 @@ Public Module CodeHelper
 
                     AppData.dbLicData = dsLic
                     Dim r = dsLic.Tables(0).Rows(0)
+                    Dim summary As New DatabaseSummaryViewModel With {
+                        .LocationName = r("LocName").ToString(),
+                        .LicenseServer = r("LicenseServer").ToString(),
+                        .CoreServer = r("CoreServiceServerName").ToString(),
+                        .DatabaseVersion = r("Version").ToString(),
+                        .WebEnabled = r("EnableWeb").ToString(),
+                        .ShiftDate = r("ShiftDate").ToString()
+                    }
+                    frm.ApplyDatabaseSummary(summary)
 
                     frm.tbLocName.Text = r("LocName").ToString()
                     frm.tbLicSvr.Text = r("LicenseServer").ToString()
