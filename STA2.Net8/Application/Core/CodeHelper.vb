@@ -114,7 +114,6 @@ Public Module CodeHelper
         ' ============================================================
         ' 2) Timers / UI updates
         ' ============================================================
-        frm.tmr10Seconds.Start()
 
         frm.dtpMsgLogDateFrom.Enabled = frm.cbMsgLogDateRange.Checked
         frm.dtpMsgLogTimeFrom.Enabled = frm.cbMsgLogDateRange.Checked
