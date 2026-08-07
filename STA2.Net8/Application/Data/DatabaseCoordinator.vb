@@ -22,6 +22,10 @@ Public Module DatabaseCoordinator
         RemoteServer = 3
 
     End Enum
+
+    Public Event DatabaseOnline As EventHandler(Of DatabaseStateEventArgs)
+
+    Public Event DatabaseOffline As EventHandler(Of DatabaseStateEventArgs)
     Public Function TestConnection(connectionString As String, Optional timeoutSeconds As Integer = 3) As Boolean
 
         If Not IsValidConnectionString(connectionString) Then
