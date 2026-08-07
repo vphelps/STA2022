@@ -102,6 +102,17 @@ Public Class FormMain
     Private Sub HandleDatabaseOnline(
     sender As Object,
     e As DatabaseStateEventArgs)
+        If tslblDbState IsNot Nothing Then
+            tslblDbState.Text = $"ONLINE ({e.Source})"
+            tslblDbState.ForeColor = Color.WhiteSmoke
+            tslblDbState.BackColor = Color.DarkGreen
+        End If
+
+        If tslblExecutionStatus IsNot Nothing Then
+            tslblExecutionStatus.Text = ""
+            tslblExecutionStatus.Visible = False
+        End If
+
 
         GlobalErrorHandler.LogAction(
         $"Database online event received. Source={e.Source}")

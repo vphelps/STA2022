@@ -251,17 +251,6 @@ Public Module DatabaseCoordinator
                 CodeHelper.FirstLoad()
                 CodeHelper.Refresher()
 
-                If form.tslblDbState IsNot Nothing Then
-                    form.tslblDbState.Text = $"ONLINE ({source})"
-                    form.tslblDbState.ForeColor = Color.WhiteSmoke
-                    form.tslblDbState.BackColor = Color.DarkGreen
-                End If
-
-                If form.tslblExecutionStatus IsNot Nothing Then
-                    form.tslblExecutionStatus.Text = ""
-                    form.tslblExecutionStatus.Visible = False
-                End If
-
             End Sub)
 
     End Sub
