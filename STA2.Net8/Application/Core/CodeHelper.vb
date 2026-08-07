@@ -36,11 +36,6 @@ Public Module CodeHelper
 
     End Sub
 
-
-
-    ' =======================================================================
-    '  Refresher() updated to use SafeDb (prevents runtime crashes)
-    ' =======================================================================
     Public Sub Refresher()
 
         ' Always update the Advantage version
@@ -76,13 +71,17 @@ Public Module CodeHelper
 
                     AppData.dbLicData = dsLic
                     Dim r = dsLic.Tables(0).Rows(0)
+                    Dim summary As New DatabaseSummaryViewModel With {
+                        .LocationName = r("LocName").ToString(),
+                        .LicenseServer = r("LicenseServer").ToString(),
+                        .CoreServer = r("CoreServiceServerName").ToString(),
+                        .DatabaseVersion = r("Version").ToString(),
+                        .WebEnabled = r("EnableWeb").ToString(),
+                        .ShiftDate = r("ShiftDate").ToString()
+                    }
+                    frm.ApplyDatabaseSummary(summary)
+                    frm.EnsureRefreshTimerRunning()
 
-                    frm.tbLocName.Text = r("LocName").ToString()
-                    frm.tbLicSvr.Text = r("LicenseServer").ToString()
-                    frm.tbCoreSvr.Text = r("CoreServiceServerName").ToString()
-                    frm.tbDbVer.Text = r("Version").ToString()
-                    frm.tbWebEnabled.Text = r("EnableWeb").ToString()
-                    frm.tbShiftDate.Text = r("ShiftDate").ToString()
                     PCInfo.DatabaseVersion = r("Version").ToString()
 
                 Else
@@ -96,13 +95,9 @@ Public Module CodeHelper
                 Exit Sub
 
             Catch ex As Exception
-                ' Only a non-connectivity error
-                frm.tbLocName.Text = "Database Error"
-                frm.tbLicSvr.Text = "Database Error"
-                frm.tbCoreSvr.Text = "Database Error"
-                frm.tbDbVer.Text = "Database Error"
-                frm.tbWebEnabled.Text = "Database Error"
-                frm.tbShiftDate.Text = "Database Error"
+
+                frm.ShowDatabaseSummaryError()
+
             End Try
         End If
 
@@ -110,12 +105,7 @@ Public Module CodeHelper
         ' ============================================================
         ' 2) Timers / UI updates
         ' ============================================================
-        frm.tmr10Seconds.Start()
-
-        frm.dtpMsgLogDateFrom.Enabled = frm.cbMsgLogDateRange.Checked
-        frm.dtpMsgLogTimeFrom.Enabled = frm.cbMsgLogDateRange.Checked
-        frm.dtpMsgLogDateTo.Enabled = frm.cbMsgLogDateRange.Checked
-        frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
+        frm.UpdateMessageLogDateRangeControls()
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
 
@@ -187,7 +177,12 @@ Public Module CodeHelper
                 PcSqlVersion = PCInfo.SqlVersion
             End If
         End If
-        frm.tbPcDbInfo.Text = String.Join("/", PcSqlVersion, PcDbSize)
+
+
+        frm.UpdateDatabaseStatusDisplay(
+            PcSqlVersion,
+            PcDbSize)
+
         If frm._options IsNot Nothing Then
             Dim uiState = New UIStateController(frm, frm._options)
             uiState.Refresh()

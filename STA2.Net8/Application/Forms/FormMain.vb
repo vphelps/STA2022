@@ -69,6 +69,53 @@ Public Class FormMain
 
     End Sub
 
+    Public Sub ApplyDatabaseSummary(
+    summary As DatabaseSummaryViewModel)
+
+        If summary Is Nothing Then Return
+
+        tbLocName.Text = summary.LocationName
+        tbLicSvr.Text = summary.LicenseServer
+        tbCoreSvr.Text = summary.CoreServer
+        tbDbVer.Text = summary.DatabaseVersion
+        tbWebEnabled.Text = summary.WebEnabled
+        tbShiftDate.Text = summary.ShiftDate
+
+    End Sub
+    Public Sub ShowDatabaseSummaryError()
+
+        tbLocName.Text = "Database Error"
+        tbLicSvr.Text = "Database Error"
+        tbCoreSvr.Text = "Database Error"
+        tbDbVer.Text = "Database Error"
+        tbWebEnabled.Text = "Database Error"
+        tbShiftDate.Text = "Database Error"
+
+    End Sub
+    Public Sub UpdateDatabaseStatusDisplay(
+    sqlVersion As String,
+    databaseSize As String)
+
+        tbPcDbInfo.Text =
+        String.Join("/", sqlVersion, databaseSize)
+
+    End Sub
+
+    Public Sub EnsureRefreshTimerRunning()
+
+        If Not tmr10Seconds.Enabled Then
+            tmr10Seconds.Start()
+        End If
+
+    End Sub
+    Public Sub UpdateMessageLogDateRangeControls()
+
+        dtpMsgLogDateFrom.Enabled = cbMsgLogDateRange.Checked
+        dtpMsgLogTimeFrom.Enabled = cbMsgLogDateRange.Checked
+        dtpMsgLogDateTo.Enabled = cbMsgLogDateRange.Checked
+        dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
+
+    End Sub
     Private Async Function RunScriptAsync(
     scriptPath As String,
     trigger As Button,
