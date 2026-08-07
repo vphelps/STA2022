@@ -26,8 +26,19 @@ jobs:
       - name: Restore Packages
         run: dotnet restore
 
-      - name: Publish Application
-        run: dotnet publish -c Release -o publish
+    - name: Publish Application
+      run: >
+        dotnet publish
+        -c Release
+        -r win-x64
+        --self-contained true
+        -p:PublishSingleFile=true
+        -p:IncludeNativeLibrariesForSelfExtract=true
+        -o publish
+     - name: Show Publish Contents 
+       shell: pwsh 
+       run: | 
+         Get-ChildItem publish 
 
       - name: Create ZIP
         shell: pwsh
