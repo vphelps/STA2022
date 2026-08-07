@@ -74,7 +74,7 @@ Public Module DatabaseCoordinator
 
         Catch
             If _lastKnownOnline <> False Then
-                GoOffline(form, "Invalid connection string")
+                GoOffline("Invalid connection string")
                 _lastKnownOnline = False
             End If
 
@@ -124,7 +124,7 @@ Public Module DatabaseCoordinator
             ' ✅ Expected: server down / unreachable
 
             If _lastKnownOnline <> False Then
-                GoOffline(form, "No SQL Server available")
+                GoOffline("No SQL Server available")
                 _lastKnownOnline = False
                 _lastKnownSource = Nothing
             End If
@@ -133,7 +133,7 @@ Public Module DatabaseCoordinator
             ' ✅ Bad connection string – don't retry repeatedly
 
             If _lastKnownOnline <> False Then
-                GoOffline(form, "Invalid connection string")
+                GoOffline("Invalid connection string")
                 _lastKnownOnline = False
                 _lastKnownSource = Nothing
             End If
@@ -142,7 +142,7 @@ Public Module DatabaseCoordinator
             ' ✅ Unexpected issues
 
             If _lastKnownOnline <> False Then
-                GoOffline(form, "Database error")
+                GoOffline("Database error")
                 _lastKnownOnline = False
                 _lastKnownSource = Nothing
             End If
@@ -205,7 +205,6 @@ Public Module DatabaseCoordinator
                 If _lastKnownOnline <> False Then
 
                     GoOffline(
-                    form,
                     If(
                         String.IsNullOrWhiteSpace(
                             health.Details),
@@ -253,20 +252,16 @@ Public Module DatabaseCoordinator
     End Sub
 
 
-    Public Sub GoOffline(form As FormMain, reason As String)
+    Public Sub GoOffline(reason As String)
 
         Variables.OfflineMode = True
         PCInfo.ValidDatabase = False
+
         RaiseEvent DatabaseOffline(
-            Nothing,
-    New DatabaseStateEventArgs With {
-        .Reason = reason
-    })
-        InvokeOnUI(form,
-            Sub()
-
-
-            End Sub)
+        Nothing,
+        New DatabaseStateEventArgs With {
+            .Reason = reason
+        })
 
     End Sub
 
@@ -310,10 +305,10 @@ Public Module DatabaseCoordinator
             LoadWebOptions(form)
             Await LoadApplicationInfo(form)
         Catch ex As SafeDb.DatabaseOfflineException
-            GoOffline(form, "Lost DB connection")
+            GoOffline("Lost DB connection")
 
         Catch ex As Exception
-            GoOffline(form, "Database error: " & ex.Message)
+            GoOffline("Database error: " & ex.Message)
         End Try
 
     End Function
