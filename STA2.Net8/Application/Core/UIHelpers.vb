@@ -132,6 +132,7 @@ Public Module UIHelpers
                     lblCountdown)
             End If
 
+            dlg.StartPosition = FormStartPosition.CenterParent
             AutoSizeDialog(dlg, btnYes, 20)
             dlg.ShowDialog(ResolveOwner(owner))
             DisposeTimer(timer)

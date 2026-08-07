@@ -31,6 +31,7 @@ Public Class FormMain
     Private _qaApiLaunchInProgress As Boolean
     Private _qaApiRestartRequested As Boolean
     Private _qaStatusRefreshInProgress As Boolean
+    Private _startupCoordinator As StartupCoordinator
 
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
@@ -202,6 +203,9 @@ Public Class FormMain
         FormHelper.InitializeUIEnhancements(Me, ToolTip1)
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
+        _startupCoordinator =
+    New StartupCoordinator(Me)
+
         lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
 
         rtbLiveOutput.CreateControl()
@@ -259,10 +263,7 @@ Public Class FormMain
             _uiStateController.SetDatabaseOfflineState()
         End If
 
-        CodeHelper.GetPcInfo()
-        Connections.IniFileHandler(False)
-        CodeHelper.FirstLoad()
-        CodeHelper.Refresher()
+        _startupCoordinator.RunStartupSequence()
 
         rbDbTableSize.Checked = True
         rbMessageLog.Checked = True
@@ -271,11 +272,7 @@ Public Class FormMain
         '_databaseController.RefreshLogs()
         UpdateDbVersionState()
 
-        DatabaseCoordinator.EvaluateDatabaseAvailability(
-        form:=Me,
-        connectionString:=ConfigValues.ConnectionString,
-        configuredContainerName:=_options?.SqlContainerName
-    )
+
 
 
 #If Not DEBUG Then
@@ -318,7 +315,7 @@ Public Class FormMain
         SetExecutionStatus(String.Empty)
         InitializeTabSwitchHint()
 
-        DatabaseCoordinator.RefreshAdvantageData(Me)
+        Await _startupCoordinator.RefreshStartupDataAsync()
         EnableDoubleBuffering(tblServices)
 
         UpdateStartDatabaseButton()
