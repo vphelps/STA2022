@@ -10,4 +10,16 @@
     Public Sub Initialize()
 
     End Sub
+    Public Sub PerformInitialRefresh()
+
+        CodeHelper.GetPcInfo()
+
+        Connections.IniFileHandler(False)
+
+        CodeHelper.FirstLoad()
+
+        CodeHelper.Refresher()
+
+    End Sub
+
 End Class

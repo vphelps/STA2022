@@ -263,10 +263,7 @@ Public Class FormMain
             _uiStateController.SetDatabaseOfflineState()
         End If
 
-        CodeHelper.GetPcInfo()
-        Connections.IniFileHandler(False)
-        CodeHelper.FirstLoad()
-        CodeHelper.Refresher()
+        _startupCoordinator.PerformInitialRefresh()
 
         rbDbTableSize.Checked = True
         rbMessageLog.Checked = True
