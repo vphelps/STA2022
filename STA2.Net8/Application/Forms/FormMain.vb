@@ -82,6 +82,16 @@ Public Class FormMain
         tbShiftDate.Text = summary.ShiftDate
 
     End Sub
+    Public Sub ShowDatabaseSummaryError()
+
+        tbLocName.Text = "Database Error"
+        tbLicSvr.Text = "Database Error"
+        tbCoreSvr.Text = "Database Error"
+        tbDbVer.Text = "Database Error"
+        tbWebEnabled.Text = "Database Error"
+        tbShiftDate.Text = "Database Error"
+
+    End Sub
     Public Sub EnsureRefreshTimerRunning()
 
         If Not tmr10Seconds.Enabled Then

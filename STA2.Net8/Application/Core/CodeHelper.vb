@@ -36,11 +36,6 @@ Public Module CodeHelper
 
     End Sub
 
-
-
-    ' =======================================================================
-    '  Refresher() updated to use SafeDb (prevents runtime crashes)
-    ' =======================================================================
     Public Sub Refresher()
 
         ' Always update the Advantage version
@@ -100,13 +95,9 @@ Public Module CodeHelper
                 Exit Sub
 
             Catch ex As Exception
-                ' Only a non-connectivity error
-                frm.tbLocName.Text = "Database Error"
-                frm.tbLicSvr.Text = "Database Error"
-                frm.tbCoreSvr.Text = "Database Error"
-                frm.tbDbVer.Text = "Database Error"
-                frm.tbWebEnabled.Text = "Database Error"
-                frm.tbShiftDate.Text = "Database Error"
+
+                frm.ShowDatabaseSummaryError()
+
             End Try
         End If
 
