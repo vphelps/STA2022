@@ -243,9 +243,6 @@ Public Module DatabaseCoordinator
         InvokeOnUI(form,
             Sub()
 
-                Dim uiState As New UIStateController(form, form._options)
-
-                uiState.SetDatabaseOnlineState()
                 ' Refresh data
                 CodeHelper.GetPcInfo()
                 CodeHelper.FirstLoad()
@@ -267,11 +264,6 @@ Public Module DatabaseCoordinator
     })
         InvokeOnUI(form,
             Sub()
-
-                Dim uiState As New UIStateController(form, form._options)
-
-                uiState.SetDatabaseOfflineState()
-
 
 
             End Sub)

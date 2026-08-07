@@ -102,6 +102,10 @@ Public Class FormMain
     Private Sub HandleDatabaseOnline(
     sender As Object,
     e As DatabaseStateEventArgs)
+        Dim uiState As New UIStateController(Me, _options)
+
+        uiState.SetDatabaseOnlineState()
+
         If tslblDbState IsNot Nothing Then
             tslblDbState.Text = $"ONLINE ({e.Source})"
             tslblDbState.ForeColor = Color.WhiteSmoke
@@ -121,6 +125,11 @@ Public Class FormMain
     Private Sub HandleDatabaseOffline(
     sender As Object,
     e As DatabaseStateEventArgs)
+
+        Dim uiState As New UIStateController(Me, _options)
+
+        uiState.SetDatabaseOfflineState()
+
         If tslblDbState IsNot Nothing Then
             tslblDbState.Text = "OFFLINE"
             tslblDbState.ForeColor = Color.White
