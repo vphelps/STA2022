@@ -1,4 +1,4 @@
-name: Create Release
+name: Release STA2
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
@@ -26,29 +26,34 @@ jobs:
       - name: Restore Packages
         run: dotnet restore
 
-    - name: Publish Application
-      run: >
-        dotnet publish
-        -c Release
-        -r win-x64
-        --self-contained true
-        -p:PublishSingleFile=true
-        -p:IncludeNativeLibrariesForSelfExtract=true
-        -o publish
-     - name: Show Publish Contents 
-       shell: pwsh 
-       run: | 
-         Get-ChildItem publish 
+      - name: Build Solution
+        run: dotnet build --configuration Release --no-restore
 
-      - name: Create ZIP
+      - name: Run Unit Tests
+        run: dotnet test --configuration Release --no-build
+
+      - name: Publish STA2
         shell: pwsh
         run: |
+          dotnet publish STA2.Net8/STA2.Net8.vbproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            --output publish
+
+      - name: Create Release ZIP
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME
+
           Compress-Archive `
             -Path publish\* `
-            -DestinationPath STA2.zip
+            -DestinationPath "STA2-$version.zip"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: STA2.zip
+          files: STA2-*.zip
           generate_release_notes: true
