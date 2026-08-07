@@ -272,16 +272,7 @@ Public Module DatabaseCoordinator
 
                 uiState.SetDatabaseOfflineState()
 
-                If form.tslblDbState IsNot Nothing Then
-                    form.tslblDbState.Text = "OFFLINE"
-                    form.tslblDbState.ForeColor = Color.White
-                    form.tslblDbState.BackColor = Color.Firebrick
-                End If
 
-                If form.tslblExecutionStatus IsNot Nothing Then
-                    form.tslblExecutionStatus.Text = reason
-                    form.tslblExecutionStatus.Visible = True
-                End If
 
             End Sub)
 

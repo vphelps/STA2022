@@ -121,7 +121,16 @@ Public Class FormMain
     Private Sub HandleDatabaseOffline(
     sender As Object,
     e As DatabaseStateEventArgs)
+        If tslblDbState IsNot Nothing Then
+            tslblDbState.Text = "OFFLINE"
+            tslblDbState.ForeColor = Color.White
+            tslblDbState.BackColor = Color.Firebrick
+        End If
 
+        If tslblExecutionStatus IsNot Nothing Then
+            tslblExecutionStatus.Text = e.Reason
+            tslblExecutionStatus.Visible = True
+        End If
         GlobalErrorHandler.LogAction(
         $"Database offline event received. Reason={e.Reason}")
 
