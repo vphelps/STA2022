@@ -263,7 +263,7 @@ Public Class FormMain
             _uiStateController.SetDatabaseOfflineState()
         End If
 
-        _startupCoordinator.PerformInitialRefresh()
+        _startupCoordinator.RunStartupSequence()
 
         rbDbTableSize.Checked = True
         rbMessageLog.Checked = True
@@ -272,7 +272,6 @@ Public Class FormMain
         '_databaseController.RefreshLogs()
         UpdateDbVersionState()
 
-        _startupCoordinator.EvaluateDatabase()
 
 
 

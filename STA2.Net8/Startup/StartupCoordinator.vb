@@ -29,4 +29,12 @@
             configuredContainerName:=_form._options?.SqlContainerName)
 
     End Sub
+    Public Sub RunStartupSequence()
+
+        PerformInitialRefresh()
+
+        EvaluateDatabase()
+
+    End Sub
+
 End Class
