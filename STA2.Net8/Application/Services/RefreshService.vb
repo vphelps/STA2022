@@ -27,5 +27,22 @@
     }
 
     End Function
+    Public Function LoadDatabaseStatistics() As DatabaseStatisticsResult
+        Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
+
+        If dsStats Is Nothing OrElse
+            dsStats.Tables.Count = 0 OrElse
+            dsStats.Tables(0).Rows.Count = 0 Then
+
+            Throw New Exception("DbStats returned no rows.")
+        End If
+
+        Dim row0 = dsStats.Tables(0).Rows(0)
+
+        Return New DatabaseStatisticsResult With {
+            .DatabaseSize = Convert.ToString(row0.Item(0)),
+            .SqlVersion = Convert.ToString(row0.Item(1))
+        }
+    End Function
 
 End Class
