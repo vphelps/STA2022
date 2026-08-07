@@ -69,6 +69,20 @@ Public Class FormMain
 
     End Sub
 
+    Public Sub ApplyDatabaseSummary(
+    summary As DatabaseSummaryViewModel)
+
+        If summary Is Nothing Then Return
+
+        tbLocName.Text = summary.LocationName
+        tbLicSvr.Text = summary.LicenseServer
+        tbCoreSvr.Text = summary.CoreServer
+        tbDbVer.Text = summary.DatabaseVersion
+        tbWebEnabled.Text = summary.WebEnabled
+        tbShiftDate.Text = summary.ShiftDate
+
+    End Sub
+
     Private Async Function RunScriptAsync(
     scriptPath As String,
     trigger As Button,
