@@ -21,5 +21,12 @@
         CodeHelper.Refresher()
 
     End Sub
+    Public Sub EvaluateDatabase()
 
+        DatabaseCoordinator.EvaluateDatabaseAvailability(
+            form:=_form,
+            connectionString:=ConfigValues.ConnectionString,
+            configuredContainerName:=_form._options?.SqlContainerName)
+
+    End Sub
 End Class

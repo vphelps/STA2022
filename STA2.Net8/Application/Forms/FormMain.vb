@@ -272,11 +272,8 @@ Public Class FormMain
         '_databaseController.RefreshLogs()
         UpdateDbVersionState()
 
-        DatabaseCoordinator.EvaluateDatabaseAvailability(
-        form:=Me,
-        connectionString:=ConfigValues.ConnectionString,
-        configuredContainerName:=_options?.SqlContainerName
-    )
+        _startupCoordinator.EvaluateDatabase()
+
 
 
 #If Not DEBUG Then
