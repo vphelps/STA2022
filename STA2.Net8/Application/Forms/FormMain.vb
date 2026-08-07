@@ -31,6 +31,7 @@ Public Class FormMain
     Private _qaApiLaunchInProgress As Boolean
     Private _qaApiRestartRequested As Boolean
     Private _qaStatusRefreshInProgress As Boolean
+    Private _startupCoordinator As StartupCoordinator
 
     Private ReadOnly _serviceRows As New List(Of ServiceRowControl)
     Private _serviceManager As ServiceManager
@@ -202,6 +203,9 @@ Public Class FormMain
         FormHelper.InitializeUIEnhancements(Me, ToolTip1)
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)
+        _startupCoordinator =
+    New StartupCoordinator(Me)
+
         lblPersonalFlavorFile.Text = "Personal Flavor Filename:  " & _options.PersonalFlavorFileName
 
         rtbLiveOutput.CreateControl()
