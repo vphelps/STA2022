@@ -315,7 +315,7 @@ Public Class FormMain
         SetExecutionStatus(String.Empty)
         InitializeTabSwitchHint()
 
-        DatabaseCoordinator.RefreshAdvantageData(Me)
+        Await _startupCoordinator.RefreshStartupDataAsync()
         EnableDoubleBuffering(tblServices)
 
         UpdateStartDatabaseButton()

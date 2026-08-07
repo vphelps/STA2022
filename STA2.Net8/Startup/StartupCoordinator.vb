@@ -36,5 +36,9 @@
         EvaluateDatabase()
 
     End Sub
+    Public Async Function RefreshStartupDataAsync() As Task
 
+        Await DatabaseCoordinator.RefreshAdvantageData(_form)
+
+    End Function
 End Class
