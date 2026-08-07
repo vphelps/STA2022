@@ -99,9 +99,59 @@ Public Class FormMain
         FormHelper.ShowErrorPopup(owner:=Me, ex:=ex, source:=source, viewLogsAction:=AddressOf ShowLatestLogInUI)
 
     End Sub
+    Private Sub HandleDatabaseOnline(
+    sender As Object,
+    e As DatabaseStateEventArgs)
+        Dim uiState As New UIStateController(Me, _options)
+
+        uiState.SetDatabaseOnlineState()
+
+        If tslblDbState IsNot Nothing Then
+            tslblDbState.Text = $"ONLINE ({e.Source})"
+            tslblDbState.ForeColor = Color.WhiteSmoke
+            tslblDbState.BackColor = Color.DarkGreen
+        End If
+
+        If tslblExecutionStatus IsNot Nothing Then
+            tslblExecutionStatus.Text = ""
+            tslblExecutionStatus.Visible = False
+        End If
+
+
+        GlobalErrorHandler.LogAction(
+        $"Database online event received. Source={e.Source}")
+
+    End Sub
+    Private Sub HandleDatabaseOffline(
+    sender As Object,
+    e As DatabaseStateEventArgs)
+
+        Dim uiState As New UIStateController(Me, _options)
+
+        uiState.SetDatabaseOfflineState()
+
+        If tslblDbState IsNot Nothing Then
+            tslblDbState.Text = "OFFLINE"
+            tslblDbState.ForeColor = Color.White
+            tslblDbState.BackColor = Color.Firebrick
+        End If
+
+        If tslblExecutionStatus IsNot Nothing Then
+            tslblExecutionStatus.Text = e.Reason
+            tslblExecutionStatus.Visible = True
+        End If
+        GlobalErrorHandler.LogAction(
+        $"Database offline event received. Reason={e.Reason}")
+
+    End Sub
+
     Private Async Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         AddHandler GlobalErrorHandler.OnErrorLogged, AddressOf HandleErrorLogged
+        AddHandler DatabaseCoordinator.DatabaseOnline,
+    AddressOf HandleDatabaseOnline
 
+        AddHandler DatabaseCoordinator.DatabaseOffline,
+    AddressOf HandleDatabaseOffline
         FormHelper.InitializeUIEnhancements(Me, ToolTip1)
         _uiStateController = New UIStateController(Me, _options)
         _databaseController = New DatabaseViewController(Me)

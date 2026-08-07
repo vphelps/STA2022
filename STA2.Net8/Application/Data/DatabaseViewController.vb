@@ -52,7 +52,7 @@ Public Class DatabaseViewController
             _form.dgvDbTableSize.Refresh()
 
         Catch ex As SafeDb.DatabaseOfflineException
-            DatabaseCoordinator.GoOffline(_form, "Lost DB connection during DbInfoRefresh")
+            DatabaseCoordinator.GoOffline("Lost DB connection during DbInfoRefresh")
             _form.dgvDbTableSize.DataSource = Nothing
 
         Catch ex As Exception
@@ -142,7 +142,7 @@ Public Class DatabaseViewController
             _form.dgvDbLogData.Refresh()
 
         Catch ex As SafeDb.DatabaseOfflineException
-            DatabaseCoordinator.GoOffline(_form, "Lost DB connection during DbLogRefresh")
+            DatabaseCoordinator.GoOffline("Lost DB connection during DbLogRefresh")
             _form.dgvDbLogCount.DataSource = Nothing
             _form.dgvDbLogData.DataSource = Nothing
         Catch ex As Exception

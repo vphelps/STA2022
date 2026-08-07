@@ -92,7 +92,7 @@ Public Module CodeHelper
 
             Catch ex As SafeDb.DatabaseOfflineException
                 ' ---- HARD OFFLINE TRIGGER ----
-                DatabaseCoordinator.GoOffline(frm, "Lost DB connection during LicenseData refresh")
+                DatabaseCoordinator.GoOffline("Lost DB connection during LicenseData refresh")
                 Exit Sub
 
             Catch ex As Exception
@@ -143,7 +143,7 @@ Public Module CodeHelper
 
         Catch ex As SafeDb.DatabaseOfflineException
             ' ---- HARD OFFLINE TRIGGER ----
-            DatabaseCoordinator.GoOffline(frm, "Lost DB connection during DbStats refresh")
+            DatabaseCoordinator.GoOffline("Lost DB connection during DbStats refresh")
             Exit Sub
 
         Catch ex As Exception
