@@ -82,6 +82,13 @@ Public Class FormMain
         tbShiftDate.Text = summary.ShiftDate
 
     End Sub
+    Public Sub EnsureRefreshTimerRunning()
+
+        If Not tmr10Seconds.Enabled Then
+            tmr10Seconds.Start()
+        End If
+
+    End Sub
 
     Private Async Function RunScriptAsync(
     scriptPath As String,

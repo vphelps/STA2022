@@ -85,6 +85,7 @@ Public Module CodeHelper
                         .ShiftDate = r("ShiftDate").ToString()
                     }
                     frm.ApplyDatabaseSummary(summary)
+                    frm.EnsureRefreshTimerRunning()
 
                     PCInfo.DatabaseVersion = r("Version").ToString()
 
