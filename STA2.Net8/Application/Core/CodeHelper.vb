@@ -86,12 +86,6 @@ Public Module CodeHelper
                     }
                     frm.ApplyDatabaseSummary(summary)
 
-                    frm.tbLocName.Text = r("LocName").ToString()
-                    frm.tbLicSvr.Text = r("LicenseServer").ToString()
-                    frm.tbCoreSvr.Text = r("CoreServiceServerName").ToString()
-                    frm.tbDbVer.Text = r("Version").ToString()
-                    frm.tbWebEnabled.Text = r("EnableWeb").ToString()
-                    frm.tbShiftDate.Text = r("ShiftDate").ToString()
                     PCInfo.DatabaseVersion = r("Version").ToString()
 
                 Else
