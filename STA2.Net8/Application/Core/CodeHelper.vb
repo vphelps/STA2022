@@ -58,11 +58,13 @@ Public Module CodeHelper
         End If
 
 
-        ' ============================================================
-        ' 1) LicenseData (SafeDb)
-        ' ============================================================
+        Dim refreshService As New RefreshService()
+
         If PCInfo.ValidDatabase Then
             Try
+                Dim licenseData =
+                    refreshService.LoadLicenseData()
+
                 Dim dsLic As DataSet = SafeDb.TryQuery(GeneralQueries.LicenseData)
 
                 If dsLic IsNot Nothing AndAlso
@@ -70,20 +72,20 @@ Public Module CodeHelper
                dsLic.Tables(0).Rows.Count > 0 Then
 
                     AppData.dbLicData = dsLic
-                    Dim r = dsLic.Tables(0).Rows(0)
+
                     Dim summary As New DatabaseSummaryViewModel With {
-                        .LocationName = r("LocName").ToString(),
-                        .LicenseServer = r("LicenseServer").ToString(),
-                        .CoreServer = r("CoreServiceServerName").ToString(),
-                        .DatabaseVersion = r("Version").ToString(),
-                        .WebEnabled = r("EnableWeb").ToString(),
-                        .ShiftDate = r("ShiftDate").ToString()
+                        .LocationName = licenseData.LocationName,
+                        .LicenseServer = licenseData.LicenseServer,
+                        .CoreServer = licenseData.CoreServer,
+                        .DatabaseVersion = licenseData.DatabaseVersion,
+                        .WebEnabled = licenseData.WebEnabled,
+                        .ShiftDate = licenseData.ShiftDate
                     }
+
                     frm.ApplyDatabaseSummary(summary)
                     frm.EnsureRefreshTimerRunning()
 
-                    PCInfo.DatabaseVersion = r("Version").ToString()
-
+                    PCInfo.DatabaseVersion = licenseData.DatabaseVersion
                 Else
                     Throw New Exception("LicenseData returned no rows.")
                 End If
