@@ -89,7 +89,14 @@ Public Class FormMain
         End If
 
     End Sub
+    Public Sub UpdateMessageLogDateRangeControls()
 
+        dtpMsgLogDateFrom.Enabled = cbMsgLogDateRange.Checked
+        dtpMsgLogTimeFrom.Enabled = cbMsgLogDateRange.Checked
+        dtpMsgLogDateTo.Enabled = cbMsgLogDateRange.Checked
+        dtpMsgLogTimeTo.Enabled = cbMsgLogDateRange.Checked
+
+    End Sub
     Private Async Function RunScriptAsync(
     scriptPath As String,
     trigger As Button,

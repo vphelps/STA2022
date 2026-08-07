@@ -114,11 +114,7 @@ Public Module CodeHelper
         ' ============================================================
         ' 2) Timers / UI updates
         ' ============================================================
-
-        frm.dtpMsgLogDateFrom.Enabled = frm.cbMsgLogDateRange.Checked
-        frm.dtpMsgLogTimeFrom.Enabled = frm.cbMsgLogDateRange.Checked
-        frm.dtpMsgLogDateTo.Enabled = frm.cbMsgLogDateRange.Checked
-        frm.dtpMsgLogTimeTo.Enabled = frm.cbMsgLogDateRange.Checked
+        frm.UpdateMessageLogDateRangeControls()
 
         Dim info = ServiceIntrospection.GetServiceFileInfo("AdvCoreService")
 
