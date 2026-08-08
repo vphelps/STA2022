@@ -59,8 +59,25 @@ Public Module CodeHelper
 
 
         Dim refreshService As New RefreshService()
-        Dim result =
-    refreshService.Refresh()
+        Dim result As RefreshResult = Nothing
+
+        Try
+
+            result = refreshService.Refresh()
+
+        Catch ex As SafeDb.DatabaseOfflineException
+
+            DatabaseCoordinator.GoOffline(
+        "Lost DB connection during refresh")
+
+            Exit Sub
+
+        Catch ex As Exception
+
+            frm.ShowDatabaseSummaryError()
+            Exit Sub
+
+        End Try
 
         If PCInfo.ValidDatabase Then
             Try
@@ -117,15 +134,6 @@ Public Module CodeHelper
         Dim PcDbSize As String = ""
         Dim PcSqlVersion As String = ""
         Try
-
-            Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
-
-            If dsStats Is Nothing OrElse
-           dsStats.Tables.Count = 0 OrElse
-           dsStats.Tables(0).Rows.Count = 0 Then
-
-                Throw New Exception("DbStats returned no rows.")
-            End If
 
             PCInfo.DbSize =
     result.Statistics.DatabaseSize
