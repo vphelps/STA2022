@@ -58,49 +58,54 @@ Public Module CodeHelper
         End If
 
 
-        ' ============================================================
-        ' 1) LicenseData (SafeDb)
-        ' ============================================================
+        Dim refreshService As New RefreshService()
+        Dim result As RefreshResult = Nothing
+
+        Try
+
+            result = refreshService.Refresh()
+
+        Catch ex As SafeDb.DatabaseOfflineException
+
+            DatabaseCoordinator.GoOffline(
+        "Lost DB connection during refresh")
+
+            Exit Sub
+
+        Catch ex As Exception
+
+            frm.ShowDatabaseSummaryError()
+            Exit Sub
+
+        End Try
+
         If PCInfo.ValidDatabase Then
+
             Try
-                Dim dsLic As DataSet = SafeDb.TryQuery(GeneralQueries.LicenseData)
 
-                If dsLic IsNot Nothing AndAlso
-               dsLic.Tables.Count > 0 AndAlso
-               dsLic.Tables(0).Rows.Count > 0 Then
+                Dim summary As New DatabaseSummaryViewModel With {
+            .LocationName = result.LicenseData.LocationName,
+            .LicenseServer = result.LicenseData.LicenseServer,
+            .CoreServer = result.LicenseData.CoreServer,
+            .DatabaseVersion = result.LicenseData.DatabaseVersion,
+            .WebEnabled = result.LicenseData.WebEnabled,
+            .ShiftDate = result.LicenseData.ShiftDate
+        }
 
-                    AppData.dbLicData = dsLic
-                    Dim r = dsLic.Tables(0).Rows(0)
-                    Dim summary As New DatabaseSummaryViewModel With {
-                        .LocationName = r("LocName").ToString(),
-                        .LicenseServer = r("LicenseServer").ToString(),
-                        .CoreServer = r("CoreServiceServerName").ToString(),
-                        .DatabaseVersion = r("Version").ToString(),
-                        .WebEnabled = r("EnableWeb").ToString(),
-                        .ShiftDate = r("ShiftDate").ToString()
-                    }
-                    frm.ApplyDatabaseSummary(summary)
-                    frm.EnsureRefreshTimerRunning()
+                frm.ApplyDatabaseSummary(summary)
 
-                    PCInfo.DatabaseVersion = r("Version").ToString()
+                frm.EnsureRefreshTimerRunning()
 
-                Else
-                    Throw New Exception("LicenseData returned no rows.")
-                End If
-
-
-            Catch ex As SafeDb.DatabaseOfflineException
-                ' ---- HARD OFFLINE TRIGGER ----
-                DatabaseCoordinator.GoOffline("Lost DB connection during LicenseData refresh")
-                Exit Sub
+                PCInfo.DatabaseVersion =
+            result.LicenseData.DatabaseVersion
 
             Catch ex As Exception
 
                 frm.ShowDatabaseSummaryError()
 
             End Try
-        End If
 
+        End If
 
         ' ============================================================
         ' 2) Timers / UI updates
@@ -115,33 +120,15 @@ Public Module CodeHelper
 
         Dim PcDbSize As String = ""
         Dim PcSqlVersion As String = ""
-        Try
-            Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
-
-            If dsStats Is Nothing OrElse
-           dsStats.Tables.Count = 0 OrElse
-           dsStats.Tables(0).Rows.Count = 0 Then
-
-                Throw New Exception("DbStats returned no rows.")
-            End If
-
-            Dim row0 = dsStats.Tables(0).Rows(0)
-            PCInfo.DbSize = Convert.ToString(row0.Item(0))
-            PCInfo.SqlVersion = Convert.ToString(row0.Item(1))
-            PCInfo.ValidDatabase = True
 
 
-        Catch ex As SafeDb.DatabaseOfflineException
-            ' ---- HARD OFFLINE TRIGGER ----
-            DatabaseCoordinator.GoOffline("Lost DB connection during DbStats refresh")
-            Exit Sub
+        PCInfo.DbSize =
+    result.Statistics.DatabaseSize
 
-        Catch ex As Exception
-            PCInfo.ValidDatabase = False
-            PcDbSize = "Invalid Database"
-            PcSqlVersion = "Invalid Database"
-        End Try
+        PCInfo.SqlVersion =
+    result.Statistics.SqlVersion
 
+        PCInfo.ValidDatabase = True
 
         ' ============================================================
         ' 4) Reflect DB summary
