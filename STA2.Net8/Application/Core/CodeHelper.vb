@@ -60,6 +60,7 @@ Public Module CodeHelper
 
         Dim refreshService As New RefreshService()
 
+
         If PCInfo.ValidDatabase Then
             Try
                 Dim licenseData =

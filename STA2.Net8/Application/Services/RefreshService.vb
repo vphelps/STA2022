@@ -44,5 +44,12 @@
             .SqlVersion = Convert.ToString(row0.Item(1))
         }
     End Function
+    Public Function Refresh() As RefreshResult
+
+        Return New RefreshResult With {
+            .LicenseData = LoadLicenseData(),
+            .Statistics = LoadDatabaseStatistics()
+        }
+    End Function
 
 End Class
