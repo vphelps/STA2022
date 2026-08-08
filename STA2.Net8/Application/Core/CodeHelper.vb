@@ -118,6 +118,8 @@ Public Module CodeHelper
         Dim PcDbSize As String = ""
         Dim PcSqlVersion As String = ""
         Try
+            Dim statistics =
+    refreshService.LoadDatabaseStatistics()
             Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
 
             If dsStats Is Nothing OrElse
@@ -127,9 +129,12 @@ Public Module CodeHelper
                 Throw New Exception("DbStats returned no rows.")
             End If
 
-            Dim row0 = dsStats.Tables(0).Rows(0)
-            PCInfo.DbSize = Convert.ToString(row0.Item(0))
-            PCInfo.SqlVersion = Convert.ToString(row0.Item(1))
+            PCInfo.DbSize =
+    statistics.DatabaseSize
+
+            PCInfo.SqlVersion =
+    statistics.SqlVersion
+
             PCInfo.ValidDatabase = True
 
 
