@@ -59,13 +59,11 @@ Public Module CodeHelper
 
 
         Dim refreshService As New RefreshService()
-
+        Dim result =
+    refreshService.Refresh()
 
         If PCInfo.ValidDatabase Then
             Try
-                Dim licenseData =
-                    refreshService.LoadLicenseData()
-
                 Dim dsLic As DataSet = SafeDb.TryQuery(GeneralQueries.LicenseData)
 
                 If dsLic IsNot Nothing AndAlso
@@ -75,18 +73,18 @@ Public Module CodeHelper
                     AppData.dbLicData = dsLic
 
                     Dim summary As New DatabaseSummaryViewModel With {
-                        .LocationName = licenseData.LocationName,
-                        .LicenseServer = licenseData.LicenseServer,
-                        .CoreServer = licenseData.CoreServer,
-                        .DatabaseVersion = licenseData.DatabaseVersion,
-                        .WebEnabled = licenseData.WebEnabled,
-                        .ShiftDate = licenseData.ShiftDate
+                        .LocationName = result.LicenseData.LocationName,
+                        .LicenseServer = result.LicenseData.LicenseServer,
+                        .CoreServer = result.LicenseData.CoreServer,
+                        .DatabaseVersion = result.LicenseData.DatabaseVersion,
+                        .WebEnabled = result.LicenseData.WebEnabled,
+                        .ShiftDate = result.LicenseData.ShiftDate
                     }
 
                     frm.ApplyDatabaseSummary(summary)
                     frm.EnsureRefreshTimerRunning()
 
-                    PCInfo.DatabaseVersion = licenseData.DatabaseVersion
+                    PCInfo.DatabaseVersion = result.LicenseData.DatabaseVersion
                 Else
                     Throw New Exception("LicenseData returned no rows.")
                 End If
@@ -119,8 +117,7 @@ Public Module CodeHelper
         Dim PcDbSize As String = ""
         Dim PcSqlVersion As String = ""
         Try
-            Dim statistics =
-    refreshService.LoadDatabaseStatistics()
+
             Dim dsStats As DataSet = SafeDb.TryQuery(GeneralQueries.DbStats)
 
             If dsStats Is Nothing OrElse
@@ -131,10 +128,10 @@ Public Module CodeHelper
             End If
 
             PCInfo.DbSize =
-    statistics.DatabaseSize
+    result.Statistics.DatabaseSize
 
             PCInfo.SqlVersion =
-    statistics.SqlVersion
+    result.Statistics.SqlVersion
 
             PCInfo.ValidDatabase = True
 
