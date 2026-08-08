@@ -80,45 +80,32 @@ Public Module CodeHelper
         End Try
 
         If PCInfo.ValidDatabase Then
+
             Try
-                Dim dsLic As DataSet = SafeDb.TryQuery(GeneralQueries.LicenseData)
 
-                If dsLic IsNot Nothing AndAlso
-               dsLic.Tables.Count > 0 AndAlso
-               dsLic.Tables(0).Rows.Count > 0 Then
+                Dim summary As New DatabaseSummaryViewModel With {
+            .LocationName = result.LicenseData.LocationName,
+            .LicenseServer = result.LicenseData.LicenseServer,
+            .CoreServer = result.LicenseData.CoreServer,
+            .DatabaseVersion = result.LicenseData.DatabaseVersion,
+            .WebEnabled = result.LicenseData.WebEnabled,
+            .ShiftDate = result.LicenseData.ShiftDate
+        }
 
-                    AppData.dbLicData = dsLic
+                frm.ApplyDatabaseSummary(summary)
 
-                    Dim summary As New DatabaseSummaryViewModel With {
-                        .LocationName = result.LicenseData.LocationName,
-                        .LicenseServer = result.LicenseData.LicenseServer,
-                        .CoreServer = result.LicenseData.CoreServer,
-                        .DatabaseVersion = result.LicenseData.DatabaseVersion,
-                        .WebEnabled = result.LicenseData.WebEnabled,
-                        .ShiftDate = result.LicenseData.ShiftDate
-                    }
+                frm.EnsureRefreshTimerRunning()
 
-                    frm.ApplyDatabaseSummary(summary)
-                    frm.EnsureRefreshTimerRunning()
-
-                    PCInfo.DatabaseVersion = result.LicenseData.DatabaseVersion
-                Else
-                    Throw New Exception("LicenseData returned no rows.")
-                End If
-
-
-            Catch ex As SafeDb.DatabaseOfflineException
-                ' ---- HARD OFFLINE TRIGGER ----
-                DatabaseCoordinator.GoOffline("Lost DB connection during LicenseData refresh")
-                Exit Sub
+                PCInfo.DatabaseVersion =
+            result.LicenseData.DatabaseVersion
 
             Catch ex As Exception
 
                 frm.ShowDatabaseSummaryError()
 
             End Try
-        End If
 
+        End If
 
         ' ============================================================
         ' 2) Timers / UI updates
@@ -133,28 +120,15 @@ Public Module CodeHelper
 
         Dim PcDbSize As String = ""
         Dim PcSqlVersion As String = ""
-        Try
 
-            PCInfo.DbSize =
+
+        PCInfo.DbSize =
     result.Statistics.DatabaseSize
 
-            PCInfo.SqlVersion =
+        PCInfo.SqlVersion =
     result.Statistics.SqlVersion
 
-            PCInfo.ValidDatabase = True
-
-
-        Catch ex As SafeDb.DatabaseOfflineException
-            ' ---- HARD OFFLINE TRIGGER ----
-            DatabaseCoordinator.GoOffline("Lost DB connection during DbStats refresh")
-            Exit Sub
-
-        Catch ex As Exception
-            PCInfo.ValidDatabase = False
-            PcDbSize = "Invalid Database"
-            PcSqlVersion = "Invalid Database"
-        End Try
-
+        PCInfo.ValidDatabase = True
 
         ' ============================================================
         ' 4) Reflect DB summary
